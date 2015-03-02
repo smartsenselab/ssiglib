@@ -186,9 +186,6 @@ function(cxx_executable name dir libs)
     ${name} "${cxx_default}" "${libs}" "${dir}/${name}.cc" ${ARGN})
 endfunction()
 
-# Sets PYTHONINTERP_FOUND and PYTHON_EXECUTABLE.
-find_package(PythonInterp)
-
 # cxx_test_with_flags(name cxx_flags libs srcs...)
 #
 # creates a named C++ test that depends on the given libs and is built
@@ -196,32 +193,4 @@ find_package(PythonInterp)
 function(cxx_test_with_flags name cxx_flags libs)
   cxx_executable_with_flags(${name} "${cxx_flags}" "${libs}" ${ARGN})
   add_test(${name} ${name})
-endfunction()
-
-# cxx_test(name libs srcs...)
-#
-# creates a named test target that depends on the given libs and is
-# built from the given source files.  Unlike cxx_test_with_flags,
-# test/name.cc is already implicitly included in the source file list.
-function(cxx_test name libs)
-  cxx_test_with_flags("${name}" "${cxx_default}" "${libs}"
-    "test/${name}.cc" ${ARGN})
-endfunction()
-
-# py_test(name)
-#
-# creates a Python test with the given name whose main module is in
-# test/name.py.  It does nothing if Python is not installed.
-function(py_test name)
-  # We are not supporting Python tests on Linux yet as they consider
-  # all Linux environments to be google3 and try to use google3 features.
-  if (PYTHONINTERP_FOUND)
-    # ${CMAKE_BINARY_DIR} is known at configuration time, so we can
-    # directly bind it from cmake. ${CTEST_CONFIGURATION_TYPE} is known
-    # only at ctest runtime (by calling ctest -c <Configuration>), so
-    # we have to escape $ to delay variable substitution here.
-    add_test(${name}
-      ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/test/${name}.py
-          --build_dir=${CMAKE_CURRENT_BINARY_DIR}/\${CTEST_CONFIGURATION_TYPE})
-  endif()
 endfunction()

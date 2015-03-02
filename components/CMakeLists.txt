@@ -1,3 +1,5 @@
+#root/components/CMakeLists.txt
+
 #Set alias to components paths
 set (CORE_PATH ${PROJECT_SOURCE_DIR}/components/core) #core
 

@@ -1,3 +1,5 @@
+#root/components/core/CMakeLists.txt
+
 #Create exception files group
 file(GLOB core_exception "${CORE_PATH}/include/core/exception.h" "${CORE_PATH}/src/exception.cpp")
 
