@@ -8,3 +8,5 @@ source_group("exception" FILES ${core_exception}) #exception
 
 #Add Library core
 add_library(core ${core_exception})
+
+set_target_properties(core PROPERTIES FOLDER components)

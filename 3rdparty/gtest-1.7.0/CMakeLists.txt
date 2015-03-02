@@ -66,3 +66,6 @@ link_directories(${gtest_BINARY_DIR}/src)
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
+
+set_target_properties(gtest PROPERTIES FOLDER 3rdparty)
+set_target_properties(gtest_main PROPERTIES FOLDER 3rdparty)

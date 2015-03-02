@@ -5,6 +5,7 @@ cmake_minimum_required (VERSION 2.6)
 
 #CMake options
 cmake_policy(SET CMP0054 NEW)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 #Set Global Project Name
 set(PROJECT_NAME_STR SSF)
