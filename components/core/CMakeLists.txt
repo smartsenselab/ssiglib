@@ -4,7 +4,7 @@
 # CREATE FILES SET
 ###############################################################################
 
-file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.h" 
+file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.hpp" 
 								"${CORE_PATH}/src/exception.cpp"
 								)
 

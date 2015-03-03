@@ -1,9 +1,11 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
-TEST(IndependentMethod, ResetsToZero) {
-	int i = 0;
-	EXPECT_EQ(0, i);
+#include <core/exception.hpp>
 
-	i = 12;
-	EXPECT_EQ(12,i);
+TEST(Exception, throw_exception) {
+	try{
+		throw ssf::Exception("message");
+	}catch (ssf::Exception& e){
+		EXPECT_STREQ("message", e.what());
+	}
 }
