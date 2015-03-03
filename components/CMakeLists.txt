@@ -1,8 +1,22 @@
 #root/components/CMakeLists.txt
 
-#Set alias to components paths
+###############################################################################
+# CONFIGURE PATHS
+###############################################################################
 set (CORE_PATH ${PROJECT_SOURCE_DIR}/components/core) #core
 
-#Include CORE component to project
+
+###############################################################################
+# INCLUDE DIRECTORIES
+###############################################################################
 include_directories (${CORE_PATH}/include/core)
+
+if(BUILD_TESTS)
+	include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+endif()
+
+
+###############################################################################
+# COMPONENTS SUBDIRECTORIES
+###############################################################################
 add_subdirectory (core)

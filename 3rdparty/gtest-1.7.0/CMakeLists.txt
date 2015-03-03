@@ -5,10 +5,6 @@
 # ctest.  You can select which tests to run using 'ctest -R regex'.
 # For more options, run 'ctest --help'.
 
-# BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
-# make it prominent in the GUI.
-option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
-
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
 option(
@@ -66,6 +62,3 @@ link_directories(${gtest_BINARY_DIR}/src)
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
 target_link_libraries(gtest_main gtest)
-
-set_target_properties(gtest PROPERTIES FOLDER 3rdparty)
-set_target_properties(gtest_main PROPERTIES FOLDER 3rdparty)
