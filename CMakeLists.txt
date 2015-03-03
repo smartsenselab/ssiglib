@@ -8,7 +8,10 @@ cmake_minimum_required (VERSION 2.6)
 ###############################################################################
 
 #Remove Warning CMP0054 from gtest cmake build
-cmake_policy(SET CMP0054 NEW) 
+
+if(POLICY CMP0054)
+	cmake_policy(SET CMP0054 OLD)
+endif() 
 
 #Allows the solution folder utilization (for MSVC) 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
