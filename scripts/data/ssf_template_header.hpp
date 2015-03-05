@@ -20,7 +20,6 @@ namespace ssf{{
 	private:
 		//private members
 
-
 	}};
 
 }}

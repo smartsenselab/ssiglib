@@ -8,10 +8,15 @@ file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.hpp"
 								"${CORE_PATH}/src/exception.cpp"
 								)
 
+file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_util.hpp" 
+								"${CORE_PATH}/src/file_util.cpp"
+								)								
+
 ###############################################################################
 # CREATE SOURCE GROUPS
 ###############################################################################
 source_group("Exception" FILES ${CORE_EXCEPTION_FILES})
+source_group("Files" FILES ${CORE_FILEINFO_FILES})
 
 
 ###############################################################################
@@ -19,7 +24,8 @@ source_group("Exception" FILES ${CORE_EXCEPTION_FILES})
 ###############################################################################
 
 #Add library core into SSF project with its project
-add_library(ssf_core ${CORE_EXCEPTION_FILES})
+add_library(ssf_core 	${CORE_EXCEPTION_FILES}
+						${CORE_FILEINFO_FILES})
 
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
