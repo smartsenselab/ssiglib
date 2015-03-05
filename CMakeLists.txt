@@ -20,6 +20,11 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PROJECT_NAME_STR SSF)
 project(${PROJECT_NAME_STR} CXX)
 
+# If install location is default, set new default to "build/install"
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
+endif()
+
 ###############################################################################
 # EXTERNAL LIBRARIES
 ###############################################################################

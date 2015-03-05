@@ -10,7 +10,9 @@ file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.hpp"
 
 file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_util.hpp" 
 								"${CORE_PATH}/src/file_util.cpp"
-								)								
+								)
+
+file(GLOB CORE_INCLUDES			"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
 # CREATE SOURCE GROUPS
@@ -26,12 +28,16 @@ source_group("Files" FILES ${CORE_FILEINFO_FILES})
 #Add library core into SSF project with its project
 add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_FILEINFO_FILES})
-
+						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 
+#Install configuration
+install (TARGETS ssf_core DESTINATION bin)
+install (FILES ${CORE_INCLUDES} DESTINATION include)
+
 ###############################################################################
-# CONFIGURE TESTS FOR LIBRARY CORE
+# SET TESTS FOR LIBRARY CORE
 ###############################################################################
 
 if(BUILD_TESTS)
