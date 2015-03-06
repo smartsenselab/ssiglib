@@ -45,7 +45,7 @@ if(BUILD_TESTS)
 
 	#Fix GTest link to test project
 	#See more details here: https://airfang.wordpress.com/2008/10/04/gtest-cmake-visual-studio/
-	SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+	#SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
 
 	#Create set of core tests files
 	file(GLOB CORE_TEST_FILES "${CORE_PATH}/test/*.cpp")
