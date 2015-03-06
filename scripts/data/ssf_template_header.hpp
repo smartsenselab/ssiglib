@@ -8,7 +8,7 @@ namespace ssf{{
 	public:
 		{className}(void);
 		virtual ~{className}(void);
-		{className}(const {className}& other);
+		{className}(const {className}& rhs);
 		{className}& operator=(const {className}& rhs);
 
 	private:

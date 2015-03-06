@@ -7,7 +7,7 @@
 namespace ssf{
 
 	class Exception : public std::exception {
-	
+
 	public:
 		explicit Exception(const std::string& message);
 		virtual ~Exception() throw();

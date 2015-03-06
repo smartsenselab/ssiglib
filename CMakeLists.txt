@@ -34,11 +34,6 @@ set(Boost_USE_STATIC OFF)
 set(Boost_USE_MULTITHREAD ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB")
 
-#add_definitions(-DBOOST_ALL_NO_LIB)  # tell the compiler to undefine this boost macro
-
-#SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
-#SET(CMAKE_CXX_FLAGS_RELEASE "/MTd")
-
 ###############################################################################
 # USER OPTIONS
 ###############################################################################

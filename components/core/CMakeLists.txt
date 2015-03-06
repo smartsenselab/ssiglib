@@ -6,10 +6,14 @@
 
 file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.hpp" 
 								"${CORE_PATH}/src/exception.cpp"
+								"${CORE_PATH}/include/core/file_exception.hpp" 
+								"${CORE_PATH}/src/file_exception.cpp"
 								)
 
-file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_info.hpp" 
-								"${CORE_PATH}/src/file_info.cpp"
+file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_handle.hpp" 
+								"${CORE_PATH}/src/file_handle.cpp"
+								"${CORE_PATH}/include/core/directory_handle.hpp" 
+								"${CORE_PATH}/src/directory_handle.cpp"
 								)
 
 file(GLOB CORE_INCLUDES			"${CORE_PATH}/include/core/*.hpp")
@@ -37,15 +41,16 @@ set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 install (TARGETS ssf_core DESTINATION bin)
 install (FILES ${CORE_INCLUDES} DESTINATION include)
 
+#Link Library core with Boost
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+target_link_libraries(ssf_core ${Boost_LIBRARIES})
+
 ###############################################################################
 # SET TESTS FOR LIBRARY CORE
 ###############################################################################
 
 if(BUILD_TESTS)
-
-	#Fix GTest link to test project
-	#See more details here: https://airfang.wordpress.com/2008/10/04/gtest-cmake-visual-studio/
-	#SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
 
 	#Create set of core tests files
 	file(GLOB CORE_TEST_FILES "${CORE_PATH}/test/*.cpp")
@@ -66,13 +71,3 @@ if(BUILD_TESTS)
 	set_target_properties(ssf_test_core PROPERTIES FOLDER TESTS)
 
 endif()
-
-###############################################################################
-# INCLUDE LIBRARIES TO CORE
-###############################################################################
-
-# Boost
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-target_link_libraries(ssf_core ${Boost_LIBRARIES})
-###target_link_libraries(ssf_test_core ${Boost_LIBRARIES})
