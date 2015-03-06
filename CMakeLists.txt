@@ -20,6 +20,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(PROJECT_NAME_STR SSF)
 project(${PROJECT_NAME_STR} CXX)
 
+#SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+#SET(CMAKE_CXX_FLAGS_RELEASE "/MTd")
+
 ###############################################################################
 # USER OPTIONS
 ###############################################################################
