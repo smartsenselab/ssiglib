@@ -8,8 +8,8 @@ file(GLOB CORE_EXCEPTION_FILES 	"${CORE_PATH}/include/core/exception.hpp"
 								"${CORE_PATH}/src/exception.cpp"
 								)
 
-file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_util.hpp" 
-								"${CORE_PATH}/src/file_util.cpp"
+file(GLOB CORE_FILEINFO_FILES 	"${CORE_PATH}/include/core/file_info.hpp" 
+								"${CORE_PATH}/src/file_info.cpp"
 								)
 
 file(GLOB CORE_INCLUDES			"${CORE_PATH}/include/core/*.hpp")
@@ -27,7 +27,8 @@ source_group("Files" FILES ${CORE_FILEINFO_FILES})
 
 #Add library core into SSF project with its project
 add_library(ssf_core 	${CORE_EXCEPTION_FILES}
-						${CORE_FILEINFO_FILES})
+						${CORE_FILEINFO_FILES}
+			)
 						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
@@ -59,9 +60,19 @@ if(BUILD_TESTS)
 
 	# This is so you can do 'make test' to see all your tests run, instead of
 	# manually running the executable ssf_test_core to see those specific tests.
-	add_test(NAME ssf_test_core COMMAND ssf_test_core)
+	add_test(NAME ssf_test_core COMMAND ssf_test_core WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
 	
 	#Configure folder to core library
 	set_target_properties(ssf_test_core PROPERTIES FOLDER TESTS)
 
 endif()
+
+###############################################################################
+# INCLUDE LIBRARIES TO CORE
+###############################################################################
+
+# Boost
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+target_link_libraries(ssf_core ${Boost_LIBRARIES})
+###target_link_libraries(ssf_test_core ${Boost_LIBRARIES})

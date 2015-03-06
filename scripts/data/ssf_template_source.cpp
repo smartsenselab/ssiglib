@@ -10,11 +10,11 @@ namespace ssf{{
 		//Destructor
 	}}
 
-	{className}::{className}(const {className}& other){{
+	{className}::{className}(const {className}& rhs){{
 		//Constructor Copy
 	}}
 
-	{className}& {className}::operator=(const {className}& other){{
+	{className}& {className}::operator=(const {className}& rhs){{
 		//Operator=
 	    return *this;
 	}}

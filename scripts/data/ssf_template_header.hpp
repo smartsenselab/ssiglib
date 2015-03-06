@@ -6,16 +6,10 @@ namespace ssf{{
 	class {className}{{
 	
 	public:
-		{className}();
-		virtual ~{className}();
+		{className}(void);
+		virtual ~{className}(void);
 		{className}(const {className}& other);
-		{className}& operator=(const {className}& other);
-
-	private:
-		//private functions
-
-	protected:
-		//protected members
+		{className}& operator=(const {className}& rhs);
 
 	private:
 		//private members
