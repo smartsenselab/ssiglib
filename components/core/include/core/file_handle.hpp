@@ -2,6 +2,7 @@
 #define _SSF_CORE_FILE_UTIL_HPP_
 
 #include <string>
+#include "boost\smart_ptr\shared_ptr.hpp"
 
 namespace boost{
 	namespace filesystem{
@@ -33,7 +34,7 @@ namespace ssf{
 		static bool exists(const std::string& fileName);
 
 	private:
-		boost::filesystem::path* mPath;
+		std::shared_ptr<boost::filesystem::path> mPath ;
 
 	};
 

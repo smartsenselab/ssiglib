@@ -19,13 +19,13 @@ namespace ssf{
 
 		boost::filesystem::path tempPath(directoryPathName);
 		if (tempPath.is_absolute())
-			this->mPath = new boost::filesystem::path(directoryPathName);
+			this->mPath = std::make_shared<boost::filesystem::path>(directoryPathName);
 		else
-			this->mPath = new boost::filesystem::path(boost::filesystem::current_path() / directoryPathName);
+			this->mPath = std::make_shared<boost::filesystem::path>(boost::filesystem::current_path() / directoryPathName);
 	}
 
 	DirectoryHandle::~DirectoryHandle(){
-		delete this->mPath;
+		//destructor
 	}
 
 	DirectoryHandle::DirectoryHandle(const DirectoryHandle& rhs)
@@ -37,9 +37,9 @@ namespace ssf{
 		return *this;
 	}
 
-	//bool DirectoryHandle::operator<(const DirectoryHandle& rhs) const{
-	//	return this->mPath->string() < rhs.mPath->string();
-	//}
+	bool DirectoryHandle::operator<(const DirectoryHandle& rhs) const{
+		return this->mPath->string() < rhs.mPath->string();
+	}
 
 	std::string DirectoryHandle::getAbsolutePath() const{
 		return this->mPath->string();
@@ -72,7 +72,9 @@ namespace ssf{
 			for (boost::filesystem::directory_iterator i(*(this->mPath)); i != end_itr; ++i){
 				if (!boost::filesystem::is_regular_file(i->path()))
 					continue;
-				list.insert(FileHandle(i->path().string()));
+				std::string t = i->path().string();
+				FileHandle te = FileHandle(i->path().string());
+				list.insert(te);
 			}
 		}
 
@@ -83,8 +85,16 @@ namespace ssf{
 		return boost::filesystem::is_empty(*(this->mPath));
 	}
 
+	bool DirectoryHandle::erase() const{
+		return boost::filesystem::remove(*(this->mPath));
+	}
+
 	bool DirectoryHandle::exists(const std::string& directoryPathName){
 		return (boost::filesystem::exists(directoryPathName) && boost::filesystem::is_directory(directoryPathName));
+	}
+
+	bool DirectoryHandle::erase(const std::string& directoryPathName){
+		return boost::filesystem::remove(directoryPathName);
 	}
 
 	ssf::DirectoryHandle DirectoryHandle::create(const std::string& directoryPathName){

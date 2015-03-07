@@ -5,6 +5,7 @@
 #include <set>
 
 #include "core/file_handle.hpp"
+#include "boost/smart_ptr/shared_ptr.hpp"
 
 namespace boost{
 	namespace filesystem{
@@ -23,24 +24,22 @@ namespace ssf{
 		DirectoryHandle(const DirectoryHandle& rhs);
 		DirectoryHandle& operator=(const DirectoryHandle& rhs);
 
-		bool operator<(const DirectoryHandle& rhs) const{
-			return true;
-		}
+		bool operator<(const DirectoryHandle& rhs) const;
 
 		std::string getAbsolutePath() const;
 		std::string getSimpleName() const;
 		std::set<DirectoryHandle> listSubDirectories();
 		std::set<FileHandle> listFiles();
 		bool isEmpty() const;
-		bool countFiles() const;
-		bool countDirectories() const;
+		bool erase() const;
 
 		static bool exists(const std::string& directoryPathName);
+		static bool erase(const std::string& directoryPathName);
 		static DirectoryHandle create(const std::string& directoryPathName);
 
 	private:
-		boost::filesystem::path* mPath;
-
+		std::shared_ptr<boost::filesystem::path> mPath;
+		
 	};
 
 }

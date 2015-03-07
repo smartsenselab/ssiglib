@@ -7,7 +7,7 @@
 namespace ssf{
 
 	FileHandle::FileHandle(){
-		
+		this->mPath = nullptr;
 	}
 
 	FileHandle::FileHandle(const std::string& fileName){
@@ -16,14 +16,14 @@ namespace ssf{
 
 		boost::filesystem::path tempPath(fileName);		
 		if (tempPath.is_absolute())
-			this->mPath = new boost::filesystem::path(fileName);
+			this->mPath = std::make_shared<boost::filesystem::path>(fileName);
 		else
-			this->mPath = new boost::filesystem::path(boost::filesystem::current_path() / fileName);
+			this->mPath = std::make_shared<boost::filesystem::path>(boost::filesystem::current_path() / fileName);
 
 	}
 
 	FileHandle::~FileHandle(){
-		delete this->mPath;
+		
 	}
 
 	FileHandle::FileHandle(const FileHandle& rhs)
@@ -31,7 +31,7 @@ namespace ssf{
 	}
 
 	FileHandle& FileHandle::operator=(const FileHandle& rhs){
-		*this->mPath = *(rhs.mPath);
+		*(this->mPath) = *(rhs.mPath);
 	    return *this;
 	}
 
