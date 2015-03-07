@@ -1,14 +1,16 @@
 #root/CMakeLists.txt
 
 #CMake Version Minimum Required
-cmake_minimum_required (VERSION 2.6)
+cmake_minimum_required (VERSION 2.8)
 
 ###############################################################################
 # CMake OPTIONS
 ###############################################################################
+#Set Global Project Name
+set(PROJECT_NAME_STR SSF)
+project(${PROJECT_NAME_STR} CXX)
 
 #Remove Warning CMP0054 from gtest cmake build
-
 if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 OLD)
 endif() 
@@ -16,12 +18,21 @@ endif()
 #Allows the solution folder utilization (for MSVC) 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-#Set Global Project Name
-set(PROJECT_NAME_STR SSF)
-project(${PROJECT_NAME_STR} CXX)
+# If install location is default, set new default to "build/install"
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
+endif()
 
-#SET(CMAKE_CXX_FLAGS_DEBUG "/MTd")
-#SET(CMAKE_CXX_FLAGS_RELEASE "/MTd")
+
+###############################################################################
+# EXTERNAL LIBRARIES
+###############################################################################
+find_package(Boost 1.47 COMPONENTS system filesystem REQUIRED)
+
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_STATIC OFF)
+set(Boost_USE_MULTITHREAD ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB")
 
 ###############################################################################
 # USER OPTIONS
