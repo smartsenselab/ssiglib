@@ -24,7 +24,7 @@ namespace ssf{
 		bool operator<(const FileHandle& rhs) const;
 
 		std::string getAbsoluteFileName() const;
-		std::string getSimpleFileName() const;
+		std::string getSimpleName() const;
 		std::string getExtenstion() const;
 		
 		bool erase();

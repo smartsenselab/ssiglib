@@ -15,7 +15,9 @@ namespace ssf{{
 	}}
 
 	{className}& {className}::operator=(const {className}& rhs){{
-		//Operator=
+		if (this != &rhs){{
+			//code here
+		}}
 	    return *this;
 	}}
 

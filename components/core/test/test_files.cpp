@@ -34,6 +34,20 @@ TEST(FileHandle, erase) {
 	EXPECT_FALSE(ssf::FileHandle::erase("invalid_file.txt"));
 }
 
+TEST(FileHandle, strings) {
+	ssf::FileHandle fileHandle("test_file.txt");
+	EXPECT_STREQ("test_file", fileHandle.getSimpleName().c_str());
+}
+
+TEST(FileHandle, copy) {
+	ssf::FileHandle fileHandle1("test_file.txt");
+	ssf::FileHandle fileHandle2(fileHandle1);
+	ssf::FileHandle fileHandle3 = fileHandle2;
+
+	EXPECT_STREQ("test_file", fileHandle2.getSimpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle3.getSimpleName().c_str());
+}
+
 ///////////////
 
 TEST(DirectoryHandle, constructor){
@@ -53,8 +67,8 @@ TEST(DirectoryHandle, erase) {
 }
 
 TEST(DirectoryHandle, lists) {
-	ssf::DirectoryHandle DirectoryHandle("folder_test");
-	EXPECT_EQ(3, DirectoryHandle.listSubDirectories().size());
+	ssf::DirectoryHandle directoryHandle("folder_test");
+	EXPECT_EQ(3, directoryHandle.listSubDirectories().size());
 }
 
 TEST(DirectoryHandle, create) {
@@ -62,4 +76,18 @@ TEST(DirectoryHandle, create) {
 	EXPECT_NO_THROW(ssf::DirectoryHandle ValidFile("temp_folder"));
 	EXPECT_TRUE(ssf::DirectoryHandle::exists("temp_folder"));
 	EXPECT_TRUE(ssf::DirectoryHandle::erase("temp_folder"));
+}
+
+TEST(DirectoryHandle, strings) {
+	ssf::DirectoryHandle directoryHandle("folder_test");
+	EXPECT_STREQ("folder_test", directoryHandle.getSimpleName().c_str());
+}
+
+TEST(DirectoryHandle, copy) {
+	ssf::DirectoryHandle directoryHandle1("folder_test");
+	ssf::DirectoryHandle directoryHandle2(directoryHandle1);
+	ssf::DirectoryHandle directoryHandle3 = directoryHandle2;
+
+	EXPECT_STREQ("folder_test", directoryHandle2.getSimpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle3.getSimpleName().c_str());
 }
