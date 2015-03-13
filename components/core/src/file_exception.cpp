@@ -7,7 +7,7 @@ namespace ssf{
 
 	}
 
-	FileException::~FileException(){
+	FileException::~FileException() throw (){
 
 	}
 
