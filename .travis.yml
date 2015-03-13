@@ -3,6 +3,9 @@ language: cpp
 compiler:
   - gcc
 
+install:
+  - sudo apt-get install libboost-filesystem1.53-dev
+
 before_script:
   - mkdir build
   - cd build
