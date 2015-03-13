@@ -28,7 +28,7 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 
 #Option to check if 'docs' will be build
-option(BUILD_DOCS "Build doxygen documentation" OFF)
+option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
 ###############################################################################
 # CMake OPTIONS

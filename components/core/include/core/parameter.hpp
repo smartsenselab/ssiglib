@@ -47,20 +47,20 @@ namespace ssf{
 		}
 
 		std::string getName() const {
-			if (!this->mRegistered)
-				throw ParameterException(this->getName(), "This parameter must be registered");
+			if (!*(this->mRegistered))
+				throw ParameterException("Undefined Parameter", "This parameter must be registered");
 			return *(this->mName);
 		}
 
 		std::string getDescription() const {
-			if (!this->mRegistered)
-				throw ParameterException(this->getName(), "This parameter must be registered");
+			if (!*(this->mRegistered))
+				throw ParameterException("Undefined Parameter", "This parameter must be registered");
 			return *(this->mDescription);
 		}
 
 		bool getRequired() const {
-			if (!this->mRegistered)
-				throw ParameterException(this->getName(), "This parameter must be registered");
+			if (!*(this->mRegistered))
+				throw ParameterException("Undefined Parameter", "This parameter must be registered");
 			return *(this->mRequired);
 		}
 
@@ -110,8 +110,8 @@ namespace ssf{
 		}
 
 		T getValue() const {
-			if (!this->mRegistered)
-				throw ParameterException(this->getName(), "This parameter must be registered");
+			if (!*(this->mRegistered))
+				throw ParameterException("Undefined Parameter", "This parameter must be registered");
 			return *(this->mValue);
 		}
 
