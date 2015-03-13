@@ -16,10 +16,20 @@ namespace ssf{
 		ParameterManager(const ParameterManager& rhs);
 		ParameterManager& operator=(const ParameterManager& rhs);
 
-		template<class ParamType> bool registerParameter(Parameter<ParamType>& parameter){
-			this->mParameters[parameter.getName()] = std::make_shared<Parameter<ParamType>>(parameter);
-			std::string a = this->mParameters[parameter.getName()]->getName();
-			return true;
+		template<class T> Parameter<T> makeParameter(const T& defaultValue, const std::string& name,
+			const std::string& description = IParameter::DEFAULT_DESCRIPTION, const bool& required = false){
+			
+			Parameter<T> newParameter;
+			*(newParameter.mValue) = defaultValue;
+			*(newParameter.mName) = name;
+			*(newParameter.mDescription) = description;
+			*(newParameter.mRequired) = required;
+			
+			this->mParameters[newParameter.getName()] = std::make_shared<Parameter<T>>(newParameter);
+			*(newParameter.mRegistered) = true;
+
+			return newParameter;
+
 		}
 
 		/*template<class ParamType> bool setParameterValue(const std::string& parameterName, const ParamType& value){
