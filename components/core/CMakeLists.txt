@@ -20,8 +20,6 @@ file(GLOB CORE_FILEHANDLE_FILES 	"${CORE_PATH}/include/core/file_handle.hpp"
 
 file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
 									"${CORE_PATH}/src/parameter.cpp"
-									"${CORE_PATH}/include/core/parameter_manager.hpp"
-									"${CORE_PATH}/src/parameter_manager.cpp"
 									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
