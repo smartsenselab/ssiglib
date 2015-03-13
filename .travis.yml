@@ -4,7 +4,9 @@ compiler:
   - gcc
 
 install:
-  - sudo apt-get install libboost-filesystem1.54-dev
+  - sudo add-apt-repository --yes ppa:boost-latest/ppa
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libboost1.54-filesystem-dev
 
 before_script:
   - mkdir build
