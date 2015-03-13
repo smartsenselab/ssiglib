@@ -4,7 +4,7 @@ compiler:
   - gcc
 
 install:
-  - sudo apt-get install libboost-filesystem
+  - sudo apt-get install libboost-filesystem-dev
 
 before_script:
   - mkdir build
