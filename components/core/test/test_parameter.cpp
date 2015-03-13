@@ -47,3 +47,14 @@ TEST_F(TestParameter, getValue){
 	EXPECT_ANY_THROW(paramFileHandle.getValue());
 	EXPECT_ANY_THROW(paramDirectoryHandle.getValue());
 }
+
+TEST_F(TestParameter, getName){
+	EXPECT_ANY_THROW(paramInt.getName());
+	EXPECT_ANY_THROW(paramLong.getName());
+	EXPECT_ANY_THROW(paramFloat.getName());
+	EXPECT_ANY_THROW(paramDouble.getName());
+	EXPECT_ANY_THROW(paramBool.getName());
+	EXPECT_ANY_THROW(paramString.getName());
+	EXPECT_ANY_THROW(paramFileHandle.getName());
+	EXPECT_ANY_THROW(paramDirectoryHandle.getName());
+}
