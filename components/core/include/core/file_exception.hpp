@@ -18,7 +18,6 @@ namespace ssf{
 
 
 	private:
-		std::string mMessage;
 		std::string mFileName;
 
 	};

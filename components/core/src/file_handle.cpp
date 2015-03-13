@@ -14,7 +14,7 @@ namespace ssf{
 		if (!boost::filesystem::exists(fileName))
 			throw FileException(fileName, "File not found!");
 
-		boost::filesystem::path tempPath(fileName);		
+		boost::filesystem::path tempPath(fileName);
 		if (tempPath.is_absolute())
 			this->mPath = std::make_shared<boost::filesystem::path>(fileName);
 		else
@@ -23,16 +23,18 @@ namespace ssf{
 	}
 
 	FileHandle::~FileHandle(){
-		
+
 	}
 
 	FileHandle::FileHandle(const FileHandle& rhs)
-		: mPath(rhs.mPath){		
+		: mPath(rhs.mPath){
 	}
 
 	FileHandle& FileHandle::operator=(const FileHandle& rhs){
-		*(this->mPath) = *(rhs.mPath);
-	    return *this;
+		if (this != &rhs){
+			*(this->mPath) = *(rhs.mPath);
+		}
+		return *this;
 	}
 
 	bool FileHandle::operator<(const FileHandle& rhs) const{
@@ -41,6 +43,10 @@ namespace ssf{
 
 	std::string FileHandle::getAbsoluteFileName() const{
 		return this->mPath->string();
+	}
+
+	std::string FileHandle::getSimpleName() const{
+		return this->mPath->stem().string();
 	}
 
 	std::string FileHandle::getExtenstion() const{

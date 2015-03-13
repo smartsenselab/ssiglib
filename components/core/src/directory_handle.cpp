@@ -33,7 +33,9 @@ namespace ssf{
 	}
 
 	DirectoryHandle& DirectoryHandle::operator=(const DirectoryHandle& rhs){
-		*this->mPath = *(rhs.mPath);
+		if (this != &rhs){
+			*this->mPath = *(rhs.mPath);
+		}
 		return *this;
 	}
 

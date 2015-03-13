@@ -36,7 +36,7 @@ namespace ssf{
 		virtual const char * what() const throw();
 
 
-	private:
+	protected:
 		std::string mMessage;
 
 	};

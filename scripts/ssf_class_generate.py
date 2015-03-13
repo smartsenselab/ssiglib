@@ -7,10 +7,11 @@ def main(argv):
 
 	component = 'core'
 	className = 'Class'
-	fileName = 'class'	
+	fileName = 'class'
+	only_interface = False	
 
 	try:
-		opts, args = getopt.getopt(argv,"hc:n:f:",["component=","name=","file="])
+		opts, args = getopt.getopt(argv,"hic:n:f:",["component=","name=","file=", "only_interface"])
 	except getopt.GetoptError:
 		help()
 		sys.exit(2)
@@ -25,6 +26,8 @@ def main(argv):
 			className = arg
 		elif opt in ("-f", "--file"):
 			fileName = arg
+		elif opt in ("-i", "--only_interface"):
+			only_interface = True
 
 
 	alias = {}	
@@ -47,8 +50,9 @@ def main(argv):
 	with open(headerPath, 'w') as fHeader:
 		fHeader.write(strTemplateHeader.format(**alias))
 
-	with open(sourcePath, 'w') as fSource:
-		fSource.write(strTemplateSource.format(**alias))
+	if(not only_interface):
+		with open(sourcePath, 'w') as fSource:
+			fSource.write(strTemplateSource.format(**alias))
 
 	print ('Class files generate with success!')
 
