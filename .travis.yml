@@ -1,9 +1,5 @@
 language: cpp
 
-os:
-  - linux
-  - osx
-
 compiler:
   - g++
   - clang
@@ -24,3 +20,9 @@ before_script:
   - cmake ..
 
 script: make
+
+os:
+  - linux
+  - osx
+  
+osx_image: xcode61
