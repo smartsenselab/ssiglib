@@ -3,9 +3,9 @@
 
 #include <string>
 #include <set>
+#include <memory>
 
 #include "core/file_handle.hpp"
-#include "boost/smart_ptr/shared_ptr.hpp"
 
 namespace boost{
 	namespace filesystem{

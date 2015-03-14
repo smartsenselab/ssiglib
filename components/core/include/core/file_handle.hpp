@@ -2,7 +2,7 @@
 #define _SSF_CORE_FILE_UTIL_HPP_
 
 #include <string>
-#include "boost\smart_ptr\shared_ptr.hpp"
+#include <memory>
 
 namespace boost{
 	namespace filesystem{

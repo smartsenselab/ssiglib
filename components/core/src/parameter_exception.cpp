@@ -7,7 +7,7 @@ namespace ssf{
 
 	}
 
-	ParameterException::~ParameterException(){
+	ParameterException::~ParameterException() throw(){
 
 	}
 
