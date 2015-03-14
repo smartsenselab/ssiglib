@@ -1,8 +1,18 @@
 language: cpp
 
+os:
+  - linux
+  - osx
+
 compiler:
   - g++
   - clang
+  
+matrix:
+  include:
+    - compiler: clang
+      env: TASK="test"
+    - env: TASK="doc"
 
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
@@ -20,9 +30,3 @@ before_script:
   - cmake ..
 
 script: make
-
-os:
-  - linux
-  - osx
-  
-osx_image: xcode61
