@@ -2,9 +2,12 @@ language: cpp
 
 matrix:
   include:
-    - compiler: clang   env: TASK="build"
-    - compiler: gcc     env: TASK="build"
-    - compiler: clang   env: TASK="build"
+    - compiler: clang
+      env: TASK="build"
+    - compiler: gcc
+      env: TASK="build"
+    - compiler: clang
+      env: TASK="build"
 
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
