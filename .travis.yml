@@ -1,18 +1,10 @@
 language: cpp
 
-os:
-  - linux
-  - osx
-
-compiler:
-  - g++
-  - clang
-  
-matrix:
-  include:
-    - compiler: clang
-      env: TASK="test"
-    - env: TASK="doc"
+env:
+  matrix:
+    - compiler: gcc     env: TASK='build'
+    - compiler: clang   env: TASK='build'
+    - compiler: clang   env: TASK='test'
 
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
