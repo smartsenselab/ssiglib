@@ -37,9 +37,9 @@ option(BUILD_DOCS "Create and install the HTML based API documentation (requires
 #Remove Warning CMP0054 from gtest cmake build
 if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 OLD)
-endif() 
+endif()
 
-#Allows the solution folder utilization (for MSVC) 
+#Allows the solution folder utilization (for MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # If install location is default, set new default to "build/install"
@@ -47,10 +47,13 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "default install path" FORCE )
 endif()
 
-#Enable tests if BUILD_TEST was checked by user 
+#Enable tests if BUILD_TEST was checked by user
 if(BUILD_TESTS)
 	enable_testing()
 endif()
+
+#definitions
+add_definitions("-std=c++11 -std=gnu++11")
 
 ###############################################################################
 # EXTERNAL LIBRARIES
