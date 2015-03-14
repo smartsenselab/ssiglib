@@ -1,7 +1,7 @@
 language: cpp
 
 compiler:
-  - g++
+  - gcc
   - clang
 
 before_install:
@@ -11,8 +11,7 @@ before_install:
 
 install:
   - sudo apt-get install -qq libboost-filesystem1.54-dev
-  - sudo apt-get install -qq gcc-4.8 g++-4.8
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  
 
 before_script:
   - mkdir build
