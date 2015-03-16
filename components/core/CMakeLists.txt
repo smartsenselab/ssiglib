@@ -64,19 +64,19 @@ if(BUILD_TESTS)
 	#Create set of core tests files
 	file(GLOB CORE_TEST_FILES "${CORE_PATH}/test/*.cpp")
 	
-	add_executable(ssf_test_core ${CORE_TEST_FILES})
+	add_executable(test_core ${CORE_TEST_FILES})
 
 	# Standard linking to gtest stuff.
-	target_link_libraries(ssf_test_core gtest gtest_main)
+	target_link_libraries(test_core gtest gtest_main)
 
 	# Extra linking for the project.
-	target_link_libraries(ssf_test_core ssf_core)
+	target_link_libraries(test_core ssf_core)
 
 	# This is so you can do 'make test' to see all your tests run, instead of
 	# manually running the executable ssf_test_core to see those specific tests.
-	add_test(NAME ssf_test_core COMMAND ssf_test_core WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
+	add_test(NAME test_core COMMAND test_core WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
 	
 	#Configure folder to core library
-	set_target_properties(ssf_test_core PROPERTIES FOLDER TESTS)
+	set_target_properties(test_core PROPERTIES FOLDER TESTS)
 
 endif()
