@@ -34,9 +34,35 @@ option(BUILD_DOCS "Create and install the HTML based API documentation (requires
 # CMake OPTIONS
 ###############################################################################
 
+#definitions
+set(CMAKE_CXX_FLAGS                "-Wall -std=c++11 -std=gnu++11")
+set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
+set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+
 #Remove Warning CMP0054 from gtest cmake build
 if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 OLD)
+endif()
+
+#Check compilers version
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE TEMP_COMPILER_VERSION)
+	if(TEMP_COMPILER_VERSION VERSION_LESS 4.7)
+		message(FATAL_ERROR "${PROJECT_NAME_STR} requires g++ 4.7 or greater. Installed version: ${CMAKE_CXX_COMPILER_VERSION}")
+	endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE TEMP_COMPILER_VERSION)
+	if (TEMP_COMPILER_VERSION VERSION_LESS 3.4)
+		message(FATAL_ERROR "${PROJECT_NAME_STR} requires Clang 3.4 or greater. Installed version: ${CMAKE_CXX_COMPILER_VERSION}")
+	endif()
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")	
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 17)
+		message(FATAL_ERROR "${PROJECT_NAME_STR} requires MSVC 1700 (MSVC 2012) or greater. Installed version: ${CMAKE_CXX_COMPILER_VERSION}")
+	endif()
+else()
+    message(WARNING "You are using an unsupported compiler! ${PROJECT_NAME_STR} has only been tested with Clang, GCC and MSVC.")
 endif()
 
 #Allows the solution folder utilization (for MSVC)
@@ -51,9 +77,6 @@ endif()
 if(BUILD_TESTS)
 	enable_testing()
 endif()
-
-#definitions
-add_definitions("-std=c++11 -std=gnu++11")
 
 ###############################################################################
 # EXTERNAL LIBRARIES
