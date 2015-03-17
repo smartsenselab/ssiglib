@@ -34,12 +34,6 @@ option(BUILD_DOCS "Create and install the HTML based API documentation (requires
 # CMake OPTIONS
 ###############################################################################
 
-#definitions
-set(CMAKE_CXX_FLAGS                "-Wall -std=c++11 -std=gnu++11")
-set(CMAKE_CXX_FLAGS_DEBUG          "-O0 -g")
-set(CMAKE_CXX_FLAGS_MINSIZEREL     "-Os -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELEASE        "-O4 -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
 
 #Remove Warning CMP0054 from gtest cmake build
 if(POLICY CMP0054)
@@ -64,6 +58,29 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 else()
     message(WARNING "You are using an unsupported compiler! ${PROJECT_NAME_STR} has only been tested with Clang, GCC and MSVC.")
 endif()
+
+
+#Definitions
+set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
+set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+
+if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
+	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -std=gnu++11")#
+	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O4 -DNDEBUG")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -g")
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}")
+	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}")
+	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+endif()
+
 
 #Allows the solution folder utilization (for MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
