@@ -7,7 +7,7 @@
 namespace ssf{
 
 	DirectoryHandle::DirectoryHandle(){
-		//Default Constructor
+		this->mPath = std::make_shared<boost::filesystem::path>();
 	}
 
 	DirectoryHandle::DirectoryHandle(const std::string& directoryPathName){

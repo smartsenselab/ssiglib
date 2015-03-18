@@ -35,6 +35,7 @@ namespace ssf{
 			this->mName = rhs.mName;
 			this->mDescription = rhs.mDescription;
 			this->mRequired = rhs.mRequired;
+			this->mRegistered = rhs.mRegistered;
 		}
 
 		IParameter& operator=(const IParameter& rhs){
@@ -42,6 +43,7 @@ namespace ssf{
 				this->mName = rhs.mName;
 				this->mDescription = rhs.mDescription;
 				this->mRequired = rhs.mRequired;
+				this->mRegistered = rhs.mRegistered;
 			}
 			return *this;
 		}

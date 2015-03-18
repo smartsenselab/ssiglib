@@ -16,7 +16,7 @@ namespace ssf{
 
 	public:
 		FileHandle();
-		explicit FileHandle(const std::string& fileName);		
+		explicit FileHandle(const std::string& fileName);
 		virtual ~FileHandle(void);		
 		FileHandle(const FileHandle& rhs);
 		FileHandle& operator=(const FileHandle& rhs);
