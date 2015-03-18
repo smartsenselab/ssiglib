@@ -7,7 +7,7 @@
 namespace ssf{
 
 	FileHandle::FileHandle(){
-		this->mPath = nullptr;
+		this->mPath = std::make_shared<boost::filesystem::path>();
 	}
 
 	FileHandle::FileHandle(const std::string& fileName){
