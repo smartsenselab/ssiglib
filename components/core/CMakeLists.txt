@@ -20,8 +20,20 @@ file(GLOB CORE_FILEHANDLE_FILES 	"${CORE_PATH}/include/core/file_handle.hpp"
 
 file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
 									"${CORE_PATH}/src/parameter.cpp"
-									"${CORE_PATH}/include/core/parameter_manager.hpp"
-									"${CORE_PATH}/src/parameter_manager.cpp"
+									"${CORE_PATH}/include/core/parameter_book.hpp"
+									"${CORE_PATH}/src/parameter_book.cpp"
+									"${CORE_PATH}/include/core/parameter_info.hpp"
+									"${CORE_PATH}/src/parameter_info.cpp"
+									)
+
+file(GLOB CORE_BASEOBJECT_FILES		"${CORE_PATH}/include/core/base_object.hpp"
+									"${CORE_PATH}/src/base_object.cpp"
+									)
+
+file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
+									"${CORE_PATH}/src/resource.cpp"
+									"${CORE_PATH}/include/core/resource_info.hpp"
+									"${CORE_PATH}/src/resource_info.cpp"
 									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
@@ -32,6 +44,9 @@ file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 source_group("Exception"	FILES ${CORE_EXCEPTION_FILES})
 source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
+source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
+source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
+
 
 ###############################################################################
 # ADD LIBRARY CORE
@@ -39,8 +54,10 @@ source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 
 #Add library core into SSF project with its project
 add_library(ssf_core 	${CORE_EXCEPTION_FILES}
-						${CORE_FILEHANDLE_FILES}
+						${CORE_FILEHANDLE_FILES} 
 						${CORE_PARAMETERS_FILES}
+						${CORE_BASEOBJECT_FILES}
+						${CORE_RESOURCE_FILES}
 			)
 						
 #Configure folder to core library

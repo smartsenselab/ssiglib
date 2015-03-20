@@ -8,18 +8,15 @@
 #include "core/file_handle.hpp"
 #include "core/directory_handle.hpp"
 
-// TODO Set Parameters constructors as protected
-// TODO Type Check
-
 namespace ssf{
 
 	enum class ParameterType{
-		INVALID_PARAMTYPE, INT, LONG, FLOAT, DOUBLE, BOOL, STRING, FILE, DIRECTORY
+		INVALID_PARAMTYPE, INT, LONG, FLOAT, DOUBLE, BOOL, STRING, FILE_HANDLE, DIRECTORY_HANDLE
 	};
 
 
 	class IParameter{
-		friend class ParameterManager;
+		friend class ParameterBook;
 
 	public:
 		IParameter(void){
@@ -81,10 +78,9 @@ namespace ssf{
 
 
 
-	//--------------------------------------------------------------------------------------------------------
 	template<class T>
 	class Parameter : public IParameter {
-		friend class ParameterManager;
+		friend class ParameterBook;
 
 	public:
 		Parameter(void) : IParameter(){
@@ -124,8 +120,8 @@ namespace ssf{
 			if (std::is_same<T, double>::value) return ParameterType::DOUBLE;
 			if (std::is_same<T, bool>::value) return ParameterType::BOOL;
 			if (std::is_same<T, std::string>::value) return ParameterType::STRING;
-			if (std::is_same<T, FileHandle>::value) return ParameterType::FILE;
-			if (std::is_same<T, DirectoryHandle>::value) return ParameterType::DIRECTORY;
+			if (std::is_same<T, FileHandle>::value) return ParameterType::FILE_HANDLE;
+			if (std::is_same<T, DirectoryHandle>::value) return ParameterType::DIRECTORY_HANDLE;
 
 			return ParameterType::INVALID_PARAMTYPE;
 		}

@@ -1,5 +1,5 @@
-#ifndef _SSF_CORE_PARAMETER_MANAGER_HPP_
-#define _SSF_CORE_PARAMETER_MANAGER_HPP_
+#ifndef _SSF_CORE_PARAMETER_LIST_HPP_
+#define _SSF_CORE_PARAMETER_LIST_HPP_
 
 #include <string>
 #include <map>
@@ -9,13 +9,13 @@
 
 namespace ssf{
 
-	class ParameterManager{
+	class ParameterBook{
 	
 	public:
-		ParameterManager(void);
-		virtual ~ParameterManager(void);
-		ParameterManager(const ParameterManager& rhs);
-		ParameterManager& operator=(const ParameterManager& rhs);
+		ParameterBook(void);
+		virtual ~ParameterBook(void);
+		//ParameterBook(const ParameterBook& rhs);
+		//ParameterBook& operator=(const ParameterBook& rhs);
 
 		template<class T> void registerParameter(Parameter<T>& parameter, std::string name,
 			const std::string& description = IParameter::DEFAULT_DESCRIPTION,
@@ -54,4 +54,4 @@ namespace ssf{
 
 }
 
-#endif // !_SSF_CORE_PARAMETER_MANAGER_HPP_
+#endif // !_SSF_CORE_PARAMETER_LIST_HPP_
