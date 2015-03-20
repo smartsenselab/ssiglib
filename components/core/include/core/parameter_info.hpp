@@ -99,39 +99,36 @@ namespace ssf{
 		}
 
 	private:
-		template<class T> void setDefaultValue(const T& defaultValue){
-			this->setDefaultValue<T>(defaultValue);
-		}
 
-		template<> void setDefaultValue(const int& defaultValue){
+		void setDefaultValue(const int& defaultValue){
 			this->intDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const long& defaultValue){
+		void setDefaultValue(const long& defaultValue){
 			this->longDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const float& defaultValue){
+		void setDefaultValue(const float& defaultValue){
 			this->floatDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const double& defaultValue){
+		void setDefaultValue(const double& defaultValue){
 			this->doubleDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const bool& defaultValue){
+		void setDefaultValue(const bool& defaultValue){
 			this->boolDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const std::string& defaultValue){
+		void setDefaultValue(const std::string& defaultValue){
 			this->stringDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const FileHandle& defaultValue){
+		void setDefaultValue(const FileHandle& defaultValue){
 			this->fileHandleDefaultValue = defaultValue;
 		}
 
-		template<> void setDefaultValue(const DirectoryHandle& defaultValue){
+		void setDefaultValue(const DirectoryHandle& defaultValue){
 			this->directoryHandleDefaultValue = defaultValue;
 		}
 
