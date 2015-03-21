@@ -47,9 +47,11 @@ namespace ssf{
 			return true;
 		}
 
+		const std::map< std::string, std::shared_ptr<IParameter> >& getParameters() const;
+
 	private:
 		std::map<std::string, std::shared_ptr<IParameter>> mParameters;
-
+	
 	};
 
 }

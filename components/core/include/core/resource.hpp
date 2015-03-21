@@ -28,7 +28,7 @@ namespace ssf{
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
 
 	private:
-		ParameterBook mParamCatalog;
+		ParameterBook mParamBook;
 
 		std::string mName;
 		std::string mAuthor;

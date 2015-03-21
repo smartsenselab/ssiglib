@@ -10,6 +10,9 @@ namespace ssf{
 		
 	}
 	
+	const std::map< std::string, std::shared_ptr<IParameter> >& ParameterBook::getParameters() const{
+		return this->mParameters;
+	}
 
 }
 

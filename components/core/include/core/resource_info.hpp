@@ -2,11 +2,13 @@
 #define _SSF_CORE_RESOURCE_INFO_HPP_
 
 #include <string>
+#include <map>
+
+#include "core/parameter_info.hpp"
 
 namespace ssf{
 
-	class ResourceInfo{
-		
+	class ResourceInfo{		
 		friend class Resource;
 
 	public:
@@ -31,8 +33,27 @@ namespace ssf{
 
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
+
+		std::map<std::string, ParameterInfo> parametersInfo;
 	};
 
 }
 
 #endif // !_SSF_CORE_RESOURCE_INFO_HPP_
+
+#include <iostream>
+
+using namespace std;
+
+
+
+
+template <class tr>
+struct test
+{
+	typedef typename tr::tipo tipo;
+	tipo a;
+	void useless(){ a.use(); }
+
+
+};
