@@ -16,10 +16,11 @@ namespace ssf{
 
 		virtual const char * what() const throw();
 
+		std::string getFileName() const;
 
 	private:
 		std::string mFileName;
-
+	
 	};
 
 }

@@ -5,7 +5,7 @@
 #include <core/directory_handle.hpp>
 
 TEST(FileHandle, constructor) {
-	EXPECT_ANY_THROW(ssf::FileHandle InvalidFile("invalid.txt"));
+	EXPECT_NO_THROW(ssf::FileHandle InvalidFile("invalid.txt"));
 	EXPECT_NO_THROW(ssf::FileHandle ValidFile("test_file.txt"));
 }
 
@@ -51,7 +51,7 @@ TEST(FileHandle, copy) {
 ///////////////
 
 TEST(DirectoryHandle, constructor){
-	EXPECT_ANY_THROW(ssf::DirectoryHandle InvalidFile("invalid_folder"));
+	EXPECT_NO_THROW(ssf::DirectoryHandle InvalidFile("invalid_folder"));
 	EXPECT_NO_THROW(ssf::DirectoryHandle ValidFile("folder_test"));
 }
 

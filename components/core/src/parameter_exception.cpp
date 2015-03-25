@@ -16,5 +16,9 @@ namespace ssf{
 		return what_message.c_str();
 	}
 
+	std::string ParameterException::getParameterName() const{
+		return this->mParameterName;
+	}
+
 }
 

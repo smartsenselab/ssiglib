@@ -18,22 +18,21 @@ file(GLOB CORE_FILEHANDLE_FILES 	"${CORE_PATH}/include/core/file_handle.hpp"
 									"${CORE_PATH}/src/directory_handle.cpp"
 									)
 
-file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
-									"${CORE_PATH}/src/parameter.cpp"
-									"${CORE_PATH}/include/core/parameter_book.hpp"
-									"${CORE_PATH}/src/parameter_book.cpp"
-									"${CORE_PATH}/include/core/parameter_info.hpp"
-									"${CORE_PATH}/src/parameter_info.cpp"
+file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter_value.hpp"
+									"${CORE_PATH}/include/core/parameters.hpp"
+									"${CORE_PATH}/src/parameters.cpp"
+									#"${CORE_PATH}/include/core/parameter_info.hpp"
+									#"${CORE_PATH}/src/parameter_info.cpp"
 									)
 
 file(GLOB CORE_BASEOBJECT_FILES		"${CORE_PATH}/include/core/base_object.hpp"
 									"${CORE_PATH}/src/base_object.cpp"
 									)
 
-file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
-									"${CORE_PATH}/src/resource.cpp"
-									"${CORE_PATH}/include/core/resource_info.hpp"
-									"${CORE_PATH}/src/resource_info.cpp"
+file(GLOB CORE_RESOURCE_FILES	 	#"${CORE_PATH}/include/core/resource.hpp"
+									#"${CORE_PATH}/src/resource.cpp"
+									#"${CORE_PATH}/include/core/resource_info.hpp"
+									#"${CORE_PATH}/src/resource_info.cpp"
 									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")

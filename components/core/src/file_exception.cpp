@@ -17,5 +17,9 @@ namespace ssf{
 		return what_message.c_str();
 	}
 
+	std::string FileException::getFileName() const{
+		return this->mFileName;
+	}
+
 }
 

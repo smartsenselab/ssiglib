@@ -49,21 +49,21 @@ namespace ssf{
 		for (auto parameter : this->mParamBook.getParameters()){
 			ParameterInfo paramInfo;
 			if (parameter.second->getType() == ParameterType::INT)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<int>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<int>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::LONG)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<long>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<long>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::FLOAT)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<float>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<float>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::DOUBLE)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<double>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<double>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::BOOL)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<bool>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<bool>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::STRING)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<std::string>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<std::string>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::FILE_HANDLE)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<FileHandle>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<FileHandle>, IParameter>(parameter.second)));
 			else if (parameter.second->getType() == ParameterType::DIRECTORY_HANDLE)
-				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<Parameter<DirectoryHandle>, IParameter>(parameter.second)));
+				paramInfo = ParameterInfo(*(std::dynamic_pointer_cast<ParameterValue<DirectoryHandle>, IParameter>(parameter.second)));
 			info.parametersInfo[paramInfo.getName()] = paramInfo;
 		}
 

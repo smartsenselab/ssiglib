@@ -11,15 +11,11 @@ namespace ssf{
 	}
 
 	FileHandle::FileHandle(const std::string& fileName){
-		if (!boost::filesystem::exists(fileName))
-			throw FileException(fileName, "File not found!");
-
 		boost::filesystem::path tempPath(fileName);
 		if (tempPath.is_absolute())
 			this->mPath = std::make_shared<boost::filesystem::path>(fileName);
 		else
 			this->mPath = std::make_shared<boost::filesystem::path>(boost::filesystem::current_path() / fileName);
-
 	}
 
 	FileHandle::~FileHandle(){
@@ -70,7 +66,6 @@ namespace ssf{
 		boost::filesystem::path path(fileName);
 		return boost::filesystem::exists(path);
 	}
-
 
 }
 

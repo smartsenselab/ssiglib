@@ -14,6 +14,7 @@ namespace ssf{
 
 		virtual const char * what() const throw();
 
+		std::string getParameterName() const;
 
 	private:
 		std::string mParameterName;

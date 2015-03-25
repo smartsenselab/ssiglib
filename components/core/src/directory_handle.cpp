@@ -10,13 +10,7 @@ namespace ssf{
 		this->mPath = std::make_shared<boost::filesystem::path>();
 	}
 
-	DirectoryHandle::DirectoryHandle(const std::string& directoryPathName){
-		if (!boost::filesystem::exists(directoryPathName))
-			throw FileException(directoryPathName, "Directory not found!");
-
-		if (!boost::filesystem::is_directory(directoryPathName))
-			throw FileException(directoryPathName, "This isn't a directory!");
-
+	DirectoryHandle::DirectoryHandle(const std::string& directoryPathName){	
 		boost::filesystem::path tempPath(directoryPathName);
 		if (tempPath.is_absolute())
 			this->mPath = std::make_shared<boost::filesystem::path>(directoryPathName);
@@ -67,6 +61,10 @@ namespace ssf{
 	}
 
 	std::set<FileHandle> DirectoryHandle::listFiles(){
+
+		if (!this->exists())
+			throw FileException(this->mPath->string(), "This directory does not exists.");
+
 		std::set<FileHandle> list;
 
 		boost::filesystem::directory_iterator end_itr;
@@ -93,6 +91,10 @@ namespace ssf{
 
 	bool DirectoryHandle::exists(const std::string& directoryPathName){
 		return (boost::filesystem::exists(directoryPathName) && boost::filesystem::is_directory(directoryPathName));
+	}
+
+	bool DirectoryHandle::exists() const{
+		return (boost::filesystem::exists(*(this->mPath)) && boost::filesystem::is_directory(*(this->mPath)));
 	}
 
 	bool DirectoryHandle::erase(const std::string& directoryPathName){
