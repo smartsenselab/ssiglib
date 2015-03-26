@@ -4,8 +4,6 @@
 #include <string>
 #include <map>
 
-#include "core/parameter_info.hpp"
-
 namespace ssf{
 
 	class ResourceInfo{		
@@ -34,7 +32,8 @@ namespace ssf{
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
 
-		std::map<std::string, ParameterInfo> parametersInfo;
+		/*Params mParams;*/
+
 	};
 
 }

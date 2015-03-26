@@ -2,7 +2,7 @@
 #define _SSF_CORE_RESOURCE_HPP_
 
 #include "core/base_object.hpp"
-#include "core/parameter_book.hpp"
+#include "core/params.hpp"
 #include "core/resource_info.hpp"
 
 namespace ssf{
@@ -28,8 +28,6 @@ namespace ssf{
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
 
 	private:
-		Parameters mParamBook;
-
 		std::string mName;
 		std::string mAuthor;
 		std::string mDescription;
@@ -38,6 +36,7 @@ namespace ssf{
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
 
+		/*Params mParams;*/
 	};
 
 }

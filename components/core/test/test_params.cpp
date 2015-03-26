@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "core/parameters.hpp"
+#include "core/params.hpp"
 
-class TestParameter : public ::testing::Test{
+class TestParams : public ::testing::Test{
 protected:
 
 	virtual void SetUp(){
@@ -15,14 +15,14 @@ protected:
 		fileHandleValue = ssf::FileHandle("test_file.txt");
 		directoryHandleValue = ssf::DirectoryHandle("folder_test");
 
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::INT, "paramInt", "description_test_int"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::LONG, "paramLong", "description_test_long"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::FLOAT, "paramFloat", "description_test_float"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::DOUBLE, "paramDouble", "description_test_double"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::BOOL, "paramBool", "description_test_bool"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::STRING, "paramString", "description_test_string"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::FILE_HANDLE, "paramFile", "description_test_file"));
-		EXPECT_NO_THROW(parameters.addParameter(ssf::ParameterType::DIRECTORY_HANDLE, "paramDirectory", "description_test_directory"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::INT, "paramInt", "description_test_int"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::LONG, "paramLong", "description_test_long"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::FLOAT, "paramFloat", "description_test_float"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::DOUBLE, "paramDouble", "description_test_double"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::BOOL, "paramBool", "description_test_bool"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::STRING, "paramString", "description_test_string"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::FILE_HANDLE, "paramFile", "description_test_file"));
+		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::DIRECTORY_HANDLE, "paramDirectory", "description_test_directory"));
 	}
 
 	int intValue;
@@ -35,22 +35,22 @@ protected:
 	ssf::DirectoryHandle directoryHandleValue;
 
 
-	ssf::Parameters parameters;
+	ssf::Params parameters;
 };
 
-TEST_F(TestParameter, getType){
-	EXPECT_EQ(ssf::ParameterType::INT, parameters.getType("paramInt"));
-	EXPECT_EQ(ssf::ParameterType::LONG, parameters.getType("paramLong"));
-	EXPECT_EQ(ssf::ParameterType::FLOAT, parameters.getType("paramFloat"));
-	EXPECT_EQ(ssf::ParameterType::DOUBLE, parameters.getType("paramDouble"));
-	EXPECT_EQ(ssf::ParameterType::BOOL, parameters.getType("paramBool"));
-	EXPECT_EQ(ssf::ParameterType::STRING, parameters.getType("paramString"));
-	EXPECT_EQ(ssf::ParameterType::FILE_HANDLE, parameters.getType("paramFile"));
-	EXPECT_EQ(ssf::ParameterType::DIRECTORY_HANDLE, parameters.getType("paramDirectory"));
+TEST_F(TestParams, getType){
+	EXPECT_EQ(ssf::ParamType::INT, parameters.getType("paramInt"));
+	EXPECT_EQ(ssf::ParamType::LONG, parameters.getType("paramLong"));
+	EXPECT_EQ(ssf::ParamType::FLOAT, parameters.getType("paramFloat"));
+	EXPECT_EQ(ssf::ParamType::DOUBLE, parameters.getType("paramDouble"));
+	EXPECT_EQ(ssf::ParamType::BOOL, parameters.getType("paramBool"));
+	EXPECT_EQ(ssf::ParamType::STRING, parameters.getType("paramString"));
+	EXPECT_EQ(ssf::ParamType::FILE_HANDLE, parameters.getType("paramFile"));
+	EXPECT_EQ(ssf::ParamType::DIRECTORY_HANDLE, parameters.getType("paramDirectory"));
 	EXPECT_ANY_THROW(parameters.getType("invalid_name"));
 }
 
-TEST_F(TestParameter, getName){
+TEST_F(TestParams, getName){
 	EXPECT_STREQ("paramInt", parameters.getName("paramInt").c_str());
 	EXPECT_STREQ("paramLong", parameters.getName("paramLong").c_str());
 	EXPECT_STREQ("paramFloat", parameters.getName("paramFloat").c_str());
@@ -62,7 +62,7 @@ TEST_F(TestParameter, getName){
 	EXPECT_ANY_THROW(parameters.getName("invalid_name").c_str());
 }
 
-TEST_F(TestParameter, getDescription){
+TEST_F(TestParams, getDescription){
 	EXPECT_STREQ("description_test_int", parameters.getDescription("paramInt").c_str());
 	EXPECT_STREQ("description_test_long", parameters.getDescription("paramLong").c_str());
 	EXPECT_STREQ("description_test_float", parameters.getDescription("paramFloat").c_str());
@@ -74,7 +74,7 @@ TEST_F(TestParameter, getDescription){
 	EXPECT_ANY_THROW(parameters.getDescription("invalid_name").c_str());
 }
 
-TEST_F(TestParameter, required){
+TEST_F(TestParams, required){
 	EXPECT_FALSE(parameters.isRequired("paramInt"));
 	EXPECT_NO_THROW(parameters.setRequired("paramInt", true));
 	EXPECT_TRUE(parameters.isRequired("paramInt"));
@@ -82,7 +82,7 @@ TEST_F(TestParameter, required){
 	EXPECT_ANY_THROW(parameters.setRequired("invalid_name", false));
 }
 
-TEST_F(TestParameter, irregularValues){
+TEST_F(TestParams, irregularValues){
 
 	EXPECT_NO_THROW(parameters.setValue("paramInt", std::numeric_limits<int>::max()));
 	EXPECT_EQ(std::numeric_limits<int>::max(), parameters.getValue<int>("paramInt"));
@@ -111,10 +111,10 @@ TEST_F(TestParameter, irregularValues){
 	EXPECT_ANY_THROW(parameters.setValue("paramString", 0));
 	EXPECT_ANY_THROW(parameters.setValue("paramFile", directoryHandleValue));
 	EXPECT_ANY_THROW(parameters.setValue("paramDirectory", fileHandleValue));
-	
+
 }
 
-TEST_F(TestParameter, regularValues){
+TEST_F(TestParams, regularValues){
 
 	EXPECT_NO_THROW(parameters.setValue("paramInt", intValue));
 	EXPECT_EQ(intValue, parameters.getValue<int>("paramInt"));
