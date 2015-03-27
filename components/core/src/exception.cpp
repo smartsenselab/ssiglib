@@ -16,4 +16,8 @@ namespace ssf{
 		return this->mMessage.c_str();
 	}
 
+	std::string Exception::getMessage() const{
+		return this->mMessage;
+	}
+
 }

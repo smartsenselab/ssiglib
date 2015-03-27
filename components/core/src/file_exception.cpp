@@ -3,7 +3,7 @@
 namespace ssf{
 
 	FileException::FileException(const std::string& fileName, const std::string& message)
-		: mFileName(fileName), Exception(message){
+		: Exception(message), mFileName(fileName){
 
 	}
 
@@ -15,6 +15,10 @@ namespace ssf{
 	const char * FileException::what() const throw(){
 		std::string what_message = mFileName + ": " + mMessage;
 		return what_message.c_str();
+	}
+
+	std::string FileException::getFileName() const{
+		return this->mFileName;
 	}
 
 }

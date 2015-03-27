@@ -32,6 +32,7 @@ namespace ssf{
 		std::set<FileHandle> listFiles();
 		bool isEmpty() const;
 		bool erase() const;
+		bool exists() const;
 
 		static bool exists(const std::string& directoryPathName);
 		static bool erase(const std::string& directoryPathName);

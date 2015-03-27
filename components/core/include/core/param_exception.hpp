@@ -5,15 +5,16 @@
 
 namespace ssf{
 
-	class ParameterException : public Exception {
+	class ParamException : public Exception {
 
 	public:
-		ParameterException(const std::string& parameterName, const std::string& message);
+		ParamException(const std::string& parameterName, const std::string& message);
 
-		virtual ~ParameterException() throw();
+		virtual ~ParamException() throw();
 
 		virtual const char * what() const throw();
 
+		std::string getParameterName() const;
 
 	private:
 		std::string mParameterName;
