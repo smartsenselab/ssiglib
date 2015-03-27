@@ -3,7 +3,7 @@
 namespace ssf{
 
 	ParamException::ParamException(const std::string& parameterName, const std::string& message)
-		: mParameterName(parameterName), Exception(message){
+		: Exception(message), mParameterName(parameterName){
 
 	}
 
