@@ -96,7 +96,16 @@ namespace ssf{
 		this->mRequired = rhs.mRequired;
 
 		if (this->mValue != nullptr){
-			delete this->mValue;
+			switch (this->mType){
+			case ParamType::INT: delete ((int*)this->mValue); break;
+			case ParamType::LONG: delete ((long*)this->mValue); break;
+			case ParamType::FLOAT: delete ((float*)this->mValue); break;
+			case ParamType::DOUBLE: delete ((double*)this->mValue); break;
+			case ParamType::BOOL: delete ((bool*)this->mValue); break;
+			case ParamType::STRING: delete ((std::string*)this->mValue); break;
+			case ParamType::FILE_HANDLE: delete ((FileHandle*)this->mValue); break;
+			case ParamType::DIRECTORY_HANDLE: delete ((DirectoryHandle*)this->mValue); break;
+			}
 			this->mValue = nullptr;
 		}
 		
