@@ -15,20 +15,20 @@ namespace ssf{
 		Resource(const Resource& rhs);
 		Resource& operator=(const Resource& rhs);
 
-		virtual ResourceInfo getInfo() const;
+		virtual ResourceInfo getInfo();
 		
 		virtual void initialize() = 0;
+		virtual std::string getName() = 0;
 		
 
-	protected:
-		void setName(const std::string& name);
+	protected:		
 		void setAuthor(const std::string& author);
 		void setDescription(const std::string& description);
 		void setAuthorEmail(const std::string& authorEmail);
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
+		Params PARAMETERS;
 
 	private:
-		std::string mName;
 		std::string mAuthor;
 		std::string mDescription;
 		std::string mAuthorEmail;
@@ -36,7 +36,7 @@ namespace ssf{
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
 
-		/*Params mParams;*/
+		
 	};
 
 }

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <memory>
 
 #include "core/param.hpp"
@@ -28,24 +29,27 @@ namespace ssf{
 		bool isFloating(const std::string& paramName);
 		bool isBoolean(const std::string& paramName);
 		bool isString(const std::string& paramName);
+		bool exists(const std::string& paramName);
 
 		void setRequired(const std::string& paramName, const bool& required = true);
 		bool isRequired(const std::string& paramName);
 
-		std::shared_ptr<Param> getParamByName(const std::string& paramName);
 
 		template < class T>
 		void setValue(const std::string& paramName, const T& value){
-			this->getParamByName(paramName)->setValue<T>(value);
+			this->getParamByName(paramName).setValue<T>(value);
 		}
 
 		template < class T>
 		T getValue(const std::string& paramName){
-			return this->getParamByName(paramName)->getValue<T>();
+			return this->getParamByName(paramName).getValue<T>();
 		}
 
+		std::map<std::string, Param> getParameters() const;
+
 	private:
-		std::map<std::string, std::shared_ptr<Param>> mParameters;
+		Param& getParamByName(const std::string& paramName);
+		std::map<std::string, Param> mParameters;
 
 	};
 

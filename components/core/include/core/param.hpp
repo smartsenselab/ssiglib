@@ -14,6 +14,7 @@ namespace ssf{
 	};
 
 	class Param{
+		friend class Params;
 
 	public:
 		Param(void);
@@ -26,46 +27,9 @@ namespace ssf{
 		std::string getName() const;
 		std::string getDescription() const;
 		bool isRequired() const;
-		void setRequired(const bool& required = true);
+		long long getMaxValue() const;
+		long long getMinValue() const;
 
-
-		template < class T>
-		void setValue(const T& value, typename std::enable_if<std::is_arithmetic<T>::value >::type* = 0){
-			try{
-				switch (this->mType){
-				case ParamType::INT: this->setNumericValue<T, int>(value); break;
-				case ParamType::LONG: this->setNumericValue<T, long>(value); break;
-				case ParamType::FLOAT: this->setNumericValue<T, float>(value); break;
-				case ParamType::DOUBLE: this->setNumericValue<T, double>(value); break;
-				case ParamType::BOOL: this->setBoolValue<T>(value); break;
-				default: throw ParamException(this->mName, this->incompatibleReceiveMessage<T>()); break;
-				}
-			}
-			catch (ParamException* e){
-				throw ParamException(e->getParameterName(), e->getMessage());
-			}
-		}
-
-		template < class T>
-		void setValue(const T& value, typename std::enable_if<std::is_convertible<T, std::string>::value >::type* = 0){
-			if (this->mType != ParamType::STRING)
-				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
-			*((std::string*)this->mValue) = value;
-		}
-
-		template < class T>
-		void setValue(const T& value, typename std::enable_if<std::is_same<T, FileHandle>::value >::type* = 0){
-			if (this->mType != ParamType::FILE_HANDLE)
-				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
-			*((FileHandle*)this->mValue) = value;
-		}
-
-		template < class T>
-		void setValue(const T& value, typename std::enable_if<std::is_same<T, DirectoryHandle>::value >::type* = 0){
-			if (this->mType != ParamType::DIRECTORY_HANDLE)
-				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
-			*((DirectoryHandle*)this->mValue) = value;
-		}
 
 		template < class T>
 		typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getValue(){
@@ -131,6 +95,47 @@ namespace ssf{
 		std::string getTypeStr() const;
 		void copy(const Param& rhs);
 
+		void setRequired(const bool& required = true);
+		void setMaxValue(const long long& maxValue);
+		void setMinValue(const long long& minValue);
+
+		template < class T>
+		void setValue(const T& value, typename std::enable_if<std::is_arithmetic<T>::value >::type* = 0){
+			try{
+				switch (this->mType){
+				case ParamType::INT: this->setNumericValue<T, int>(value); break;
+				case ParamType::LONG: this->setNumericValue<T, long>(value); break;
+				case ParamType::FLOAT: this->setNumericValue<T, float>(value); break;
+				case ParamType::DOUBLE: this->setNumericValue<T, double>(value); break;
+				case ParamType::BOOL: this->setBoolValue<T>(value); break;
+				default: throw ParamException(this->mName, this->incompatibleReceiveMessage<T>()); break;
+				}
+			}
+			catch (ParamException* e){
+				throw ParamException(e->getParameterName(), e->getMessage());
+			}
+		}
+
+		template < class T>
+		void setValue(const T& value, typename std::enable_if<std::is_convertible<T, std::string>::value >::type* = 0){
+			if (this->mType != ParamType::STRING)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((std::string*)this->mValue) = value;
+		}
+
+		template < class T>
+		void setValue(const T& value, typename std::enable_if<std::is_same<T, FileHandle>::value >::type* = 0){
+			if (this->mType != ParamType::FILE_HANDLE)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((FileHandle*)this->mValue) = value;
+		}
+
+		template < class T>
+		void setValue(const T& value, typename std::enable_if<std::is_same<T, DirectoryHandle>::value >::type* = 0){
+			if (this->mType != ParamType::DIRECTORY_HANDLE)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((DirectoryHandle*)this->mValue) = value;
+		}
 
 		template<class T>
 		std::string incompatibleReceiveMessage(){
@@ -182,13 +187,15 @@ namespace ssf{
 			return newValue;
 		}
 
-
 	protected:
 		ParamType mType;
 		std::string mName;
-		std::string mDescription;
-		bool mRequired;
+		std::string mDescription;		
 		void* mValue;
+
+		bool mRequired;
+		long long maxValue;
+		long long minValue;
 	};
 
 }

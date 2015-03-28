@@ -7,6 +7,7 @@ namespace ssf{
 	}
 
 	Param::Param(const ParamType& parameterType, const std::string& name, const std::string& description){
+		this->mValue = nullptr;
 		this->mType = parameterType;
 		this->mName = name;
 		this->mDescription = description;
@@ -38,10 +39,11 @@ namespace ssf{
 			case ParamType::DIRECTORY_HANDLE: delete ((DirectoryHandle*)this->mValue); break;
 			}
 		}
-			
+		this->mValue = nullptr;
 	}
 
 	Param::Param(const Param& rhs){
+		this->mValue = nullptr;
 		this->copy(rhs);
 	}
 
@@ -70,6 +72,22 @@ namespace ssf{
 
 	void Param::setRequired(const bool& required /*= true*/){
 		this->mRequired = required;
+	}
+
+	long long Param::getMaxValue() const{
+		return this->maxValue;
+	}
+
+	void Param::setMaxValue(const long long& maxValue){
+		this->maxValue = maxValue;
+	}
+
+	long long Param::getMinValue() const{
+		return this->minValue;
+	}
+
+	void Param::setMinValue(const long long& minValue){
+		this->minValue = minValue;
 	}
 
 	std::string Param::getTypeStr() const{
