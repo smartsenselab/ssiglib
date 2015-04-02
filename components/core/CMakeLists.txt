@@ -35,6 +35,10 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									#"${CORE_PATH}/src/resource_info.cpp"
 									)
 
+file(GLOB CORE_CAMERAS_FILES		"${CORE_PATH}/include/core/camera.hpp"
+									"${CORE_PATH}/src/camera.cpp"
+									)
+							
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
@@ -45,7 +49,7 @@ source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
-
+source_group("Cameras"		FILES ${CORE_CAMERAS_FILES})
 
 ###############################################################################
 # ADD LIBRARY CORE
@@ -57,6 +61,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_PARAMETERS_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
+						${CORE_CAMERAS_FILES}
 			)
 						
 #Configure folder to core library
