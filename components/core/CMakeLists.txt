@@ -35,6 +35,14 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									#"${CORE_PATH}/src/resource_info.cpp"
 									)
 
+
+
+file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
+									"${CORE_PATH}/src/log.cpp"
+									)
+
+
+
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
@@ -45,6 +53,7 @@ source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
+source_group("Log"			FILES ${CORE_LOG_FILES})
 
 
 ###############################################################################
@@ -57,6 +66,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_PARAMETERS_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
+						${CORE_LOG_FILES}
 			)
 						
 #Configure folder to core library
