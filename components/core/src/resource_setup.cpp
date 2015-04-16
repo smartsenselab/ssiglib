@@ -24,5 +24,9 @@ namespace ssf{
 	    return *this;
 	}
 
+	const std::map<std::string, Parameter>& ResourceSetup::getParams() const{
+		return this->mParams;
+	}
+
 }
 

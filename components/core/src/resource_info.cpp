@@ -61,7 +61,7 @@ namespace ssf{
 		return this->mMinorRequiredVersion;
 	}
 
-	std::map<std::string, Param> ResourceInfo::getParams() const{
+	const std::map<std::string, Parameter>& ResourceInfo::getParams() const{
 		return this->mParams.getParameters();
 	}
 

@@ -69,7 +69,7 @@ TEST_F(TestResource, resourceInfo){
 	EXPECT_EQ(2, info.getMajorRequiredVersion());
 	EXPECT_EQ(0, info.getMinorRequiredVersion());
 
-	std::map<std::string, ssf::Param> paramsInfo = info.getParams();
+	std::map<std::string, ssf::Parameter> paramsInfo = info.getParams();
 
 	EXPECT_EQ(ssf::ParamType::INT, paramsInfo["paramInt"].getType());
 	EXPECT_STREQ("paramInt", paramsInfo["paramInt"].getName().c_str());

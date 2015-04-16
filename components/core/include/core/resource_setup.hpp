@@ -1,7 +1,9 @@
 #ifndef _SSF_CORE_RESOURCE_SETUP_HPP_
 #define _SSF_CORE_RESOURCE_SETUP_HPP_
 
-#include <core/params.hpp>
+#include <map>
+
+#include "core/parameter.hpp"
 
 namespace ssf{
 
@@ -15,14 +17,16 @@ namespace ssf{
 		
 		template < class T>
 		void setParam(const std::string& paramName, const ParamType& paramType, const T& value){
-			if (!this->mParams.exists(paramName))
-				this->mParams.addParameter(paramType, paramName, "");
-			this->mParams.setValue<T>(paramName, value);
+			if (this->mParams.find(paramName) == this->mParams.end())
+				this->mParams[paramName] = Parameter(paramType, paramName, "");
+			this->mParams[paramName].setValue<T>(value);
 		}
+
+		const std::map<std::string, Parameter>& getParams() const;
 
 	private:
 		std::string mResourceName;
-		Params mParams;
+		std::map<std::string, Parameter> mParams;
 
 	};
 

@@ -13,22 +13,23 @@ namespace ssf{
 		INT, LONG, FLOAT, DOUBLE, BOOL, STRING, FILE_HANDLE, DIRECTORY_HANDLE
 	};
 
-	class Param{
-		friend class Params;
+	class Parameter{
+		friend class Parameters;
+		friend class ParameterInfo;
 
 	public:
-		Param(void);
-		Param(const ParamType& parameterType, const std::string& name, const std::string& description);
-		virtual ~Param(void);
-		Param(const Param& rhs);
-		Param& operator=(const Param& rhs);
+		Parameter(void);
+		Parameter(const ParamType& parameterType, const std::string& name, const std::string& description);
+		virtual ~Parameter(void);
+		Parameter(const Parameter& rhs);
+		Parameter& operator=(const Parameter& rhs);
 
 		ParamType getType() const;
 		std::string getName() const;
 		std::string getDescription() const;
 		bool isRequired() const;
-		long long getMaxValue() const;
-		long long getMinValue() const;
+		long getMaxValue() const;
+		long getMinValue() const;
 
 
 		template < class T>
@@ -90,14 +91,74 @@ namespace ssf{
 			return *((DirectoryHandle*)this->mValue);
 		}
 
+		template < class T>
+		typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getDefaultValue(){
+			T returnValue;
+			try{
+				switch (this->mType){
+				case ParamType::INT: returnValue = this->getNumericDefaultValue<T, int>(); break;
+				case ParamType::LONG: returnValue = this->getNumericDefaultValue<T, long>(); break;
+				case ParamType::FLOAT: returnValue = this->getNumericDefaultValue<T, float>(); break;
+				case ParamType::DOUBLE: returnValue = this->getNumericDefaultValue<T, double>(); break;
+				case ParamType::BOOL: returnValue = this->getNumericDefaultValue<T, bool>(); break;
+				default: throw ParamException(this->mName, this->incompatibleResultMessage<T>()); break;
+				}
+			}
+			catch (ParamException* e){
+				throw ParamException(e->getParameterName(), e->getMessage());
+			}
+			return returnValue;
+		}
+
+		template < class T>
+		typename std::enable_if<std::is_same<T, bool>::value, T>::type getDefaultValue(){
+			T returnValue;
+			try{
+				switch (this->mType){
+				case ParamType::INT: returnValue = this->getBoolDefaultValue<int>(); break;
+				case ParamType::LONG: returnValue = this->getBoolDefaultValue<long>(); break;
+				case ParamType::FLOAT: returnValue = this->getBoolDefaultValue<float>(); break;
+				case ParamType::DOUBLE: returnValue = this->getBoolDefaultValue<double>(); break;
+				case ParamType::BOOL: returnValue = this->getBoolDefaultValue<bool>(); break;
+				default: throw ParamException(this->mName, this->incompatibleResultMessage<T>()); break;
+				}
+			}
+			catch (ParamException* e){
+				throw ParamException(e->getParameterName(), e->getMessage());
+			}
+			return returnValue;
+		}
+
+		template < class T>
+		typename std::enable_if<std::is_convertible<T, std::string>::value, T>::type getDefaultValue(){
+			if (this->mType != ParamType::STRING)
+				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
+			return *((std::string*)this->mDefaultValue);
+		}
+
+		template < class T>
+		typename std::enable_if<std::is_same<T, FileHandle>::value, T>::type getDefaultValue(){
+			if (this->mType != ParamType::FILE_HANDLE)
+				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
+			return *((FileHandle*)this->mDefaultValue);
+		}
+
+		template < class T>
+		typename std::enable_if<std::is_same<T, DirectoryHandle>::value, T>::type getDefaultValue(){
+			if (this->mType != ParamType::DIRECTORY_HANDLE)
+				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
+			return *((DirectoryHandle*)this->mDefaultValue);
+		}
+
 	private:
 
 		std::string getTypeStr() const;
-		void copy(const Param& rhs);
+		void copy(const Parameter& rhs);
+		void eraseValues();
 
 		void setRequired(const bool& required = true);
-		void setMaxValue(const long long& maxValue);
-		void setMinValue(const long long& minValue);
+		void setMaxValue(const long& maxValue);
+		void setMinValue(const long& minValue);
 
 		template < class T>
 		void setValue(const T& value, typename std::enable_if<std::is_arithmetic<T>::value >::type* = 0){
@@ -137,6 +198,44 @@ namespace ssf{
 			*((DirectoryHandle*)this->mValue) = value;
 		}
 
+		template < class T>
+		void setDefaultValue(const T& value, typename std::enable_if<std::is_arithmetic<T>::value >::type* = 0){
+			try{
+				switch (this->mType){
+				case ParamType::INT: this->setNumericDefaultValue<T, int>(value); break;
+				case ParamType::LONG: this->setNumericDefaultValue<T, long>(value); break;
+				case ParamType::FLOAT: this->setNumericDefaultValue<T, float>(value); break;
+				case ParamType::DOUBLE: this->setNumericDefaultValue<T, double>(value); break;
+				case ParamType::BOOL: this->setBoolDefaultValue<T>(value); break;
+				default: throw ParamException(this->mName, this->incompatibleReceiveMessage<T>()); break;
+				}
+			}
+			catch (ParamException* e){
+				throw ParamException(e->getParameterName(), e->getMessage());
+			}
+		}
+
+		template < class T>
+		void setDefaultValue(const T& value, typename std::enable_if<std::is_convertible<T, std::string>::value >::type* = 0){
+			if (this->mType != ParamType::STRING)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((std::string*)this->mDefaultValue) = value;
+		}
+
+		template < class T>
+		void setDefaultValue(const T& value, typename std::enable_if<std::is_same<T, FileHandle>::value >::type* = 0){
+			if (this->mType != ParamType::FILE_HANDLE)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((FileHandle*)this->mDefaultValue) = value;
+		}
+
+		template < class T>
+		void setDefaultValue(const T& value, typename std::enable_if<std::is_same<T, DirectoryHandle>::value >::type* = 0){
+			if (this->mType != ParamType::DIRECTORY_HANDLE)
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			*((DirectoryHandle*)this->mDefaultValue) = value;
+		}
+
 		template<class T>
 		std::string incompatibleReceiveMessage(){
 			std::string msg = "This parameter cannot receive " + std::string(typeid(T).name()) + " type value.";
@@ -161,6 +260,15 @@ namespace ssf{
 		}
 
 		template<class T, class S>
+		void setNumericDefaultValue(const T& value){
+			if (!std::is_convertible<T, S>::value){
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			}
+			S newValue = static_cast<S>(value);
+			*((S*)this->mDefaultValue) = newValue;
+		}
+
+		template<class T, class S>
 		T getNumericValue(){
 			if (!std::is_convertible<S, T>::value){
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
@@ -169,6 +277,14 @@ namespace ssf{
 			return newValue;
 		}
 
+		template<class T, class S>
+		T getNumericDefaultValue(){
+			if (!std::is_convertible<S, T>::value){
+				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
+			}
+			T returnValue = static_cast<T>(*((S*)this->mDefaultValue));
+			return returnValue;
+		}
 
 		template<class T>
 		void setBoolValue(const T& value){
@@ -178,24 +294,44 @@ namespace ssf{
 			*((bool*)this->mValue) = (value != 0);
 		}
 
+		template<class T>
+		void setBoolDefaultValue(const T& value){
+			if (!std::is_convertible<T, bool>::value){
+				throw ParamException(this->mName, this->incompatibleReceiveMessage<T>());
+			}
+			*((bool*)this->mDefaultValue) = (value != 0);
+		}
+
 		template<class S>
 		bool getBoolValue(){
 			if (!std::is_convertible<S, bool>::value){
 				throw ParamException(this->mName, this->incompatibleResultMessage<bool>());
 			}
-			bool newValue = static_cast<bool>(*((S*)this->mValue) != 0);
-			return newValue;
+			bool returnValue = static_cast<bool>(*((S*)this->mValue) != 0);
+			return returnValue;
 		}
+
+		template<class S>
+		bool getBoolDefaultValue(){
+			if (!std::is_convertible<S, bool>::value){
+				throw ParamException(this->mName, this->incompatibleResultMessage<bool>());
+			}
+			bool returnValue = static_cast<bool>(*((S*)this->mDefaultValue) != 0);
+			return returnValue;
+		}
+
+
 
 	protected:
 		ParamType mType;
 		std::string mName;
 		std::string mDescription;		
 		void* mValue;
+		void* mDefaultValue;
 
 		bool mRequired;
-		long long maxValue;
-		long long minValue;
+		long maxValue;
+		long minValue;
 	};
 
 }

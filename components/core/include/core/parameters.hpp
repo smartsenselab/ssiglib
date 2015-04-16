@@ -6,17 +6,17 @@
 #include <vector>
 #include <memory>
 
-#include "core/param.hpp"
+#include "core/parameter.hpp"
 
 namespace ssf{
 
-	class Params{
+	class Parameters{
 
 	public:
-		Params(void);
-		virtual ~Params(void);
-		Params(const Params& rhs);
-		Params& operator=(const Params& rhs);
+		Parameters(void);
+		virtual ~Parameters(void);
+		Parameters(const Parameters& rhs);
+		Parameters& operator=(const Parameters& rhs);
 
 		void addParameter(const ParamType& type, const std::string& name, const std::string& description);
 
@@ -41,15 +41,21 @@ namespace ssf{
 		}
 
 		template < class T>
+		void setDefaultValue(const std::string& paramName, const T& value){
+			this->getParamByName(paramName).setDefaultValue<T>(value);
+		}
+
+		template < class T>
 		T getValue(const std::string& paramName){
 			return this->getParamByName(paramName).getValue<T>();
 		}
 
-		std::map<std::string, Param> getParameters() const;
+		const std::map<std::string, Parameter>& getParameters() const;
+		void setup(const std::map<std::string, Parameter>& paramsSetup);
 
 	private:
-		Param& getParamByName(const std::string& paramName);
-		std::map<std::string, Param> mParameters;
+		Parameter& getParamByName(const std::string& paramName);
+		std::map<std::string, Parameter> mParameters;
 
 	};
 

@@ -47,6 +47,10 @@ namespace ssf{
 		return info;
 	}
 
+	void Resource::setup(const ResourceSetup& setup){
+		
+	}
+
 	void Resource::setAuthor(const std::string& author){
 		this->mAuthor = author;
 	}
@@ -63,6 +67,8 @@ namespace ssf{
 		this->mMajorRequiredVersion = majorVersion;
 		this->mMinorRequiredVersion = minorVersion;
 	}
+
+
 
 }
 

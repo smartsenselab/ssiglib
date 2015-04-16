@@ -1,55 +1,55 @@
-#include "core/params.hpp"
+#include "core/parameters.hpp"
 
 namespace ssf{
 
-	Params::Params(){
+	Parameters::Parameters(){
 		
 	}
 
-	Params::~Params(){
+	Parameters::~Parameters(){
 
 	}
 
-	Params::Params(const Params& rhs){
+	Parameters::Parameters(const Parameters& rhs){
 		this->mParameters = rhs.mParameters;
 	}
 
-	Params& Params::operator=(const Params& rhs){
+	Parameters& Parameters::operator=(const Parameters& rhs){
 		if (this != &rhs){
 			this->mParameters = rhs.mParameters;
 		}
 		return *this;
 	}
 
-	void Params::addParameter(const ParamType& type, const std::string& paramName, const std::string& paramDescription){
+	void Parameters::addParameter(const ParamType& type, const std::string& paramName, const std::string& paramDescription){
 
 		if (this->mParameters.find(paramName) != this->mParameters.end()){
 			throw ParamException(paramName, "Parameter name already used. Please, try other name.");
 		}
 		
-		this->mParameters[paramName] = Param(type, paramName, paramDescription);
+		this->mParameters[paramName] = Parameter(type, paramName, paramDescription);
 
 	}
 
-	ssf::ParamType Params::getType(const std::string& paramName){
+	ssf::ParamType Parameters::getType(const std::string& paramName){
 		return this->getParamByName(paramName).getType();
 	}
 
-	std::string Params::getName(const std::string& paramName){
+	std::string Parameters::getName(const std::string& paramName){
 		return this->getParamByName(paramName).getName();
 	}
 
-	std::string Params::getDescription(const std::string& paramName){
+	std::string Parameters::getDescription(const std::string& paramName){
 		return this->getParamByName(paramName).getDescription();
 	}
 
-	bool Params::isNumeric(const std::string& paramName){
+	bool Parameters::isNumeric(const std::string& paramName){
 		if (this->isIntegral(paramName) || this->isFloating(paramName))
 			return true;
 		return false;
 	}
 
-	bool Params::isIntegral(const std::string& paramName){
+	bool Parameters::isIntegral(const std::string& paramName){
 		if (this->getParamByName(paramName).getType() == ParamType::INT)
 			return true;
 		if (this->getParamByName(paramName).getType() == ParamType::LONG)
@@ -57,7 +57,7 @@ namespace ssf{
 		return false;
 	}
 
-	bool Params::isFloating(const std::string& paramName){
+	bool Parameters::isFloating(const std::string& paramName){
 		if (this->getParamByName(paramName).getType() == ParamType::FLOAT)
 			return true;
 		if (this->getParamByName(paramName).getType() == ParamType::DOUBLE)
@@ -65,31 +65,40 @@ namespace ssf{
 		return false;
 	}
 
-	bool Params::isBoolean(const std::string& paramName){
+	bool Parameters::isBoolean(const std::string& paramName){
 		return (this->getParamByName(paramName).getType() == ParamType::BOOL);
 	}
 
-	bool Params::isString(const std::string& paramName){
+	bool Parameters::isString(const std::string& paramName){
 		return (this->getParamByName(paramName).getType() == ParamType::STRING);
 	}
 
-	bool Params::exists(const std::string& paramName){
+	bool Parameters::exists(const std::string& paramName){
 		return !(this->mParameters.find(paramName) == this->mParameters.end());
 	}
 
-	void Params::setRequired(const std::string& paramName, const bool& required /*= true*/){
+	void Parameters::setRequired(const std::string& paramName, const bool& required /*= true*/){
 		this->getParamByName(paramName).setRequired(required);
 	}
 
-	bool Params::isRequired(const std::string& paramName){
+	bool Parameters::isRequired(const std::string& paramName){
 		return this->getParamByName(paramName).isRequired();
 	}
 	
-	std::map<std::string, Param> Params::getParameters() const{
+	const std::map<std::string, Parameter>& Parameters::getParameters() const{
 		return this->mParameters;
 	}
 
-	Param& Params::getParamByName(const std::string& paramName){
+	void Parameters::setup(const std::map<std::string, Parameter>& paramsSetup){
+		for (auto param : this->getParameters()){
+			auto paramSetup = paramsSetup.find(param.second.getName());
+			if (paramSetup != paramsSetup.end()){
+
+			}
+		}
+	}
+
+	Parameter& Parameters::getParamByName(const std::string& paramName){
 		if (this->mParameters.find(paramName) == this->mParameters.end())
 			throw ParamException(paramName, "There is no parameter with such name.");
 		return this->mParameters[paramName];

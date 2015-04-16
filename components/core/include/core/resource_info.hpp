@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "core/params.hpp"
+#include "core/parameters.hpp"
 
 namespace ssf{
 
@@ -25,7 +25,7 @@ namespace ssf{
 		std::string getRequiredVersion() const;
 		int getMajorRequiredVersion() const;
 		int getMinorRequiredVersion() const;
-		std::map<std::string, Param> getParams() const;
+		const std::map<std::string, Parameter>& getParams() const;
 
 	protected:
 		std::string mName;
@@ -36,7 +36,7 @@ namespace ssf{
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
 
-		Params mParams;
+		Parameters mParams;
 
 	};
 

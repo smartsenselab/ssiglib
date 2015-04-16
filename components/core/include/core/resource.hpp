@@ -2,8 +2,9 @@
 #define _SSF_CORE_RESOURCE_HPP_
 
 #include "core/base_object.hpp"
-#include "core/params.hpp"
+#include "core/parameters.hpp"
 #include "core/resource_info.hpp"
+#include "core/resource_setup.hpp"
 
 namespace ssf{
 
@@ -16,6 +17,7 @@ namespace ssf{
 		Resource& operator=(const Resource& rhs);
 
 		virtual ResourceInfo getInfo();
+		virtual void setup(const ResourceSetup& setup);
 		
 		virtual void initialize() = 0;
 		virtual std::string getName() = 0;
@@ -26,7 +28,7 @@ namespace ssf{
 		void setDescription(const std::string& description);
 		void setAuthorEmail(const std::string& authorEmail);
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
-		Params PARAMETERS;
+		Parameters PARAMETERS;
 
 	private:
 		std::string mAuthor;
