@@ -15,15 +15,14 @@ namespace ssf{
 	{
 		boost::log::add_file_log("test.log");
 		boost::log::add_common_attributes();
-
 	}
 
-	void setFilter(boost::log::trivial::filter){
-		boost::log::core::get()->set_filter
-			(
-			boost::log::trivial::severity >= boost::log::trivial::filter
-			);
-	}
+	//void setFilter(boost::log::trivial::filter){
+	//	boost::log::core::get()->set_filter
+	//		(
+	//		boost::log::trivial::severity >= boost::log::trivial::filter
+	//		);
+	//}
 
 	void Log::INFO(std::string message){
 		BOOST_LOG_TRIVIAL(info) << message;

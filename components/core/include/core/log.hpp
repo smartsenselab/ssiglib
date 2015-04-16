@@ -9,7 +9,7 @@ namespace ssf{
 	public:
 
 		static void init();
-		static void setFilter(std::string filter);
+		/*static void setFilter(std::string filter);*/
 		static void INFO(std::string message);
 		static void ERROR(std::string message);
 		static void DEBUG(std::string message);
