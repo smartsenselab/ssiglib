@@ -98,7 +98,7 @@ endif()
 ###############################################################################
 # EXTERNAL LIBRARIES
 ###############################################################################
-find_package(Boost 1.47 COMPONENTS system filesystem REQUIRED)
+find_package(Boost 1.47 COMPONENTS system filesystem log REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_STATIC OFF)
