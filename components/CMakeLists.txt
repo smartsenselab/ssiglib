@@ -6,6 +6,8 @@
 set (CORE_PATH ${PROJECT_SOURCE_DIR}/components/core) #core
 set (STATISTICS_PATH ${PROJECT_SOURCE_DIR}/components/statistics) #statistics
 set (MATH_PATH ${PROJECT_SOURCE_DIR}/components/math) #math
+set (API_PATH ${PROJECT_SOURCE_DIR}/components/api) #api
+set (PARAM_TEMP_PATH ${PROJECT_SOURCE_DIR}/components/param_temp) #param_temp
 
 
 ###############################################################################
@@ -14,6 +16,8 @@ set (MATH_PATH ${PROJECT_SOURCE_DIR}/components/math) #math
 include_directories (${CORE_PATH}/include/)
 include_directories (${STATISTICS_PATH}/include/)
 include_directories (${MATH_PATH}/include/)
+include_directories (${API_PATH}/include/)
+include_directories (${PARAM_TEMP_PATH}/include/)
 
 
 if(BUILD_TESTS)
@@ -26,3 +30,5 @@ endif()
 add_subdirectory (core)
 add_subdirectory (statistics)
 add_subdirectory (math)
+add_subdirectory (api)
+add_subdirectory (param_temp)
