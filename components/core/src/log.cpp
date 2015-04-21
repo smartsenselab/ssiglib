@@ -17,12 +17,26 @@ namespace ssf{
 		boost::log::add_common_attributes();
 	}
 
-	//void setFilter(boost::log::trivial::filter){
-	//	boost::log::core::get()->set_filter
-	//		(
-	//		boost::log::trivial::severity >= boost::log::trivial::filter
-	//		);
-	//}
+	void setFilter(LogFilter filter){
+
+		int filter_level;
+
+		switch (filter){
+		case LogFilter::DEBUG: filter_level = boost::log::trivial::debug;
+			break;
+		case LogFilter::INFO: filter_level = boost::log::trivial::info;
+			break;
+		case LogFilter::WARNING: filter_level = boost::log::trivial::warning;
+			break;
+		case LogFilter::ERROR: filter_level = boost::log::trivial::error;
+			break;
+		}
+
+		boost::log::core::get()->set_filter
+			(
+			boost::log::trivial::severity >= filter_level
+			);
+	}
 
 	void Log::INFO(std::string message){
 		BOOST_LOG_TRIVIAL(info) << message;

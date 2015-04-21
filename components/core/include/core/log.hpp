@@ -5,11 +5,17 @@
 
 namespace ssf{
 
+	enum class LogFilter{
+		DEBUG, INFO, WARNING, ERROR
+	};
+
 	class Log{
 	public:
 
+		//Log::setFilter(LogFilter::INFO)
+
 		static void init();
-		/*static void setFilter(std::string filter);*/
+		static void setFilter(LogFilter filter);
 		static void INFO(std::string message);
 		static void ERROR(std::string message);
 		static void DEBUG(std::string message);
