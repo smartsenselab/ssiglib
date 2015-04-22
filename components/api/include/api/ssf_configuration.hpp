@@ -5,20 +5,7 @@
 #include <vector>
 #include <tuple>
 #include <map>
-
-enum typeValue{
-    INT, FLOAT, DOUBLE, LONG, BOOL, STRING
-};
-
-struct parameter{
-    
-    int value1;
-    float value2;
-    double value3;
-    long value4;
-    bool value5;
-    std::string value6;
-};
+#include "param_temp/param_temp.hpp"
 
 namespace ssf{
 
@@ -32,26 +19,19 @@ namespace ssf{
         
         void addModule(const std::string& moduleName, const std::string& moduleType);
         
+        template <class type>
+        void setParam(const std::string& moduleName, type param);
+        
+        void setStream(const std::string& moduleGiver, const std::string& giverOut, const std::string& moduleReceiver, const std::string& receiverIn);
 
 	private:
-        std::map<std::string, std::vector< std::pair< std::string, struct parameter > > > mModules;
+        static std::map< std::string, std::vector< std::string > > modules;
+        
+        static std::map< std::string, std::vector< std::pair< std::string, ParamTemp<class T> > > > parameters;
+        
+        static std::map< std::string, std::map< std::string, std::vector< std::pair< std::string, std::string > > > > streams;
+        
 	};
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif // !_SSF_API_SSF_CONFIGURATION_HPP_

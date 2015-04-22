@@ -3,16 +3,19 @@
 
 namespace ssf{
 
-	class param_temp{
+    template <class T>
+	class ParamTemp{
 	
 	public:
-		param_temp(void);
-		virtual ~param_temp(void);
-		param_temp(const param_temp& rhs);
-		param_temp& operator=(const param_temp& rhs);
+		ParamTemp(const T& value);
+		virtual ~ParamTemp(void);
+		ParamTemp(const ParamTemp& rhs);
+		T& operator=(const ParamTemp& rhs);
+        
+        T getValue();
 
 	private:
-		//private members
+        T value;
 
 	};
 

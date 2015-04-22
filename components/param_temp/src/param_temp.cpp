@@ -2,24 +2,31 @@
 
 namespace ssf{
 
-	param_temp::param_temp(){
-		//Constructor
+    template <class T>
+	ParamTemp<T>::ParamTemp(const T& value){
+        this->value = value;
+	}
+    
+    template <class T>
+	ParamTemp<T>::~ParamTemp(){
 	}
 
-	param_temp::~param_temp(){
-		//Destructor
-	}
-
-	param_temp::param_temp(const param_temp& rhs){
+    template <class T>
+	ParamTemp<T>::ParamTemp(const ParamTemp& rhs){
 		//Constructor Copy
 	}
 
-	param_temp& param_temp::operator=(const param_temp& rhs){
+    template <class T>
+	T& ParamTemp<T>::operator=(const ParamTemp& rhs){
 		if (this != &rhs){
 			//code here
 		}
 	    return *this;
 	}
+    
+    template<class T>
+    T ParamTemp<T>::getValue(){
+        return this->value;
+    }
 
 }
-
