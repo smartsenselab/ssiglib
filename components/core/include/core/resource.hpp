@@ -28,7 +28,7 @@ namespace ssf{
 		void setDescription(const std::string& description);
 		void setAuthorEmail(const std::string& authorEmail);
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
-		Parameters PARAMETERS;
+		Parameters Parameters;
 
 	private:
 		std::string mAuthor;

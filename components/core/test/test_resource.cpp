@@ -13,14 +13,14 @@ public:
 		this->setDescription("resource_description");
 		this->setRequiredVersion(2, 0);
 
-		this->PARAMETERS.addParameter(ssf::ParamType::INT, "paramInt", "description_test_int");
-		this->PARAMETERS.addParameter(ssf::ParamType::LONG, "paramLong", "description_test_long");
-		this->PARAMETERS.addParameter(ssf::ParamType::FLOAT, "paramFloat", "description_test_float");
-		this->PARAMETERS.addParameter(ssf::ParamType::DOUBLE, "paramDouble", "description_test_double");
-		this->PARAMETERS.addParameter(ssf::ParamType::BOOL, "paramBool", "description_test_bool");
-		this->PARAMETERS.addParameter(ssf::ParamType::STRING, "paramString", "description_test_string");
-		this->PARAMETERS.addParameter(ssf::ParamType::FILE_HANDLE, "paramFile", "description_test_file");
-		this->PARAMETERS.addParameter(ssf::ParamType::DIRECTORY_HANDLE, "paramDirectory", "description_test_directory");
+		this->Parameters.addParameter(ssf::ParamType::INT, "paramInt", "description_test_int");
+		this->Parameters.addParameter(ssf::ParamType::LONG, "paramLong", "description_test_long");
+		this->Parameters.addParameter(ssf::ParamType::FLOAT, "paramFloat", "description_test_float");
+		this->Parameters.addParameter(ssf::ParamType::DOUBLE, "paramDouble", "description_test_double");
+		this->Parameters.addParameter(ssf::ParamType::BOOL, "paramBool", "description_test_bool");
+		this->Parameters.addParameter(ssf::ParamType::STRING, "paramString", "description_test_string");
+		this->Parameters.addParameter(ssf::ParamType::FILE_HANDLE, "paramFile", "description_test_file");
+		this->Parameters.addParameter(ssf::ParamType::DIRECTORY_HANDLE, "paramDirectory", "description_test_directory");
 	}
 
 };

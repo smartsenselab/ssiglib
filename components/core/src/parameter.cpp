@@ -1,5 +1,7 @@
 #include "core/parameter.hpp"
 
+#include <limits>
+
 namespace ssf{
 
 	Parameter::Parameter(){
