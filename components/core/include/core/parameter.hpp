@@ -320,8 +320,6 @@ namespace ssf{
 			return returnValue;
 		}
 
-
-
 	protected:
 		ParamType mType;
 		std::string mName;

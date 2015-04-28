@@ -28,7 +28,6 @@ namespace ssf{
 		void setDescription(const std::string& description);
 		void setAuthorEmail(const std::string& authorEmail);
 		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
-		Parameters Parameters;
 
 	private:
 		std::string mAuthor;
@@ -37,6 +36,9 @@ namespace ssf{
 
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
+
+	protected:
+		Parameters parameters;
 
 		
 	};

@@ -42,7 +42,7 @@ namespace ssf{
 		info.mAuthorEmail = this->mAuthorEmail;
 		info.mMajorRequiredVersion = this->mMajorRequiredVersion;
 		info.mMinorRequiredVersion = this->mMinorRequiredVersion;
-		info.mParams = this->Parameters;
+		info.mParams = this->parameters;
 		
 		return info;
 	}
