@@ -3,19 +3,20 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <memory>
 
-#include "core/param.hpp"
+#include "core/parameter.hpp"
 
 namespace ssf{
 
-	class Params{
+	class Parameters{
 
 	public:
-		Params(void);
-		virtual ~Params(void);
-		Params(const Params& rhs);
-		Params& operator=(const Params& rhs);
+		Parameters(void);
+		virtual ~Parameters(void);
+		Parameters(const Parameters& rhs);
+		Parameters& operator=(const Parameters& rhs);
 
 		void addParameter(const ParamType& type, const std::string& name, const std::string& description);
 
@@ -28,24 +29,38 @@ namespace ssf{
 		bool isFloating(const std::string& paramName);
 		bool isBoolean(const std::string& paramName);
 		bool isString(const std::string& paramName);
+		bool exists(const std::string& paramName);
 
 		void setRequired(const std::string& paramName, const bool& required = true);
 		bool isRequired(const std::string& paramName);
 
-		std::shared_ptr<Param> getParamByName(const std::string& paramName);
+		long getMaxValue(const std::string& paramName);
+		void setMaxValue(const std::string& paramName, const long& maxValue);
+		long getMinValue(const std::string& paramName);
+		void setMinValue(const std::string& paramName, const long& minValue);
+
 
 		template < class T>
 		void setValue(const std::string& paramName, const T& value){
-			this->getParamByName(paramName)->setValue<T>(value);
+			this->getParamByName(paramName).setValue<T>(value);
+		}
+
+		template < class T>
+		void setDefaultValue(const std::string& paramName, const T& value){
+			this->getParamByName(paramName).setDefaultValue<T>(value);
 		}
 
 		template < class T>
 		T getValue(const std::string& paramName){
-			return this->getParamByName(paramName)->getValue<T>();
+			return this->getParamByName(paramName).getValue<T>();
 		}
 
+		const std::map<std::string, Parameter>& getParameters() const;
+		void setup(std::map<std::string, Parameter>& paramsSetup);
+
 	private:
-		std::map<std::string, std::shared_ptr<Param>> mParameters;
+		Parameter& getParamByName(const std::string& paramName);
+		std::map<std::string, Parameter> mParameters;
 
 	};
 
