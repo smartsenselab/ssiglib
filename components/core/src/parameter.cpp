@@ -106,7 +106,20 @@ namespace ssf{
 	}
 
 	void Parameter::setMaxValue(const long& maxValue){
-		this->maxValue = maxValue;
+		switch (this->mType){
+		case ParamType::INT:
+			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<int>::max()) ? std::numeric_limits<int>::max():maxValue);
+			break;
+		case ParamType::LONG:
+			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<long>::max()) ? std::numeric_limits<long>::max() : maxValue);
+			break;
+		case ParamType::FLOAT:
+			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<float>::max()) ? std::numeric_limits<float>::max() : maxValue);
+			break;
+		case ParamType::DOUBLE:
+			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<double>::max()) ? std::numeric_limits<double>::max() : maxValue);
+			break;
+		}
 	}
 
 	long Parameter::getMinValue() const{
@@ -114,7 +127,20 @@ namespace ssf{
 	}
 
 	void Parameter::setMinValue(const long& minValue){
-		this->minValue = minValue;
+		switch (this->mType){
+		case ParamType::INT:
+			this->minValue = static_cast<long>((minValue < std::numeric_limits<int>::min()) ? std::numeric_limits<int>::min() : minValue);
+			break;
+		case ParamType::LONG:
+			this->minValue = static_cast<long>((minValue < std::numeric_limits<long>::min()) ? std::numeric_limits<long>::min() : minValue);
+			break;
+		case ParamType::FLOAT:
+			this->minValue = static_cast<long>((minValue < std::numeric_limits<float>::min()) ? std::numeric_limits<float>::min() : minValue);
+			break;
+		case ParamType::DOUBLE:
+			this->minValue = static_cast<long>((minValue < std::numeric_limits<double>::min()) ? std::numeric_limits<double>::min() : minValue);
+			break;
+		}
 	}
 
 	std::string Parameter::getTypeStr() const{

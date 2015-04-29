@@ -15,7 +15,6 @@ namespace ssf{
 
 	class Parameter{
 		friend class Parameters;
-		friend class ParameterInfo;
 
 	public:
 		Parameter(void);

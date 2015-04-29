@@ -34,6 +34,11 @@ namespace ssf{
 		void setRequired(const std::string& paramName, const bool& required = true);
 		bool isRequired(const std::string& paramName);
 
+		long getMaxValue(const std::string& paramName);
+		void setMaxValue(const std::string& paramName, const long& maxValue);
+		long getMinValue(const std::string& paramName);
+		void setMinValue(const std::string& paramName, const long& minValue);
+
 
 		template < class T>
 		void setValue(const std::string& paramName, const T& value){
@@ -51,7 +56,7 @@ namespace ssf{
 		}
 
 		const std::map<std::string, Parameter>& getParameters() const;
-		void setup(const std::map<std::string, Parameter>& paramsSetup);
+		void setup(std::map<std::string, Parameter>& paramsSetup);
 
 	private:
 		Parameter& getParamByName(const std::string& paramName);

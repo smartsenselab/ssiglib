@@ -22,8 +22,6 @@ file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
 									"${CORE_PATH}/src/parameter.cpp"
 									"${CORE_PATH}/include/core/parameters.hpp"
 									"${CORE_PATH}/src/parameters.cpp"
-									"${CORE_PATH}/include/core/parameter_info.hpp"
-									"${CORE_PATH}/src/parameter_info.cpp"
 									)
 
 file(GLOB CORE_BASEOBJECT_FILES		"${CORE_PATH}/include/core/base_object.hpp"

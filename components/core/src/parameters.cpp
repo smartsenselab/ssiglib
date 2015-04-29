@@ -85,16 +85,64 @@ namespace ssf{
 		return this->getParamByName(paramName).isRequired();
 	}
 	
+	long Parameters::getMaxValue(const std::string& paramName){
+		return this->getParamByName(paramName).getMaxValue();
+	}
+
+	void Parameters::setMaxValue(const std::string& paramName, const long& maxValue){
+		return this->getParamByName(paramName).setMaxValue(maxValue);
+	}
+
+	long Parameters::getMinValue(const std::string& paramName){
+		return this->getParamByName(paramName).getMinValue();
+	}
+
+	void Parameters::setMinValue(const std::string& paramName, const long& minValue){
+		return this->getParamByName(paramName).setMinValue(minValue);
+	}
+
 	const std::map<std::string, Parameter>& Parameters::getParameters() const{
 		return this->mParameters;
 	}
 
-	void Parameters::setup(const std::map<std::string, Parameter>& paramsSetup){
-		for (auto param : this->getParameters()){
-			auto paramSetup = paramsSetup.find(param.second.getName());
-			if (paramSetup != paramsSetup.end()){
-
+	void Parameters::setup(std::map<std::string, Parameter>& paramsSetup){
+		for (auto parameter : this->getParameters()){
+			auto setup = paramsSetup.find(parameter.second.getName());
+			if (setup != paramsSetup.end() && parameter.second.isRequired()){
+				throw ParamException(parameter.second.getName(), "This parameter requires a value.");
 			}
+			if (parameter.second.getType() != setup->second.getType()){
+				std::string message = "Parameter setup type mismatch. Correct type is " + parameter.second.getTypeStr() + ".";
+				throw ParamException(parameter.second.getName(), message);
+			}
+
+			switch (parameter.second.getType()){
+			case ParamType::INT:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<int>());
+				break;
+			case ParamType::LONG:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<long>());
+				break;
+			case ParamType::FLOAT:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<float>());
+				break;
+			case ParamType::DOUBLE:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<double>());
+				break;
+			case ParamType::BOOL:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<bool>());
+				break;
+			case ParamType::STRING:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<std::string>());
+				break;
+			case ParamType::FILE_HANDLE:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<FileHandle>());
+				break;
+			case ParamType::DIRECTORY_HANDLE:
+				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<DirectoryHandle>());
+				break;
+			}
+			
 		}
 	}
 
