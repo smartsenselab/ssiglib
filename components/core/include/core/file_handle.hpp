@@ -14,26 +14,26 @@ namespace boost{
 
 namespace ssf{
 
-	class SSF_EXPORT FileHandle{
+	class FileHandle{
 
 	public:
-		FileHandle();
-		explicit FileHandle(const std::string& fileName);
-		virtual ~FileHandle(void);		
-		FileHandle(const FileHandle& rhs);
-		FileHandle& operator=(const FileHandle& rhs);
+		SSF_EXPORT FileHandle();
+		SSF_EXPORT explicit FileHandle(const std::string& fileName);
+		SSF_EXPORT virtual ~FileHandle(void);
+		SSF_EXPORT FileHandle(const FileHandle& rhs);
+		SSF_EXPORT FileHandle& operator=(const FileHandle& rhs);
 
-		bool operator<(const FileHandle& rhs) const;
+		SSF_EXPORT bool operator<(const FileHandle& rhs) const;
 
-		std::string getAbsoluteFileName() const;
-		std::string getSimpleName() const;
-		std::string getExtenstion() const;
+		SSF_EXPORT std::string getAbsoluteFileName() const;
+		SSF_EXPORT std::string getSimpleName() const;
+		SSF_EXPORT std::string getExtenstion() const;
 		
-		bool erase();
-		bool hasExtension() const;
+		SSF_EXPORT bool erase();
+		SSF_EXPORT bool hasExtension() const;
 
-		static bool erase(const std::string& fileName);
-		static bool exists(const std::string& fileName);
+		SSF_EXPORT static bool erase(const std::string& fileName);
+		SSF_EXPORT static bool exists(const std::string& fileName);
 
 	private:
 		std::shared_ptr<boost::filesystem::path> mPath ;
