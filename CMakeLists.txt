@@ -99,6 +99,7 @@ endif()
 # CMake Auxiliary Files
 ###############################################################################
 include(cmake/SSFBoostUtil.cmake)
+include(cmake/SSFUtil.cmake)
 
 ###############################################################################
 # SUBDIRECTORIES

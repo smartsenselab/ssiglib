@@ -4,6 +4,8 @@
 #include <string>
 #include <memory>
 
+#include "core/ssfdef.hpp"
+
 namespace boost{
 	namespace filesystem{
 		class path;
@@ -12,7 +14,7 @@ namespace boost{
 
 namespace ssf{
 
-	class FileHandle{
+	class SSF_EXPORT FileHandle{
 
 	public:
 		FileHandle();

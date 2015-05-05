@@ -22,11 +22,11 @@ endmacro()
 macro(ssf_link_boost TARGET)
 	ssf_find_boost(COMPONENTS ${ARGN} REQUIRED)
 	
-	set_target_properties(ssf_core PROPERTIES COMPILE_DEFINITIONS BOOST_ALL_NO_LIB)
-	set_target_properties(ssf_core PROPERTIES COMPILE_DEFINITIONS BOOST_ALL_DYN_LINK)
-	set_target_properties(ssf_core PROPERTIES DEFINE_SYMBOL BOOST_ALL_DYN_LINK)
-	set_target_properties(ssf_core PROPERTIES DEFINE_SYMBOL BOOST_ALL_NO_LIB)
+	target_compile_definitions(${TARGET} PUBLIC BOOST_ALL_NO_LIB)
+	target_compile_definitions(${TARGET} PUBLIC BOOST_ALL_DYN_LINK)
+
 	target_include_directories(${TARGET} PUBLIC ${Boost_INCLUDE_DIR})
+	
 	target_link_libraries(ssf_core ${Boost_LIBRARIES})
 
 endmacro()

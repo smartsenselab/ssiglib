@@ -74,8 +74,7 @@ target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 
-set_target_properties(ssf_core PROPERTIES COMPILE_DEFINITIONS SSFAPI_EXPORTS)
-set_target_properties(ssf_core PROPERTIES DEFINE_SYMBOL SSFAPI_EXPORTS)
+target_compile_definitions(ssf_core PUBLIC SSFAPI_EXPORTS)
 
 #Install configuration
 install (TARGETS ssf_core DESTINATION bin)
