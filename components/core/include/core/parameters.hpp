@@ -56,6 +56,7 @@ namespace ssf{
 		}
 
 		const std::map<std::string, Parameter>& getParameters() const;
+        
 		void setup(std::map<std::string, Parameter>& paramsSetup);
 
 	private:

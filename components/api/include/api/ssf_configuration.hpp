@@ -5,11 +5,13 @@
 #include <vector>
 #include <tuple>
 #include <map>
-#include "param_temp/param_temp.hpp"
+#include <core/parameters.hpp>
+#include "api/stream.hpp"
+#include "api/module.hpp"
 
 namespace ssf{
-
-	class SSFConfiguration{
+    
+    class SSFConfiguration{
 	
 	public:
 		SSFConfiguration(void);
@@ -19,17 +21,20 @@ namespace ssf{
         
         void addModule(const std::string& moduleName, const std::string& moduleType);
         
-        template <class type>
-        void setParam(const std::string& moduleName, type param);
+        template<class T>
+        void setParameter(const std::string& moduleType, const std::string& moduleName, const std::string& paramName, ParamType type, T value){
+            modules[moduleName].addParameter(type, paramName, "");
+            modules[moduleName].setValue(paramName, value);
+        };
         
-        void setStream(const std::string& moduleGiver, const std::string& giverOut, const std::string& moduleReceiver, const std::string& receiverIn);
+        
+        void setStream(const std::string& moduleProvider, const std::string& providerOutput, const std::string& moduleReceiver, const std::string& receiverInput);
 
 	private:
-        static std::map< std::string, std::vector< std::string > > modules;
         
-        static std::map< std::string, std::vector< std::pair< std::string, ParamTemp<class T> > > > parameters;
+        std::map< std::string, Module> modules;
         
-        static std::map< std::string, std::map< std::string, std::vector< std::pair< std::string, std::string > > > > streams;
+        std::vector< Stream >  streams;
         
 	};
 }
