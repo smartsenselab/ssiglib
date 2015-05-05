@@ -1,6 +1,11 @@
 #root/components/core/CMakeLists.txt
 
 ###############################################################################
+# CONFIGURE CORE PATH
+###############################################################################
+set (CORE_PATH ${PROJECT_SOURCE_DIR}/components/core)
+
+###############################################################################
 # CREATE FILES SET
 ###############################################################################
 
@@ -64,6 +69,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_RESOURCE_FILES}
 						${CORE_UTIL_FILES}
 			)
+target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
@@ -91,6 +97,8 @@ if(BUILD_TESTS)
 
 	# Standard linking to gtest stuff.
 	target_link_libraries(test_core gtest gtest_main)
+	target_include_directories(test_core PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+	target_include_directories(test_core PUBLIC ${CORE_PATH}/include/)
 
 	# Extra linking for the project.
 	target_link_libraries(test_core ssf_core)
