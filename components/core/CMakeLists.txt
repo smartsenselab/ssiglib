@@ -36,6 +36,9 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									"${CORE_PATH}/src/resource_setup.cpp"
 									)
 
+file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
+									)
+
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
@@ -46,6 +49,7 @@ source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
+source_group("Util"			FILES ${CORE_UTIL_FILES})
 
 
 ###############################################################################
@@ -58,19 +62,21 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_PARAMETERS_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
+						${CORE_UTIL_FILES}
 			)
 						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 
+set_target_properties(ssf_core PROPERTIES COMPILE_DEFINITIONS SSFAPI_EXPORTS)
+set_target_properties(ssf_core PROPERTIES DEFINE_SYMBOL SSFAPI_EXPORTS)
+
 #Install configuration
 install (TARGETS ssf_core DESTINATION bin)
 install (FILES ${CORE_INCLUDES} DESTINATION include)
 
-#Link Library core with Boost
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-target_link_libraries(ssf_core ${Boost_LIBRARIES})
+ssf_link_boost(ssf_core system filesystem)
+
 
 ###############################################################################
 # SET TESTS FOR LIBRARY CORE
