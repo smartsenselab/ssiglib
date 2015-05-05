@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "core/ssfdef.hpp"
 #include "core/exception.hpp"
 
 namespace ssf{
@@ -10,13 +11,13 @@ namespace ssf{
 	class FileException : public Exception {
 
 	public:
-		FileException(const std::string& fileName, const std::string& message);
+		SSF_EXPORT FileException(const std::string& fileName, const std::string& message);
 
-		virtual ~FileException() throw();
+		SSF_EXPORT virtual ~FileException() throw();
 
-		virtual const char * what() const throw();
+		SSF_EXPORT virtual const char * what() const throw();
 
-		std::string getFileName() const;
+		SSF_EXPORT std::string getFileName() const;
 
 	private:
 		std::string mFileName;

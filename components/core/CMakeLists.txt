@@ -1,6 +1,11 @@
 #root/components/core/CMakeLists.txt
 
 ###############################################################################
+# CONFIGURE CORE PATH
+###############################################################################
+set (CORE_PATH ${PROJECT_SOURCE_DIR}/components/core)
+
+###############################################################################
 # CREATE FILES SET
 ###############################################################################
 
@@ -36,6 +41,9 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									"${CORE_PATH}/src/resource_setup.cpp"
 									)
 
+file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
+									)
+
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
@@ -46,6 +54,7 @@ source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
+source_group("Util"			FILES ${CORE_UTIL_FILES})
 
 
 ###############################################################################
@@ -58,19 +67,21 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_PARAMETERS_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
+						${CORE_UTIL_FILES}
 			)
+target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
+
+target_compile_definitions(ssf_core PUBLIC SSFAPI_EXPORTS)
 
 #Install configuration
 install (TARGETS ssf_core DESTINATION bin)
 install (FILES ${CORE_INCLUDES} DESTINATION include)
 
-#Link Library core with Boost
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-target_link_libraries(ssf_core ${Boost_LIBRARIES})
+ssf_link_boost(ssf_core system filesystem)
+
 
 ###############################################################################
 # SET TESTS FOR LIBRARY CORE
@@ -85,6 +96,8 @@ if(BUILD_TESTS)
 
 	# Standard linking to gtest stuff.
 	target_link_libraries(test_core gtest gtest_main)
+	target_include_directories(test_core PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+	target_include_directories(test_core PUBLIC ${CORE_PATH}/include/)
 
 	# Extra linking for the project.
 	target_link_libraries(test_core ssf_core)
