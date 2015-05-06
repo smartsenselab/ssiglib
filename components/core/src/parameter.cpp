@@ -119,6 +119,8 @@ namespace ssf{
 		case ParamType::DOUBLE:
 			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<double>::max()) ? std::numeric_limits<double>::max() : maxValue);
 			break;
+		default:
+			break;
 		}
 	}
 
@@ -139,6 +141,8 @@ namespace ssf{
 			break;
 		case ParamType::DOUBLE:
 			this->minValue = static_cast<long>((minValue < std::numeric_limits<double>::min()) ? std::numeric_limits<double>::min() : minValue);
+			break;
+		default:
 			break;
 		}
 	}
