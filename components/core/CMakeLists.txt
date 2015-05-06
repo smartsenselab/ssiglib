@@ -42,7 +42,10 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									)
 
 file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
-									"${CORE_PATH}/src/matrix.cpp"									
+									"${CORE_PATH}/src/matrix.cpp"
+									"${CORE_PATH}/include/core/cube.hpp"
+									"${CORE_PATH}/include/core/point2d.hpp"
+									"${CORE_PATH}/include/core/point3d.hpp"
 									)
 
 file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"

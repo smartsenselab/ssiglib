@@ -7,12 +7,11 @@
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
-option(
+set(
   gtest_force_shared_crt
-  "Use shared (DLL) run-time lib even when Google Test is built as static lib."
-  ON)
+  OFF)
 
-option(gtest_disable_pthreads "Disable uses of pthreads in gtest." ON)
+set(gtest_disable_pthreads ON)
 
 # Defines pre_project_set_up_hermetic_build() and set_up_hermetic_build().
 include(cmake/hermetic_build.cmake OPTIONAL)
