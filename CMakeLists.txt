@@ -24,7 +24,7 @@ option(BUILD_TESTS "Build tests" ON)
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
-option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
 
 #Option to check if 'docs' will be build
 option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
@@ -99,6 +99,7 @@ endif()
 # CMake Auxiliary Files
 ###############################################################################
 include(cmake/SSFBoostUtil.cmake)
+include(cmake/SSFOpenCVUtil.cmake)
 include(cmake/SSFUtil.cmake)
 
 ###############################################################################

@@ -41,6 +41,10 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									"${CORE_PATH}/src/resource_setup.cpp"
 									)
 
+file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
+									"${CORE_PATH}/src/matrix.cpp"									
+									)
+
 file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
 									)
 
@@ -55,6 +59,7 @@ source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
 source_group("Util"			FILES ${CORE_UTIL_FILES})
+source_group("Structures"	FILES ${CORE_STRUCTURES_FILES})
 
 
 ###############################################################################
@@ -68,6 +73,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
 						${CORE_UTIL_FILES}
+						${CORE_STRUCTURES_FILES}
 			)
 target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 						
@@ -80,7 +86,9 @@ target_compile_definitions(ssf_core PUBLIC SSFAPI_EXPORTS)
 install (TARGETS ssf_core DESTINATION bin)
 install (FILES ${CORE_INCLUDES} DESTINATION include)
 
+#Link External Libraries
 ssf_link_boost(ssf_core system filesystem)
+ssf_link_opencv(ssf_core opencv_core opencv_imgproc opencv_highgui)
 
 
 ###############################################################################

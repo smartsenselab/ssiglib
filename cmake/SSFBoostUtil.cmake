@@ -8,9 +8,10 @@ macro(ssf_find_boost)
 	cmake_parse_arguments(SSF_FIND_BOOST "${ssf_options}" "${ssf_oneValueArgs}" "${ssf_multiValueArgs}" ${ARGN} )	
 	
 	set(ssf_options "")
-	if(REQUIRED)
-		set(ssf_options "${ssf_options} REQUIRED")
-	endif()
+	if(${SSF_FIND_BOOST_REQUIRED})
+		set(ssf_options "REQUIRED")
+	endif()	
+		
 	
 	find_package(Boost ${ssf_boost_minimal_version} COMPONENTS ${SSF_FIND_BOOST_COMPONENTS} ${ssf_options})
 	set(Boost_USE_STATIC_LIBS OFF)
