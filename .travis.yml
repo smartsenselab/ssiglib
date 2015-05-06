@@ -13,6 +13,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
   - sudo add-apt-repository --yes ppa:boost-latest/ppa
   - sudo add-apt-repository --yes ppa:kalakris/cmake
+  - sudo add-apt-repository --yes ppa:kubuntu-ppa/backports 
   - sudo apt-get update -qq
 
 install:
