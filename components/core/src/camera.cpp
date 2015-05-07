@@ -1,9 +1,11 @@
 #include "core/camera.hpp"
+#include <iostream>
 
 namespace ssf{
 
-	Camera::Camera(){
-		//Constructor
+	//Constructor
+	Camera::Camera(void){
+
 	}
 
 	Camera::~Camera(){

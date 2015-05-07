@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# python script -c core -n nameClass -f nameFile
+
 import sys, getopt
 
 
