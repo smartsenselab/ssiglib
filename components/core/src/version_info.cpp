@@ -71,7 +71,7 @@ namespace ssf{
 		if (tokens.size() == 0 || tokens.size() > 3)
 			throw Exception("Invalid Version Format");
 
-		int major, minor, patch = 0;
+		int major = 0, minor = 0, patch = 0;
 
 		try{
 			if (tokens.size() >= 3){
