@@ -1,6 +1,6 @@
 #include "core/point3d.hpp"
 
-#include <opencv2/core/types.hpp>
+#include <opencv/cv.h>
 
 namespace ssf{
 
