@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 
 namespace boost{
 	namespace filesystem{

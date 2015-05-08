@@ -81,6 +81,10 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 endif()
 
+#Disable C4996
+if(MSVC)
+	add_definitions(/D_SCL_SECURE_NO_WARNINGS=1)
+endif()
 
 #Allows the solution folder utilization (for MSVC)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

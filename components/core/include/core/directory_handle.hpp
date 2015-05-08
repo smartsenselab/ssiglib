@@ -5,7 +5,7 @@
 #include <set>
 #include <memory>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/file_handle.hpp"
 
 namespace boost{

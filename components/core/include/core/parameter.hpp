@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/file_handle.hpp"
 #include "core/directory_handle.hpp"
 #include "core/param_exception.hpp"

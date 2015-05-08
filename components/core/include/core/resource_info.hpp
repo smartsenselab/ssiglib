@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/parameters.hpp"
 
 namespace ssf{

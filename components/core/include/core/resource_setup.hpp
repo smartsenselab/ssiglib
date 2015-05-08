@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/parameter.hpp"
 
 namespace ssf{

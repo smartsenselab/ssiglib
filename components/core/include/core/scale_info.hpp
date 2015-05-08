@@ -1,7 +1,7 @@
 #ifndef _SSF_CORE_SCALE_INFO_HPP_
 #define _SSF_CORE_SCALE_INFO_HPP_
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/rect.hpp"
 
 namespace ssf{

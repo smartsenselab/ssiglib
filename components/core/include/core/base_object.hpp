@@ -1,7 +1,7 @@
 #ifndef _SSF_CORE_BASE_OBJECT_HPP_
 #define _SSF_CORE_BASE_OBJECT_HPP_
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 
 namespace ssf{
 

@@ -6,6 +6,9 @@
 #include <iterator>
 #include <vector>
 
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
+
 #include "core/util.hpp"
 #include "core/exception.hpp"
 
@@ -62,32 +65,48 @@ namespace ssf{
 	}
 
 	void VersionInfo::set(const std::string& version){
-		std::istringstream iss(version);
-		std::istringstream key(".");
-		std::vector<std::string> tokens{ std::istream_iterator < std::string > {iss}, std::istream_iterator < std::string > {key} };
+		std::vector<std::string> tokens;
+		boost::algorithm::split(tokens, version, boost::algorithm::is_any_of(".,"));
 
 		if (tokens.size() == 0 || tokens.size() > 3)
 			throw Exception("Invalid Version Format");
 
-		this->mMajor = 0;
-		this->mMinor = 0;
-		this->mPatch = 0;
+		int major, minor, patch = 0;
 
-		if (tokens.size() >= 3){
-			tokens[2] = Util::trim(tokens[2]);
-			this->mPatch = std::stoi(tokens[2]);
+		try{
+			if (tokens.size() >= 3){
+				tokens[2] = Util::trim(tokens[2]);
+				patch = std::stoi(tokens[2]);
+			}
+
+			if (tokens.size() >= 2){
+				tokens[1] = Util::trim(tokens[1]);
+				minor = std::stoi(tokens[1]);
+			}
+
+			if (tokens.size() >= 1){
+				tokens[0] = Util::trim(tokens[0]);
+				major = std::stoi(tokens[0]);
+			}
+		}
+		catch (const boost::exception& /*e*/){
+			throw Exception("Invalid Version Format");
+		}
+		catch (const std::exception& /*e*/){
+			throw Exception("Invalid Version Format");
 		}
 
-		if (tokens.size() >= 2){
-			tokens[1] = Util::trim(tokens[1]);
-			this->mMinor = std::stoi(tokens[1]);
-		}
 
-		if (tokens.size() >= 1){
-			tokens[0] = Util::trim(tokens[0]);
-			this->mMajor = std::stoi(tokens[0]);
-		}
+		this->mMajor = major;
+		this->mMinor = minor;
+		this->mPatch = patch;
 
+	}
+
+	void VersionInfo::set(const unsigned short& major /*= 0*/, const unsigned short& minor /*= 0*/, const unsigned short& patch /*= 0*/){
+		this->mMajor = major;
+		this->mMinor = minor;
+		this->mPatch = patch;
 	}
 
 	bool VersionInfo::operator==(const VersionInfo& rhs){

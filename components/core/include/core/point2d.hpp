@@ -2,7 +2,7 @@
 #define _SSF_CORE_POINT2D_HPP_
 
 #include <type_traits>
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 
 namespace cv{
 	template<typename _Tp> class Point_;

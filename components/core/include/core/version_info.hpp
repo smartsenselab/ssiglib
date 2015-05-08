@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 
 namespace ssf{
 
@@ -23,6 +23,7 @@ namespace ssf{
 		unsigned short getPatch() const;
 		void setPatch(const unsigned short& patch);
 
+		void set(const unsigned short& major = 0, const unsigned short& minor = 0, const unsigned short& patch = 0);
 		void set(const std::string& version);
 		std::string toString() const;
 

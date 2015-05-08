@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/exception.hpp"
 #include "core/point2d.hpp"
 

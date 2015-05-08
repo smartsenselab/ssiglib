@@ -1,7 +1,7 @@
 #ifndef _SSF_CORE_RESOURCE_HPP_
 #define _SSF_CORE_RESOURCE_HPP_
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/base_object.hpp"
 #include "core/parameters.hpp"
 #include "core/resource_info.hpp"

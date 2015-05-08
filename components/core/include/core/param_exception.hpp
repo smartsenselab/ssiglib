@@ -1,7 +1,7 @@
 #ifndef _SSF_CORE_PARAMETER_EXCEPTION_HPP_
 #define _SSF_CORE_PARAMETER_EXCEPTION_HPP_
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/exception.hpp"
 
 namespace ssf{

@@ -3,8 +3,13 @@
 
 namespace ssf{
 
-#if !defined _CRT_SECURE_NO_DEPRECATE && defined _MSC_VER && _MSC_VER > 1300
-#  define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio warnings */
+//#if !defined _CRT_SECURE_NO_DEPRECATE && defined _MSC_VER && _MSC_VER > 1300
+//#  define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio warnings */
+//# define _SCL_SECURE_NO_WARNINGS
+//#endif
+
+#if (defined _MSC_VER)
+	#pragma warning(disable:4996) // disable deprecated warning 
 #endif
 
 

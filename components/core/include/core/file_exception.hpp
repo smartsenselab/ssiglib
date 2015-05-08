@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "core/ssfdef.hpp"
+#include "core/base.hpp"
 #include "core/exception.hpp"
 
 namespace ssf{
