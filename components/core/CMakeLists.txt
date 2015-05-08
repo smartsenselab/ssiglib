@@ -42,7 +42,15 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									)
 
 file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
-									"${CORE_PATH}/src/matrix.cpp"									
+									"${CORE_PATH}/src/matrix.cpp"
+									"${CORE_PATH}/include/core/cube.hpp"
+									"${CORE_PATH}/include/core/point2d.hpp"
+									"${CORE_PATH}/src/point2d.cpp"
+									"${CORE_PATH}/include/core/point3d.hpp"
+									"${CORE_PATH}/src/point3d.cpp"
+									"${CORE_PATH}/include/core/rect.hpp"
+									"${CORE_PATH}/src/scale_info.cpp"
+									"${CORE_PATH}/include/core/scale_info.hpp"
 									)
 
 file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
@@ -113,6 +121,7 @@ if(BUILD_TESTS)
 
 	# Extra linking for the project.
 	target_link_libraries(test_core ssf_core)
+	ssf_link_opencv(test_core opencv_core opencv_imgproc opencv_highgui)
 
 	# This is so you can do 'make test' to see all your tests run, instead of
 	# manually running the executable ssf_test_core to see those specific tests.
