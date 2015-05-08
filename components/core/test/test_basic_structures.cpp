@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <fstream>
 
-#include <opencv2/core/types.hpp>
+#include <opencv/cv.h>
 
 #include <core/point2d.hpp>
 #include <core/point3d.hpp>

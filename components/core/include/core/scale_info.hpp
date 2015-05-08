@@ -23,6 +23,9 @@ namespace ssf{
 		int getInterpolationMethod() const;
 		void setInterpolationMethod(const int& interpolationMethod);
 
+		float getScale() const;
+		void setScale(const float& scale);
+
 		Rect<int> getObjectSize() const;
 		void setObjectSize(const Rect<int>& objectSize);
 

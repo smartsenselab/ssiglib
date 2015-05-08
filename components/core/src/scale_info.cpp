@@ -45,6 +45,14 @@ namespace ssf{
 		this->interpolationMethod = interpolationMethod;
 	}
 
+	float ScaleInfo::getScale() const{
+		return this->scale;
+	}
+
+	void ScaleInfo::setScale(const float& scale){
+		this->scale = scale;
+	}
+
 	Rect<int> ScaleInfo::getObjectSize() const{
 		return this->objectSize;
 	}
@@ -60,6 +68,7 @@ namespace ssf{
 	void ScaleInfo::setDetWindowSize(const Rect<int>& detWindowSize){
 		this->detWindowSize = detWindowSize;
 	}
+
 
 }
 
