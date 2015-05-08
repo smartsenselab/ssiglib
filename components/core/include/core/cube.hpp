@@ -15,7 +15,7 @@ namespace ssf{
 	public:
 		Cube(T x = 0, T y = 0, T z = 0, T width = 0, T height = 0, T length = 0)
 			: mPosition(Point3D<T>(x, y, z)),
-			mWidht(width), mHeight(height), mLength(length){
+			mWidth(width), mHeight(height), mLength(length){
 		}
 
 		virtual ~Cube(void){
@@ -23,7 +23,7 @@ namespace ssf{
 
 		Cube(const Cube& rhs){
 			this->mPosition = rhs.mPosition;
-			this->mWidht = rhs.mWidht;
+			this->mWidth = rhs.mWidth;
 			this->mHeight = rhs.mHeight;
 			this->mLength = rhs.mLength;
 		}
@@ -31,7 +31,7 @@ namespace ssf{
 		Cube& operator=(const Cube& rhs){
 			if (this != &rhs){
 				this->mPosition = rhs.mPosition;
-				this->mWidht = rhs.mWidht;
+				this->mWidth = rhs.mWidth;
 				this->mHeight = rhs.mHeight;
 				this->mLength = rhs.mLength;
 			}
@@ -62,11 +62,11 @@ namespace ssf{
 			this->mHeight = height;
 		}
 
-		T getWidht() const { return this->mWidht; }
+		T getWidth() const { return this->mWidth; }
 		void setWidth(const T& width) {
 			if (width < 0)
 				throw Exception("The width value must be positive.");
-			this->mWidth = widht;
+			this->mWidth = width;
 		}
 
 		bool isValid() const { return (this->mHeight != 0 && this->mWidth != 0 && this->mLength != 0); }
@@ -74,7 +74,7 @@ namespace ssf{
 
 	private:
 		Point3D<T> mPosition;
-		T mWidht, mHeight, mLength;
+		T mWidth, mHeight, mLength;
 
 	};
 

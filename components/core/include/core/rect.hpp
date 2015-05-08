@@ -56,7 +56,7 @@ namespace ssf{
 		void setWidth(const T& width) {
 			if (width < 0)
 				throw Exception("The width value must be positive.");
-			this->mWidth = widht;
+			this->mWidth = width;
 		}
 
 		bool isValid() const { return (this->mHeight != 0 && this->mWidth != 0); }
