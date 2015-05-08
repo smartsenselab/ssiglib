@@ -46,6 +46,10 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
 									)
 
 file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
+									"${CORE_PATH}/include/core/version_info.hpp"
+									"${CORE_PATH}/src/version_info.cpp"	
+									"${CORE_PATH}/include/core/util.hpp"
+									"${CORE_PATH}/src/util.cpp"
 									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")

@@ -1,5 +1,5 @@
-#ifndef _SSF_CORE_UTIL_HPP_
-#define _SSF_CORE_UTIL_HPP_
+#ifndef _SSF_CORE_SSFDEF_HPP_
+#define _SSF_CORE_SSFDEF_HPP_
 
 namespace ssf{
 
@@ -20,4 +20,4 @@ namespace ssf{
 
 }
 
-#endif // !_SSF_CORE_UTIL_HPP_
+#endif // !_SSF_CORE_SSFDEF_HPP_
