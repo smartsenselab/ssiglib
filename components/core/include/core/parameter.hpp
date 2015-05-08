@@ -3,13 +3,14 @@
 
 #include <string>
 
+#include "core/ssfdef.hpp"
 #include "core/file_handle.hpp"
 #include "core/directory_handle.hpp"
 #include "core/param_exception.hpp"
 
 namespace ssf{
 
-	enum class ParamType{
+	enum class SSF_EXPORT ParamType{
 		INT, LONG, FLOAT, DOUBLE, BOOL, STRING, FILE_HANDLE, DIRECTORY_HANDLE
 	};
 
@@ -17,22 +18,22 @@ namespace ssf{
 		friend class Parameters;
 
 	public:
-		Parameter(void);
-		Parameter(const ParamType& parameterType, const std::string& name, const std::string& description);
-		virtual ~Parameter(void);
-		Parameter(const Parameter& rhs);
-		Parameter& operator=(const Parameter& rhs);
+		SSF_EXPORT Parameter(void);
+		SSF_EXPORT Parameter(const ParamType& parameterType, const std::string& name, const std::string& description);
+		SSF_EXPORT virtual ~Parameter(void);
+		SSF_EXPORT Parameter(const Parameter& rhs);
+		SSF_EXPORT Parameter& operator=(const Parameter& rhs);
 
-		ParamType getType() const;
-		std::string getName() const;
-		std::string getDescription() const;
-		bool isRequired() const;
-		long getMaxValue() const;
-		long getMinValue() const;
+		SSF_EXPORT ParamType getType() const;
+		SSF_EXPORT std::string getName() const;
+		SSF_EXPORT std::string getDescription() const;
+		SSF_EXPORT bool isRequired() const;
+		SSF_EXPORT long getMaxValue() const;
+		SSF_EXPORT long getMinValue() const;
 
 
 		template < class T>
-		typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getValue(){
+		SSF_EXPORT typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getValue(){
 			T returnValue;
 			try{
 				switch (this->mType){
@@ -51,7 +52,7 @@ namespace ssf{
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, bool>::value, T>::type getValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, bool>::value, T>::type getValue(){
 			T returnValue;
 			try{
 				switch (this->mType){
@@ -70,28 +71,28 @@ namespace ssf{
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_convertible<T, std::string>::value, T>::type getValue(){
+		SSF_EXPORT typename std::enable_if<std::is_convertible<T, std::string>::value, T>::type getValue(){
 			if (this->mType != ParamType::STRING)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((std::string*)this->mValue);
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, FileHandle>::value, T>::type getValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, FileHandle>::value, T>::type getValue(){
 			if (this->mType != ParamType::FILE_HANDLE)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((FileHandle*)this->mValue);
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, DirectoryHandle>::value, T>::type getValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, DirectoryHandle>::value, T>::type getValue(){
 			if (this->mType != ParamType::DIRECTORY_HANDLE)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((DirectoryHandle*)this->mValue);
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getDefaultValue(){
+		SSF_EXPORT typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>::type getDefaultValue(){
 			T returnValue;
 			try{
 				switch (this->mType){
@@ -110,7 +111,7 @@ namespace ssf{
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, bool>::value, T>::type getDefaultValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, bool>::value, T>::type getDefaultValue(){
 			T returnValue;
 			try{
 				switch (this->mType){
@@ -129,21 +130,21 @@ namespace ssf{
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_convertible<T, std::string>::value, T>::type getDefaultValue(){
+		SSF_EXPORT typename std::enable_if<std::is_convertible<T, std::string>::value, T>::type getDefaultValue(){
 			if (this->mType != ParamType::STRING)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((std::string*)this->mDefaultValue);
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, FileHandle>::value, T>::type getDefaultValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, FileHandle>::value, T>::type getDefaultValue(){
 			if (this->mType != ParamType::FILE_HANDLE)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((FileHandle*)this->mDefaultValue);
 		}
 
 		template < class T>
-		typename std::enable_if<std::is_same<T, DirectoryHandle>::value, T>::type getDefaultValue(){
+		SSF_EXPORT typename std::enable_if<std::is_same<T, DirectoryHandle>::value, T>::type getDefaultValue(){
 			if (this->mType != ParamType::DIRECTORY_HANDLE)
 				throw ParamException(this->mName, this->incompatibleResultMessage<T>());
 			return *((DirectoryHandle*)this->mDefaultValue);
@@ -151,7 +152,7 @@ namespace ssf{
 
 	private:
 
-		std::string getTypeStr() const;
+		SSF_EXPORT std::string getTypeStr() const;
 		void copy(const Parameter& rhs);
 		void eraseValues();
 

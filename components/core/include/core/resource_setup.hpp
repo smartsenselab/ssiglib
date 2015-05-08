@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "core/ssfdef.hpp"
 #include "core/parameter.hpp"
 
 namespace ssf{
@@ -10,19 +11,19 @@ namespace ssf{
 	class ResourceSetup{
 	
 	public:
-		ResourceSetup(const std::string& resourceName = "");
-		virtual ~ResourceSetup(void);
-		ResourceSetup(const ResourceSetup& rhs);
-		ResourceSetup& operator=(const ResourceSetup& rhs);
+		SSF_EXPORT ResourceSetup(const std::string& resourceName = "");
+		SSF_EXPORT virtual ~ResourceSetup(void);
+		SSF_EXPORT ResourceSetup(const ResourceSetup& rhs);
+		SSF_EXPORT ResourceSetup& operator=(const ResourceSetup& rhs);
 		
 		template < class T>
-		void setParam(const std::string& paramName, const ParamType& paramType, const T& value){
+		SSF_EXPORT void setParam(const std::string& paramName, const ParamType& paramType, const T& value){
 			if (this->mParams.find(paramName) == this->mParams.end())
 				this->mParams[paramName] = Parameter(paramType, paramName, "");
 			this->mParams[paramName].setValue<T>(value);
 		}
 
-		const std::map<std::string, Parameter>& getParams() const;
+		SSF_EXPORT const std::map<std::string, Parameter>& getParams() const;
 
 	private:
 		std::string mResourceName;
