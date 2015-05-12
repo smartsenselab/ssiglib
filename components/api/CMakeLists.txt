@@ -11,6 +11,7 @@ file(GLOB API_API_FILES		"${API_PATH}/include/api/ssf_configuration.hpp"
                             "${API_PATH}/src/module.cpp"
                             "${API_PATH}/include/api/module.hpp"
                             "${API_PATH}/include/api/api_exception.hpp"
+                            "${API_PATH}/src/api_exception.cpp"
 
 							)
 

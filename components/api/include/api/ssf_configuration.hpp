@@ -23,6 +23,9 @@ namespace ssf{
         
         template<class T>
         void setParameter(const std::string& moduleType, const std::string& moduleName, const std::string& paramName, ParamType type, T value){
+            if(modules.find(moduleName) == modules.end()){
+                APIException(moduleName, "Module does not exist, create it first before adding parameters to it.");
+            }
             modules[moduleName].addParameter(type, paramName, "");
             modules[moduleName].setValue(paramName, value);
         };
@@ -32,9 +35,9 @@ namespace ssf{
 
 	private:
         
-        std::map< std::string, Module> modules;
+        std::map<std::string, Module> modules;
         
-        std::vector< Stream >  streams;
+        std::vector<Stream>  streams;
         
 	};
 }
