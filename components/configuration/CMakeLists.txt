@@ -1,4 +1,4 @@
-#root/components/api/CMakeLists.txt
+#root/components/configuration/CMakeLists.txt
 
 ###############################################################################
 # CONFIGURE CORE PATH
@@ -40,10 +40,10 @@ source_group("Exceptions"		FILES ${CONFIGURATION_EXCEPTIONS_FILES})
 source_group("Util"				FILES ${CONFIGURATION_UTIL_FILES})
 
 ###############################################################################
-# ADD LIBRARY API
+# ADD LIBRARY CONFIGURATION
 ###############################################################################
 
-#Add library api into SSF project with its project
+#Add library configuration into SSF project with its project
 add_library(ssf_configuration 	${CONFIGURATION_MAIN_FILES}
 								${CONFIGURATION_STREAM_FILES}
 								${CONFIGURATION_MODULE_FILES}
@@ -53,11 +53,11 @@ add_library(ssf_configuration 	${CONFIGURATION_MAIN_FILES}
 								
 target_include_directories (ssf_configuration PUBLIC ${CONFIGURATION_PATH}/include/)
 
-#Link core to api
+#Link core to configuration
 #target_include_directories(ssf_configuration PUBLIC ${CORE_PATH}/include/)
 target_link_libraries(ssf_configuration ssf_core)
 						
-#Configure folder to api library
+#Configure folder to configuration library
 set_target_properties(ssf_configuration PROPERTIES FOLDER COMPONENTS)
 
 target_compile_definitions(ssf_core PUBLIC CONFIG_API_EXPORTS)
@@ -67,12 +67,12 @@ install (TARGETS ssf_configuration DESTINATION bin)
 install (FILES ${CONFIGURATION_INCLUDES} DESTINATION include)
 
 ###############################################################################
-# SET TESTS FOR LIBRARY API
+# SET TESTS FOR LIBRARY CONFIGURATIOS
 ###############################################################################
 
-#if(BUILD_TESTS)
+if(BUILD_TESTS)
 
-	#Create set of api tests files
+	#Create set of configuration tests files
     file(GLOB CONFIGURATION_TEST_FILES "${CONFIGURATION_PATH}/test/*.cpp")
 	
     add_executable(test_configuration ${CONFIGURATION_TEST_FILES})
@@ -86,10 +86,10 @@ install (FILES ${CONFIGURATION_INCLUDES} DESTINATION include)
     target_link_libraries(test_configuration ssf_configuration)
 
 	# This is so you can do 'make test' to see all your tests run, instead of
-	# manually running the executable ssf_test_api to see those specific tests.
+	# manually running the executable ssf_test_configuration to see those specific tests.
     add_test(NAME test_configuration COMMAND test_configuration WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/configuration")
 	
-	#Configure folder to api library
+	#Configure folder to configuration library
     set_target_properties(test_configuration PROPERTIES FOLDER TESTS)
 
-#endif()
+endif()
