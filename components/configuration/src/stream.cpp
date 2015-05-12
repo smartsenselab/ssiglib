@@ -1,4 +1,4 @@
-#include "api/stream.hpp"
+#include "configuration/stream.hpp"
 #include <string>
 
 namespace ssf{
