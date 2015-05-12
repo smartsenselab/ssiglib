@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 
 namespace ssf{
 
-	enum class SSF_EXPORT LogFilter{
+	enum class CORE_EXPORT LogFilter{
 		DEBUG, INFO, WARNING, ERROR
 	};
 
@@ -15,16 +15,16 @@ namespace ssf{
 	public:
 
 		//Log::setFilter(LogFilter::INFO)
-		SSF_EXPORT static void outputConsole(const bool& option);
+		CORE_EXPORT static void outputConsole(const bool& option);
 		
-		SSF_EXPORT static void outputFile(const bool& option, const std::string& fileName = "output.log");
+		CORE_EXPORT static void outputFile(const bool& option, const std::string& fileName = "output.log");
 
 		//static void init();
-		SSF_EXPORT static void setFilter(const LogFilter& filter);
-		SSF_EXPORT static void INFO(const std::string& message);
-		SSF_EXPORT static void ERROR(const std::string& message);
-		SSF_EXPORT static void DEBUG(const std::string& message);
-		SSF_EXPORT static void WARNING(const std::string& message);
+		CORE_EXPORT static void setFilter(const LogFilter& filter);
+		CORE_EXPORT static void INFO(const std::string& message);
+		CORE_EXPORT static void ERROR(const std::string& message);
+		CORE_EXPORT static void DEBUG(const std::string& message);
+		CORE_EXPORT static void WARNING(const std::string& message);
 
 
 	};

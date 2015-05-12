@@ -1,5 +1,5 @@
-#ifndef _SSF_CORE_SSFDEF_HPP_
-#define _SSF_CORE_SSFDEF_HPP_
+#ifndef _SSF_CORE_DEFS_HPP_
+#define _SSF_CORE_DEFS_HPP_
 
 namespace ssf{
 
@@ -14,15 +14,15 @@ namespace ssf{
 
 
 #if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-	#if defined SSFAPI_EXPORTS
-		#define  SSF_EXPORT __declspec(dllexport)
+	#if defined  CORE_API_EXPORTS
+		#define  CORE_EXPORT __declspec(dllexport)
 	#else
-		#define  SSF_EXPORT __declspec(dllimport)
+		#define  CORE_EXPORT __declspec(dllimport)
 	#endif
 #else
-	#define SSF_EXPORT
+	#define CORE_EXPORT
 #endif
 
 }
 
-#endif // !_SSF_CORE_SSFDEF_HPP_
+#endif // !_SSF_CORE_DEFS_HPP_

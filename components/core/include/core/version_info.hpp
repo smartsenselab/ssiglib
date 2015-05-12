@@ -3,11 +3,11 @@
 
 #include <string>
 
-#include "core/base.hpp"
+#include "core/core_defs.hpp"
 
 namespace ssf{
 
-	class SSF_EXPORT VersionInfo{
+	class CORE_EXPORT VersionInfo{
 
 	public:
 		VersionInfo(const unsigned short& major = 0, const unsigned short& minor = 0, const unsigned short& patch = 0);

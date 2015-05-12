@@ -53,7 +53,7 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
 									"${CORE_PATH}/include/core/scale_info.hpp"
 									)
 
-file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/base.hpp"
+file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/core_defs.hpp"
 									"${CORE_PATH}/include/core/version_info.hpp"
 									"${CORE_PATH}/src/version_info.cpp"	
 									"${CORE_PATH}/include/core/util.hpp"
@@ -102,7 +102,7 @@ target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 
-target_compile_definitions(ssf_core PUBLIC SSFAPI_EXPORTS)
+target_compile_definitions(ssf_core PUBLIC CORE_API_EXPORTS)
 
 #Install configuration
 install (TARGETS ssf_core DESTINATION bin)
