@@ -40,6 +40,10 @@ if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 OLD)
 endif()
 
+if(POLICY CMP0042)
+	cmake_policy(SET CMP0042 OLD)
+endif()
+
 #Check compilers version
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE TEMP_COMPILER_VERSION)
