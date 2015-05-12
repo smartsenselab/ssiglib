@@ -131,11 +131,11 @@ function(cxx_library_with_type name type cxx_flags)
   set_target_properties(${name}
     PROPERTIES
     COMPILE_FLAGS "${cxx_flags}")
-  if (BUILD_SHARED_LIBS OR type STREQUAL "SHARED")
-    set_target_properties(${name}
-      PROPERTIES
-      COMPILE_DEFINITIONS "GTEST_CREATE_SHARED_LIBRARY=1")
-  endif()
+  #if (BUILD_SHARED_LIBS OR type STREQUAL "SHARED")
+  #  set_target_properties(${name}
+  #    PROPERTIES
+  #    COMPILE_DEFINITIONS "GTEST_CREATE_SHARED_LIBRARY=1")
+  #endif()
   if (CMAKE_USE_PTHREADS_INIT)
     target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
   endif()
@@ -150,7 +150,7 @@ function(cxx_shared_library name cxx_flags)
 endfunction()
 
 function(cxx_library name cxx_flags)
-  cxx_library_with_type(${name} "" "${cxx_flags}" ${ARGN})
+  cxx_library_with_type(${name} STATIC "${cxx_flags}" ${ARGN})
 endfunction()
 
 # cxx_executable_with_flags(name cxx_flags libs srcs...)

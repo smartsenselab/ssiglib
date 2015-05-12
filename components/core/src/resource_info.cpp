@@ -17,6 +17,7 @@ namespace ssf{
 		this->mAuthorEmail = rhs.mAuthorEmail;
 		this->mMajorRequiredVersion = rhs.mMajorRequiredVersion;
 		this->mMinorRequiredVersion = rhs.mMinorRequiredVersion;
+		this->mParams = rhs.mParams;
 	}
 
 	ResourceInfo& ResourceInfo::operator=(const ResourceInfo& rhs){
@@ -27,6 +28,7 @@ namespace ssf{
 			this->mAuthorEmail = rhs.mAuthorEmail;
 			this->mMajorRequiredVersion = rhs.mMajorRequiredVersion;
 			this->mMinorRequiredVersion = rhs.mMinorRequiredVersion;
+			this->mParams = rhs.mParams;
 		}
 		return *this;
 	}	
@@ -56,7 +58,11 @@ namespace ssf{
 	}
 
 	int ResourceInfo::getMinorRequiredVersion() const{
-		return this->mMajorRequiredVersion;
+		return this->mMinorRequiredVersion;
+	}
+
+	const std::map<std::string, Parameter>& ResourceInfo::getParams() const{
+		return this->mParams.getParameters();
 	}
 
 }

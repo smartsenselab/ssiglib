@@ -1,7 +1,7 @@
 #root/CMakeLists.txt
 
 #CMake Version Minimum Required
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 2.8.11)
 
 ###############################################################################
 # DEFINITION
@@ -9,31 +9,31 @@ cmake_minimum_required (VERSION 2.8)
 
 set(PROJECT_ACRONYM_STR "SSF")
 set(PROJECT_NAME_STR "Smart Surveillance Framework")
-
-set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
-set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
-
 project(${PROJECT_ACRONYM_STR} CXX)
 
 ###############################################################################
 # USER OPTIONS
 ###############################################################################
 
+set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
+set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
+
 #Option to check if 'test' will be available
 option(BUILD_TESTS "Build tests" ON)
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
-option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
 
 #Option to check if 'docs' will be build
 option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
+mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+
 ###############################################################################
 # CMake OPTIONS
 ###############################################################################
-
 
 #Remove Warning CMP0054 from gtest cmake build
 if(POLICY CMP0054)
@@ -96,14 +96,11 @@ if(BUILD_TESTS)
 endif()
 
 ###############################################################################
-# EXTERNAL LIBRARIES
+# CMake Auxiliary Files
 ###############################################################################
-find_package(Boost 1.47 COMPONENTS log log_setup thread date_time filesystem system REQUIRED)
-
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_STATIC OFF)
-set(Boost_USE_MULTITHREAD ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_ALL_DYN_LINK -DBOOST_ALL_NO_LIB")
+include(cmake/SSFBoostUtil.cmake)
+include(cmake/SSFOpenCVUtil.cmake)
+include(cmake/SSFUtil.cmake)
 
 ###############################################################################
 # SUBDIRECTORIES
@@ -117,3 +114,4 @@ add_subdirectory(components)
 
 #Add documentation
 add_subdirectory(doc)
+

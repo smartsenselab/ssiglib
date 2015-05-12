@@ -7,12 +7,11 @@
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
-option(
+set(
   gtest_force_shared_crt
-  "Use shared (DLL) run-time lib even when Google Test is built as static lib."
-  ON)
+  OFF)
 
-option(gtest_disable_pthreads "Disable uses of pthreads in gtest." ON)
+set(gtest_disable_pthreads ON)
 
 # Defines pre_project_set_up_hermetic_build() and set_up_hermetic_build().
 include(cmake/hermetic_build.cmake OPTIONAL)
@@ -45,13 +44,10 @@ include(cmake/internal_utils.cmake)
 
 config_compiler_and_linker()  # Defined in internal_utils.cmake.
 
-# Where Google Test's .h files can be found.
-include_directories(
-  ${gtest_SOURCE_DIR}/include
-  ${gtest_SOURCE_DIR})
+
 
 # Where Google Test's libraries can be found.
-link_directories(${gtest_BINARY_DIR}/src)
+#link_directories(${gtest_BINARY_DIR}/src)
 
 ########################################################################
 #
@@ -63,4 +59,16 @@ link_directories(${gtest_BINARY_DIR}/src)
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
+# Where Google Test's .h files can be found.
+target_include_directories(gtest PUBLIC
+  ${gtest_SOURCE_DIR}/include
+  ${gtest_SOURCE_DIR})
+
+target_include_directories(gtest_main PUBLIC
+  ${gtest_SOURCE_DIR}/include
+  ${gtest_SOURCE_DIR})
+
 target_link_libraries(gtest_main gtest)
+
+set_target_properties(gtest PROPERTIES FOLDER 3RDPARTY)
+set_target_properties(gtest_main PROPERTIES FOLDER 3RDPARTY)
