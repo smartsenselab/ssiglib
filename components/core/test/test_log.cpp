@@ -4,7 +4,9 @@
 #include <core/log.hpp>
 
 TEST(Log, messages) {
-	ssf::Log::init();
+	//ssf::Log::init();// if 1, you add your log to a file, if not, a log in the console appears.
+	ssf::Log::OutputConsole(true);
+	ssf::Log::OutputFile(true);
 	ssf::Log::INFO("message info");
 	ssf::Log::ERROR("message error");
 	ssf::Log::DEBUG("message debug");

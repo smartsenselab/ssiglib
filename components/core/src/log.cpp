@@ -7,17 +7,40 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/utility/setup/console.hpp>
+#include <stdbool.h>
 
 namespace ssf{
 
 
-	void Log::init()
-	{
-		boost::log::add_file_log("test.log");
-		boost::log::add_common_attributes();
+	//void Log::init()
+	//{
+		
+		//boost::log::add_file_log("test.log");
+
+		//boost::log::add_common_attributes();	
+	//}
+
+	 void Log::OutputConsole(bool option){
+
+		if (option == true)
+
+			boost::log::add_console_log(std::cout);
+
+			boost::log::add_common_attributes();
+	}
+	void Log::OutputFile(bool option){
+
+		if (option == true){
+
+			boost::log::add_file_log("test.log");
+
+			boost::log::add_common_attributes();
+		}
+
 	}
 
-	void setFilter(LogFilter filter){
+	void Log::setFilter(LogFilter filter){
 
 		int filter_level;
 

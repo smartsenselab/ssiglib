@@ -13,8 +13,11 @@ namespace ssf{
 	public:
 
 		//Log::setFilter(LogFilter::INFO)
+		static void OutputConsole(bool option);
+		
+		static void OutputFile(bool option);
 
-		static void init();
+		//static void init();
 		static void setFilter(LogFilter filter);
 		static void INFO(std::string message);
 		static void ERROR(std::string message);
