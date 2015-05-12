@@ -1,6 +1,11 @@
 #root/components/api/CMakeLists.txt
 
 ###############################################################################
+# CONFIGURE CORE PATH
+###############################################################################
+set (API_PATH ${PROJECT_SOURCE_DIR}/components/api)
+
+###############################################################################
 # CREATE FILES SET
 ###############################################################################
 
@@ -29,6 +34,7 @@ source_group("API"	FILES ${API_API_FILES})
 
 #Add library api into SSF project with its project
 add_library(ssf_api 	${API_API_FILES})
+target_include_directories (ssf_api PUBLIC ${API_PATH}/include/)
 
 #Link core to api
 include_directories (${CORE_PATH}/include/)
