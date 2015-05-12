@@ -79,6 +79,8 @@ install (FILES ${CONFIGURATION_INCLUDES} DESTINATION include)
 
 	# Standard linking to gtest stuff.
     target_link_libraries(test_configuration gtest gtest_main)
+	target_include_directories(test_configuration PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+	target_include_directories(test_configuration PUBLIC ${CORE_PATH}/include/)
 
 	# Extra linking for the project.
     target_link_libraries(test_configuration ssf_configuration)
