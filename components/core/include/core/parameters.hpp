@@ -55,8 +55,12 @@ namespace ssf{
 			return this->getParamByName(paramName).getValue<T>();
 		}
 
+
+
+
 		SSF_EXPORT const std::map<std::string, Parameter>& getParameters() const;
 		SSF_EXPORT void setup(std::map<std::string, Parameter>& paramsSetup);
+
 
 	private:
 		SSF_EXPORT Parameter& getParamByName(const std::string& paramName);

@@ -16,6 +16,8 @@ function test()
   cmake -DBUILD_TESTS=ON $SSF_DIR
   make ssf_core -j3
   make test_core
+  make ssf_configuration -j3
+  make test_configuration
   make test -j3
 }
 
