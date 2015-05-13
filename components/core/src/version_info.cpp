@@ -109,6 +109,10 @@ namespace ssf{
 		this->mPatch = patch;
 	}
 
+	std::string VersionInfo::toString() const{
+		return std::to_string(this->mMajor) + "." + std::to_string(this->mMinor) + "." + std::to_string(this->mPatch);
+	}
+
 	bool VersionInfo::operator==(const VersionInfo& rhs){
 		return this->mMajor == rhs.mMajor
 			&& this->mMinor == rhs.mMinor

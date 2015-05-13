@@ -6,14 +6,14 @@
 
 namespace ssf{
 
-	class IPlugin {
+	class Plugin {
 
 	public:	
 		virtual const std::string& getName() const = 0;
 		virtual const ssf::VersionInfo& getVersion() const = 0;
 
 	protected:
-		virtual ~IPlugin() {}
+		virtual ~Plugin() {}
 
 	};
 

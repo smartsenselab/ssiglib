@@ -4,6 +4,11 @@
 #include "core/core_defs.hpp"
 #include "plugin_defs.hpp"
 
+#include <cassert>
+#include <cstddef>
+#include <string>
+
+
 
 #if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
 #include <Windows.h>
@@ -19,7 +24,7 @@ namespace ssf{
 
 	public:
 
-		explicit PluginLoader(const std::string& pluginName = "")
+		PluginLoader(const std::string& pluginName = "")
 			: mPluginName(pluginName), mPlugin(nullptr), mHandle(0){
 		}
 
@@ -39,7 +44,7 @@ namespace ssf{
 			bool res = true;
 			if (this->isLoaded()){
 				if (this->mPlugin){
-					this->callFunction<void>(PLUGIN_FACTORY_DESTROY);
+					this->callFunction<void>(PLUGIN_DESTROY_FUNCTION);
 					this->mPlugin = nullptr;
 				}
 				res = this->unloadLibrary();
@@ -58,7 +63,7 @@ namespace ssf{
 			if (!isLoaded())
 				return nullptr;
 			if (!this->mPlugin)
-				this->mPlugin = callFunction<T*>(PLUGIN_FACTORY_CREATE);
+				this->mPlugin = callFunction<T*>(PLUGIN_CREATE_FUNCTION);
 			return this->mPlugin;
 		}
 

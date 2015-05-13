@@ -19,12 +19,12 @@ PLUGIN_EXPORT void destroyPluginFacade();              \
 
 #define PLUGIN_FACTORY_DEFINITION(T)    \
 T* globalInstance = NULL;               \
-T* createPluginFacade()                 \
+T* createPluginFacade(){                \
     if (!globalInstance)                \
         globalInstance = new T();       \
     return globalInstance;              \
 }                                       \
-void destroyPluginFacade()              \
+void destroyPluginFacade(){             \
     if (globalInstance){                \
         delete globalInstance;          \
         globalInstance = NULL;          \
