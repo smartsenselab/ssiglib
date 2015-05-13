@@ -6,7 +6,7 @@
 #if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
 #define PLUGIN_NAME "plugin_instance.dll"
 #else
-#define PLUGIN_NAME "plugin_instance.so"
+#define PLUGIN_NAME "libplugin_instance.so"
 #endif
 
 TEST(Plugin, load) {
