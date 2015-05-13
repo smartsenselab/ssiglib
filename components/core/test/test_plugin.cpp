@@ -19,9 +19,7 @@ TEST(Plugin, load) {
 	bool isLoaded = loader.load();
 	EXPECT_TRUE(isLoaded);
 
-
 	plugin = loader.getPluginInstance();
-
 
 	EXPECT_STREQ("Example", plugin->getName().c_str());
 	EXPECT_STREQ("1.3.4", plugin->getVersion().toString().c_str());		
