@@ -60,13 +60,14 @@ file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/core_defs.hpp"
 									"${CORE_PATH}/src/util.cpp"
 									)
 
-
-
 file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
 									"${CORE_PATH}/src/log.cpp"
 									)
 
-
+file(GLOB CORE_PLUGIN_FILES			"${CORE_PATH}/include/core/plugin_loader.hpp"
+									"${CORE_PATH}/include/core/plugin_defs.hpp"
+									"${CORE_PATH}/include/core/plugin.hpp"
+									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
@@ -81,6 +82,7 @@ source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
 source_group("Log"			FILES ${CORE_LOG_FILES})
 source_group("Util"			FILES ${CORE_UTIL_FILES})
 source_group("Structures"	FILES ${CORE_STRUCTURES_FILES})
+source_group("Plugin"		FILES ${CORE_PLUGIN_FILES})
 
 
 ###############################################################################
@@ -96,6 +98,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_LOG_FILES}
 						${CORE_UTIL_FILES}
 						${CORE_STRUCTURES_FILES}
+						${CORE_PLUGIN_FILES}
 			)
 target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 						
