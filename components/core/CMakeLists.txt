@@ -66,7 +66,6 @@ file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
 
 file(GLOB CORE_PLUGIN_FILES			"${CORE_PATH}/include/core/plugin_loader.hpp"
 									"${CORE_PATH}/include/core/plugin_defs.hpp"
-									"${CORE_PATH}/include/core/plugin.hpp"
 									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")

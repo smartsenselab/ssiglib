@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "core/plugin_loader.hpp"
-#include "core/plugin.hpp"
+#include "core/resource.hpp"
 
 #if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
 #define PLUGIN_NAME "plugin_instance.dll"
@@ -13,15 +13,16 @@ TEST(Plugin, load) {
 	
 	std::string pluginPath(PLUGIN_NAME);
 	
-	ssf::PluginLoader<ssf::Plugin> loader(pluginPath);
-	ssf::Plugin* plugin = nullptr;
+	ssf::PluginLoader<ssf::Resource> loader(pluginPath);
+	ssf::Resource* plugin = nullptr;
 
 	bool isLoaded = loader.load();
 	EXPECT_TRUE(isLoaded);
 
 	plugin = loader.getPluginInstance();
+	plugin->initialize();
 
-	EXPECT_STREQ("Example", plugin->getName().c_str());
-	EXPECT_STREQ("1.3.4", plugin->getVersion().toString().c_str());		
+	EXPECT_STREQ("RESOURCE_SPECIALIZATION", plugin->getName().c_str());
+	EXPECT_STREQ("Antonio", plugin->getInfo().getAuthor().c_str());
 	
 }
