@@ -28,6 +28,6 @@ macro(ssf_link_boost TARGET)
 
 	target_include_directories(${TARGET} PUBLIC ${Boost_INCLUDE_DIR})
 	
-	target_link_libraries(ssf_core ${Boost_LIBRARIES})
+	target_link_libraries(${TARGET} ${Boost_LIBRARIES})
 
 endmacro()

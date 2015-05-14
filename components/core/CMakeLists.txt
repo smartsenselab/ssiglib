@@ -53,16 +53,20 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
 									"${CORE_PATH}/include/core/scale_info.hpp"
 									)
 
-file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/ssfdef.hpp"
+file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/core_defs.hpp"
+									"${CORE_PATH}/include/core/version_info.hpp"
+									"${CORE_PATH}/src/version_info.cpp"	
+									"${CORE_PATH}/include/core/util.hpp"
+									"${CORE_PATH}/src/util.cpp"
 									)
-
-
 
 file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
 									"${CORE_PATH}/src/log.cpp"
 									)
 
-
+file(GLOB CORE_PLUGIN_FILES			"${CORE_PATH}/include/core/plugin_loader.hpp"
+									"${CORE_PATH}/include/core/plugin_defs.hpp"
+									)
 
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
@@ -77,6 +81,7 @@ source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
 source_group("Log"			FILES ${CORE_LOG_FILES})
 source_group("Util"			FILES ${CORE_UTIL_FILES})
 source_group("Structures"	FILES ${CORE_STRUCTURES_FILES})
+source_group("Plugin"		FILES ${CORE_PLUGIN_FILES})
 
 
 ###############################################################################
@@ -92,13 +97,14 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_LOG_FILES}
 						${CORE_UTIL_FILES}
 						${CORE_STRUCTURES_FILES}
+						${CORE_PLUGIN_FILES}
 			)
 target_include_directories(ssf_core PUBLIC ${CORE_PATH}/include/)
 						
 #Configure folder to core library
 set_target_properties(ssf_core PROPERTIES FOLDER COMPONENTS)
 
-target_compile_definitions(ssf_core PUBLIC SSFAPI_EXPORTS)
+target_compile_definitions(ssf_core PUBLIC CORE_API_EXPORTS)
 
 #Install configuration
 install (TARGETS ssf_core DESTINATION bin)
@@ -113,27 +119,6 @@ ssf_link_opencv(ssf_core opencv_core opencv_imgproc opencv_highgui)
 # SET TESTS FOR LIBRARY CORE
 ###############################################################################
 
-if(BUILD_TESTS)
-
-	#Create set of core tests files
-	file(GLOB CORE_TEST_FILES "${CORE_PATH}/test/*.cpp")
-	
-	add_executable(test_core ${CORE_TEST_FILES})
-
-	# Standard linking to gtest stuff.
-	target_link_libraries(test_core gtest gtest_main)
-	target_include_directories(test_core PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-	target_include_directories(test_core PUBLIC ${CORE_PATH}/include/)
-
-	# Extra linking for the project.
-	target_link_libraries(test_core ssf_core)
-	ssf_link_opencv(test_core opencv_core opencv_imgproc opencv_highgui)
-
-	# This is so you can do 'make test' to see all your tests run, instead of
-	# manually running the executable ssf_test_core to see those specific tests.
-	add_test(NAME test_core COMMAND test_core WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
-	
-	#Configure folder to core library
-	set_target_properties(test_core PROPERTIES FOLDER TESTS)
-
+if(BUILD_TESTS)	
+	add_subdirectory(test)
 endif()

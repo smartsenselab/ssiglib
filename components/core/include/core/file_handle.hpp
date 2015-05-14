@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 
 namespace boost{
 	namespace filesystem{
@@ -17,23 +17,23 @@ namespace ssf{
 	class FileHandle{
 
 	public:
-		SSF_EXPORT FileHandle();
-		SSF_EXPORT explicit FileHandle(const std::string& fileName);
-		SSF_EXPORT virtual ~FileHandle(void);
-		SSF_EXPORT FileHandle(const FileHandle& rhs);
-		SSF_EXPORT FileHandle& operator=(const FileHandle& rhs);
+		CORE_EXPORT FileHandle();
+		CORE_EXPORT explicit FileHandle(const std::string& fileName);
+		CORE_EXPORT virtual ~FileHandle(void);
+		CORE_EXPORT FileHandle(const FileHandle& rhs);
+		CORE_EXPORT FileHandle& operator=(const FileHandle& rhs);
 
-		SSF_EXPORT bool operator<(const FileHandle& rhs) const;
+		CORE_EXPORT bool operator<(const FileHandle& rhs) const;
 
-		SSF_EXPORT std::string getAbsoluteFileName() const;
-		SSF_EXPORT std::string getSimpleName() const;
-		SSF_EXPORT std::string getExtenstion() const;
+		CORE_EXPORT std::string getAbsoluteFileName() const;
+		CORE_EXPORT std::string getSimpleName() const;
+		CORE_EXPORT std::string getExtenstion() const;
 		
-		SSF_EXPORT bool erase();
-		SSF_EXPORT bool hasExtension() const;
+		CORE_EXPORT bool erase();
+		CORE_EXPORT bool hasExtension() const;
 
-		SSF_EXPORT static bool erase(const std::string& fileName);
-		SSF_EXPORT static bool exists(const std::string& fileName);
+		CORE_EXPORT static bool erase(const std::string& fileName);
+		CORE_EXPORT static bool exists(const std::string& fileName);
 
 	private:
 		std::shared_ptr<boost::filesystem::path> mPath ;

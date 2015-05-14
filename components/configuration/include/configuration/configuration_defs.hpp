@@ -15,4 +15,4 @@ namespace ssf{
 
 }
 
-#endif // !_SSF_CORE_UTIL_HPP_
+#endif // !_SSF_CONFIGURATION_DEFS_HPP_
