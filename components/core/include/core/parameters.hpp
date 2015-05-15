@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "core/parameter.hpp"
+#include "core/file_handle.hpp"
 
 namespace ssf{
 
@@ -15,6 +16,8 @@ namespace ssf{
 	public:
 		CORE_EXPORT Parameters(void);
 		CORE_EXPORT virtual ~Parameters(void);
+		CORE_EXPORT Parameters(const FileHandle& fileHandle, const std::string& node = "");
+		CORE_EXPORT Parameters(const std::string& fileName, const std::string& node = "");
 		CORE_EXPORT Parameters(const Parameters& rhs);
 		CORE_EXPORT Parameters& operator=(const Parameters& rhs);
 
@@ -22,14 +25,7 @@ namespace ssf{
 
 		CORE_EXPORT ParamType getType(const std::string& paramName);
 		CORE_EXPORT std::string getName(const std::string& paramName);
-		CORE_EXPORT std::string getDescription(const std::string& paramName);
-
-		CORE_EXPORT bool isNumeric(const std::string& paramName);
-		CORE_EXPORT bool isIntegral(const std::string& paramName);
-		CORE_EXPORT bool isFloating(const std::string& paramName);
-		CORE_EXPORT bool isBoolean(const std::string& paramName);
-		CORE_EXPORT bool isString(const std::string& paramName);
-		CORE_EXPORT bool exists(const std::string& paramName);
+		CORE_EXPORT std::string getDescription(const std::string& paramName);		
 
 		CORE_EXPORT void setRequired(const std::string& paramName, const bool& required = true);
 		CORE_EXPORT bool isRequired(const std::string& paramName);
@@ -56,14 +52,13 @@ namespace ssf{
 		}
 
 
-
-
 		CORE_EXPORT const std::map<std::string, Parameter>& getParameters() const;
 		CORE_EXPORT void setup(std::map<std::string, Parameter>& paramsSetup);
 
 
 	private:
 		CORE_EXPORT Parameter& getParamByName(const std::string& paramName);
+		void readParamsFromFile(const std::string& fileName, const std::string& node = "");
 		std::map<std::string, Parameter> mParameters;
 
 	};

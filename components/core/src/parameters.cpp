@@ -1,9 +1,22 @@
 #include "core/parameters.hpp"
 
+#include <opencv/cv.h>
+
+#include <core/param_exception.hpp>
+
+
 namespace ssf{
 
 	Parameters::Parameters(){
 		
+	}
+
+	Parameters::Parameters(const FileHandle& fileHandle, const std::string& node /*= ""*/){
+		this->readParamsFromFile(fileHandle.getAbsoluteFileName(), node);
+	}
+
+	Parameters::Parameters(const std::string& fileName, const std::string& node /*= ""*/){
+		this->readParamsFromFile(fileName, node);
 	}
 
 	Parameters::~Parameters(){
@@ -27,7 +40,7 @@ namespace ssf{
 			throw ParamException(paramName, "Parameter name already used. Please, try other name.");
 		}
 		
-		this->mParameters[paramName] = Parameter(type, paramName, paramDescription);
+		this->mParameters[paramName] = Parameter(paramName, paramDescription, type);
 
 	}
 
@@ -150,6 +163,14 @@ namespace ssf{
 		if (this->mParameters.find(paramName) == this->mParameters.end())
 			throw ParamException(paramName, "There is no parameter with such name.");
 		return this->mParameters[paramName];
+	}
+
+	void Parameters::readParamsFromFile(const std::string& fileName, const std::string& nodeName /*= ""*/){
+		cv::FileStorage fs(fileName, cv::FileStorage::READ);
+		cv::FileNode node = (node == "")?fs.root():fs[nodeName];
+		for (auto current = node.begin(); current != node.end(); current++){
+			std::string paramName = (*current).name();
+		}
 	}
 
 }
