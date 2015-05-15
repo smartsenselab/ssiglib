@@ -5,6 +5,7 @@
 #include <set>
 #include <memory>
 
+#include "core/core_defs.hpp"
 #include "core/file_handle.hpp"
 
 namespace boost{
@@ -18,25 +19,25 @@ namespace ssf{
 	class DirectoryHandle{
 
 	public:
-		DirectoryHandle(void);
-		DirectoryHandle(const std::string& directoryPathName);
-		virtual ~DirectoryHandle(void);
-		DirectoryHandle(const DirectoryHandle& rhs);
-		DirectoryHandle& operator=(const DirectoryHandle& rhs);
+		CORE_EXPORT DirectoryHandle(void);
+		CORE_EXPORT DirectoryHandle(const std::string& directoryPathName);
+		CORE_EXPORT virtual ~DirectoryHandle(void);
+		CORE_EXPORT DirectoryHandle(const DirectoryHandle& rhs);
+		CORE_EXPORT DirectoryHandle& operator=(const DirectoryHandle& rhs);
 
-		bool operator<(const DirectoryHandle& rhs) const;
+		CORE_EXPORT bool operator<(const DirectoryHandle& rhs) const;
 
-		std::string getAbsolutePath() const;
-		std::string getSimpleName() const;
-		std::set<DirectoryHandle> listSubDirectories();
-		std::set<FileHandle> listFiles();
-		bool isEmpty() const;
-		bool erase() const;
-		bool exists() const;
+		CORE_EXPORT std::string getAbsolutePath() const;
+		CORE_EXPORT std::string getSimpleName() const;
+		CORE_EXPORT std::set<DirectoryHandle> listSubDirectories();
+		CORE_EXPORT std::set<FileHandle> listFiles();
+		CORE_EXPORT bool isEmpty() const;
+		CORE_EXPORT bool erase() const;
+		CORE_EXPORT bool exists() const;
 
-		static bool exists(const std::string& directoryPathName);
-		static bool erase(const std::string& directoryPathName);
-		static DirectoryHandle create(const std::string& directoryPathName);
+		CORE_EXPORT static bool exists(const std::string& directoryPathName);
+		CORE_EXPORT static bool erase(const std::string& directoryPathName);
+		CORE_EXPORT static DirectoryHandle create(const std::string& directoryPathName);
 
 	private:
 		std::shared_ptr<boost::filesystem::path> mPath;

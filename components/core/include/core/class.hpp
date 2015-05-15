@@ -3,13 +3,13 @@
 
 namespace ssf{
 
-	class Class{
+	class PluginLoader-f{
 	
 	public:
-		Class(void);
-		virtual ~Class(void);
-		Class(const Class& rhs);
-		Class& operator=(const Class& rhs);
+		PluginLoader-f(void);
+		virtual ~PluginLoader-f(void);
+		PluginLoader-f(const PluginLoader-f& rhs);
+		PluginLoader-f& operator=(const PluginLoader-f& rhs);
 
 	private:
 		//private members

@@ -1,0 +1,4 @@
+message info
+message error
+message debug
+message warning

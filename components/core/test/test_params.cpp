@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "core/params.hpp"
+#include "core/parameters.hpp"
 
 class TestParams : public ::testing::Test{
 protected:
@@ -35,7 +35,7 @@ protected:
 	ssf::DirectoryHandle directoryHandleValue;
 
 
-	ssf::Params parameters;
+	ssf::Parameters parameters;
 };
 
 TEST_F(TestParams, getType){

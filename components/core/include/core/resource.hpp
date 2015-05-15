@@ -1,34 +1,36 @@
 #ifndef _SSF_CORE_RESOURCE_HPP_
 #define _SSF_CORE_RESOURCE_HPP_
 
+#include "core/core_defs.hpp"
 #include "core/base_object.hpp"
-#include "core/params.hpp"
+#include "core/parameters.hpp"
 #include "core/resource_info.hpp"
+#include "core/resource_setup.hpp"
 
 namespace ssf{
 
 	class Resource : public BaseObject{
 
 	public:
-		Resource(void);
-		virtual ~Resource(void);
-		Resource(const Resource& rhs);
-		Resource& operator=(const Resource& rhs);
+		CORE_EXPORT Resource(void);
+		CORE_EXPORT virtual ~Resource(void);
+		CORE_EXPORT Resource(const Resource& rhs);
+		CORE_EXPORT Resource& operator=(const Resource& rhs);
 
-		virtual ResourceInfo getInfo() const;
+		CORE_EXPORT virtual ResourceInfo getInfo();
+		CORE_EXPORT virtual void setup(const ResourceSetup& setup);
 		
-		virtual void initialize() = 0;
+		CORE_EXPORT virtual void initialize() = 0;
+		CORE_EXPORT virtual std::string getName() = 0;
 		
 
-	protected:
-		void setName(const std::string& name);
-		void setAuthor(const std::string& author);
-		void setDescription(const std::string& description);
-		void setAuthorEmail(const std::string& authorEmail);
-		void setRequiredVersion(const int& majorVersion, const int& minorVersion);
+	protected:		
+		CORE_EXPORT void setAuthor(const std::string& author);
+		CORE_EXPORT void setDescription(const std::string& description);
+		CORE_EXPORT void setAuthorEmail(const std::string& authorEmail);
+		CORE_EXPORT void setRequiredVersion(const int& majorVersion, const int& minorVersion);
 
 	private:
-		std::string mName;
 		std::string mAuthor;
 		std::string mDescription;
 		std::string mAuthorEmail;
@@ -36,7 +38,10 @@ namespace ssf{
 		int mMajorRequiredVersion;
 		int mMinorRequiredVersion;
 
-		/*Params mParams;*/
+	protected:
+		Parameters parameters;
+
+		
 	};
 
 }

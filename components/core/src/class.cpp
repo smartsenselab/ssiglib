@@ -2,19 +2,19 @@
 
 namespace ssf{
 
-	Class::Class(){
+	PluginLoader-f::PluginLoader-f(){
 		//Constructor
 	}
 
-	Class::~Class(){
+	PluginLoader-f::~PluginLoader-f(){
 		//Destructor
 	}
 
-	Class::Class(const Class& rhs){
+	PluginLoader-f::PluginLoader-f(const PluginLoader-f& rhs){
 		//Constructor Copy
 	}
 
-	Class& Class::operator=(const Class& rhs){
+	PluginLoader-f& PluginLoader-f::operator=(const PluginLoader-f& rhs){
 		if (this != &rhs){
 			//code here
 		}
