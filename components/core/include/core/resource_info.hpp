@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 #include "core/parameters.hpp"
 
 namespace ssf{
@@ -15,18 +15,18 @@ namespace ssf{
 		ResourceInfo(void);
 
 	public:
-		SSF_EXPORT virtual ~ResourceInfo(void);
-		SSF_EXPORT ResourceInfo(const ResourceInfo& rhs);
-		SSF_EXPORT ResourceInfo& operator=(const ResourceInfo& rhs);
+		CORE_EXPORT virtual ~ResourceInfo(void);
+		CORE_EXPORT ResourceInfo(const ResourceInfo& rhs);
+		CORE_EXPORT ResourceInfo& operator=(const ResourceInfo& rhs);
 	
-		SSF_EXPORT std::string getName() const;
-		SSF_EXPORT std::string getAuthor() const;
-		SSF_EXPORT std::string getDescription() const;
-		SSF_EXPORT std::string getAuthorEmail() const;
-		SSF_EXPORT std::string getRequiredVersion() const;
-		SSF_EXPORT int getMajorRequiredVersion() const;
-		SSF_EXPORT int getMinorRequiredVersion() const;
-		SSF_EXPORT const std::map<std::string, Parameter>& getParams() const;
+		CORE_EXPORT std::string getName() const;
+		CORE_EXPORT std::string getAuthor() const;
+		CORE_EXPORT std::string getDescription() const;
+		CORE_EXPORT std::string getAuthorEmail() const;
+		CORE_EXPORT std::string getRequiredVersion() const;
+		CORE_EXPORT int getMajorRequiredVersion() const;
+		CORE_EXPORT int getMinorRequiredVersion() const;
+		CORE_EXPORT const std::map<std::string, Parameter>& getParams() const;
 
 	protected:
 		std::string mName;

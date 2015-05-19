@@ -2,7 +2,7 @@
 #define _SSF_CORE_POINT2D_HPP_
 
 #include <type_traits>
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 
 namespace cv{
 	template<typename _Tp> class Point_;
@@ -15,7 +15,7 @@ namespace cv{
 namespace ssf{
 
 	template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
-	class SSF_EXPORT Point2D{
+	class CORE_EXPORT Point2D{
 
 	public:
 
@@ -59,7 +59,7 @@ namespace ssf{
 
 	};
 
-	class SSF_EXPORT Point2Di : public Point2D < int > {
+	class CORE_EXPORT Point2Di : public Point2D < int > {
 	public:
 		Point2Di(void);
 		Point2Di(const cv::Point& cvPoint);
@@ -68,7 +68,7 @@ namespace ssf{
 		void set(const cv::Point& cvPoint);
 	};
 
-	class SSF_EXPORT Point2Df : public Point2D < float > {
+	class CORE_EXPORT Point2Df : public Point2D < float > {
 	public:
 		Point2Df(void);
 		Point2Df(const cv::Point2f& cvPoint);
@@ -77,7 +77,7 @@ namespace ssf{
 		void set(const cv::Point2f& cvPoint);
 	};
 
-	class SSF_EXPORT Point2Dd : public Point2D < double > {
+	class CORE_EXPORT Point2Dd : public Point2D < double > {
 	public:
 		Point2Dd(void);
 		Point2Dd(const cv::Point2d& cvPoint);

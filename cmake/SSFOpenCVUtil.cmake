@@ -22,6 +22,6 @@ macro(ssf_link_opencv TARGET)
 	find_path(OpenCV_INCLUDE_DIR "opencv/cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" DOC "")
 	target_include_directories(${TARGET} PUBLIC ${OpenCV_INCLUDE_DIR})
 	
-	target_link_libraries(ssf_core ${OpenCV_LIBS})
+	target_link_libraries(${TARGET} ${OpenCV_LIBS})
 
 endmacro()

@@ -1,7 +1,7 @@
 #ifndef _SSF_CORE_EXCEPTION_HPP_
 #define _SSF_CORE_EXCEPTION_HPP_
 
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 
 #include <string>
 #include <exception>
@@ -32,12 +32,12 @@ namespace ssf{
 		 \param	message	The exception message.
 		 */
 
-		SSF_EXPORT explicit Exception(const std::string& message);
-		SSF_EXPORT virtual ~Exception() throw();
+		CORE_EXPORT explicit Exception(const std::string& message);
+		CORE_EXPORT virtual ~Exception() throw();
 
-		SSF_EXPORT virtual const char * what() const throw();
+		CORE_EXPORT virtual const char * what() const throw();
 
-		SSF_EXPORT std::string getMessage() const;
+		CORE_EXPORT std::string getMessage() const;
 
 	protected:
 		std::string mMessage;

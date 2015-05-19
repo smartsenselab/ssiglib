@@ -3,14 +3,14 @@
 
 #include <type_traits>
 
-#include "core/ssfdef.hpp"
+#include "core/core_defs.hpp"
 #include "core/exception.hpp"
 #include "core/point2d.hpp"
 
 namespace ssf{
 
 	template<typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type>
-	class SSF_EXPORT Rect{
+	class CORE_EXPORT Rect{
 
 	public:
 		Rect(T x = 0, T y = 0, T width = 0, T height = 0)

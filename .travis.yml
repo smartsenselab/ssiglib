@@ -19,7 +19,7 @@ before_install:
 install:
   - sudo apt-get install -qq cmake
   - sudo apt-get install -qq libboost-filesystem1.54-dev libboost-log1.54-dev libboost-date-time1.54-dev libboost-thread1.54-dev 
-  - sudo apt-get install libcv-dev libcvaux-dev libhighgui-dev libopencv-dev
+  - sudo apt-get install -qq libcv-dev libcvaux-dev libhighgui-dev libopencv-dev
   - sudo apt-get install -qq gcc-4.8 g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90  
 

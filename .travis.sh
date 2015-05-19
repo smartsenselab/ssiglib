@@ -14,10 +14,7 @@ function test()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON $SSF_DIR
-  make ssf_core -j3
-  make test_core
-  make ssf_configuration -j3
-  make test_configuration
+  make -j2
   make test -j3
 }
 
