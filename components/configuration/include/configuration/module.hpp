@@ -20,7 +20,7 @@ namespace ssf{
         
         template < class T>
 		CONFIG_EXPORT void setValue(const std::string& paramName, const T& value){
-            mParameters.setValue(paramName, value);
+            mParameters[paramName].setValue(value);
         }
 
 	private:
