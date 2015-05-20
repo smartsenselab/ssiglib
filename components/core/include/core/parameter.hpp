@@ -60,11 +60,12 @@ namespace ssf{
 		CORE_EXPORT void setRequired(const bool& required);
 
 	private:
-		std::string mValue;
-
-		ParamType mType;
 		std::string mName;
 		std::string mDescription;
+		ParamType mType;		
+
+		std::string mValue;
+
 		bool mRequired;
 	};
 

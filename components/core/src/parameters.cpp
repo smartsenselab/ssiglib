@@ -81,7 +81,7 @@ namespace ssf{
 			throw Exception("Parameters file with incorrect syntax!");
 		std::string paramName, paramValue;
 		paramName = fileNode.name();
-		paramValue = fileNode;
+		fileNode >> paramValue;
 		ParamType paramType;
 		if (fileNode.isInt())
 			paramType = ParamType::INTEGER;
