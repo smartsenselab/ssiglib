@@ -15,6 +15,9 @@ if(BUILD_TESTS)
 	# Extra linking for the project.
 	target_link_libraries(test_core ssf_core)
 	ssf_link_opencv(test_core opencv_core opencv_imgproc opencv_highgui)
+	
+	#create test directory if it does not exists
+	file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
 
 	# This is so you can do 'make test' to see all your tests run, instead of
 	# manually running the executable ssf_test_core to see those specific tests.
