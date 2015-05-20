@@ -20,10 +20,10 @@ file(GLOB CAMERAS_TEMP_FILES		"${CAMERAS_PATH}/include/cameras/SMCamCMD.hpp"
 									"${CAMERAS_PATH}/src/SMCamCMD.cpp"
 									"${CAMERAS_PATH}/include/cameras/SMData.hpp"
 									"${CAMERAS_PATH}/src/SMData.cpp"
-									"${CAMERAS_PATH}/include/cameras/VideoCameraPTZ.hpp"
-									"${CAMERAS_PATH}/src/VideoCameraPTZ.cpp"
-									"${CAMERAS_PATH}/include/cameras/VideoCameraPTZTrendNet7865.hpp"
-									"${CAMERAS_PATH}/src/VideoCameraPTZTrendNet7865.cpp"
+									"${CAMERAS_PATH}/include/cameras/video_camera_PTZ.hpp"
+									"${CAMERAS_PATH}/src/video_camera_PTZ.cpp"
+									"${CAMERAS_PATH}/include/cameras/video_camera_PTZ_Trend_Net7865.hpp"
+									"${CAMERAS_PATH}/src/video_camera_PTZ_Trend_Net7865.cpp"
 									)
 							
 file(GLOB CORE_INCLUDES				"${CAMERAS_PATH}/include/cameras/*.hpp")

@@ -5,8 +5,9 @@
 
 namespace ssf{
 
-	VideoCamera::VideoCamera(){
-		this->mAddress = "";
+	VideoCamera::VideoCamera(const std::string& address /*=localhost*/)
+		: mAddress(address){
+
 	}
 
 	VideoCamera::~VideoCamera(){

@@ -11,7 +11,7 @@ namespace ssf{
 	class VideoCamera : public Camera{
 
 	public:
-		VideoCamera(void);
+		VideoCamera(const std::string& address = "localhost");
 		virtual ~VideoCamera(void);
 		VideoCamera(const VideoCamera& rhs);
 		VideoCamera& operator=(const VideoCamera& rhs);
@@ -22,7 +22,7 @@ namespace ssf{
 		virtual void setAddress(std::string IP);
 		virtual std::string getAddress();
 
-	private:
+	protected:
 		std::string mAddress;
 
 	};
