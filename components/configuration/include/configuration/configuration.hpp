@@ -26,7 +26,7 @@ namespace ssf{
         template<class T>
 		CONFIG_EXPORT void setParameter(const std::string& moduleType, const std::string& moduleName, const std::string& paramName, ParamType type, T value){
             if(modules.find(moduleName) == modules.end()){
-                ConfigurationException(moduleName, "Module does not exist, create it first before adding parameters to it.");
+                throw ConfigurationException(moduleName, "Module does not exist, create it first before adding parameters to it.");
             }
             modules[moduleName].addParameter(type, paramName, "");
             modules[moduleName].setValue(paramName, value);
