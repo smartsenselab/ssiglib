@@ -1,0 +1,5 @@
+%YAML:1.0
+paramInteger: "10" 
+paramReal: "2.2"
+paramString: "test_string"
+paramBool: "true"

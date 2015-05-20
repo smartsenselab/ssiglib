@@ -29,7 +29,7 @@ namespace ssf{
 	}
     
     void Module::addParameter(const ParamType& type, const std::string& name, const std::string& description){
-        this->mParameters.addParameter(type, name, description);
+        //this->mParameters.addParameter(type, name, description);
     }
 
 }

@@ -20,9 +20,12 @@ if(BUILD_TESTS)
 	# manually running the executable ssf_test_core to see those specific tests.
 	add_test(NAME test_core COMMAND test_core WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/core")
 	
+	file(GLOB CORE_TEST_FILES "${PROJECT_SOURCE_DIR}/data/tests/core/*")
+	file(COPY ${CORE_TEST_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+	
 	#Configure folder to core library
 	set_target_properties(test_core PROPERTIES FOLDER TESTS)
 
-	add_subdirectory( test_plugins )
+	add_subdirectory(subtest_plugins )
 	
 endif()

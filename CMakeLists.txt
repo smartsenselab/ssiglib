@@ -88,6 +88,7 @@ endif()
 #Disable C4996
 if(MSVC)
 	add_definitions(/D_SCL_SECURE_NO_WARNINGS=1)
+	add_definitions(/D_CRT_SECURE_NO_WARNINGS=1)
 endif()
 
 #Allows the solution folder utilization (for MSVC)

@@ -11,13 +11,13 @@
 #define PLUGIN_CREATE_FUNCTION	"createPluginFacade"
 #define PLUGIN_DESTROY_FUNCTION	"destroyPluginFacade"
 
-#define PLUGIN_FACTORY_DECLARATION(T)               \
+#define PLUGIN_DECLARATION(T)               \
 extern "C"{                                         \
 PLUGIN_EXPORT T* createPluginFacade();                 \
 PLUGIN_EXPORT void destroyPluginFacade();              \
 }
 
-#define PLUGIN_FACTORY_DEFINITION(T)    \
+#define PLUGIN_DEFINITION(T)    \
 T* globalInstance = NULL;               \
 T* createPluginFacade(){                \
     if (!globalInstance)                \
