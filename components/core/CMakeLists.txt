@@ -37,8 +37,6 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									"${CORE_PATH}/src/resource.cpp"
 									"${CORE_PATH}/include/core/resource_info.hpp"
 									"${CORE_PATH}/src/resource_info.cpp"
-									"${CORE_PATH}/include/core/resource_setup.hpp"
-									"${CORE_PATH}/src/resource_setup.cpp"
 									)
 
 file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
@@ -66,22 +64,6 @@ file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
 
 file(GLOB CORE_PLUGIN_FILES			"${CORE_PATH}/include/core/plugin_loader.hpp"
 									"${CORE_PATH}/include/core/plugin_defs.hpp"
-									)
-
-file(GLOB CORE_CAMERAS_FILES		"${CORE_PATH}/include/core/camera.hpp"
-									"${CORE_PATH}/src/camera.cpp"
-									"${CORE_PATH}/include/core/SMCamCapabilities.hpp"
-									"${CORE_PATH}/src/SMCamCapabilities.cpp"
-									"${CORE_PATH}/include/core/SMCamCMD.hpp"
-									"${CORE_PATH}/src/SMCamCMD.cpp"
-									"${CORE_PATH}/include/core/SMData.hpp"
-									"${CORE_PATH}/src/SMData.cpp"
-									"${CORE_PATH}/include/core/VideoCamera.hpp"
-									"${CORE_PATH}/src/VideoCamera.cpp"
-									"${CORE_PATH}/include/core/VideoCameraPTZ.hpp"
-									"${CORE_PATH}/src/VideoCameraPTZ.cpp"
-									"${CORE_PATH}/include/core/VideoCameraPTZTrendNet7865.hpp"
-									"${CORE_PATH}/src/VideoCameraPTZTrendNet7865.cpp"
 									)
 							
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")

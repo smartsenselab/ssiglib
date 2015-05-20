@@ -15,8 +15,11 @@ if(BUILD_TESTS)
 	# Extra linking for the project.
     target_link_libraries(test_configuration ssf_configuration)
 
+	#create test directory if it does not exists
+	file(MAKE_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/configuration")
+
 	# This is so you can do 'make test' to see all your tests run, instead of
-	# manually running the executable ssf_test_configuration to see those specific tests.
+	# manually running the executable ssf_test_configuration to see those specific tests.	
     add_test(NAME test_configuration COMMAND test_configuration WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/data/tests/configuration")
 	
 	#Configure folder to configuration library

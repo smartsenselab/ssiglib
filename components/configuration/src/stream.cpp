@@ -2,6 +2,10 @@
 #include <string>
 
 namespace ssf{
+    
+    Stream::Stream(){
+        
+    }
 
 	Stream::Stream(const std::string& moduleIDProvider, const std::string& outputProvider, const std::string& moduleIDReceiver, const std::string inputReceiver){
         this->mModuleIDProvider = moduleIDProvider;
@@ -11,16 +15,23 @@ namespace ssf{
 	}
 
 	Stream::~Stream(){
-		//Destructor
 	}
 
 	Stream::Stream(const Stream& rhs){
-		//Constructor Copy
+        this->mModuleIDProvider = rhs.mModuleIDProvider;
+        this->mModuleIDReceiver = rhs.mModuleIDReceiver;
+        this->mOutputProvider = rhs.mOutputProvider;
+        this->mInputReceiver = rhs.mInputReceiver;
+
 	}
 
 	Stream& Stream::operator=(const Stream& rhs){
 		if (this != &rhs){
-			//code here
+            this->mModuleIDProvider = rhs.mModuleIDProvider;
+            this->mModuleIDReceiver = rhs.mModuleIDReceiver;
+            this->mOutputProvider = rhs.mOutputProvider;
+            this->mInputReceiver = rhs.mInputReceiver;
+            
 		}
 	    return *this;
 	}

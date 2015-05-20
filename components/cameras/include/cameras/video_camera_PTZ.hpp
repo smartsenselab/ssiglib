@@ -10,20 +10,20 @@ namespace ssf{
 		
 	public:
 
-		VideoCameraPTZ(const std::string& address = "localhost");
-		virtual ~VideoCameraPTZ(void);
-		VideoCameraPTZ(const VideoCameraPTZ& rhs);
-		VideoCameraPTZ& operator=(const VideoCameraPTZ& rhs);
+		CAMERAS_EXPORT VideoCameraPTZ(const std::string& address = "localhost");
+		CAMERAS_EXPORT virtual ~VideoCameraPTZ(void);
+		CAMERAS_EXPORT VideoCameraPTZ(const VideoCameraPTZ& rhs);
+		CAMERAS_EXPORT VideoCameraPTZ& operator=(const VideoCameraPTZ& rhs);
 
-		virtual float getMaxZoom(); //informa o Zoom maximo atingido pela camera
-		virtual float getMaxTilt(); //informa o Tilt maximo atingido pela camera
-		virtual float getCurrentZoom() = 0; //informa o atual Zoom da camera
-		virtual float getCurrentPan() = 0; //informa o atual Pan da camera
-		virtual float getCurrentTilt() = 0; //informa o atual Tilt da camera
+		CAMERAS_EXPORT virtual float getMaxZoom(); //informa o Zoom maximo atingido pela camera
+		CAMERAS_EXPORT virtual float getMaxTilt(); //informa o Tilt maximo atingido pela camera
+		CAMERAS_EXPORT virtual float getCurrentZoom() = 0; //informa o atual Zoom da camera
+		CAMERAS_EXPORT virtual float getCurrentPan() = 0; //informa o atual Pan da camera
+		CAMERAS_EXPORT virtual float getCurrentTilt() = 0; //informa o atual Tilt da camera
 
-		virtual bool setZoom(float angle) = 0; //Envia o Zoom para a camera
-		virtual bool setPAN(float angle) = 0; //Envia o Pan para a camera
-		virtual bool setTILT(float angle) = 0; //Envia o Tilt para a camera
+		CAMERAS_EXPORT virtual bool setZoom(float angle) = 0; //Envia o Zoom para a camera
+		CAMERAS_EXPORT virtual bool setPAN(float angle) = 0; //Envia o Pan para a camera
+		CAMERAS_EXPORT virtual bool setTILT(float angle) = 0; //Envia o Tilt para a camera
 
 	
 

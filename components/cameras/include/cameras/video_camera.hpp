@@ -11,16 +11,16 @@ namespace ssf{
 	class VideoCamera : public Camera{
 
 	public:
-		VideoCamera(const std::string& address = "localhost");
-		virtual ~VideoCamera(void);
-		VideoCamera(const VideoCamera& rhs);
-		VideoCamera& operator=(const VideoCamera& rhs);
+		CAMERAS_EXPORT VideoCamera(const std::string& address = "localhost");
+		CAMERAS_EXPORT virtual ~VideoCamera(void);
+		CAMERAS_EXPORT VideoCamera(const VideoCamera& rhs);
+		CAMERAS_EXPORT VideoCamera& operator=(const VideoCamera& rhs);
 
-		virtual int getFPS() = 0;
-		virtual Point2Di getResolution() = 0;
+		CAMERAS_EXPORT virtual int getFPS() = 0;
+		CAMERAS_EXPORT virtual Point2Di getResolution() = 0;
 
-		virtual void setAddress(std::string IP);
-		virtual std::string getAddress();
+		CAMERAS_EXPORT virtual void setAddress(std::string IP);
+		CAMERAS_EXPORT virtual std::string getAddress();
 
 	protected:
 		std::string mAddress;

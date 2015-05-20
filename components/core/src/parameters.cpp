@@ -1,5 +1,13 @@
 #include "core/parameters.hpp"
 
+
+#include <iostream>
+#include <opencv/cv.h>
+
+
+#include <core/param_exception.hpp>
+
+
 namespace ssf{
 
 	Parameters::Parameters(){
@@ -8,6 +16,14 @@ namespace ssf{
 
 	Parameters::~Parameters(){
 
+	}
+
+	Parameters::Parameters(const FileHandle& fileHandle, const std::string& node /*= ""*/){
+		this->readParamsFromFile(fileHandle.getAbsoluteFileName(), node);
+	}
+
+	Parameters::Parameters(const std::string& fileName, const std::string& node /*= ""*/){
+		this->readParamsFromFile(fileName, node);
 	}
 
 	Parameters::Parameters(const Parameters& rhs){
@@ -21,135 +37,63 @@ namespace ssf{
 		return *this;
 	}
 
-	void Parameters::addParameter(const ParamType& type, const std::string& paramName, const std::string& paramDescription){
-
-		if (this->mParameters.find(paramName) != this->mParameters.end()){
-			throw ParamException(paramName, "Parameter name already used. Please, try other name.");
+	Parameter& Parameters::operator[](const std::string& parameterName){
+		if (this->mParameters.find(parameterName) == this->mParameters.end()){
+			throw ParamException(parameterName, "Parameter with this name does not exists.");
 		}
-		
-		this->mParameters[paramName] = Parameter(type, paramName, paramDescription);
-
+		return this->mParameters[parameterName];
 	}
 
-	ssf::ParamType Parameters::getType(const std::string& paramName){
-		return this->getParamByName(paramName).getType();
+	void Parameters::addParameter(const std::string& name, const std::string& description /*= ""*/, const ParamType& type /*= ParamType::STRING*/){
+		if (this->mParameters.find(name) != this->mParameters.end()){
+			throw ParamException(name, "Parameter name already used. Please, try other name.");
+		}
+		this->mParameters[name] = Parameter(name, description, type);
 	}
 
-	std::string Parameters::getName(const std::string& paramName){
-		return this->getParamByName(paramName).getName();
-	}
-
-	std::string Parameters::getDescription(const std::string& paramName){
-		return this->getParamByName(paramName).getDescription();
-	}
-
-	bool Parameters::isNumeric(const std::string& paramName){
-		if (this->isIntegral(paramName) || this->isFloating(paramName))
-			return true;
-		return false;
-	}
-
-	bool Parameters::isIntegral(const std::string& paramName){
-		if (this->getParamByName(paramName).getType() == ParamType::INT)
-			return true;
-		if (this->getParamByName(paramName).getType() == ParamType::LONG)
-			return true;
-		return false;
-	}
-
-	bool Parameters::isFloating(const std::string& paramName){
-		if (this->getParamByName(paramName).getType() == ParamType::FLOAT)
-			return true;
-		if (this->getParamByName(paramName).getType() == ParamType::DOUBLE)
-			return true;
-		return false;
-	}
-
-	bool Parameters::isBoolean(const std::string& paramName){
-		return (this->getParamByName(paramName).getType() == ParamType::BOOL);
-	}
-
-	bool Parameters::isString(const std::string& paramName){
-		return (this->getParamByName(paramName).getType() == ParamType::STRING);
-	}
-
-	bool Parameters::exists(const std::string& paramName){
-		return !(this->mParameters.find(paramName) == this->mParameters.end());
-	}
-
-	void Parameters::setRequired(const std::string& paramName, const bool& required /*= true*/){
-		this->getParamByName(paramName).setRequired(required);
-	}
-
-	bool Parameters::isRequired(const std::string& paramName){
-		return this->getParamByName(paramName).isRequired();
-	}
-	
-	long Parameters::getMaxValue(const std::string& paramName){
-		return this->getParamByName(paramName).getMaxValue();
-	}
-
-	void Parameters::setMaxValue(const std::string& paramName, const long& maxValue){
-		return this->getParamByName(paramName).setMaxValue(maxValue);
-	}
-
-	long Parameters::getMinValue(const std::string& paramName){
-		return this->getParamByName(paramName).getMinValue();
-	}
-
-	void Parameters::setMinValue(const std::string& paramName, const long& minValue){
-		return this->getParamByName(paramName).setMinValue(minValue);
+	void Parameters::addParameter(const Parameter& parameter){
+		if (this->mParameters.find(parameter.getName()) != this->mParameters.end()){
+			throw ParamException(parameter.getName(), "Parameter name already used. Please, try other name.");
+		}
+		this->mParameters[parameter.getName()] = parameter;
 	}
 
 	const std::map<std::string, Parameter>& Parameters::getParameters() const{
 		return this->mParameters;
 	}
 
-	void Parameters::setup(std::map<std::string, Parameter>& paramsSetup){
-		for (auto parameter : this->getParameters()){
-			auto setup = paramsSetup.find(parameter.second.getName());
-			if (setup != paramsSetup.end() && parameter.second.isRequired()){
-				throw ParamException(parameter.second.getName(), "This parameter requires a value.");
+	void Parameters::readParamsFromFile(const std::string& fileName, const std::string& nodeName /*= ""*/){
+		cv::FileStorage fs(fileName, cv::FileStorage::READ);
+		cv::FileNode node = (nodeName == "") ? fs.root() : fs[nodeName];
+		for (auto current = node.begin(); current != node.end(); current++){
+			try{
+				Parameter param = this->converNodeToParameter(*current);
+				this->addParameter(param);
 			}
-			if (parameter.second.getType() != setup->second.getType()){
-				std::string message = "Parameter setup type mismatch. Correct type is " + parameter.second.getTypeStr() + ".";
-				throw ParamException(parameter.second.getName(), message);
-			}
-
-			switch (parameter.second.getType()){
-			case ParamType::INT:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<int>());
-				break;
-			case ParamType::LONG:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<long>());
-				break;
-			case ParamType::FLOAT:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<float>());
-				break;
-			case ParamType::DOUBLE:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<double>());
-				break;
-			case ParamType::BOOL:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<bool>());
-				break;
-			case ParamType::STRING:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<std::string>());
-				break;
-			case ParamType::FILE_HANDLE:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<FileHandle>());
-				break;
-			case ParamType::DIRECTORY_HANDLE:
-				this->getParamByName(parameter.second.getName()).setValue((setup->second).getValue<DirectoryHandle>());
-				break;
-			}
-			
+			catch (Exception* e){
+				throw ParamException(fileName, e->what());
+			}			
 		}
 	}
 
-	Parameter& Parameters::getParamByName(const std::string& paramName){
-		if (this->mParameters.find(paramName) == this->mParameters.end())
-			throw ParamException(paramName, "There is no parameter with such name.");
-		return this->mParameters[paramName];
+	Parameter Parameters::converNodeToParameter(const cv::FileNode& fileNode){
+		if (fileNode.size() != 1 || !fileNode.isNamed())
+			throw Exception("Parameters file with incorrect syntax!");
+		std::string paramName, paramValue;
+		paramName = fileNode.name();
+		fileNode >> paramValue;
+		ParamType paramType;
+		if (fileNode.isInt())
+			paramType = ParamType::INTEGER;
+		else if (fileNode.isReal())
+			paramType = ParamType::REAL;
+		else if (fileNode.isString())
+			paramType = ParamType::STRING;
+		else
+			throw Exception("Parameters file with incorrect syntax!");
+		Parameter param(paramName, "", paramType);
+		param.setValue(paramValue);
+		return param;
 	}
 
 }

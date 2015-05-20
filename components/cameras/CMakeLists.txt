@@ -16,15 +16,15 @@ file(GLOB CAMERAS_CAMERA_FILES		"${CAMERAS_PATH}/include/cameras/camera.hpp"
 									"${CAMERAS_PATH}/src/video_camera.cpp"
 									)
 									
-file(GLOB CAMERAS_TEMP_FILES		"${CAMERAS_PATH}/include/cameras/SMCamCMD.hpp"
-									"${CAMERAS_PATH}/src/SMCamCMD.cpp"
-									"${CAMERAS_PATH}/include/cameras/SMData.hpp"
-									"${CAMERAS_PATH}/src/SMData.cpp"
-									"${CAMERAS_PATH}/include/cameras/video_camera_PTZ.hpp"
+file(GLOB CAMERAS_PTZ_FILES			"${CAMERAS_PATH}/include/cameras/video_camera_PTZ.hpp"
 									"${CAMERAS_PATH}/src/video_camera_PTZ.cpp"
 									"${CAMERAS_PATH}/include/cameras/video_camera_PTZ_Trend_Net7865.hpp"
 									"${CAMERAS_PATH}/src/video_camera_PTZ_Trend_Net7865.cpp"
 									)
+
+file(GLOB CAMERAS_UTIL_FILES		"${CAMERAS_PATH}/include/cameras/cameras_defs.hpp"
+									)
+
 							
 file(GLOB CORE_INCLUDES				"${CAMERAS_PATH}/include/cameras/*.hpp")
 
@@ -32,7 +32,8 @@ file(GLOB CORE_INCLUDES				"${CAMERAS_PATH}/include/cameras/*.hpp")
 # CREATE SOURCE GROUPS
 ###############################################################################
 source_group("Cameras"	FILES ${CAMERAS_CAMERA_FILES})
-source_group("Temp"		FILES ${CAMERAS_TEMP_FILES})
+source_group("PTZ"		FILES ${CAMERAS_PTZ_FILES})
+source_group("Util"		FILES ${CAMERAS_UTIL_FILES})
 
 ###############################################################################
 # ADD LIBRARY CORE
@@ -40,7 +41,8 @@ source_group("Temp"		FILES ${CAMERAS_TEMP_FILES})
 
 #Add library core into SSF project with its project
 add_library(ssf_cameras 	${CAMERAS_CAMERA_FILES}
-							${CAMERAS_TEMP_FILES}
+							${CAMERAS_PTZ_FILES}
+							${CAMERAS_UTIL_FILES}
 							)
 							
 target_include_directories(ssf_cameras PUBLIC ${CAMERAS_PATH}/include/)
@@ -66,4 +68,8 @@ ssf_link_boost(ssf_cameras system filesystem log log_setup thread date_time)
 
 if(BUILD_TESTS)	
 	add_subdirectory(test)
+endif()
+
+if(BUILD_APPS)	
+	add_subdirectory(app)
 endif()
