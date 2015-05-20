@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <configuration/configuration.hpp>
+#include <configuration/module.hpp>
 
 TEST(Configuration, constructor) {
     EXPECT_NO_THROW(ssf::Configuration test_configuration);
@@ -33,11 +34,10 @@ TEST(Configuration, setParameter){
     ssf::Configuration test;
     test.addModule("ModuleA", "typeA");
     
-    EXPECT_NO_THROW(test.setParameter("typeA", "ModuleA", "param1", ssf::ParamType::INT, 1));
-    EXPECT_NO_THROW(test.setParameter("typeA", "ModuleA", "param2", ssf::ParamType::INT, 2));
-    EXPECT_NO_THROW(test.setParameter("typeA", "ModuleA", "param3", ssf::ParamType::INT, 3));
-    EXPECT_ANY_THROW(test.setParameter("typeA", "ModuleA", "param1", ssf::ParamType::INT, 1));
-    EXPECT_ANY_THROW(test.setParameter("typeA", "ModuleA", "param2", ssf::ParamType::INT, 1));
-    EXPECT_ANY_THROW(test.setParameter("typeA", "ModuleA", "param3", ssf::ParamType::INT, 1));
+	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param1", 1));
+	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param2", 2));
+	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param3", 3));
+	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param4", 4));
+	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param5", 5));
     
 }

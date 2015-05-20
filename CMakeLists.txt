@@ -77,6 +77,8 @@ if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" S
 	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O4 -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -g")
+	#Solve plugin problem for some linux versions
+	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS}")
 	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -88,6 +90,7 @@ endif()
 #Disable C4996
 if(MSVC)
 	add_definitions(/D_SCL_SECURE_NO_WARNINGS=1)
+	add_definitions(/D_CRT_SECURE_NO_WARNINGS=1)
 endif()
 
 #Allows the solution folder utilization (for MSVC)

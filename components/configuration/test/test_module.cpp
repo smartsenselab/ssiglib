@@ -29,8 +29,6 @@ TEST(Module, getID){
 
 TEST(Module, addSetParameter){
     ssf::Module test_module("moduleName", "moduleType");
-    EXPECT_NO_THROW(test_module.addParameter(ssf::ParamType::INT, "integer", ""));
-    EXPECT_ANY_THROW(test_module.addParameter(ssf::ParamType::INT, "integer", ""));
-    test_module.setValue("integer", 5);
-    EXPECT_EQ(5, test_module.getValue<int>("integer"));
+    EXPECT_NO_THROW(test_module.addParameter("integer", 5));
+    EXPECT_ANY_THROW(test_module.addParameter("integer", 5));	
 }
