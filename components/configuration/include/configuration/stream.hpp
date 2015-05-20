@@ -10,6 +10,7 @@ namespace ssf{
 	class Stream{
 	
 	public:
+        CONFIG_EXPORT Stream();
 		CONFIG_EXPORT Stream(const std::string& moduleIDProvider, const std::string& outputProvider, const std::string& moduleIDReceiver, const std::string inputReceiver);
 		CONFIG_EXPORT virtual ~Stream(void);
 		CONFIG_EXPORT Stream(const Stream& rhs);
