@@ -19,24 +19,24 @@ namespace ssf{
 		CORE_EXPORT virtual std::string getName() = 0;
 		CORE_EXPORT virtual std::string getType() = 0;
 		
-		CORE_EXPORT virtual ResourceInfo getInfo();
-		CORE_EXPORT virtual void setup(const std::string& paramFile, const std::string& nodeID);
-		CORE_EXPORT virtual void setup(const FileHandle& paramFile, const std::string& nodeID);
-		CORE_EXPORT virtual void setup(const ParametersSetup& paramSetup);
+//		CORE_EXPORT virtual ResourceInfo getInfo();
+//		CORE_EXPORT virtual void setup(const std::string& paramFile, const std::string& nodeID);
+//		CORE_EXPORT virtual void setup(const FileHandle& paramFile, const std::string& nodeID);
+//		CORE_EXPORT virtual void setup(const ParametersSetup& paramSetup);
 
 	protected:		
-		CORE_EXPORT virtual void setAuthor(const std::string& author);
-		CORE_EXPORT virtual void setDescription(const std::string& description);
-		CORE_EXPORT virtual void setAuthorEmail(const std::string& authorEmail);
-		CORE_EXPORT virtual void setRequiredVersion(const unsigned short& major, const unsigned short& minor = 0, const unsigned short& patch = 0);
-		CORE_EXPORT virtual void setRequiredVersion(const VersionInfo& version);
-		CORE_EXPORT virtual void setProperty(const std::string& propertyName, const std::string& propertyValue);
+//		CORE_EXPORT virtual void setAuthor(const std::string& author);
+//		CORE_EXPORT virtual void setDescription(const std::string& description);
+//		CORE_EXPORT virtual void setAuthorEmail(const std::string& authorEmail);
+//		CORE_EXPORT virtual void setRequiredVersion(const unsigned short& major, const unsigned short& minor = 0, const unsigned short& patch = 0);
+//		CORE_EXPORT virtual void setRequiredVersion(const VersionInfo& version);
+//		CORE_EXPORT virtual void setProperty(const std::string& propertyName, const std::string& propertyValue);
 
 	private:
-		ResourceInfo mResourceInfo;
+//		ResourceInfo mResourceInfo;
 
 	protected:
-		Parameters PARAMETERS;
+//		Parameters PARAMETERS;
 
 		
 	};
