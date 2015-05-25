@@ -25,6 +25,8 @@ file(GLOB CORE_FILEHANDLE_FILES 	"${CORE_PATH}/include/core/file_handle.hpp"
 
 file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
 									"${CORE_PATH}/src/parameter.cpp"
+									"${CORE_PATH}/include/core/parameter_info.hpp"
+									"${CORE_PATH}/src/parameter_info.cpp"
 									"${CORE_PATH}/include/core/parameters.hpp"
 									"${CORE_PATH}/src/parameters.cpp"
 									)
