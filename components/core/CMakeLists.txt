@@ -27,6 +27,8 @@ file(GLOB CORE_PARAMETERS_FILES 	"${CORE_PATH}/include/core/parameter.hpp"
 									"${CORE_PATH}/src/parameter.cpp"
 									"${CORE_PATH}/include/core/parameter_info.hpp"
 									"${CORE_PATH}/src/parameter_info.cpp"
+									"${CORE_PATH}/include/core/parameters_setup.hpp"
+									"${CORE_PATH}/src/parameters_setup.cpp"
 									"${CORE_PATH}/include/core/parameters.hpp"
 									"${CORE_PATH}/src/parameters.cpp"
 									)

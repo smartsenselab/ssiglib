@@ -1,5 +1,43 @@
 %YAML:1.0
-paramInteger: "10" 
-paramReal: "2.2"
-paramString: "test_string"
-paramBool: "true"
+config1:
+   paramInteger: 10 
+   paramDouble: 2.2
+   paramString: "test_string"
+   paramBool: "true"
+   paramFileHandle: "test_file.txt"
+   paramDirectoryHandle: "folder_test"
+   paramIntVector: [10, 11, 12]
+   paramDoubleVector: [1000, 1100.1, 1200.2]
+   paramStringVector: ["a", "b", "c"]
+invalid1:
+   paramInteger: {}
+   paramDouble: 2.2
+   paramString: "test_string"
+   paramBool: true
+   paramFileHandle: "test_file.txt"
+   paramDirectoryHandle: "folder_test"
+   paramIntVector: [10, 11, 12]
+   paramDoubleVector: [1000, 1100.1, 1200.2]
+   paramStringVector: ["a", "b", "c"]
+invalid2:
+   config1:
+      paramInteger: 10
+      paramDouble: 2.2
+      paramString: "test_string"
+      paramBool: "true"
+      paramFileHandle: "test_file.txt"
+      paramDirectoryHandle: "folder_test"
+      paramIntVector: [10, 11, 12]
+      paramDoubleVector: [1000, 1100.1, 1200.2]
+      paramStringVector: ["a", "b", "c"]
+invalid3: {}
+invalid4:
+   paramInteger: []
+   paramDouble: 2.2
+   paramString: "test_string"
+   paramBool: true
+   paramFileHandle: "test_file.txt"
+   paramDirectoryHandle: "folder_test"
+   paramIntVector: [10, 11, 12]
+   paramDoubleVector: [1000, 1100.1, 1200.2]
+   paramStringVector: ["a", "b", "c"]
