@@ -1,268 +1,386 @@
-//#include <gtest/gtest.h>
-//
-//#include "core/parameter.hpp"
-//#include <limits>
-//
-//TEST(Parameter, INTEGER){
-//	ssf::Parameter p("test", "description");
-//
-//	int intValue;
-//	long long longLongValue;
-//	unsigned int unsignedValue;
-//	float floatValue;
-//	std::string stringValue;
-//	
-//	intValue = std::numeric_limits<int>::max();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::max(), p.toInt());
-//
-//	intValue = std::numeric_limits<int>::min();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::min(), p.toInt());
-//
-//	intValue = 0;
-//	p.setValue(intValue);
-//	EXPECT_EQ(0, p.toInt());
-//
-//	unsignedValue = std::numeric_limits<unsigned int>::max();
-//	p.setValue(unsignedValue);
-//	EXPECT_EQ(std::numeric_limits<unsigned int>::max(), p.toUnsignedInt());
-//
-//	unsignedValue = std::numeric_limits<unsigned int>::max();
-//	p.setValue(unsignedValue);
-//	EXPECT_ANY_THROW(p.toInt());
-//
-//	intValue = std::numeric_limits<int>::min();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::min(), p.toInt());
-//
-//	intValue = 0;
-//	p.setValue(intValue);
-//	EXPECT_EQ(0, p.toInt());
-//
-//	longLongValue = std::numeric_limits<int>::max();
-//	p.setValue(longLongValue);
-//	EXPECT_EQ(std::numeric_limits<int>::max(), p.toInt());
-//
-//	longLongValue = std::numeric_limits<long long>::max();
-//	p.setValue(longLongValue);
-//	EXPECT_ANY_THROW(p.toInt());
-//
-//	floatValue = 10.5;
-//	p.setValue(floatValue);
-//	EXPECT_EQ(10, p.toInt());
-//
-//	stringValue = "101";
-//	p.setValue(stringValue);
-//	EXPECT_EQ(101, p.toInt());
-//
-//	p.setValue("101");
-//	EXPECT_EQ(101, p.toInt());
-//
-//	p.setValue("10.99");
-//	EXPECT_EQ(10, p.toInt());
-//
-//}
-//
-//
-//TEST(Parameter, REAL){
-//	ssf::Parameter p("test", "description");
-//
-//	int intValue;
-//	long long longLongValue;
-//	unsigned int unsignedValue;
-//	float floatValue;
-//	std::string stringValue;
-//
-//	intValue = std::numeric_limits<int>::max();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::max(), p.toInt());
-//
-//	intValue = std::numeric_limits<int>::min();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::min(), p.toInt());
-//
-//	intValue = 0;
-//	p.setValue(intValue);
-//	EXPECT_EQ(0, p.toInt());
-//
-//	unsignedValue = std::numeric_limits<unsigned int>::max();
-//	p.setValue(unsignedValue);
-//	EXPECT_EQ(std::numeric_limits<unsigned int>::max(), p.toUnsignedInt());
-//
-//	unsignedValue = std::numeric_limits<unsigned int>::max();
-//	p.setValue(unsignedValue);
-//	EXPECT_ANY_THROW(p.toInt());
-//
-//	intValue = std::numeric_limits<int>::min();
-//	p.setValue(intValue);
-//	EXPECT_EQ(std::numeric_limits<int>::min(), p.toInt());
-//
-//	intValue = 0;
-//	p.setValue(intValue);
-//	EXPECT_EQ(0, p.toInt());
-//
-//	longLongValue = std::numeric_limits<int>::max();
-//	p.setValue(longLongValue);
-//	EXPECT_EQ(std::numeric_limits<int>::max(), p.toInt());
-//
-//	longLongValue = std::numeric_limits<long long>::max();
-//	p.setValue(longLongValue);
-//	EXPECT_ANY_THROW(p.toInt());
-//
-//	floatValue = 10.5;
-//	p.setValue(floatValue);
-//	EXPECT_EQ(10, p.toInt());
-//
-//	stringValue = "101";
-//	p.setValue(stringValue);
-//	EXPECT_EQ(101, p.toInt());
-//
-//	p.setValue("101");
-//	EXPECT_EQ(101, p.toInt());
-//
-//	p.setValue("10.99");
-//	EXPECT_EQ(10, p.toInt());
-//
-//}
-//
-//
-////
-////class TestParams : public ::testing::Test{
-////protected:
-////
-////	virtual void SetUp(){
-////		intValue = 99;
-////		longValue = 99999;
-////		floatValue = float(99.88);
-////		doubleValue = 99999.88888888;
-////		boolValue = true;
-////		stringValue = "stringValue";
-////		fileHandleValue = ssf::FileHandle("test_file.txt");
-////		directoryHandleValue = ssf::DirectoryHandle("folder_test");
-////
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::INT, "paramInt", "description_test_int"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::LONG, "paramLong", "description_test_long"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::FLOAT, "paramFloat", "description_test_float"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::DOUBLE, "paramDouble", "description_test_double"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::BOOL, "paramBool", "description_test_bool"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::STRING, "paramString", "description_test_string"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::FILE_HANDLE, "paramFile", "description_test_file"));
-////		EXPECT_NO_THROW(parameters.addParameter(ssf::ParamType::DIRECTORY_HANDLE, "paramDirectory", "description_test_directory"));
-////	}
-////
-////	int intValue;
-////	long longValue;
-////	float floatValue;
-////	double doubleValue;
-////	bool boolValue;
-////	std::string stringValue;
-////	ssf::FileHandle fileHandleValue;
-////	ssf::DirectoryHandle directoryHandleValue;
-////
-////
-////	ssf::Parameters parameters;
-////};
-////
-////TEST_F(TestParams, getType){
-////	EXPECT_EQ(ssf::ParamType::INT, parameters.getType("paramInt"));
-////	EXPECT_EQ(ssf::ParamType::LONG, parameters.getType("paramLong"));
-////	EXPECT_EQ(ssf::ParamType::FLOAT, parameters.getType("paramFloat"));
-////	EXPECT_EQ(ssf::ParamType::DOUBLE, parameters.getType("paramDouble"));
-////	EXPECT_EQ(ssf::ParamType::BOOL, parameters.getType("paramBool"));
-////	EXPECT_EQ(ssf::ParamType::STRING, parameters.getType("paramString"));
-////	EXPECT_EQ(ssf::ParamType::FILE_HANDLE, parameters.getType("paramFile"));
-////	EXPECT_EQ(ssf::ParamType::DIRECTORY_HANDLE, parameters.getType("paramDirectory"));
-////	EXPECT_ANY_THROW(parameters.getType("invalid_name"));
-////}
-////
-////TEST_F(TestParams, getName){
-////	EXPECT_STREQ("paramInt", parameters.getName("paramInt").c_str());
-////	EXPECT_STREQ("paramLong", parameters.getName("paramLong").c_str());
-////	EXPECT_STREQ("paramFloat", parameters.getName("paramFloat").c_str());
-////	EXPECT_STREQ("paramDouble", parameters.getName("paramDouble").c_str());
-////	EXPECT_STREQ("paramBool", parameters.getName("paramBool").c_str());
-////	EXPECT_STREQ("paramString", parameters.getName("paramString").c_str());
-////	EXPECT_STREQ("paramFile", parameters.getName("paramFile").c_str());
-////	EXPECT_STREQ("paramDirectory", parameters.getName("paramDirectory").c_str());
-////	EXPECT_ANY_THROW(parameters.getName("invalid_name").c_str());
-////}
-////
-////TEST_F(TestParams, getDescription){
-////	EXPECT_STREQ("description_test_int", parameters.getDescription("paramInt").c_str());
-////	EXPECT_STREQ("description_test_long", parameters.getDescription("paramLong").c_str());
-////	EXPECT_STREQ("description_test_float", parameters.getDescription("paramFloat").c_str());
-////	EXPECT_STREQ("description_test_double", parameters.getDescription("paramDouble").c_str());
-////	EXPECT_STREQ("description_test_bool", parameters.getDescription("paramBool").c_str());
-////	EXPECT_STREQ("description_test_string", parameters.getDescription("paramString").c_str());
-////	EXPECT_STREQ("description_test_file", parameters.getDescription("paramFile").c_str());
-////	EXPECT_STREQ("description_test_directory", parameters.getDescription("paramDirectory").c_str());
-////	EXPECT_ANY_THROW(parameters.getDescription("invalid_name").c_str());
-////}
-////
-////TEST_F(TestParams, required){
-////	EXPECT_FALSE(parameters.isRequired("paramInt"));
-////	EXPECT_NO_THROW(parameters.setRequired("paramInt", true));
-////	EXPECT_TRUE(parameters.isRequired("paramInt"));
-////	EXPECT_ANY_THROW(parameters.isRequired("invalid_name"));
-////	EXPECT_ANY_THROW(parameters.setRequired("invalid_name", false));
-////}
-////
-////TEST_F(TestParams, irregularValues){
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramInt", std::numeric_limits<int>::max()));
-////	EXPECT_EQ(std::numeric_limits<int>::max(), parameters.getValue<int>("paramInt"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramInt", std::numeric_limits<long>::max()));
-////	EXPECT_EQ(static_cast<int>(std::numeric_limits<long>::max()), parameters.getValue<long>("paramInt"));
-////	EXPECT_TRUE(parameters.getValue<bool>("paramInt"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramInt",true));
-////	EXPECT_EQ(1, parameters.getValue<int>("paramInt"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramInt", false));
-////	EXPECT_EQ(0, parameters.getValue<int>("paramInt"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramBool", std::numeric_limits<int>::max()));
-////	EXPECT_TRUE(parameters.getValue<bool>("paramBool"));
-////	EXPECT_EQ(1, parameters.getValue<int>("paramBool"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramBool", 0));
-////	EXPECT_FALSE(parameters.getValue<bool>("paramBool"));
-////
-////
-////	
-////	EXPECT_ANY_THROW(parameters.setValue("paramInt", "invalid"));
-////	EXPECT_ANY_THROW(parameters.setValue("paramBool", "invalid"));
-////	EXPECT_ANY_THROW(parameters.setValue("paramString", 0));
-////	EXPECT_ANY_THROW(parameters.setValue("paramFile", directoryHandleValue));
-////	EXPECT_ANY_THROW(parameters.setValue("paramDirectory", fileHandleValue));
-////
-////}
-////
-////TEST_F(TestParams, regularValues){
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramInt", intValue));
-////	EXPECT_EQ(intValue, parameters.getValue<int>("paramInt"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramLong", longValue));
-////	EXPECT_EQ(longValue, parameters.getValue<long>("paramLong"));
-////	
-////	EXPECT_NO_THROW(parameters.setValue("paramFloat", floatValue));
-////	EXPECT_FLOAT_EQ(floatValue, parameters.getValue<float>("paramFloat"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramDouble", doubleValue));
-////	EXPECT_DOUBLE_EQ(doubleValue, parameters.getValue<double>("paramDouble"));
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramBool", boolValue));
-////	EXPECT_TRUE(parameters.getValue<bool>("paramBool"));
-////	
-////	EXPECT_NO_THROW(parameters.setValue("paramString", stringValue));
-////	EXPECT_STREQ(stringValue.c_str(), parameters.getValue<std::string>("paramString").c_str());
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramFile", fileHandleValue));
-////	EXPECT_STREQ(fileHandleValue.getAbsoluteFileName().c_str(), parameters.getValue<ssf::FileHandle>("paramFile").getAbsoluteFileName().c_str());
-////
-////	EXPECT_NO_THROW(parameters.setValue("paramDirectory", directoryHandleValue));
-////	EXPECT_STREQ(directoryHandleValue.getAbsolutePath().c_str(), parameters.getValue<ssf::DirectoryHandle>("paramDirectory").getAbsolutePath().c_str());
-////}
+#include <gtest/gtest.h>
+
+#include <map>
+
+#include "core/parameter.hpp"
+
+class TestParameter : public ::testing::Test{
+public:
+
+	virtual void SetUp(){
+
+		intValue = 99;
+		doubleValue = 99999.88888888;
+		boolValue = true;
+		stringValue = "stringValue";
+		fileHandleValue = ssf::FileHandle("test_file.txt");
+		directoryHandleValue = ssf::DirectoryHandle("folder_test");
+		intVectorValue = std::vector < int > {10, 11, 12};
+		doubleVectorValue = std::vector < double > {1000, 1100.1, 1200.2};
+		stringVectorValue = std::vector < std::string > {"a", "b", "c"};
+
+		EXPECT_NO_THROW(parameters["paramInt"] = ssf::Parameter("paramInt", intValue, "description_test_int"));
+		EXPECT_NO_THROW(parameters["paramDouble"] = ssf::Parameter("paramDouble", doubleValue, "description_test_double"));
+		EXPECT_NO_THROW(parameters["paramBool"] = ssf::Parameter("paramBool", boolValue, "description_test_bool"));
+		EXPECT_NO_THROW(parameters["paramString"] = ssf::Parameter("paramString", stringValue, "description_test_string"));
+		EXPECT_NO_THROW(parameters["paramFileHandle"] = ssf::Parameter("paramFileHandle", fileHandleValue, "description_test_file"));
+		EXPECT_NO_THROW(parameters["paramDirectoryHandle"] = ssf::Parameter("paramDirectoryHandle", directoryHandleValue, "description_test_directory"));
+		EXPECT_NO_THROW(parameters["paramIntVector"] = ssf::Parameter("paramIntVector", intVectorValue, "description_test_intVector"));
+		EXPECT_NO_THROW(parameters["paramDoubleVector"] = ssf::Parameter("paramDoubleVector", doubleVectorValue, "description_test_doubleVector"));
+		EXPECT_NO_THROW(parameters["paramStringVector"] = ssf::Parameter("paramStringVector", stringVectorValue, "description_test_stringVector"));
+	}
+
+	int intValue;
+	double doubleValue;
+	bool boolValue;
+	std::string stringValue;
+	ssf::FileHandle fileHandleValue;
+	ssf::DirectoryHandle directoryHandleValue;
+	std::vector<int> intVectorValue;
+	std::vector<double> doubleVectorValue;
+	std::vector<std::string> stringVectorValue;
+
+
+	std::map<std::string, ssf::Parameter> parameters;
+};
+
+TEST_F(TestParameter, getName){
+	EXPECT_EQ("paramInt", parameters["paramInt"].getName());
+	EXPECT_EQ("paramDouble", parameters["paramDouble"].getName());
+	EXPECT_EQ("paramBool", parameters["paramBool"].getName());
+	EXPECT_EQ("paramString", parameters["paramString"].getName());
+	EXPECT_EQ("paramFileHandle", parameters["paramFileHandle"].getName());
+	EXPECT_EQ("paramDirectoryHandle", parameters["paramDirectoryHandle"].getName());
+	EXPECT_EQ("paramIntVector", parameters["paramIntVector"].getName());
+	EXPECT_EQ("paramDoubleVector", parameters["paramDoubleVector"].getName());
+	EXPECT_EQ("paramStringVector", parameters["paramStringVector"].getName());
+}
+
+TEST_F(TestParameter, getDescription){
+	EXPECT_EQ("description_test_int", parameters["paramInt"].getDescription());
+	EXPECT_EQ("description_test_double", parameters["paramDouble"].getDescription());
+	EXPECT_EQ("description_test_bool", parameters["paramBool"].getDescription());
+	EXPECT_EQ("description_test_string", parameters["paramString"].getDescription());
+	EXPECT_EQ("description_test_file", parameters["paramFileHandle"].getDescription());
+	EXPECT_EQ("description_test_directory", parameters["paramDirectoryHandle"].getDescription());
+	EXPECT_EQ("description_test_intVector", parameters["paramIntVector"].getDescription());
+	EXPECT_EQ("description_test_doubleVector", parameters["paramDoubleVector"].getDescription());
+	EXPECT_EQ("description_test_stringVector", parameters["paramStringVector"].getDescription());
+}
+
+TEST_F(TestParameter, getType){
+	EXPECT_EQ(ssf::ParamType::INT, parameters["paramInt"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::DOUBLE, parameters["paramDouble"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::BOOL, parameters["paramBool"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::STRING, parameters["paramString"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::FILE_HANDLE, parameters["paramFileHandle"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::DIRECTORY_HANDLE, parameters["paramDirectoryHandle"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::INT_VECTOR, parameters["paramIntVector"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::DOUBLE_VECTOR, parameters["paramDoubleVector"].getExpectedType());
+	EXPECT_EQ(ssf::ParamType::STRING_VECTOR, parameters["paramStringVector"].getExpectedType());
+	
+}
+
+TEST_F(TestParameter, isRequired){
+	EXPECT_FALSE(parameters["paramInt"].isRequired());
+	EXPECT_FALSE(parameters["paramDouble"].isRequired());
+	EXPECT_FALSE(parameters["paramBool"].isRequired());
+	EXPECT_FALSE(parameters["paramString"].isRequired());
+	EXPECT_FALSE(parameters["paramFileHandle"].isRequired());
+	EXPECT_FALSE(parameters["paramDirectoryHandle"].isRequired());
+	EXPECT_FALSE(parameters["paramIntVector"].isRequired());
+	EXPECT_FALSE(parameters["paramDoubleVector"].isRequired());
+	EXPECT_FALSE(parameters["paramStringVector"].isRequired());
+
+	parameters["paramInt"].setRequired(true);
+	EXPECT_TRUE(parameters["paramInt"].isRequired());
+	parameters["paramInt"].setRequired(false);
+	EXPECT_FALSE(parameters["paramInt"].isRequired());
+
+}
+
+TEST_F(TestParameter, testCopy){
+	ssf::Parameter copyParameter(this->parameters["paramInt"]);
+	EXPECT_EQ("paramInt", copyParameter.getName());
+	EXPECT_EQ("description_test_int", copyParameter.getDescription());
+	EXPECT_EQ(ssf::ParamType::INT, copyParameter.getExpectedType());
+	EXPECT_FALSE(copyParameter.isRequired());
+
+	ssf::Parameter lhsParameter = this->parameters["paramInt"];
+	EXPECT_EQ("paramInt", lhsParameter.getName());
+	EXPECT_EQ("description_test_int", lhsParameter.getDescription());
+	EXPECT_EQ(ssf::ParamType::INT, lhsParameter.getExpectedType());
+	EXPECT_FALSE(lhsParameter.isRequired());
+}
+
+TEST_F(TestParameter, toIntRegular){
+
+	ssf::Parameter param("a", 10);
+	EXPECT_EQ(10, param.toInt());
+	param = ssf::Parameter("a", 10.5);
+	EXPECT_EQ(10, param.toInt());
+	param = ssf::Parameter("a", -10);
+	EXPECT_EQ(-10, param.toInt());
+	param = ssf::Parameter("a", -10.5);
+	EXPECT_EQ(-10, param.toInt());
+
+	int i = 10;
+	param = ssf::Parameter("a", i);
+	EXPECT_EQ(10, param.toInt());
+	double d = 10.5;
+	param = ssf::Parameter("a", d);
+	EXPECT_EQ(10, param.toInt());
+
+	param = ssf::Parameter("a", "10");
+	EXPECT_EQ(10, param.toInt());
+	param = ssf::Parameter("a", "-10");
+	EXPECT_EQ(-10, param.toInt());
+
+	param = ssf::Parameter("a", true);
+	EXPECT_EQ(1, param.toInt());
+	param = ssf::Parameter("a", false);
+	EXPECT_EQ(0, param.toInt());
+
+	param = ssf::Parameter("a", "true");
+	EXPECT_EQ(1, param.toInt());
+	param = ssf::Parameter("a", "false");
+	EXPECT_EQ(0, param.toInt());
+
+	param = ssf::Parameter("a", std::vector < int > {10, 20, 30});
+	EXPECT_EQ(10, param.toInt());
+	param = ssf::Parameter("a", std::vector < double > {10.1, 20.2, 30.3});
+	EXPECT_EQ(10, param.toInt());
+	param = ssf::Parameter("a", std::vector < std::string > {"10", "20", "30"});
+	EXPECT_EQ(10, param.toInt());
+
+
+	i = std::numeric_limits<int>::max();
+	param = ssf::Parameter("a",i);
+	EXPECT_EQ(std::numeric_limits<int>::max(), param.toInt());
+
+	i = std::numeric_limits<int>::min();
+	param = ssf::Parameter("a", i);
+	EXPECT_EQ(std::numeric_limits<int>::min(), param.toInt());
+
+	d = std::numeric_limits<double>::min();
+	param = ssf::Parameter("a", d);
+	EXPECT_EQ((int)std::numeric_limits<double>::min(), param.toInt());
+
+}
+
+TEST_F(TestParameter, toIntIrregular){
+	
+	double d = std::numeric_limits<double>::max();
+	ssf::Parameter param = ssf::Parameter("a", d);
+	EXPECT_ANY_THROW(param.toInt());
+
+	param = ssf::Parameter("a", "nom_number");
+	EXPECT_ANY_THROW(param.toInt());
+
+	param = ssf::Parameter("a", ssf::FileHandle("file"));
+	EXPECT_ANY_THROW(param.toInt());
+
+	param = ssf::Parameter("a", ssf::DirectoryHandle("directory"));
+	EXPECT_ANY_THROW(param.toInt());
+
+}
+
+TEST_F(TestParameter, toDoubleRegular){
+
+	ssf::Parameter param("a", 10);
+	EXPECT_EQ(10, param.toDouble());
+	param = ssf::Parameter("a", 10.5);
+	EXPECT_EQ(10.5, param.toDouble());
+	param = ssf::Parameter("a", -10);
+	EXPECT_EQ(-10, param.toDouble());
+	param = ssf::Parameter("a", -10.5);
+	EXPECT_EQ(-10.5, param.toDouble());
+
+	int i = 10;
+	param = ssf::Parameter("a", i);
+	EXPECT_EQ(10, param.toDouble());
+	double d = 10.5;
+	param = ssf::Parameter("a", d);
+	EXPECT_EQ(10.5, param.toDouble());
+
+	param = ssf::Parameter("a", "10.55");
+	EXPECT_EQ(10.55, param.toDouble());
+
+	param = ssf::Parameter("a", true);
+	EXPECT_EQ(1, param.toDouble());
+	param = ssf::Parameter("a", false);
+	EXPECT_EQ(0, param.toDouble());
+
+	param = ssf::Parameter("a", "true");
+	EXPECT_EQ(1, param.toDouble());
+	param = ssf::Parameter("a", "false");
+	EXPECT_EQ(0, param.toDouble());
+
+	param = ssf::Parameter("a", std::vector < int > {10, 20, 30});
+	EXPECT_EQ(10, param.toDouble());
+	param = ssf::Parameter("a", std::vector < double > {10.1, 20.2, 30.3});
+	EXPECT_EQ(10.1, param.toDouble());
+	param = ssf::Parameter("a", std::vector < std::string > {"10.1", "20.2", "30.3"});
+	EXPECT_EQ(10.1, param.toDouble());
+
+
+	i = std::numeric_limits<int>::max();
+	param = ssf::Parameter("a", i);
+	EXPECT_EQ(std::numeric_limits<int>::max(), param.toDouble());
+
+	i = std::numeric_limits<int>::min();
+	param = ssf::Parameter("a", i);
+	EXPECT_EQ(std::numeric_limits<int>::min(), param.toDouble());
+
+	d = std::numeric_limits<float>::max();
+	param = ssf::Parameter("a", d);
+	EXPECT_EQ(std::numeric_limits<float>::max(), param.toDouble());
+
+	double dtest = -312312312313141.1535635245245245;
+	param = ssf::Parameter("a", dtest);
+	EXPECT_EQ(-312312312313141.1535635245245245, param.toDouble());
+
+}
+
+TEST_F(TestParameter, toDoubleIrregular){
+
+	ssf::Parameter param = ssf::Parameter("a", "nom_number");
+	EXPECT_ANY_THROW(param.toDouble());
+
+	param = ssf::Parameter("a", ssf::FileHandle("file"));
+	EXPECT_ANY_THROW(param.toDouble());
+
+	param = ssf::Parameter("a", ssf::DirectoryHandle("directory"));
+	EXPECT_ANY_THROW(param.toDouble());
+
+}
+
+TEST_F(TestParameter, toBoolRegular){
+
+	ssf::Parameter param("a", true);
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", false);
+	EXPECT_FALSE(param.toBool());
+
+	param = ssf::Parameter("a", 10);
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", -10);
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", 10.1);
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", -10.1);
+	EXPECT_TRUE(param.toBool());
+
+	param = ssf::Parameter("a", 0);
+	EXPECT_FALSE(param.toBool());
+	
+	param = ssf::Parameter("a", "10");
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", "-10");
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", "0");
+	EXPECT_FALSE(param.toBool());
+
+	param = ssf::Parameter("a", "true");
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", "false");
+	EXPECT_FALSE(param.toBool());
+
+	param = ssf::Parameter("a", std::vector < int > {10, 20, 30});
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", std::vector < double > {10.1, 20.2, 30.3});
+	EXPECT_TRUE(param.toBool());
+	param = ssf::Parameter("a", std::vector < std::string > {"10", "20", "30"});
+	EXPECT_TRUE(param.toBool());
+
+}
+
+TEST_F(TestParameter, toIntVectorRegular){
+
+	ssf::Parameter param("a", 10);
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	param = ssf::Parameter("a", 10.5);
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	param = ssf::Parameter("a", -10);
+	EXPECT_EQ(-10, param.toIntVector()[0]);
+	param = ssf::Parameter("a", -10.5);
+	EXPECT_EQ(-10, param.toIntVector()[0]);
+
+	param = ssf::Parameter("a", "10");
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	param = ssf::Parameter("a", "-10");
+	EXPECT_EQ(-10, param.toIntVector()[0]);
+
+	param = ssf::Parameter("a", true);
+	EXPECT_EQ(1, param.toIntVector()[0]);
+	param = ssf::Parameter("a", false);
+	EXPECT_EQ(0, param.toIntVector()[0]);
+
+	param = ssf::Parameter("a", "true");
+	EXPECT_EQ(1, param.toIntVector()[0]);
+	param = ssf::Parameter("a", "false");
+	EXPECT_EQ(0, param.toIntVector()[0]);
+
+	param = ssf::Parameter("a", std::vector < int > {10, 20, 30});
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	EXPECT_EQ(20, param.toIntVector()[1]);
+	EXPECT_EQ(30, param.toIntVector()[2]);
+	
+	param = ssf::Parameter("a", std::vector < double > {10.1, 20.2, 30.3});
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	EXPECT_EQ(20, param.toIntVector()[1]);
+	EXPECT_EQ(30, param.toIntVector()[2]);
+
+	param = ssf::Parameter("a", std::vector < std::string > {"10", "20", "30"});
+	EXPECT_EQ(10, param.toIntVector()[0]);
+	EXPECT_EQ(20, param.toIntVector()[1]);
+	EXPECT_EQ(30, param.toIntVector()[2]);
+
+}
+
+TEST_F(TestParameter, toIntVectorIrregular){
+	
+	ssf::Parameter param = ssf::Parameter("a", "nom_number");
+	EXPECT_ANY_THROW(param.toIntVector());
+
+	param = ssf::Parameter("a", std::vector < std::string > {"10", "20", "30"});
+
+	param = ssf::Parameter("a", ssf::FileHandle("file"));
+	EXPECT_ANY_THROW(param.toIntVector());
+
+	param = ssf::Parameter("a", ssf::DirectoryHandle("directory"));
+	EXPECT_ANY_THROW(param.toIntVector());
+
+}
+
+TEST_F(TestParameter, checkTypes){
+
+	EXPECT_TRUE(ssf::Parameter::isInt("10"));
+	EXPECT_TRUE(ssf::Parameter::isInt("-10"));
+	EXPECT_TRUE(ssf::Parameter::isInt("0"));
+	EXPECT_TRUE(ssf::Parameter::isInt("true"));
+	EXPECT_TRUE(ssf::Parameter::isInt("false"));
+	EXPECT_FALSE(ssf::Parameter::isInt("10 10"));
+	EXPECT_FALSE(ssf::Parameter::isInt("word"));
+
+	EXPECT_TRUE(ssf::Parameter::isDouble("10.1"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("-10.1"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("0"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("0.0"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("10"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("true"));
+	EXPECT_TRUE(ssf::Parameter::isDouble("false"));
+	EXPECT_FALSE(ssf::Parameter::isDouble("10.1 10"));
+	EXPECT_FALSE(ssf::Parameter::isDouble("word"));
+
+	EXPECT_TRUE(ssf::Parameter::isIntVector(std::vector < std::string > {"10", "20", "30"}));
+	EXPECT_TRUE(ssf::Parameter::isIntVector(std::vector < std::string > {"10", "true", "30"}));
+	EXPECT_FALSE(ssf::Parameter::isIntVector(std::vector < std::string > {"10", "word", "30"}));
+
+	EXPECT_TRUE(ssf::Parameter::isDoubleVector(std::vector < std::string > {"10", "20", "30"}));
+	EXPECT_TRUE(ssf::Parameter::isDoubleVector(std::vector < std::string > {"10.1", "20.2", "30.3"}));
+	EXPECT_TRUE(ssf::Parameter::isDoubleVector(std::vector < std::string > {"10.1", "false", "30.3"}));
+	EXPECT_FALSE(ssf::Parameter::isDoubleVector(std::vector < std::string > {"10.1", "word", "30.3"}));
+	
+
+}
