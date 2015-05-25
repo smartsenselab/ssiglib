@@ -20,7 +20,6 @@ TEST(Plugin, load) {
 	EXPECT_TRUE(isLoaded);
 
 	plugin = loader.getPluginInstance();
-	plugin->initialize();
 
 	EXPECT_STREQ("RESOURCE_SPECIALIZATION", plugin->getName().c_str());
 	EXPECT_STREQ("TYPE_RESOURCE_SPECIALIZATION", plugin->getType().c_str());
