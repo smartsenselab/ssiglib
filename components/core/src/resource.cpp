@@ -11,19 +11,19 @@ namespace ssf{
 	}
 
 	Resource::Resource(const Resource& rhs){
-		this->mResourceInfo = rhs.mResourceInfo;
-		this->PARAMETERS = rhs.PARAMETERS;		
+//		this->mResourceInfo = rhs.mResourceInfo;
+//		this->PARAMETERS = rhs.PARAMETERS;		
 	}
 
 	Resource& Resource::operator=(const Resource& rhs){
 		if (this != &rhs){
-			this->mResourceInfo = rhs.mResourceInfo;
-			this->PARAMETERS = rhs.PARAMETERS;
+//			this->mResourceInfo = rhs.mResourceInfo;
+//			this->PARAMETERS = rhs.PARAMETERS;
 		}
 		return *this;
 	}
 
-	ssf::ResourceInfo Resource::getInfo(){
+/*	ssf::ResourceInfo Resource::getInfo(){
 		ResourceInfo retResourceInfo = this->mResourceInfo;
 		retResourceInfo.mParametersInfo = this->PARAMETERS.getParametersInfo();
 		return retResourceInfo;
@@ -53,7 +53,7 @@ namespace ssf{
 		this->mResourceInfo.setAuthorEmail(authorEmail);
 	}
 
-	void Resource::setRequiredVersion(const unsigned short& major, const unsigned short& minor /*= 0*/, const unsigned short& patch /*= 0*/){
+	void Resource::setRequiredVersion(const unsigned short& major, const unsigned short& minor, const unsigned short& patch){
 		this->mResourceInfo.setRequiredVersion(VersionInfo(major, minor, patch));
 	}
 
@@ -64,6 +64,6 @@ namespace ssf{
 	void Resource::setProperty(const std::string& propertyName, const std::string& propertyValue){
 		this->mResourceInfo.setProperty(propertyName, propertyValue);
 	}
-
+*/
 }
 
