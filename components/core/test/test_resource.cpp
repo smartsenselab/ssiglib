@@ -51,21 +51,21 @@ public:
 };
 //
 //
-//class TestResource : public ::testing::Test{
-//protected:
-//
-//	virtual void SetUp(){
-//		EXPECT_NO_THROW(resource = new ResourceSpecialization());
-//	}
-//
-//	virtual void TearDown() {
-//		delete resource;
-//	}
-//
-//	ResourceSpecialization* resource;
-//};
-//
-//TEST_F(TestResource, resourceInfo){
+class TestResource : public ::testing::Test{
+protected:
+
+	virtual void SetUp(){
+		EXPECT_NO_THROW(resource = new ResourceSpecialization());
+	}
+
+	virtual void TearDown() {
+		delete resource;
+	}
+
+	ResourceSpecialization* resource;
+};
+
+TEST_F(TestResource, resourceInfo){
 //
 //	EXPECT_STREQ("RESOURCE_SPECIALIZATION", this->resource->getName().c_str());
 //	EXPECT_STREQ("TYPE_RESOURCE_SPECIALIZATION", this->resource->getType().c_str());
@@ -84,4 +84,4 @@ public:
 //	EXPECT_STREQ("paramInt", paramsInfo["paramInt"].getName().c_str());
 //	EXPECT_STREQ("description_test_int", paramsInfo["paramInt"].getDescription().c_str());
 //
-//}
+}
