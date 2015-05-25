@@ -1,253 +1,328 @@
 #include "core/parameter.hpp"
 
-#include <limits>
+#include <boost/lexical_cast.hpp>
+
+#include "core/param_exception.hpp"
+
 
 namespace ssf{
 
-	Parameter::Parameter(){
-		this->mValue = nullptr;
-		this->mDefaultValue = nullptr;
-	}
-
-	Parameter::Parameter(const ParamType& parameterType, const std::string& name, const std::string& description){
-		this->mValue = nullptr;
-		this->mDefaultValue = nullptr;
-		this->mType = parameterType;
-		this->mName = name;
-		this->mDescription = description;
+	Parameter::Parameter(void){
+		this->mExpectedType = ParamType::STRING;
+		this->mName = "";
+		this->mDescription = "";
 		this->mRequired = false;
-
-		switch (parameterType){
-		case ParamType::INT:
-			this->mValue = new int(0);
-			this->mDefaultValue = new int(0);
-			this->maxValue = std::numeric_limits<int>::max();
-			this->minValue = std::numeric_limits<int>::min();
-			break;
-		case ParamType::LONG:
-			this->mValue = new long(0);
-			this->mDefaultValue = new long(0);
-			this->maxValue = std::numeric_limits<long>::max();
-			this->minValue = std::numeric_limits<long>::min();
-			break;
-		case ParamType::FLOAT:
-			this->mValue = new float(0.0);
-			this->mDefaultValue = new float(0.0);
-			this->maxValue = static_cast<long>(std::numeric_limits<float>::max());
-			this->minValue = static_cast<long>(std::numeric_limits<float>::min());
-			break;
-		case ParamType::DOUBLE:
-			this->mValue = new double(0.0);
-			this->mDefaultValue = new double(0.0);
-			this->maxValue = static_cast<long>(std::numeric_limits<double>::max());
-			this->minValue = static_cast<long>(std::numeric_limits<double>::min());
-			break;
-		case ParamType::BOOL:
-			this->mValue = new bool(false);
-			this->mDefaultValue = new bool(false);
-			break;
-		case ParamType::STRING:
-			this->mValue = new std::string("");
-			this->mDefaultValue = new std::string("");
-			break;
-		case ParamType::FILE_HANDLE:
-			this->mValue = new FileHandle();
-			this->mDefaultValue = new FileHandle();
-			break;
-		case ParamType::DIRECTORY_HANDLE:
-			this->mValue = new DirectoryHandle();
-			this->mDefaultValue = new DirectoryHandle();
-			break;
-		}
-
 	}
 
-	Parameter::~Parameter(){
-		if (this->mValue != nullptr){
-			this->eraseValues();
+	Parameter::Parameter(const std::string& name, const int& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		std::string convertString = std::to_string(defaultValue);
+		this->mDefaultValue.push_back(convertString);
+		this->mValue.push_back(convertString);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::INT;
+	}
+
+	Parameter::Parameter(const std::string& name, const double& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+
+		//std::ostringstream out;
+		//out << std::fixed << std::setprecision(5) << defaultValue;
+		//std::string convertString = out.str();
+		std::string convertString = std::to_string(defaultValue);
+		this->mDefaultValue.push_back(convertString);
+		this->mValue.push_back(convertString);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::DOUBLE;
+	}
+
+	Parameter::Parameter(const std::string& name, const bool& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		std::string convertString = defaultValue ? "true" : "false";
+		this->mDefaultValue.push_back(convertString);
+		this->mValue.push_back(convertString);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::BOOL;
+	}
+
+	Parameter::Parameter(const std::string& name, const char* defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		std::string strValue(defaultValue);
+		this->mDefaultValue.push_back(strValue);
+		this->mValue.push_back(strValue);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::STRING;
+	}
+
+	Parameter::Parameter(const std::string& name, const std::string& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		this->mDefaultValue.push_back(defaultValue);
+		this->mValue.push_back(defaultValue);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::STRING;
+	}
+
+	Parameter::Parameter(const std::string& name, const FileHandle& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		std::string convertString = defaultValue.getAbsoluteFileName();
+		this->mDefaultValue.push_back(convertString);
+		this->mValue.push_back(convertString);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::FILE_HANDLE;
+	}
+
+	Parameter::Parameter(const std::string& name, const DirectoryHandle& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		std::string convertString = defaultValue.getAbsolutePath();
+		this->mDefaultValue.push_back(convertString);
+		this->mValue.push_back(convertString);
+		this->mRequired = false;
+		this->mExpectedType = ParamType::DIRECTORY_HANDLE;
+	}
+
+	Parameter::Parameter(const std::string& name, const std::vector<int>& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		for (auto value : defaultValue)
+			this->mDefaultValue.push_back(std::to_string(value));
+		this->mValue = mDefaultValue;
+		this->mRequired = false;
+		this->mExpectedType = ParamType::INT_VECTOR;
+	}
+
+	Parameter::Parameter(const std::string& name, const std::vector<double>& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		for (auto value : defaultValue){
+			std::string convertString = std::to_string(value);
+			this->mDefaultValue.push_back(convertString);
 		}
-		this->mValue = nullptr;
+		this->mValue = mDefaultValue;
+		this->mRequired = false;
+		this->mExpectedType = ParamType::DOUBLE_VECTOR;
+	}
+
+	Parameter::Parameter(const std::string& name, const std::vector<std::string>& defaultValue, const std::string& description /*= "no description."*/)
+		: mName(name), mDescription(description){
+		this->mDefaultValue = defaultValue;
+		this->mValue = defaultValue;
+		this->mRequired = false;
+		this->mExpectedType = ParamType::STRING_VECTOR;
+	}
+
+	Parameter::~Parameter(void){
+
 	}
 
 	Parameter::Parameter(const Parameter& rhs){
-		this->mValue = nullptr;
-		this->copy(rhs);
+		this->mName = rhs.mName;
+		this->mDescription = rhs.mDescription;
+		this->mExpectedType = rhs.mExpectedType;
+		this->mValue = rhs.mValue;
+		this->mDefaultValue = rhs.mDefaultValue;
+		this->mRequired = rhs.mRequired;
 	}
 
 	Parameter& Parameter::operator=(const Parameter& rhs){
 		if (this != &rhs){
-			this->copy(rhs);
+			this->mName = rhs.mName;
+			this->mDescription = rhs.mDescription;
+			this->mExpectedType = rhs.mExpectedType;
+			this->mValue = rhs.mValue;
+			this->mDefaultValue = rhs.mDefaultValue;
+			this->mRequired = rhs.mRequired;
 		}
 		return *this;
 	}
 
-	ParamType Parameter::getType() const{
-		return this->mType;
+	int Parameter::toInt() const{
+		double temp_value;
+		int convert_value;
+		try{
+			temp_value = boost::lexical_cast<double>(this->mValue[0]);
+			convert_value = boost::numeric_cast<int>(temp_value);
+		}
+		catch (std::exception e){
+			if (this->mValue[0] == "true")
+				return 1;
+
+			if (this->mValue[0] == "false")
+				return 0;
+			throw ParamException(this->mName, "Is not possible convert this parameter to int.");
+		}
+		return convert_value;
 	}
+
+	double Parameter::toDouble() const{
+		double convert_value;
+		try{
+			convert_value = boost::lexical_cast<double>(this->mValue[0]);
+		}
+		catch (std::exception e){
+			if (this->mValue[0] == "true")
+				return 1;
+
+			if (this->mValue[0] == "false")
+				return 0;
+			throw ParamException(this->mName, "Is not possible convert this parameter to double.");
+		}
+		return convert_value;
+	}
+
+	bool Parameter::toBool() const{
+		int tempValue;
+		try{
+			tempValue = this->toInt();
+		}
+		catch (std::exception e){
+			if (this->mValue[0] == "false")
+				return false;
+		}
+		return (tempValue != 0);
+	}
+
+	std::string Parameter::toString() const{
+		return this->mValue[0];
+	}
+
+	FileHandle Parameter::toFileHandle() const{
+		return FileHandle(this->mValue[0]);
+	}
+
+	DirectoryHandle Parameter::toDirectoryHandle() const{
+		return DirectoryHandle(this->mValue[0]);
+	}
+
+	std::vector<int> Parameter::toIntVector() const{
+		std::vector<int> retVector;
+		double temp_value;
+		int convert_value;
+		for (auto strValue : this->mValue){
+			try{
+				temp_value = boost::lexical_cast<double>(strValue);
+				convert_value = boost::numeric_cast<int>(temp_value);
+			}
+			catch (std::exception e){
+				if (strValue == "true")
+					convert_value = 1;
+				else if (strValue == "false")
+					convert_value = 0;
+				else
+					throw ParamException(this->mName, "Is not possible convert this parameter to int.");
+			}
+			retVector.push_back(convert_value);
+		}
+		return retVector;
+	}
+
+	std::vector<double> Parameter::toDoubleVector() const{
+		std::vector<double> retVector;
+		double convert_value;
+		for (auto strValue : this->mValue){
+			try{
+				convert_value = boost::lexical_cast<double>(strValue);
+			}
+			catch (std::exception e){
+				if (strValue == "true")
+					convert_value = 1;
+				else if (strValue == "false")
+					convert_value = 0;
+				else
+					throw ParamException(this->mName, "Is not possible convert this parameter to double.");
+			}
+			retVector.push_back(convert_value);
+		}
+		return retVector;
+	}
+
+	std::vector<std::string> Parameter::toStringVector() const{
+		return this->mValue;
+	}
+
+	bool Parameter::isInt(){
+		return Parameter::isInt(this->mValue[0]);
+	}
+
+	bool Parameter::isDouble(){
+		return Parameter::isDouble(this->mValue[0]);
+	}
+
+	bool Parameter::isIntVector(){
+		return Parameter::isIntVector(this->mValue);
+	}
+
+	bool Parameter::isDoubleVector(){
+		return Parameter::isDoubleVector(this->mValue);
+	}
+
+	bool Parameter::isInt(const std::string& stringValue){
+		try{
+			boost::lexical_cast<int>(stringValue);
+		}
+		catch (std::exception e){
+			if (stringValue == "true" || stringValue == "false")
+				return true;
+			return false;
+		}
+		return true;
+	}
+
+	bool Parameter::isDouble(const std::string& stringValue){
+		try{
+			boost::lexical_cast<double>(stringValue);
+		}
+		catch (std::exception e){
+			if (stringValue == "true" || stringValue == "false")
+				return true;
+			return false;
+		}
+		return true;
+	}
+
+	bool Parameter::isIntVector(const std::vector<std::string> vectorStringValue){
+		for (auto singleValue : vectorStringValue){
+			if (!Parameter::isInt(singleValue))
+				return false;
+		}
+		return true;
+	}
+	bool Parameter::isDoubleVector(const std::vector<std::string> vectorStringValue){
+		for (auto singleValue : vectorStringValue){
+			if (!Parameter::isDouble(singleValue))
+				return false;
+		}
+		return true;
+	}
+
 
 	std::string Parameter::getName() const{
 		return this->mName;
+	}
+
+	void Parameter::restoreToDefaultValue(){
+		this->mValue = this->mDefaultValue;
+	}
+
+	ssf::ParamType Parameter::getExpectedType() const{
+		return this->mExpectedType;
+	}
+
+	void Parameter::setExpectedType(const ParamType& expectedType){
+		this->mExpectedType = expectedType;
 	}
 
 	std::string Parameter::getDescription() const{
 		return this->mDescription;
 	}
 
+	void Parameter::setDescription(const std::string& description){
+		this->mDescription = description;
+	}
+
 	bool Parameter::isRequired() const{
 		return this->mRequired;
 	}
 
-	void Parameter::setRequired(const bool& required /*= true*/){
+	void Parameter::setRequired(const bool& required){
 		this->mRequired = required;
 	}
 
-	long Parameter::getMaxValue() const{
-		return this->maxValue;
-	}
-
-	void Parameter::setMaxValue(const long& maxValue){
-		switch (this->mType){
-		case ParamType::INT:
-			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<int>::max()) ? std::numeric_limits<int>::max():maxValue);
-			break;
-		case ParamType::LONG:
-			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<long>::max()) ? std::numeric_limits<long>::max() : maxValue);
-			break;
-		case ParamType::FLOAT:
-			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<float>::max()) ? std::numeric_limits<float>::max() : maxValue);
-			break;
-		case ParamType::DOUBLE:
-			this->maxValue = static_cast<long>((maxValue > std::numeric_limits<double>::max()) ? std::numeric_limits<double>::max() : maxValue);
-			break;
-		default:
-			break;
-		}
-	}
-
-	long Parameter::getMinValue() const{
-		return this->minValue;
-	}
-
-	void Parameter::setMinValue(const long& minValue){
-		switch (this->mType){
-		case ParamType::INT:
-			this->minValue = static_cast<long>((minValue < std::numeric_limits<int>::min()) ? std::numeric_limits<int>::min() : minValue);
-			break;
-		case ParamType::LONG:
-			this->minValue = static_cast<long>((minValue < std::numeric_limits<long>::min()) ? std::numeric_limits<long>::min() : minValue);
-			break;
-		case ParamType::FLOAT:
-			this->minValue = static_cast<long>((minValue < std::numeric_limits<float>::min()) ? std::numeric_limits<float>::min() : minValue);
-			break;
-		case ParamType::DOUBLE:
-			this->minValue = static_cast<long>((minValue < std::numeric_limits<double>::min()) ? std::numeric_limits<double>::min() : minValue);
-			break;
-		default:
-			break;
-		}
-	}
-
-	std::string Parameter::getTypeStr() const{
-		switch (this->mType)
-		{
-		case ParamType::INT: return "INT";
-		case ParamType::LONG: return "LONG";
-		case ParamType::FLOAT: return "FLOAT";
-		case ParamType::DOUBLE: return "DOUBLE";
-		case ParamType::BOOL: return "BOOL";
-		case ParamType::STRING: return "STRING";
-		case ParamType::FILE_HANDLE: return "FILE_HANDLE";
-		case ParamType::DIRECTORY_HANDLE: return "DIRECTORY_HANDLE";
-		default: return "UNKNOW TYPE";
-		}
-
-	}
-
-	void Parameter::copy(const Parameter& rhs){
-
-		this->mType = rhs.mType;
-		this->mName = rhs.mName;
-		this->mDescription = rhs.mDescription;
-		this->mRequired = rhs.mRequired;
-
-		if (this->mValue != nullptr && this->mDefaultValue != nullptr){
-			this->eraseValues();
-			this->mValue = nullptr;
-		}
-
-		if (rhs.mValue == nullptr && rhs.mDefaultValue != nullptr)
-			return;
-
-		switch (rhs.mType){
-		case ParamType::INT: 
-			this->mValue = new int(*((int*)rhs.mValue)); 
-			this->mDefaultValue = new int(*((int*)rhs.mDefaultValue));
-			break;
-		case ParamType::LONG: 
-			this->mValue = new long(*((long*)rhs.mValue));
-			this->mDefaultValue = new long(*((long*)rhs.mDefaultValue));
-			break;
-		case ParamType::FLOAT: 
-			this->mValue = new float(*((float*)rhs.mValue));
-			this->mDefaultValue = new float(*((float*)rhs.mDefaultValue));
-			break;
-		case ParamType::DOUBLE: 
-			this->mValue = new double(*((double*)rhs.mValue)); 
-			this->mDefaultValue = new double(*((double*)rhs.mDefaultValue));
-			break;
-		case ParamType::BOOL: 
-			this->mValue = new bool(*((bool*)rhs.mValue));
-			this->mDefaultValue = new bool(*((bool*)rhs.mDefaultValue));
-			break;
-		case ParamType::STRING: 
-			this->mValue = new std::string(*((std::string*)rhs.mValue));
-			this->mDefaultValue = new std::string(*((std::string*)rhs.mDefaultValue));
-			break;
-		case ParamType::FILE_HANDLE: 
-			this->mValue = new FileHandle(*((FileHandle*)rhs.mValue));
-			this->mDefaultValue = new FileHandle(*((FileHandle*)rhs.mDefaultValue));
-			break;
-		case ParamType::DIRECTORY_HANDLE: 
-			this->mValue = new DirectoryHandle(*((DirectoryHandle*)rhs.mValue)); 
-			this->mDefaultValue = new DirectoryHandle(*((DirectoryHandle*)rhs.mDefaultValue));
-			break;
-		}
-
-	}
-
-	void Parameter::eraseValues(){
-		switch (this->mType){
-		case ParamType::INT:
-			delete ((int*)this->mValue);
-			delete ((int*)this->mDefaultValue);
-			break;
-		case ParamType::LONG:
-			delete ((long*)this->mValue);
-			delete ((long*)this->mDefaultValue);
-			break;
-		case ParamType::FLOAT:
-			delete ((float*)this->mValue);
-			delete ((float*)this->mDefaultValue);
-			break;
-		case ParamType::DOUBLE:
-			delete ((double*)this->mValue);
-			delete ((double*)this->mDefaultValue);
-			break;
-		case ParamType::BOOL:
-			delete ((bool*)this->mValue);
-			delete ((bool*)this->mDefaultValue);
-			break;
-		case ParamType::STRING:
-			delete ((std::string*)this->mValue);
-			delete ((std::string*)this->mDefaultValue);
-			break;
-		case ParamType::FILE_HANDLE:
-			delete ((FileHandle*)this->mValue);
-			delete ((FileHandle*)this->mDefaultValue);
-			break;
-		case ParamType::DIRECTORY_HANDLE: delete ((DirectoryHandle*)this->mValue); break;
-		}
-	}
-
 }
-

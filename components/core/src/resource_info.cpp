@@ -1,9 +1,13 @@
 #include "core/resource_info.hpp"
 
+#include "core/exception.hpp"
+
 namespace ssf{
 
 	ResourceInfo::ResourceInfo(){
-		
+		this->mAuthor = "Unknown Author";
+		this->mDescription = "Description not available";
+		this->mAuthorEmail = "Unknown Author Email";
 	}
 
 	ResourceInfo::~ResourceInfo(){
@@ -11,30 +15,24 @@ namespace ssf{
 	}
 
 	ResourceInfo::ResourceInfo(const ResourceInfo& rhs){
-		this->mName = rhs.mName;
 		this->mAuthor = rhs.mAuthor;
 		this->mDescription = rhs.mDescription;
 		this->mAuthorEmail = rhs.mAuthorEmail;
-		this->mMajorRequiredVersion = rhs.mMajorRequiredVersion;
-		this->mMinorRequiredVersion = rhs.mMinorRequiredVersion;
-		this->mParams = rhs.mParams;
+		this->mRequiredVersion = rhs.mRequiredVersion;
+		this->mProperties = rhs.mProperties;
+		this->mParametersInfo = rhs.mParametersInfo;
 	}
 
 	ResourceInfo& ResourceInfo::operator=(const ResourceInfo& rhs){
 		if (this != &rhs){
-			this->mName = rhs.mName;
 			this->mAuthor = rhs.mAuthor;
 			this->mDescription = rhs.mDescription;
 			this->mAuthorEmail = rhs.mAuthorEmail;
-			this->mMajorRequiredVersion = rhs.mMajorRequiredVersion;
-			this->mMinorRequiredVersion = rhs.mMinorRequiredVersion;
-			this->mParams = rhs.mParams;
+			this->mRequiredVersion = rhs.mRequiredVersion;
+			this->mProperties = rhs.mProperties;
+			this->mParametersInfo = rhs.mParametersInfo;
 		}
 		return *this;
-	}	
-
-	std::string ResourceInfo::getName() const{
-		return this->mName;
 	}
 
 	std::string ResourceInfo::getAuthor() const{
@@ -48,21 +46,41 @@ namespace ssf{
 	std::string ResourceInfo::getAuthorEmail() const{
 		return this->mAuthorEmail;
 	}
-	
-	std::string ResourceInfo::getRequiredVersion() const{
-		return (std::to_string(this->mMajorRequiredVersion) + "." + std::to_string(this->mMinorRequiredVersion));
+
+	VersionInfo ResourceInfo::getRequiredVersion() const{
+		return this->mRequiredVersion;
 	}
 
-	int ResourceInfo::getMajorRequiredVersion() const{
-		return this->mMajorRequiredVersion;
+	std::string ResourceInfo::getProperty(const std::string& propertyName){
+		if (this->mProperties.find(propertyName) == this->mProperties.end()){
+			std::string message = "Does not exists a property with name \"" + propertyName + "\".";
+			throw Exception(message);
+		}
+		return this->mProperties[propertyName];
 	}
 
-	int ResourceInfo::getMinorRequiredVersion() const{
-		return this->mMinorRequiredVersion;
+	const std::map<std::string, ParameterInfo>& ResourceInfo::getParametersInfo(){
+		return this->mParametersInfo;
 	}
 
-	const std::map<std::string, Parameter>& ResourceInfo::getParams() const{
-		return this->mParams.getParameters();
+	void ResourceInfo::setAuthor(const std::string& author){
+		this->mAuthor = author;
+	}
+
+	void ResourceInfo::setDescription(const std::string& description){
+		this->mDescription = description;
+	}
+
+	void ResourceInfo::setAuthorEmail(const std::string& email){
+		this->mAuthorEmail = email;
+	}
+
+	void ResourceInfo::setRequiredVersion(const VersionInfo& version){
+		this->mRequiredVersion = version;
+	}
+
+	void ResourceInfo::setProperty(const std::string& propertyName, const std::string& propertyValue){
+		this->mProperties[propertyName] = propertyValue;
 	}
 
 }
