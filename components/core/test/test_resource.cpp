@@ -3,13 +3,13 @@
 #include "core/resource.hpp"
 #include "core/resource_info.hpp"
 
-class ResourceSpecialization : public ssf::Resource{
+class ResourceTest : public ssf::Resource{
 
 public:
 	std::string getName() { return "RESOURCE_SPECIALIZATION"; }
 	std::string getType() { return "TYPE_RESOURCE_SPECIALIZATION"; }
 
-	ResourceSpecialization(){
+	ResourceTest(){
 
 		this->setAuthor("Antonio");
 		this->setAuthorEmail("antonio@ssig.br");
@@ -55,33 +55,33 @@ class TestResource : public ::testing::Test{
 protected:
 
 	virtual void SetUp(){
-		EXPECT_NO_THROW(resource = new ResourceSpecialization());
+		EXPECT_NO_THROW(resource = new ResourceTest());
 	}
 
 	virtual void TearDown() {
 		delete resource;
 	}
 
-	ResourceSpecialization* resource;
+	ResourceTest* resource;
 };
 
 TEST_F(TestResource, resourceInfo){
-//
-//	EXPECT_STREQ("RESOURCE_SPECIALIZATION", this->resource->getName().c_str());
-//	EXPECT_STREQ("TYPE_RESOURCE_SPECIALIZATION", this->resource->getType().c_str());
-//
-//	ssf::ResourceInfo info = this->resource->getInfo();
-//	EXPECT_STREQ("Antonio", info.getAuthor().c_str());
-//	EXPECT_STREQ("antonio@ssig.br", info.getAuthorEmail().c_str());
-//	EXPECT_STREQ("resource_description", info.getDescription().c_str());
-//	EXPECT_STREQ("2.0.0", info.getRequiredVersion().toString().c_str());
-//	EXPECT_EQ(2, info.getRequiredVersion().getMajor());
-//	EXPECT_EQ(0, info.getRequiredVersion().getMinor());
-//
-//	std::map<std::string, ssf::ParameterInfo> paramsInfo = info.getParametersInfo();
-//
-//	EXPECT_EQ(ssf::ParamType::INT, paramsInfo["paramInt"].getExpectedType());
-//	EXPECT_STREQ("paramInt", paramsInfo["paramInt"].getName().c_str());
-//	EXPECT_STREQ("description_test_int", paramsInfo["paramInt"].getDescription().c_str());
-//
+
+	EXPECT_STREQ("RESOURCE_SPECIALIZATION", this->resource->getName().c_str());
+	EXPECT_STREQ("TYPE_RESOURCE_SPECIALIZATION", this->resource->getType().c_str());
+
+	ssf::ResourceInfo info = this->resource->getInfo();
+	EXPECT_STREQ("Antonio", info.getAuthor().c_str());
+	EXPECT_STREQ("antonio@ssig.br", info.getAuthorEmail().c_str());
+	EXPECT_STREQ("resource_description", info.getDescription().c_str());
+	EXPECT_STREQ("2.0.0", info.getRequiredVersion().toString().c_str());
+	EXPECT_EQ(2, info.getRequiredVersion().getMajor());
+	EXPECT_EQ(0, info.getRequiredVersion().getMinor());
+
+	std::map<std::string, ssf::ParameterInfo> paramsInfo = info.getParametersInfo();
+
+	EXPECT_EQ(ssf::ParamType::INT, paramsInfo["paramInt"].getExpectedType());
+	EXPECT_STREQ("paramInt", paramsInfo["paramInt"].getName().c_str());
+	EXPECT_STREQ("description_test_int", paramsInfo["paramInt"].getDescription().c_str());
+
 }
