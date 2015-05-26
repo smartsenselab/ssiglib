@@ -6,6 +6,7 @@ if(BUILD_APPS)
 	file(GLOB CAMERAS_APP_FILES "${CAMERAS_PATH}/app/main.cpp")
 	
 	add_executable(app_cameras ${CAMERAS_APP_FILES})
+	ssf_link_boost(app_cameras system filesystem log log_setup thread date_time)
 
 	# Standard linking to gtest stuff.
 	target_include_directories(app_cameras PUBLIC ${CAMERAS_PATH}/include/)

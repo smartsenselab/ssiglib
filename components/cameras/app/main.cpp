@@ -3,9 +3,11 @@
 
 int main(){
 
-	ssf::VideoCameraPTZTrendNet7865 camera("ip");
+	ssf::VideoCameraPTZTrendNet7865 camera("172.22.22.210");
 
-	camera.getCurrentPan();
+	camera.setPAN(30);
+	//camera.setPAN(-100);
+	//camera.setTILT(100);
 
 	return 0;
 }

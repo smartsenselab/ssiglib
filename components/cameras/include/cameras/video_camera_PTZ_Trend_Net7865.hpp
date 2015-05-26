@@ -11,8 +11,7 @@ namespace ssf{
 
 	class VideoCameraPTZTrendNet7865 : public VideoCameraPTZ{
 	
-		float constant;
-
+	
 	public:
 		CAMERAS_EXPORT VideoCameraPTZTrendNet7865(const std::string& address = "localhost");
 		CAMERAS_EXPORT virtual ~VideoCameraPTZTrendNet7865(void);
@@ -31,10 +30,10 @@ namespace ssf{
 		CAMERAS_EXPORT bool setTILT(float angle); //Envia o Tilt para a camera
 
 	private:
-		boost::asio::ip::tcp::resolver::query go(std::string xpos, std::string ypos); 
+	//	boost::asio::io_service VideoCameraPTZTrendNet7865::go(std::string xpos, std::string ypos);
 
 	private:
-		boost::asio::io_service io_service;
+	
 		std::string url;
 
 	};

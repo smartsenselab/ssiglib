@@ -1,8 +1,8 @@
 #ifndef _SSF_CORE_VIDEOCAMERAPTZ_HPP_
 #define _SSF_CORE_VIDEOCAMERAPTZ_HPP_
 
-#include "video_camera.hpp"
-#include "video_camera_PTZ.hpp"
+#include "cameras\video_camera.hpp"
+#include "cameras\video_camera_PTZ.hpp"
 
 namespace ssf{
 
