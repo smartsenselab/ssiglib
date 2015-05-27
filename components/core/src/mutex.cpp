@@ -18,16 +18,5 @@ namespace ssf{
 		this->mLock.unlock();
 	}
 
-	Mutex::Mutex(const Mutex& rhs){
-		//code here
-	}
-
-	Mutex& Mutex::operator=(const Mutex& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
-
 }
 
