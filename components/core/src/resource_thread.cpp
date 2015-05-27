@@ -5,9 +5,9 @@
 #include <iostream>
 
 namespace ssf{
-
+	
 	ResourceThread::ResourceThread(){
-		this->mThread = nullptr;
+		//this->mThread = nullptr;
 	}
 
 	ResourceThread::~ResourceThread(){
@@ -25,7 +25,7 @@ namespace ssf{
 	    return *this;
 	}
 
-	void ResourceThread::start(){
+	/*void ResourceThread::start(){
 		this->mThread = std::make_shared<boost::thread>(boost::bind(&ResourceThread::run, this));
 	}
 	
@@ -35,7 +35,7 @@ namespace ssf{
 
 	void ResourceThread::join(){
 		this->mThread->join();
-	}
+	}*/
 
 	
 

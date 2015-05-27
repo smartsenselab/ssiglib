@@ -17,17 +17,17 @@ namespace ssf{
 		CORE_EXPORT ResourceThread(const ResourceThread& rhs);
 		CORE_EXPORT ResourceThread& operator=(const ResourceThread& rhs);
 
-		CORE_EXPORT virtual void start();
+		/*CORE_EXPORT virtual void start();
 		CORE_EXPORT virtual void stop();
 		CORE_EXPORT virtual void join();
 
 		CORE_EXPORT virtual void beforeRun() = 0;
 		CORE_EXPORT virtual void run() = 0;
-		CORE_EXPORT virtual void afterRun() = 0;
+		CORE_EXPORT virtual void afterRun() = 0;*/
 		
 
-	private:
-		std::shared_ptr<boost::thread> mThread;
+	//private:
+	//	std::shared_ptr<boost::thread> mThread;
 
 	};
 
