@@ -8,6 +8,7 @@ namespace ssf{
 	class BaseObject{
 	
 	public:
+
 		CORE_EXPORT BaseObject(void);
 		CORE_EXPORT virtual ~BaseObject(void);
 		CORE_EXPORT BaseObject(const BaseObject& rhs);
