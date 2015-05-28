@@ -1,6 +1,6 @@
 #include "core/resource_thread.hpp"
 
-//#include <boost/thread.hpp>
+#include <boost/thread.hpp>
 //#include <boost/chrono.hpp>
 #include <iostream>
 
