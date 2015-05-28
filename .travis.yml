@@ -6,8 +6,6 @@ matrix:
       env: TASK="build"
     - compiler: gcc
       env: TASK="build"
-    - compiler: clang
-      env: TASK="test"
 
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
