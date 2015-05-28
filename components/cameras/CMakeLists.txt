@@ -10,16 +10,16 @@ set (CAMERAS_PATH ${PROJECT_SOURCE_DIR}/components/cameras)
 ###############################################################################
 
 
-file(GLOB CAMERAS_CAMERA_FILES		"${CAMERAS_PATH}/include/cameras/camera.hpp"
-									"${CAMERAS_PATH}/src/camera.cpp"
-									"${CAMERAS_PATH}/include/cameras/video_camera.hpp"
-									"${CAMERAS_PATH}/src/video_camera.cpp"
+file(GLOB CAMERAS_CAMERA_FILES		"${CAMERAS_PATH}/include/cameras/ip_camera.hpp"
+									"${CAMERAS_PATH}/src/ip_camera.cpp"
+									"${CAMERAS_PATH}/include/cameras/ip_video_camera.hpp"
+									"${CAMERAS_PATH}/src/ip_video_camera.cpp"
 									)
 									
-file(GLOB CAMERAS_PTZ_FILES			"${CAMERAS_PATH}/include/cameras/video_camera_PTZ.hpp"
-									"${CAMERAS_PATH}/src/video_camera_PTZ.cpp"
-									"${CAMERAS_PATH}/include/cameras/video_camera_PTZ_Trend_Net7865.hpp"
-									"${CAMERAS_PATH}/src/video_camera_PTZ_Trend_Net7865.cpp"
+file(GLOB CAMERAS_PTZ_FILES			"${CAMERAS_PATH}/include/cameras/ip_video_camera_PTZ.hpp"
+									"${CAMERAS_PATH}/src/ip_video_camera_PTZ.cpp"
+									"${CAMERAS_PATH}/include/cameras/ip_video_camera_PTZ_Trend_Net7865.hpp"
+									"${CAMERAS_PATH}/src/ip_video_camera_PTZ_Trend_Net7865.cpp"
 									)
 
 file(GLOB CAMERAS_UTIL_FILES		"${CAMERAS_PATH}/include/cameras/cameras_defs.hpp"
