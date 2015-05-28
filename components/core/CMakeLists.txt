@@ -79,7 +79,7 @@ file(GLOB CORE_LOG_FILES			"${CORE_PATH}/include/core/log.hpp"
 file(GLOB CORE_PLUGIN_FILES			"${CORE_PATH}/include/core/plugin_loader.hpp"
 									"${CORE_PATH}/include/core/plugin_defs.hpp"
 									)
-
+							
 file(GLOB CORE_INCLUDES				"${CORE_PATH}/include/core/*.hpp")
 
 ###############################################################################
@@ -90,12 +90,12 @@ source_group("Files"		FILES ${CORE_FILEHANDLE_FILES})
 source_group("Parameters"	FILES ${CORE_PARAMETERS_FILES})
 source_group("Base Ojbect"	FILES ${CORE_BASEOBJECT_FILES})
 source_group("Resources"	FILES ${CORE_RESOURCE_FILES})
-source_group("Log"			FILES ${CORE_LOG_FILES})
-source_group("Util"			FILES ${CORE_UTIL_FILES})
+source_group("Cameras"		FILES ${CORE_CAMERAS_FILES})
+source_group("Log"		FILES ${CORE_LOG_FILES})
+source_group("Util"		FILES ${CORE_UTIL_FILES})
 source_group("Structures"	FILES ${CORE_STRUCTURES_FILES})
 source_group("Plugin"		FILES ${CORE_PLUGIN_FILES})
 source_group("Mutex"		FILES ${CORE_MUTEX_FILES})
-
 
 ###############################################################################
 # ADD LIBRARY CORE
@@ -107,6 +107,7 @@ add_library(ssf_core 	${CORE_EXCEPTION_FILES}
 						${CORE_PARAMETERS_FILES}
 						${CORE_BASEOBJECT_FILES}
 						${CORE_RESOURCE_FILES}
+						${CORE_CAMERAS_FILES}
 						${CORE_LOG_FILES}
 						${CORE_UTIL_FILES}
 						${CORE_STRUCTURES_FILES}

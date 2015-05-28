@@ -22,6 +22,9 @@ set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 #Option to check if 'test' will be available
 option(BUILD_TESTS "Build tests" ON)
 
+#Option to check if 'app' will be available
+option(BUILD_APPS "Build APP's" ON)
+
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
