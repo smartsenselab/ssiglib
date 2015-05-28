@@ -6,7 +6,7 @@
 *  license. If you do not agree to this license, do not download, install,
 *  copy or use the software.
 *
-*                              License Agreement
+*                   Software License Agreement (BSD License)
 *                      For Smart Surveillance Framework
 *                        http://ssig.dcc.ufmg.br/ssf/
 *
