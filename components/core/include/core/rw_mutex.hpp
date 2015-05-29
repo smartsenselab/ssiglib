@@ -47,20 +47,46 @@
 
 #include "core/core_defs.hpp"
 
-
-//http://stackoverflow.com/questions/27860685/how-to-make-a-multiple-read-single-write-lock-from-more-basic-synchronization-pr
-
 namespace ssf{
 
+	/**
+	 * @brief	A reader and writer mutex.
+	 * 			
+	 * @detail	The ReaderWriterMutex concept extends the Mutex Concept to include the notion of reader-writer locks.
+	 * 			This implementation was based on <a href="http://stackoverflow.com/a/28121513"><i>qqibrow</i> suggestion in StackOverflow</a>.
+	 */
 	class RWMutex{
 
 	public:
+
+		/**
+		 * @brief	Initializes a new instance of the RWMutex class.
+		 */
 		CORE_EXPORT RWMutex(void);
+
+		/**
+		 * @brief	Finalizes an instance of the RWMutex class.
+		 */
 		CORE_EXPORT virtual ~RWMutex(void);
 
+		/**
+		 * @brief	Lock mutex for read operations.
+		 */
 		CORE_EXPORT void lockRead();
+
+		/**
+		 * @brief	Unlock mutex for read operations.
+		 */
 		CORE_EXPORT void unlockRead();
+
+		/**
+		 * @brief	Lock mutex for write operations.
+		 */
 		CORE_EXPORT void lockWrite();
+
+		/**
+		 * @brief	Unlock mutex for write operations.
+		 */
 		CORE_EXPORT void unlockWrite();
 
 	private:
@@ -68,9 +94,9 @@ namespace ssf{
 		RWMutex& operator=(const RWMutex& rhs);
 
 	private:
-		std::mutex mMutext;
-		std::condition_variable mReaderCond, mWriterCond;
-		int mReaders, mWriters, mActiverWriters;
+		std::mutex mMutex;  ///< The mutex use for lock
+		std::condition_variable mReaderCond, mWriterCond; ///< The condition variables used for control
+		int mReaders, mWriters, mActiverWriters; ///< Counters for write and read locks
 
 	};
 

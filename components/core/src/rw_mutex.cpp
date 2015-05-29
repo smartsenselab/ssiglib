@@ -53,7 +53,7 @@ namespace ssf{
 	}
 
 	void RWMutex::lockRead(){
-		std::unique_lock<std::mutex> lck(mMutext);
+		std::unique_lock<std::mutex> lck(mMutex);
 		while (!(mWriters == 0))
 			mReaderCond.wait(lck);
 		++mReaders;
@@ -61,14 +61,14 @@ namespace ssf{
 	}
 
 	void RWMutex::unlockRead(){
-		std::unique_lock<std::mutex> lck(mMutext);
+		std::unique_lock<std::mutex> lck(mMutex);
 		mReaders--;
 		lck.unlock();
 		mWriterCond.notify_one();
 	}
 
 	void RWMutex::lockWrite(){
-		std::unique_lock<std::mutex> lck(mMutext);
+		std::unique_lock<std::mutex> lck(mMutex);
 		mWriters++;
 		while (!((mReaders == 0) && (mActiverWriters == 0)))
 			mWriterCond.wait(lck);
@@ -77,7 +77,7 @@ namespace ssf{
 	}
 
 	void RWMutex::unlockWrite(){
-		std::unique_lock<std::mutex> lck(mMutext);
+		std::unique_lock<std::mutex> lck(mMutex);
 		mWriters--;
 		mActiverWriters--;
 		if (mWriters > 0) {

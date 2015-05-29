@@ -44,19 +44,36 @@
 
 #include <mutex>
 
-namespace boost{
-	class mutex;
-}
-
 namespace ssf{
 
+	/**
+	 * @brief	SSF Mutex.
+	 * 			
+	 * @detail	We decided for our own Mutex class because in future we can change or 
+	 * 			optimize the mutex implementation without carry big changes on code.
+	 */
 	class Mutex{
 	
 	public:
+
+		/**
+		 * @brief	Initializes a new instance of the Mutex class.
+		 */
 		Mutex(void);
+
+		/**
+		 * @brief	Finalizes an instance of the Mutex class.
+		 */
 		virtual ~Mutex(void);
 
+		/**
+		 * @brief	Locks the mutex.
+		 */
 		void lock();
+
+		/**
+		 * @brief	Unlocks the mutex.
+		 */
 		void unlock();
 
 	private:
@@ -64,7 +81,7 @@ namespace ssf{
 		Mutex& operator=(const Mutex& rhs);
 
 	private:
-		std::unique_lock<std::mutex> mLock;
+		std::unique_lock<std::mutex> mLock; ///< The mutex used for lock
 
 	};
 

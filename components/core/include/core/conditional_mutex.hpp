@@ -49,14 +49,43 @@
 
 namespace ssf{
 
+	/**
+	* @brief	SSF Conditional mutex.
+	*
+	* @detail	A conditional mutex is able to lock a thread (by waitForReady() function) until user 
+	* 			set the mutex status as ready.
+	* 			We decided for our own Conditional mutex class because, in future, we could change or
+	* 			optimize the mutex implementation without carry big changes on code.
+	*/
 	class ConditionalMutex{
 
 	public:
+
+		/**
+		 * @brief	Initializes a new instance of the ConditionalMutex class.
+		 *
+		 * @param	ready	Initial condition. If ready is false, the mutex status is lock.
+		 */
 		CORE_EXPORT ConditionalMutex(const bool& ready = false);
+
+		/**
+		 * @brief	Finalizes an instance of the ConditionalMutex class.
+		 */
 		CORE_EXPORT virtual ~ConditionalMutex(void);
 
+		/**
+		 * @brief	Set mutex status as unready, e.g. lock.
+		 */
 		CORE_EXPORT void unready();
+
+		/**
+		 * @brief	Set mutex status as ready, e.g. unlock.
+		 */
 		CORE_EXPORT void ready();
+
+		/**
+		 * @brief	Lock thread until mutex status changes to ready.
+		 */
 		CORE_EXPORT void waitForReady();
 
 
@@ -65,9 +94,9 @@ namespace ssf{
 		ConditionalMutex& operator=(const ConditionalMutex& rhs);
 
 	private:
-		std::mutex mMutex;
-		std::condition_variable mConditionVariable;
-		bool mReadyStatus;
+		std::mutex mMutex;  ///< The mutex used for lock
+		std::condition_variable mConditionVariable; ///< The condition variable used for control
+		bool mReadyStatus;  ///< The mutex status, true is ready
 
 
 	};

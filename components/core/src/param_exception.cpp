@@ -73,7 +73,7 @@ namespace ssf{
 		return what_message.c_str();
 	}
 
-	std::string ParamException::parameterName() const{
+	std::string ParamException::parameterName() const throw(){
 		return this->mParameterName;
 	}
 
