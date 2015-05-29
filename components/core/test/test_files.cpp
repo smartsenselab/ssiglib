@@ -77,7 +77,7 @@ TEST(FileHandle, erase) {
 
 TEST(FileHandle, strings) {
 	ssf::FileHandle fileHandle("test_file.txt");
-	EXPECT_STREQ("test_file", fileHandle.getSimpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle.simpleName().c_str());
 }
 
 TEST(FileHandle, copy) {
@@ -85,8 +85,16 @@ TEST(FileHandle, copy) {
 	ssf::FileHandle fileHandle2(fileHandle1);
 	ssf::FileHandle fileHandle3 = fileHandle2;
 
-	EXPECT_STREQ("test_file", fileHandle2.getSimpleName().c_str());
-	EXPECT_STREQ("test_file", fileHandle3.getSimpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle2.simpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle3.simpleName().c_str());
+}
+
+TEST(FileHandle, equal) {
+	ssf::FileHandle fileHandle1("test_file.txt");
+	ssf::FileHandle fileHandle2("test_file.txt");
+
+	EXPECT_TRUE(fileHandle1 == fileHandle2);
+	EXPECT_FALSE(fileHandle1 != fileHandle2);
 }
 
 ///////////////
@@ -121,7 +129,7 @@ TEST(DirectoryHandle, create) {
 
 TEST(DirectoryHandle, strings) {
 	ssf::DirectoryHandle directoryHandle("folder_test");
-	EXPECT_STREQ("folder_test", directoryHandle.getSimpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle.simpleName().c_str());
 }
 
 TEST(DirectoryHandle, copy) {
@@ -129,6 +137,14 @@ TEST(DirectoryHandle, copy) {
 	ssf::DirectoryHandle directoryHandle2(directoryHandle1);
 	ssf::DirectoryHandle directoryHandle3 = directoryHandle2;
 
-	EXPECT_STREQ("folder_test", directoryHandle2.getSimpleName().c_str());
-	EXPECT_STREQ("folder_test", directoryHandle3.getSimpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle2.simpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle3.simpleName().c_str());
+}
+
+TEST(DirectoryHandle, equal) {
+	ssf::DirectoryHandle directoryHandle1("folder_test");
+	ssf::DirectoryHandle directoryHandle2("folder_test");
+
+	EXPECT_TRUE(directoryHandle1 == directoryHandle2);
+	EXPECT_FALSE(directoryHandle1 != directoryHandle2);
 }

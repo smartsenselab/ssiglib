@@ -50,38 +50,56 @@
 namespace ssf{
 
 	/**
-	 \class	Exception
-	
-	 \brief		Default Class for handle all SSF exceptions
-	
-	 \author	Antonio Carlos
-	 \date		3/8/2015
+	 * @brief	Base exception object for SSF.
 	 */
-
 	class Exception : public std::exception {
 
 	public:
 
 		/**
-		 \fn		explicit Exception::Exception(const std::string& message);
-		
-		 \brief		Constructor.
-		
-		 \author	Antonio Carlos
-		 \date		3/8/2015
-		
-		 \param	message	The exception message.
+		 * @brief	Initializes a new instance of the Exception class.
+		 *
+		 * @param	message	The message.
 		 */
+		CORE_EXPORT explicit Exception(const char* message = "");
 
+		/**
+		 * @brief	Initializes a new instance of the Exception class.
+		 *
+		 * @param	message	The exception message.
+		 */
 		CORE_EXPORT explicit Exception(const std::string& message);
+
+		/**
+		 * @brief	Finalizes an instance of the Exception class.
+		 */
 		CORE_EXPORT virtual ~Exception() throw();
 
+		/**
+		 * @brief	Initializes a new instance of the Exception class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
+		CORE_EXPORT Exception(const Exception& rhs);
+
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
+		CORE_EXPORT Exception& operator=(const Exception& rhs);
+
+		/**
+		 * @brief	Gets the what exception message happened.
+		 *
+		 * @return	Exception message.
+		 */
 		CORE_EXPORT virtual const char * what() const throw();
 
-		CORE_EXPORT std::string getMessage() const;
-
 	protected:
-		std::string mMessage;
+		std::string mMessage;   ///< The exception message
 
 	};
 

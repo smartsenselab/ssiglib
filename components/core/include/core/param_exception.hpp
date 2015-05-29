@@ -47,19 +47,71 @@
 
 namespace ssf{
 
+	/**
+	 * @brief	Exception specialization for signaling parameters errors.
+	 * 			
+	 * @sa	Exception
+	 */
 	class ParamException : public Exception {
 
 	public:
+
+		/**		 
+		 *
+		 * @brief	Initializes a new instance of the ParamException class.
+		 *
+		 * @param	@optional	parameterName	Name of the parameter where the exception happen.
+		 * @param	@optional	message		 	The exception message.
+		 */
+		CORE_EXPORT ParamException(const std::string& parameterName = "", const char* message = "");
+
+		/**
+		 * @brief	Initializes a new instance of the ParamException class.
+		 *
+		 * @param	parameterName	Name of the parameter where the exception happen.
+		 * @param	message		 	The exception message.
+		 */
 		CORE_EXPORT ParamException(const std::string& parameterName, const std::string& message);
 
+		/**
+		 * @brief	Finalizes an instance of the ParamException class.
+		 */
 		CORE_EXPORT virtual ~ParamException() throw();
 
+		/**
+		 * @fn	ParamException::ParamException(const ParamException& rhs);
+		 *
+		 * @brief	Initializes a new instance of the ParamException class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
+		CORE_EXPORT ParamException(const ParamException& rhs);
+
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
+		CORE_EXPORT ParamException& operator=(const ParamException& rhs);
+
+		/**
+		 * @brief	Gets the what exception message happened.
+		 *
+		 * @return	Exception message.
+		 */
 		CORE_EXPORT virtual const char * what() const throw();
 
-		CORE_EXPORT std::string getParameterName() const;
+		/**
+		 * @brief	Parameter name where the exception happen.
+		 *
+		 * @return	A std::string with parameter name.
+		 */
+		CORE_EXPORT std::string parameterName() const throw();
 
 	private:
-		std::string mParameterName;
+		std::string mParameterName; ///< Name of the parameter where the exception happen.
 
 	};
 

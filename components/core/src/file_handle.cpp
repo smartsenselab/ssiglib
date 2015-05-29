@@ -47,10 +47,6 @@
 
 namespace ssf{
 
-	FileHandle::FileHandle(){
-		this->mPath = std::make_shared<boost::filesystem::path>();
-	}
-
 	FileHandle::FileHandle(const std::string& fileName){
 		boost::filesystem::path tempPath(fileName);
 		if (tempPath.is_absolute())
@@ -78,15 +74,23 @@ namespace ssf{
 		return this->mPath->string() < rhs.mPath->string();
 	}
 
-	std::string FileHandle::getAbsoluteFileName() const{
+	bool FileHandle::operator==(const FileHandle& rhs) const{
+		return *(this->mPath) == *(rhs.mPath);
+	}
+
+	bool FileHandle::operator!=(const FileHandle& rhs) const{
+		return *(this->mPath) != *(rhs.mPath);
+	}
+
+	std::string FileHandle::absolutePath() const{
 		return this->mPath->string();
 	}
 
-	std::string FileHandle::getSimpleName() const{
+	std::string FileHandle::simpleName() const{
 		return this->mPath->stem().string();
 	}
 
-	std::string FileHandle::getExtenstion() const{
+	std::string FileHandle::extension() const{
 		return this->mPath->extension().string();
 	}
 

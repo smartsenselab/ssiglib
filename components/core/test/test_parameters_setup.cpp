@@ -101,8 +101,8 @@ TEST_F(TestParametersSetup, testValues){
 	EXPECT_EQ("99.900000", values["paramDouble"][0]);
 	EXPECT_EQ("true", values["paramBool"][0]);
 	EXPECT_EQ("stringValue", values["paramString"][0]);
-	EXPECT_EQ(ssf::FileHandle("test_file.txt").getAbsoluteFileName(), values["paramFileHandle"][0]);
-	EXPECT_EQ(ssf::DirectoryHandle("folder_test").getAbsolutePath(), values["paramDirectoryHandle"][0]);
+	EXPECT_EQ(ssf::FileHandle("test_file.txt").absolutePath(), values["paramFileHandle"][0]);
+	EXPECT_EQ(ssf::DirectoryHandle("folder_test").absolutePath(), values["paramDirectoryHandle"][0]);
 	EXPECT_EQ("10", values["paramIntVector"][0]);
 	EXPECT_EQ("11", values["paramIntVector"][1]);
 	EXPECT_EQ("12", values["paramIntVector"][2]);
@@ -131,8 +131,8 @@ TEST_F(TestParametersSetup, setValue){
 	EXPECT_EQ("11.100000", values["paramDouble"][0]);
 	EXPECT_EQ("false", values["paramBool"][0]);
 	EXPECT_EQ("new_value", values["paramString"][0]);
-	EXPECT_EQ(ssf::FileHandle("new_file.txt").getAbsoluteFileName(), values["paramFileHandle"][0]);
-	EXPECT_EQ(ssf::DirectoryHandle("new_directory").getAbsolutePath(), values["paramDirectoryHandle"][0]);
+	EXPECT_EQ(ssf::FileHandle("new_file.txt").absolutePath(), values["paramFileHandle"][0]);
+	EXPECT_EQ(ssf::DirectoryHandle("new_directory").absolutePath(), values["paramDirectoryHandle"][0]);
 	EXPECT_EQ("97", values["paramIntVector"][0]);
 	EXPECT_EQ("98", values["paramIntVector"][1]);
 	EXPECT_EQ("99", values["paramIntVector"][2]);

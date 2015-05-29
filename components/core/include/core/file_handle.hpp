@@ -46,6 +46,7 @@
 #include <memory>
 
 #include "core/core_defs.hpp"
+#include "core/base_object.hpp"
 
 namespace boost{
 	namespace filesystem{
@@ -55,32 +56,130 @@ namespace boost{
 
 namespace ssf{
 
-	class FileHandle{
+	/**
+	 * @brief	This handles with files on filesystem level.
+	 * 			
+	 * @detail	Supports basic operations, such as get absolute file path, verify if a file
+	 * 			exists or erase a file.
+	 *
+	 * @sa	BaseObject
+	 */
+	class FileHandle : public BaseObject{
 
 	public:
-		CORE_EXPORT FileHandle();
-		CORE_EXPORT explicit FileHandle(const std::string& fileName);
+
+		/**
+		 * @brief	Initializes a new instance of the FileHandle class.
+		 *
+		 * @param	fileName	name of the file.
+		 */
+		CORE_EXPORT explicit FileHandle(const std::string& fileName = "");
+
+		/**
+		 * @brief	Finalizes an instance of the FileHandle class.
+		 */
 		CORE_EXPORT virtual ~FileHandle(void);
+
+		/**
+		 * @brief	Initializes a new instance of the FileHandle class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
 		CORE_EXPORT FileHandle(const FileHandle& rhs);
+
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
 		CORE_EXPORT FileHandle& operator=(const FileHandle& rhs);
 
+		/**
+		 * @brief	Less-than comparison operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the first parameter is less than the second.
+		 */
 		CORE_EXPORT bool operator<(const FileHandle& rhs) const;
 
-		CORE_EXPORT std::string getAbsoluteFileName() const;
-		CORE_EXPORT std::string getSimpleName() const;
-		CORE_EXPORT std::string getExtenstion() const;
-		
+		/**
+		 * @brief	Equality operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the parameters are considered equivalent.
+		 */
+		CORE_EXPORT bool operator==(const FileHandle& rhs) const;
+
+		/**
+		 * @brief	Inequality operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the parameters are not considered equivalent.
+		 */
+		CORE_EXPORT bool operator!=(const FileHandle& rhs) const;
+
+		/**
+		 * @brief	Gets absolute path of file. For instance <tt>/home/user/file.txt</tt>
+		 *
+		 * @return	A string with file path.
+		 */
+		CORE_EXPORT std::string absolutePath() const;
+
+		/**
+		 * @brief	Gets simple file name (without extension).
+		 *
+		 * @return	A string with simple file name.
+		 */
+		CORE_EXPORT std::string simpleName() const;
+
+		/**
+		 * @brief	Gets the extension of file, for instance <i>txt</i>
+		 *
+		 * @return	A string with extension.
+		 */
+		CORE_EXPORT std::string extension() const;
+
+		/**
+		 * @brief	Erases the file.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT bool erase();
+
+		/**
+		 * @brief	Query if this file has extension.
+		 *
+		 * @return	true if extension, false if not.
+		 */
 		CORE_EXPORT bool hasExtension() const;
 
+		/**
+		 * @brief	Erases the given file.
+		 *
+		 * @param	fileName	name of the file.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT static bool erase(const std::string& fileName);
+
+		/**
+		 * @brief	Query if the given file exists.
+		 *
+		 * @param	fileName	name of the file.
+		 *
+		 * @return	true if it exists, false if it not exists.
+		 */
 		CORE_EXPORT static bool exists(const std::string& fileName);
 
 	private:
-		std::shared_ptr<boost::filesystem::path> mPath ;
+		std::shared_ptr<boost::filesystem::path> mPath ;	///< Full pathname of the file
 
 	};
-
 }
 
 #endif // !_SSF_CORE_FILE_UTIL_HPP_PP_

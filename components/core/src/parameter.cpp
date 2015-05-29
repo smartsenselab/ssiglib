@@ -105,7 +105,7 @@ namespace ssf{
 
 	Parameter::Parameter(const std::string& name, const FileHandle& defaultValue, const std::string& description /*= "no description."*/)
 		: mName(name), mDescription(description){
-		std::string convertString = defaultValue.getAbsoluteFileName();
+		std::string convertString = defaultValue.absolutePath();
 		this->mDefaultValue.push_back(convertString);
 		this->mValue.push_back(convertString);
 		this->mRequired = false;
@@ -114,7 +114,7 @@ namespace ssf{
 
 	Parameter::Parameter(const std::string& name, const DirectoryHandle& defaultValue, const std::string& description /*= "no description."*/)
 		: mName(name), mDescription(description){
-		std::string convertString = defaultValue.getAbsolutePath();
+		std::string convertString = defaultValue.absolutePath();
 		this->mDefaultValue.push_back(convertString);
 		this->mValue.push_back(convertString);
 		this->mRequired = false;

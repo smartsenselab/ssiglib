@@ -163,8 +163,8 @@ TEST_F(TestParameterInfo, getDefaultValue){
 	EXPECT_EQ("99.900000", paramDoubleInfo.getDefaultValue());
 	EXPECT_EQ("true", paramBoolInfo.getDefaultValue());
 	EXPECT_EQ("stringValue", paramStringInfo.getDefaultValue());
-	EXPECT_EQ(ssf::FileHandle("test_file.txt").getAbsoluteFileName(), paramFileHandleInfo.getDefaultValue());
-	EXPECT_EQ(ssf::DirectoryHandle("folder_test").getAbsolutePath(), paramDirectoryHandleInfo.getDefaultValue());
+	EXPECT_EQ(ssf::FileHandle("test_file.txt").absolutePath(), paramFileHandleInfo.getDefaultValue());
+	EXPECT_EQ(ssf::DirectoryHandle("folder_test").absolutePath(), paramDirectoryHandleInfo.getDefaultValue());
 	EXPECT_EQ("10, 11, 12", paramIntVectorInfo.getDefaultValue());
 	EXPECT_EQ("1000.000000, 1100.100000, 1200.200000", paramDoubleVectorInfo.getDefaultValue());
 	EXPECT_EQ("a, b, c", paramStringVectorInfo.getDefaultValue());
@@ -177,8 +177,8 @@ TEST_F(TestParameterInfo, getValue){
 	EXPECT_EQ("99.900000", paramDoubleInfo.getValue());
 	EXPECT_EQ("true", paramBoolInfo.getValue());
 	EXPECT_EQ("stringValue", paramStringInfo.getValue());
-	EXPECT_EQ(ssf::FileHandle("test_file.txt").getAbsoluteFileName(), paramFileHandleInfo.getValue());
-	EXPECT_EQ(ssf::DirectoryHandle("folder_test").getAbsolutePath(), paramDirectoryHandleInfo.getValue());
+	EXPECT_EQ(ssf::FileHandle("test_file.txt").absolutePath(), paramFileHandleInfo.getValue());
+	EXPECT_EQ(ssf::DirectoryHandle("folder_test").absolutePath(), paramDirectoryHandleInfo.getValue());
 	EXPECT_EQ("10, 11, 12", paramIntVectorInfo.getValue());
 	EXPECT_EQ("1000.000000, 1100.100000, 1200.200000", paramDoubleVectorInfo.getValue());
 	EXPECT_EQ("a, b, c", paramStringVectorInfo.getValue());

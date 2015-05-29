@@ -43,21 +43,32 @@
 
 namespace ssf{
 
-	Exception::Exception(const std::string& message)
+	Exception::Exception(const char* message /*= "" */)
 		: mMessage(message){
-		
+
+	}
+
+	Exception::Exception(const std::string& message)
+		: mMessage(message){	
 	}
 
 	Exception::~Exception() throw(){
+		//Destructor
+	}
 
+	Exception::Exception(const Exception& rhs){
+		this->mMessage = rhs.mMessage;
+	}
+
+	Exception& Exception::operator=(const Exception& rhs){
+		if (this != &rhs){
+			this->mMessage = rhs.mMessage;
+		}
+		return *this;
 	}
 
 	const char* Exception::what() const throw(){
 		return this->mMessage.c_str();
-	}
-
-	std::string Exception::getMessage() const{
-		return this->mMessage;
 	}
 
 }

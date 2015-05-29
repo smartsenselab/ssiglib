@@ -46,17 +46,38 @@
 
 namespace ssf{
 
+	/**
+	 * @brief	A base object some special SSF Objects, such as Resource and Parameters.
+	 */
 	class BaseObject{
 	
 	public:
 
+		/**
+		 * @brief	Initializes a new instance of the BaseObject class.
+		 */
 		CORE_EXPORT BaseObject(void);
-		CORE_EXPORT virtual ~BaseObject(void);
-		CORE_EXPORT BaseObject(const BaseObject& rhs);
-		CORE_EXPORT BaseObject& operator=(const BaseObject& rhs);
 
-	private:
-		//private members
+		/**
+		 * @brief	Finalizes an instance of the BaseObject class.
+		 */
+		CORE_EXPORT virtual ~BaseObject(void);
+
+		/**
+		 * @brief	Initializes a new instance of the BaseObject class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
+		CORE_EXPORT BaseObject(const BaseObject& rhs);
+
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
+		CORE_EXPORT BaseObject& operator=(const BaseObject& rhs);
 
 	};
 

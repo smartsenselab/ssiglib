@@ -40,6 +40,12 @@
 *****************************************************************************L*/
 
 #ifndef _SSF_CORE_FILE_EXCEPTION_HPP_
+
+/**
+ * @def	_SSF_CORE_FILE_EXCEPTION_HPP_
+ *
+ * @brief	A macro that defines ssf core file exception hpp.
+ */
 #define _SSF_CORE_FILE_EXCEPTION_HPP_
 
 #include <string>
@@ -49,20 +55,69 @@
 
 namespace ssf{
 
+	/**
+	 * @brief	Exception specialization for signaling file errors.
+	 *
+	 * @sa	Exception
+	 */
 	class FileException : public Exception {
 
 	public:
+
+		/**
+		 * @brief	Initializes a new instance of the FileException class.
+		 *
+		 * @param	fileName	Name of the file where the exception happen.
+		 * @param	message 	The exception message.
+		 */
+		CORE_EXPORT FileException(const std::string& fileName = "", const char* message = "");
+
+		/**
+		 * @brief	Initializes a new instance of the FileException class.
+		 *
+		 * @param	fileName	Name of the file where the exception happen.
+		 * @param	message 	The exception message.
+		 */
 		CORE_EXPORT FileException(const std::string& fileName, const std::string& message);
 
+		/**
+		 * @brief	Finalizes an instance of the FileException class.
+		 */
 		CORE_EXPORT virtual ~FileException() throw();
 
-		CORE_EXPORT virtual const char * what() const throw();
+		/**
+		 * @brief	Initializes a new instance of the FileException class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
+		CORE_EXPORT FileException(const FileException& rhs);
 
-		CORE_EXPORT std::string getFileName() const;
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
+		CORE_EXPORT FileException& operator=(const FileException& rhs);
+
+		/**
+		 * @brief	Gets the what exception message happened.
+		 *
+		 * @return	Exception message.
+		 */
+		CORE_EXPORT virtual const char *what() const throw();
+
+		/**
+		 * @brief	File name where the exception happen.
+		 *
+		 * @return	A std::string with file name.
+		 */
+		CORE_EXPORT std::string fileName() const;
 
 	private:
-		std::string mFileName;
-	
+		std::string mFileName;  ///< Name of the file where the exception happen.
+
 	};
 
 }

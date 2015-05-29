@@ -59,7 +59,7 @@ namespace ssf{
 
 	ParametersSetup::ParametersSetup(const FileHandle& paramFile, const std::string& nodeID)
 		: mID(nodeID){
-		this->_readParamsFromFile(paramFile.getAbsoluteFileName(), nodeID);
+		this->_readParamsFromFile(paramFile.absolutePath(), nodeID);
 	}
 
 	ParametersSetup::~ParametersSetup(){
@@ -144,12 +144,12 @@ namespace ssf{
 	}
 
 	void ParametersSetup::setValue(const std::string& name, const FileHandle& value){
-		std::string convertString = value.getAbsoluteFileName();
+		std::string convertString = value.absolutePath();
 		this->_setParameter(name, std::vector < std::string > {convertString});
 	}
 
 	void ParametersSetup::setValue(const std::string& name, const DirectoryHandle& value){
-		std::string convertString = value.getAbsolutePath();
+		std::string convertString = value.absolutePath();
 		this->_setParameter(name, std::vector < std::string > {convertString});
 	}
 

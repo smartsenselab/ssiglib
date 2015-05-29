@@ -43,13 +43,29 @@
 
 namespace ssf{
 
+	CORE_EXPORT ParamException::ParamException(const std::string& parameterName /*= ""*/, const char* message /*= ""*/)
+		: Exception(message), mParameterName(parameterName){
+	}
+
 	ParamException::ParamException(const std::string& parameterName, const std::string& message)
 		: Exception(message), mParameterName(parameterName){
-
 	}
 
 	ParamException::~ParamException() throw(){
+		//Destructor
+	}
 
+	ParamException::ParamException(const ParamException& rhs){
+		Exception::operator=(rhs);
+		this->mParameterName = rhs.mParameterName;
+	}
+
+	CORE_EXPORT ParamException& ParamException::operator=(const ParamException& rhs){
+		if (this != &rhs){
+			Exception::operator=(rhs);
+			this->mParameterName = rhs.mParameterName;
+		}
+		return *this;
 	}
 
 	const char * ParamException::what() const throw(){
@@ -57,7 +73,7 @@ namespace ssf{
 		return what_message.c_str();
 	}
 
-	std::string ParamException::getParameterName() const{
+	std::string ParamException::parameterName() const{
 		return this->mParameterName;
 	}
 

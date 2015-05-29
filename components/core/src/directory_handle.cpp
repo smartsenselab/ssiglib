@@ -47,11 +47,7 @@
 
 namespace ssf{
 
-	DirectoryHandle::DirectoryHandle(){
-		this->mPath = std::make_shared<boost::filesystem::path>();
-	}
-
-	DirectoryHandle::DirectoryHandle(const std::string& directoryPathName){	
+	DirectoryHandle::DirectoryHandle(const std::string& directoryPathName /*= "" */){	
 		boost::filesystem::path tempPath(directoryPathName);
 		if (tempPath.is_absolute())
 			this->mPath = std::make_shared<boost::filesystem::path>(directoryPathName);
@@ -78,11 +74,19 @@ namespace ssf{
 		return this->mPath->string() < rhs.mPath->string();
 	}
 
-	std::string DirectoryHandle::getAbsolutePath() const{
+	bool DirectoryHandle::operator==(const DirectoryHandle& rhs) const{
+		return *(this->mPath) == *(rhs.mPath);
+	}
+
+	bool DirectoryHandle::operator!=(const DirectoryHandle& rhs) const{
+		return *(this->mPath) != *(rhs.mPath);
+	}
+
+	std::string DirectoryHandle::absolutePath() const{
 		return this->mPath->string();
 	}
 
-	std::string DirectoryHandle::getSimpleName() const{
+	std::string DirectoryHandle::simpleName() const{
 		return this->mPath->stem().string();
 	}
 

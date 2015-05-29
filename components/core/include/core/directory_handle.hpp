@@ -57,33 +57,151 @@ namespace boost{
 
 namespace ssf{
 
-	class DirectoryHandle{
+	/**
+	 * @brief	This handles with directories on filesystem level.
+	 * 			
+	 * @detail	Supports basic operations, such as get absolute file path, verify if a directory
+	 * 			exists and create or erase a directory.
+	 */
+	class DirectoryHandle : public BaseObject{
 
 	public:
-		CORE_EXPORT DirectoryHandle(void);
-		CORE_EXPORT DirectoryHandle(const std::string& directoryPathName);
+
+		/**
+		 * @brief	Initializes a new instance of the DirectoryHandle class.
+		 *
+		 * @param	directoryPathName	Full pathname of the directory file.
+		 */
+		CORE_EXPORT DirectoryHandle(const std::string& directoryPathName = "");
+
+		/**
+		 * @brief	Finalizes an instance of the DirectoryHandle class.
+		 */
 		CORE_EXPORT virtual ~DirectoryHandle(void);
+
+		/**
+		 * @brief	Initializes a new instance of the DirectoryHandle class.
+		 *
+		 * @param	rhs	The right hand side.
+		 */
 		CORE_EXPORT DirectoryHandle(const DirectoryHandle& rhs);
+
+		/**
+		 * @brief	Assignment operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	A shallow copy of this object.
+		 */
 		CORE_EXPORT DirectoryHandle& operator=(const DirectoryHandle& rhs);
 
+		/**
+		 * @brief	Less-than comparison operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the first parameter is less than the second.
+		 */
 		CORE_EXPORT bool operator<(const DirectoryHandle& rhs) const;
 
-		CORE_EXPORT std::string getAbsolutePath() const;
-		CORE_EXPORT std::string getSimpleName() const;
+		/**
+		 * @brief	Equality operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the parameters are considered equivalent.
+		 */
+		CORE_EXPORT bool operator==(const DirectoryHandle& rhs) const;
+
+		/**
+		 * @brief	Inequality operator.
+		 *
+		 * @param	rhs	The right hand side.
+		 *
+		 * @return	true if the parameters are not considered equivalent.
+		 */
+		CORE_EXPORT bool operator!=(const DirectoryHandle& rhs) const;
+
+		/**
+		 * @brief	Gets absolute path of directory. For instance <tt>/home/user/directory</tt>
+		 *
+		 * @return	A string.A string with directory path.
+		 */
+		CORE_EXPORT std::string absolutePath() const;
+
+		/**
+		 * @brief	Gets simple directory name.
+		 *
+		 * @return	A string with simple directory name.
+		 */
+		CORE_EXPORT std::string simpleName() const;
+
+		/**
+		 * @brief	List all sub directories.
+		 *
+		 * @return	A set of all sub directories;
+		 */
 		CORE_EXPORT std::set<DirectoryHandle> listSubDirectories();
+
+		/**
+		 * @brief	List all files into directory.
+		 *
+		 * @return	A set of all files;
+		 */
 		CORE_EXPORT std::set<FileHandle> listFiles();
+
+		/**
+		 * @brief	Query if this directory is empty.
+		 *
+		 * @return	true if empty, false if not.
+		 */
 		CORE_EXPORT bool isEmpty() const;
+
+		/**
+		 * @brief	Erases this directory.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT bool erase() const;
+
+		/**
+		 * @brief	Query if this directory exists.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT bool exists() const;
 
+		/**
+		 * @brief	Query if the given directory exists.
+		 *
+		 * @param	directoryPathName	Full pathname of the directory.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT static bool exists(const std::string& directoryPathName);
+
+		/**
+		 * @brief	Erases the given directory.
+		 *
+		 * @param	directoryPathName	Full pathname of the directory.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT static bool erase(const std::string& directoryPathName);
+
+		/**
+		 * @brief	Creates a new directory.
+		 *
+		 * @param	directoryPathName	Full pathname of the new directory.
+		 *
+		 * @return	A DirectoryHandle that represents the new directory.
+		 */
 		CORE_EXPORT static DirectoryHandle create(const std::string& directoryPathName);
 
 	private:
-		std::shared_ptr<boost::filesystem::path> mPath;
+		std::shared_ptr<boost::filesystem::path> mPath; ///< Full pathname of the file
 		
-	};
+	};  ///< .
 
 }
 

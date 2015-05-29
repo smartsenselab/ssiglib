@@ -43,22 +43,37 @@
 
 namespace ssf{
 
+	FileException::FileException(const std::string& fileName /*= ""*/, const char* message /*= ""*/)
+		: Exception(message), mFileName(fileName){
+	}
+
 	FileException::FileException(const std::string& fileName, const std::string& message)
 		: Exception(message), mFileName(fileName){
-
 	}
 
 	FileException::~FileException() throw (){
-
+		//Destructor
 	}
 
+	FileException::FileException(const FileException& rhs){
+		Exception::operator=(rhs);
+		this->mFileName = rhs.mFileName;
+	}
+
+	CORE_EXPORT FileException& FileException::operator=(const FileException& rhs){
+		if (this != &rhs){
+			Exception::operator=(rhs);
+			this->mFileName = rhs.mFileName;
+		}
+		return *this;
+	}
 
 	const char * FileException::what() const throw(){
 		std::string what_message = mFileName + ": " + mMessage;
 		return what_message.c_str();
 	}
 
-	std::string FileException::getFileName() const{
+	std::string FileException::fileName() const{
 		return this->mFileName;
 	}
 
