@@ -16,4 +16,4 @@ Please visit the Wiki Installation Page
 2. Create your feature branch: `git checkout -b feature-feat_name`
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin feature-feat_name`
-5. Submit a pull request :D
+5. Submit a pull request
