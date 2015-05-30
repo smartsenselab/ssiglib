@@ -111,6 +111,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 #Enable tests if BUILD_TEST was checked by user
 if(BUILD_TESTS)
 	enable_testing()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g --coverage")
 endif()
 
 ###############################################################################
