@@ -32,7 +32,11 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
 #Option to check if 'docs' will be build
 option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
-mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+# BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
+# make it prominent in the GUI.
+option(ENABLE_COVERAGE "Enable coverage collection with  GCov." OFF)
+
+mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH ENABLE_COVERAGE)
 
 ###############################################################################
 # CMake OPTIONS
@@ -111,7 +115,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 #Enable tests if BUILD_TEST was checked by user
 if(BUILD_TESTS)
 	enable_testing()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g --coverage")
+endif()
+
+if(ENABLE_COVERAGE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 --coverage")
 endif()
 
 ###############################################################################
