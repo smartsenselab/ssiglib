@@ -16,6 +16,9 @@ function test()
   cmake -DBUILD_TESTS=ON $SSF_DIR
   make -j2
   make test -j3
+  cd ..
+  gcov build/components/core/CMakeFiles/ssf_core.dir/src/*.cpp*
+  - bash <(curl -s https://codecov.io/bash)
 }
 
 case $TASK in
