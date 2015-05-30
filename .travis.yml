@@ -23,3 +23,19 @@ install:
 
 script:
   - bash .travis.sh
+  
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "XKIh6ahaNC2hPrEA8lgk3j/KNyw0MsNkQoFUJvzen27k0ZW7pgy0rwFeBwJa/UZgaOLjPkX5sK0C9E4HKJRpl3yRaTGVUvCN9m1/+jd0Dk6AazlEuwfswK6qAkO7Jp6o4z5KBwcPYKuzpe/RqVXW8+r6aMnwT0itz7thHxdd1UXEudJjqlhVFPMAWYe8jTuJAEhIpSoiCNbE/5z1XT3HcT+IVwgtnL4KjpuYKenVX3Qwjj3mNuAbf64ieSjcQk2MY/udkTnN7wM80vYVXHpt/M1kksbIqYOaBn3EIGJ8ANIYAa4cpLeeAIa/WSLH3TNBVZd01ZzVDaR3WeWyaefKom8ceFe9PY8O8jCSHW4QFf3TW2b8hytUQu5AkvwBnfjN75uVgq680ORseTj+j5TFldjKmjNOCc1qyOxQYi20oAYOkcn3XK60IO91djzrpBIJmTjk0D5i78kynRScOUlwg9boieJzZil+Tj+aArPZrnwXzgchKNbbI8JlZSQfvvCz/Cuxnfi6/jK3AaaTfus39/7B8UPWbX7VZdtVvam9OrBMrRB9ojpqONy2li1sv/oZx9awIVrzzFZefKv2Knx+Fgo5AX3IE6BiJkB72ULHFaxGbOx2tHQMXtkLMQIiiC41ATySmmonuFXWMPKBTSs95Bp8Ao+c7Hjbb6BWngV5BPc="
+
+addons:
+  coverity_scan:
+    project:
+      name: "acnazarejr/ssf"
+      description: "Build submitted via Travis CI"
+    notification_email: acnazarejr@gmail.com
+    build_command_prepend: "mkdir $BUILD_DIR; cd $BUILD_DIR;cmake -DBUILD_TESTS=OFF $SSF_DIR"
+    build_command:   "make -j2"
+    branch_pattern: coverity_scan
