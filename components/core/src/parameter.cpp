@@ -1,43 +1,40 @@
-/*L*****************************************************************************
+/*L*************************************************************************************************
 *
 *  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 * 
-*  By downloading, copying, installing or using the software you agree to this
-*  license. If you do not agree to this license, do not download, install,
-*  copy or use the software.
+*  By downloading, copying, installing or using the software you agree to this license. If you do 
+*  not agree to this license, do not download, install, copy or use the software.
 *
-*                   Software License Agreement (BSD License)
-*                      For Smart Surveillance Framework
-*                        http://ssig.dcc.ufmg.br/ssf/
+*                            Software License Agreement (BSD License)
+*                               For Smart Surveillance Framework
+*                                 http://ssig.dcc.ufmg.br/ssf/
 *
 *  Copyright (c) 2013, Smart Surveillance Interest Group, all rights reserved.
 *  
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions are met:
+*  Redistribution and use in source and binary forms, with or without modification, are permitted 
+*  provided that the following conditions are met:
 *
-*    1. Redistributions of source code must retain the above copyright notice, 
-*       this list of conditions and the following disclaimer.
+*    1. Redistributions of source code must retain the above copyright notice, this list of 
+*       conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright 
-*       notice, this list of conditions and the following disclaimer in the 
-*       documentation and/or other materials provided with the distribution.
+*    2. Redistributions in binary form must reproduce the above copyright notice, this list of 
+*       conditions and the following disclaimer in the documentation and/or other materials 
+*       provided with the distribution.
 *
-*    3. Neither the name of the copyright holder nor the names of its 
-*       contributors may be used to endorse or promote products derived from 
-*       this software without specific prior written permission.
+*    3. Neither the name of the copyright holder nor the names of its contributors may be used to 
+*       endorse or promote products derived from this software without specific prior written 
+*       permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-*  THE POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+*  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+*  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+*  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+*  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+*  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+*  POSSIBILITY OF SUCH DAMAGE.
+*************************************************************************************************L*/
 
 #include "core/parameter.hpp"
 
@@ -174,10 +171,25 @@ namespace ssf{
 		return *this;
 	}
 
-	int Parameter::toInt() const{
-		double temp_value;
+	bool Parameter::operator<(const Parameter& rhs) const{
+		if (this->mName < rhs.mName)
+			return true;
+		else 
+			return (this->mValue < rhs.mValue);
+	}
+
+	bool Parameter::operator==(const Parameter& rhs) const{
+		return (this->mValue == rhs.mValue && this->mName == rhs.mName);
+	}
+
+	bool Parameter::operator!=(const Parameter& rhs) const{
+		return (this->mName != rhs.mName);
+	}
+
+	int Parameter::toInt() const{		
 		int convert_value;
 		try{
+			double temp_value;
 			temp_value = boost::lexical_cast<double>(this->mValue[0]);
 			convert_value = boost::numeric_cast<int>(temp_value);
 		}
@@ -233,11 +245,11 @@ namespace ssf{
 	}
 
 	std::vector<int> Parameter::toIntVector() const{
-		std::vector<int> retVector;
-		double temp_value;
+		std::vector<int> retVector;		
 		int convert_value;
 		for (auto strValue : this->mValue){
 			try{
+				double temp_value;
 				temp_value = boost::lexical_cast<double>(strValue);
 				convert_value = boost::numeric_cast<int>(temp_value);
 			}
@@ -255,9 +267,9 @@ namespace ssf{
 	}
 
 	std::vector<double> Parameter::toDoubleVector() const{
-		std::vector<double> retVector;
-		double convert_value;
+		std::vector<double> retVector;		
 		for (auto strValue : this->mValue){
+			double convert_value;
 			try{
 				convert_value = boost::lexical_cast<double>(strValue);
 			}
@@ -334,7 +346,7 @@ namespace ssf{
 	}
 
 
-	std::string Parameter::getName() const{
+	std::string Parameter::name() const{
 		return this->mName;
 	}
 
@@ -342,7 +354,7 @@ namespace ssf{
 		this->mValue = this->mDefaultValue;
 	}
 
-	ssf::ParamType Parameter::getExpectedType() const{
+	ssf::ParamType Parameter::expectedType() const{
 		return this->mExpectedType;
 	}
 
@@ -350,7 +362,7 @@ namespace ssf{
 		this->mExpectedType = expectedType;
 	}
 
-	std::string Parameter::getDescription() const{
+	std::string Parameter::description() const{
 		return this->mDescription;
 	}
 
