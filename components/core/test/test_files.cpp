@@ -1,43 +1,40 @@
-/*L*****************************************************************************
+/*L*************************************************************************************************
 *
 *  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 * 
-*  By downloading, copying, installing or using the software you agree to this
-*  license. If you do not agree to this license, do not download, install,
-*  copy or use the software.
+*  By downloading, copying, installing or using the software you agree to this license. If you do 
+*  not agree to this license, do not download, install, copy or use the software.
 *
-*                   Software License Agreement (BSD License)
-*                      For Smart Surveillance Framework
-*                        http://ssig.dcc.ufmg.br/ssf/
+*                            Software License Agreement (BSD License)
+*                               For Smart Surveillance Framework
+*                                 http://ssig.dcc.ufmg.br/ssf/
 *
 *  Copyright (c) 2013, Smart Surveillance Interest Group, all rights reserved.
 *  
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions are met:
+*  Redistribution and use in source and binary forms, with or without modification, are permitted 
+*  provided that the following conditions are met:
 *
-*    1. Redistributions of source code must retain the above copyright notice, 
-*       this list of conditions and the following disclaimer.
+*    1. Redistributions of source code must retain the above copyright notice, this list of 
+*       conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright 
-*       notice, this list of conditions and the following disclaimer in the 
-*       documentation and/or other materials provided with the distribution.
+*    2. Redistributions in binary form must reproduce the above copyright notice, this list of 
+*       conditions and the following disclaimer in the documentation and/or other materials 
+*       provided with the distribution.
 *
-*    3. Neither the name of the copyright holder nor the names of its 
-*       contributors may be used to endorse or promote products derived from 
-*       this software without specific prior written permission.
+*    3. Neither the name of the copyright holder nor the names of its contributors may be used to 
+*       endorse or promote products derived from this software without specific prior written 
+*       permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-*  THE POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+*  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+*  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+*  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+*  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+*  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+*  POSSIBILITY OF SUCH DAMAGE.
+*************************************************************************************************L*/
 
 #include <gtest/gtest.h>
 #include <fstream>
@@ -77,7 +74,7 @@ TEST(FileHandle, erase) {
 
 TEST(FileHandle, strings) {
 	ssf::FileHandle fileHandle("test_file.txt");
-	EXPECT_STREQ("test_file", fileHandle.getSimpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle.simpleName().c_str());
 }
 
 TEST(FileHandle, copy) {
@@ -85,8 +82,16 @@ TEST(FileHandle, copy) {
 	ssf::FileHandle fileHandle2(fileHandle1);
 	ssf::FileHandle fileHandle3 = fileHandle2;
 
-	EXPECT_STREQ("test_file", fileHandle2.getSimpleName().c_str());
-	EXPECT_STREQ("test_file", fileHandle3.getSimpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle2.simpleName().c_str());
+	EXPECT_STREQ("test_file", fileHandle3.simpleName().c_str());
+}
+
+TEST(FileHandle, equal) {
+	ssf::FileHandle fileHandle1("test_file.txt");
+	ssf::FileHandle fileHandle2("test_file.txt");
+
+	EXPECT_TRUE(fileHandle1 == fileHandle2);
+	EXPECT_FALSE(fileHandle1 != fileHandle2);
 }
 
 ///////////////
@@ -121,7 +126,7 @@ TEST(DirectoryHandle, create) {
 
 TEST(DirectoryHandle, strings) {
 	ssf::DirectoryHandle directoryHandle("folder_test");
-	EXPECT_STREQ("folder_test", directoryHandle.getSimpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle.simpleName().c_str());
 }
 
 TEST(DirectoryHandle, copy) {
@@ -129,6 +134,14 @@ TEST(DirectoryHandle, copy) {
 	ssf::DirectoryHandle directoryHandle2(directoryHandle1);
 	ssf::DirectoryHandle directoryHandle3 = directoryHandle2;
 
-	EXPECT_STREQ("folder_test", directoryHandle2.getSimpleName().c_str());
-	EXPECT_STREQ("folder_test", directoryHandle3.getSimpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle2.simpleName().c_str());
+	EXPECT_STREQ("folder_test", directoryHandle3.simpleName().c_str());
+}
+
+TEST(DirectoryHandle, equal) {
+	ssf::DirectoryHandle directoryHandle1("folder_test");
+	ssf::DirectoryHandle directoryHandle2("folder_test");
+
+	EXPECT_TRUE(directoryHandle1 == directoryHandle2);
+	EXPECT_FALSE(directoryHandle1 != directoryHandle2);
 }

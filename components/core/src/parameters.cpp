@@ -1,43 +1,40 @@
-/*L*****************************************************************************
+/*L*************************************************************************************************
 *
 *  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
 * 
-*  By downloading, copying, installing or using the software you agree to this
-*  license. If you do not agree to this license, do not download, install,
-*  copy or use the software.
+*  By downloading, copying, installing or using the software you agree to this license. If you do 
+*  not agree to this license, do not download, install, copy or use the software.
 *
-*                   Software License Agreement (BSD License)
-*                      For Smart Surveillance Framework
-*                        http://ssig.dcc.ufmg.br/ssf/
+*                            Software License Agreement (BSD License)
+*                               For Smart Surveillance Framework
+*                                 http://ssig.dcc.ufmg.br/ssf/
 *
 *  Copyright (c) 2013, Smart Surveillance Interest Group, all rights reserved.
 *  
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions are met:
+*  Redistribution and use in source and binary forms, with or without modification, are permitted 
+*  provided that the following conditions are met:
 *
-*    1. Redistributions of source code must retain the above copyright notice, 
-*       this list of conditions and the following disclaimer.
+*    1. Redistributions of source code must retain the above copyright notice, this list of 
+*       conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright 
-*       notice, this list of conditions and the following disclaimer in the 
-*       documentation and/or other materials provided with the distribution.
+*    2. Redistributions in binary form must reproduce the above copyright notice, this list of 
+*       conditions and the following disclaimer in the documentation and/or other materials 
+*       provided with the distribution.
 *
-*    3. Neither the name of the copyright holder nor the names of its 
-*       contributors may be used to endorse or promote products derived from 
-*       this software without specific prior written permission.
+*    3. Neither the name of the copyright holder nor the names of its contributors may be used to 
+*       endorse or promote products derived from this software without specific prior written 
+*       permission.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
-*  THE POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
+*  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+*  AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+*  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+*  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR 
+*  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+*  POSSIBILITY OF SUCH DAMAGE.
+*************************************************************************************************L*/
 
 #include "core/parameters.hpp"
 
@@ -79,56 +76,56 @@ namespace ssf{
 		return this->mParameters[parameterName];
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, "", description));
-		this->getParameter(paramName).setRequired(true);
+	void Parameters::addParameter(const std::string& parameterName, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, "", description));
+		this->getParameter(parameterName).setRequired(true);
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const int& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const int& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const double& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const double& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const bool& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const bool& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const char* defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const char* defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const std::string& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const std::string& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const FileHandle& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const FileHandle& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const DirectoryHandle& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const DirectoryHandle& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const std::vector<int>& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const std::vector<int>& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const std::vector<double>& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const std::vector<double>& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
-	void Parameters::addParameter(const std::string& paramName, const std::vector<std::string>& defaultValue, const std::string& description /*= "no description."*/){
-		this->addParameter(Parameter(paramName, defaultValue, description));
+	void Parameters::addParameter(const std::string& parameterName, const std::vector<std::string>& defaultValue, const std::string& description /*= "no description."*/){
+		this->addParameter(Parameter(parameterName, defaultValue, description));
 	}
 
 	void Parameters::addParameter(const Parameter& parameter){
-		if (this->mParameters.find(parameter.getName()) != this->mParameters.end()){
-			throw ParamException(parameter.getName(), "Parameter name already used. Please, try other name.");
+		if (this->mParameters.find(parameter.name()) != this->mParameters.end()){
+			throw ParamException(parameter.name(), "Parameter name already used. Please, try other name.");
 		}
-		this->mParameters[parameter.getName()] = parameter;
+		this->mParameters[parameter.name()] = parameter;
 	}
 
 
@@ -141,7 +138,7 @@ namespace ssf{
 	}
 
 	void Parameters::setup(const ParametersSetup& paramSetup){
-		std::map<std::string, std::vector<std::string>> values = paramSetup.getParametersValues();
+		std::map<std::string, std::vector<std::string>> values = paramSetup.mParametersValues;
 		for (auto parameter : this->mParameters){
 			std::string paramName = parameter.first;
 			if (values.find(paramName) == values.end()){
@@ -153,7 +150,7 @@ namespace ssf{
 				}
 			}
 			std::vector<std::string> setupValue = values[paramName];
-			ParamType requiredType = parameter.second.getExpectedType();
+			ParamType requiredType = parameter.second.expectedType();
 			switch (requiredType){
 			case ParamType::INT:
 				if (!Parameter::isInt(setupValue[0]))
@@ -179,11 +176,11 @@ namespace ssf{
 	}
 
 
-	bool Parameters::has(const std::string& paramName){
-		return (this->mParameters.find(paramName) != this->mParameters.end());
+	bool Parameters::has(const std::string& parameterName){
+		return (this->mParameters.find(parameterName) != this->mParameters.end());
 	}
 
-	std::map<std::string, ParameterInfo> Parameters::getParametersInfo(){
+	std::map<std::string, ParameterInfo> Parameters::parametersInfo(){
 		std::map<std::string, ParameterInfo> returnMap;
 		for (auto parameter : this->mParameters)
 			returnMap[parameter.first] = ParameterInfo(parameter.second);
