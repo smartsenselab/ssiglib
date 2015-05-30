@@ -18,7 +18,7 @@ function test()
   make test -j3
   cd ..
   gcov build/components/core/CMakeFiles/ssf_core.dir/src/*.cpp*
-  - bash <(curl -s https://codecov.io/bash)
+  bash <(curl -s https://codecov.io/bash)
 }
 
 case $TASK in
