@@ -14,11 +14,8 @@ function test()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON $SSF_DIR
-  make 
-  make test
-  cd ..
-  gcov build/components/core/CMakeFiles/ssf_core.dir/src/*.cpp*
-  bash <(curl -s https://codecov.io/bash)
+  make -j2
+  make test -j3
 }
 
 case $TASK in
