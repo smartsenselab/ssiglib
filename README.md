@@ -6,10 +6,6 @@ The Smart Surveillance Framework is a C/C++ library built to provide a set of fu
 
 The SSF was designed to provide features for a good scene understanding, scalability, real-time operation, multi-sensor environment, usage of low cost standard components, runtime re-configuration, and communication control.
 
-## Installation
-
-Please visit the Wiki Installation Page
-
 ## Contributing
 
 1. Fork it!
@@ -17,3 +13,7 @@ Please visit the Wiki Installation Page
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin feature-feat_name`
 5. Submit a pull request :D
+
+## Build
+
+Please visit the Wiki Build Page
