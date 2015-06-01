@@ -53,6 +53,8 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
 									"${CORE_PATH}/include/core/point3d.hpp"
 									"${CORE_PATH}/src/point3d.cpp"
 									"${CORE_PATH}/include/core/rect.hpp"
+									"${CORE_PATH}/include/core/concurrent_queue.hpp"
+									"${CORE_PATH}/include/core/moodycamel_concurrent_queue.hpp"
 									)
 
 file(GLOB CORE_UTIL_FILES			"${CORE_PATH}/include/core/core_defs.hpp"

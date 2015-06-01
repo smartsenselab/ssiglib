@@ -36,52 +36,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_MUTEX_HPP_
-#define _SSF_CORE_MUTEX_HPP_
+#ifndef _SSF_CORE_CONCURRENT_QUEUE_HPP_
+#define _SSF_CORE_CONCURRENT_QUEUE_HPP_
 
-#include <mutex>
+#include <core/moodycamel_concurrent_queue.hpp>
 #include "core/core_defs.hpp"
+
 
 namespace ssf{
 
-	/**
-	 * @brief	SSF Mutex.
-	 * 			
-	 * @detail	We decided for our own Mutex class because in future we can change or 
-	 * 			optimize the mutex implementation without carry big changes on code.
-	 */
-	class Mutex{
+	template<class T>
+	class ConcurrentQueue{
 	
 	public:
+		CORE_EXPORT ConcurrentQueue(void){
+			
+			//this->mInternalQueue.
+		}
 
-		/**
-		 * @brief	Initializes a new instance of the Mutex class.
-		 */
-		CORE_EXPORT Mutex(void);
+		CORE_EXPORT virtual ~ConcurrentQueue(void){
+			//Destructor
+		}
 
-		/**
-		 * @brief	Finalizes an instance of the Mutex class.
-		 */
-		CORE_EXPORT virtual ~Mutex(void);
+		CORE_EXPORT bool push(T const& data){
+			return this->mInternalQueue.enqueue(data);
+		}
 
-		/**
-		 * @brief	Locks the mutex.
-		 */
-		CORE_EXPORT void lock();
+		CORE_EXPORT bool pop(T& data){
+			return this->mInternalQueue.try_dequeue(data);
+		}
 
-		/**
-		 * @brief	Unlocks the mutex.
-		 */
-		CORE_EXPORT void unlock();
+		CORE_EXPORT size_t size(){
+			return this->mInternalQueue.size_approx();
+		}
 
-		Mutex(const Mutex& rhs) SSF_DELETE_FUNCTION;
-		Mutex& operator=(const Mutex& rhs) SSF_DELETE_FUNCTION;
+		ConcurrentQueue(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
+		ConcurrentQueue& operator=(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
 
 	private:
-		std::unique_lock<std::mutex> mLock; ///< The mutex used for lock
+		moodycamel::ConcurrentQueue<T> mInternalQueue;
 
 	};
 
 }
 
-#endif // !_SSF_CORE_MUTEX_HPP_PP_
+#endif // !_SSF_CORE_CONCURRENT_QUEUE_HPP_

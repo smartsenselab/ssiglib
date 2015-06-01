@@ -48,13 +48,16 @@ def main(argv):
 
 	headerPath = "../components/%s/include/%s/%s.hpp" % (component, component, fileName)
 	sourcePath = "../components/%s/src/%s.cpp" % (component, fileName)
+	
+	with open('data/ssf_template_license.txt', 'r') as fTemplateLicense :
+		strTemplateLicense = fTemplateLicense.read()
 
 	with open(headerPath, 'w') as fHeader:
-		fHeader.write(strTemplateHeader.format(**alias))
+		fHeader.write(strTemplateLicense.rstrip('\r\n') + '\n\n' + strTemplateHeader.format(**alias))
 
 	if(not only_interface):
 		with open(sourcePath, 'w') as fSource:
-			fSource.write(strTemplateSource.format(**alias))
+			fSource.write(strTemplateLicense.rstrip('\r\n') + '\n\n' + strTemplateSource.format(**alias))
 
 	print ('Class files generate with success!')
 
