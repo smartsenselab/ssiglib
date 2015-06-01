@@ -45,41 +45,79 @@
 
 namespace ssf{
 
+	/**
+	 * @brief	Concurrent Queue Structure (Thread Safe).
+	 *
+	 * @tparam	T	Generic type parameter.
+	 * 				
+	 * @detail	This class uses the 
+	 * 			<a href="https://github.com/cameron314/concurrentqueue"><i>Cameron's Concurrent Queue implementation</i>
+	 */
 	template<class T>
 	class ConcurrentQueue{
 
 	public:
+
+		/**
+		 * @brief	Initializes a new instance of the ConcurrentQueue class.
+		 */
 		CORE_EXPORT ConcurrentQueue(void){
 
 			//this->mInternalQueue.
 		}
 
+		/**
+		 * @brief	Finalizes an instance of the ConcurrentQueue class.
+		 */
 		CORE_EXPORT virtual ~ConcurrentQueue(void){
 			//Destructor
 		}
 
+		/**
+		 * @brief	Pushes an object onto this queue.
+		 *
+		 * @param	data	The data.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT bool push(T const& data){
 			return this->mInternalQueue.enqueue(data);
 		}
 
+		/**
+		 * @brief	Removes and returns the first queue object.
+		 *
+		 * @param	data	The data to pop.
+		 *
+		 * @return	true if it succeeds, false if it fails.
+		 */
 		CORE_EXPORT bool pop(T& data){
 			return this->mInternalQueue.try_dequeue(data);
 		}
 
+		/**
+		 * @brief	Gets the size.
+		 *
+		 * @return	The size of queue.
+		 */
 		CORE_EXPORT size_t size(){
 			return this->mInternalQueue.size_approx();
 		}
 
+		/**
+		 * @brief	Clears this object to its blank/initial state.
+		 */
 		CORE_EXPORT void clear(){
 			T dummyData;
 			while (this->mInternalQueue.try_dequeue(dummyData));
 		}
 
+
 		ConcurrentQueue(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
 		ConcurrentQueue& operator=(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
 
 	private:
-		moodycamel::ConcurrentQueue<T> mInternalQueue;
+		moodycamel::ConcurrentQueue<T> mInternalQueue;  ///< Internal Concurrent Queue implementation
 
 	};
 
