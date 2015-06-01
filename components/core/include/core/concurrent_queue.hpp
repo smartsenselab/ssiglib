@@ -73,7 +73,6 @@ namespace ssf{
 		CORE_EXPORT void clear(){
 			T dummyData;
 			while (this->mInternalQueue.try_dequeue(dummyData));
-
 		}
 
 		ConcurrentQueue(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
