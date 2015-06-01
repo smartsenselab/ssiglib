@@ -40,6 +40,7 @@
 #define _SSF_CORE_MUTEX_HPP_
 
 #include <mutex>
+#include "core/core_defs.hpp"
 
 namespace ssf{
 
@@ -56,26 +57,25 @@ namespace ssf{
 		/**
 		 * @brief	Initializes a new instance of the Mutex class.
 		 */
-		Mutex(void);
+		CORE_EXPORT Mutex(void);
 
 		/**
 		 * @brief	Finalizes an instance of the Mutex class.
 		 */
-		virtual ~Mutex(void);
+		CORE_EXPORT virtual ~Mutex(void);
 
 		/**
 		 * @brief	Locks the mutex.
 		 */
-		void lock();
+		CORE_EXPORT void lock();
 
 		/**
 		 * @brief	Unlocks the mutex.
 		 */
-		void unlock();
+		CORE_EXPORT void unlock();
 
-	private:
-		Mutex(const Mutex& rhs);
-		Mutex& operator=(const Mutex& rhs);
+		Mutex(const Mutex& rhs) SSF_DELETE_FUNCTION;
+		Mutex& operator=(const Mutex& rhs) SSF_DELETE_FUNCTION;
 
 	private:
 		std::unique_lock<std::mutex> mLock; ///< The mutex used for lock

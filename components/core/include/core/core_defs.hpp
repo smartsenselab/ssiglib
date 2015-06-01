@@ -46,15 +46,25 @@ namespace ssf{
 //# define _SCL_SECURE_NO_WARNINGS
 //#endif
 
-
-#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-	#if defined  CORE_API_EXPORTS
-		#define  CORE_EXPORT __declspec(dllexport)
+#ifndef CORE_EXPORT
+	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
+		#if defined  CORE_API_EXPORTS
+			#define  CORE_EXPORT __declspec(dllexport)
+		#else
+			#define  CORE_EXPORT __declspec(dllimport)
+		#endif
 	#else
-		#define  CORE_EXPORT __declspec(dllimport)
+		#define CORE_EXPORT
 	#endif
-#else
-	#define CORE_EXPORT
+#endif
+
+
+#ifndef SSF_DELETE_FUNCTION
+	#if defined(_MSC_VER) && _MSC_VER < 1800
+		#define SSF_DELETE_FUNCTION
+	#else
+		#define SSF_DELETE_FUNCTION = delete
+	#endif
 #endif
 
 }

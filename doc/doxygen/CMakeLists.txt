@@ -7,8 +7,8 @@ if(BUILD_DOCS)
         message(FATAL_ERROR "Doxygen is needed to build the documentation.")
     endif()
 
-    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
-    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in)
+    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
 
     configure_file(${doxyfile_in} ${doxyfile} @ONLY)
 

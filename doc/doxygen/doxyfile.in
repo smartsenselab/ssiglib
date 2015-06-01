@@ -10,7 +10,8 @@ INPUT					= @doxy_main_page@ \
 FILE_PATTERNS			= *.hpp 
 RECURSIVE				= YES
 USE_MDFILE_AS_MAINPAGE	= @doxy_main_page@
-EXCLUDE_SYMBOLS 		= cv::*
+EXCLUDE_SYMBOLS 		= cv::* \
+						moodycamel::*
 ENABLE_PREPROCESSING 	= YES
 MACRO_EXPANSION      	= YES
 EXPAND_ONLY_PREDEF   	= YES
