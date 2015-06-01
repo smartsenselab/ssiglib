@@ -1,5 +1,9 @@
 language: cpp
 
+env:
+  global:
+   - secure: "H1ZVbraqi9LAmdGM9O9VhFHJP6Uk1Ux2iZSQqmSUi+Ph4muk8vsr7Grqu6yPJOI71aSs73ugTxW3S6nYVzgB+nCqEHZk5RnjyDHDfvDAg0h+OsBP4u0dQ6IZMfFRhw6R8B+VpUKD4j687MLs3eUFMsRJ8/t+24+/T097dKYWij4="
+
 matrix:
   include:
     - compiler: clang
@@ -8,6 +12,16 @@ matrix:
       env: TASK="build"
     - compiler: gcc
       env: TASK="test"
+
+addons:
+  coverity_scan:
+    project:
+      name: "ssig/ssf"
+      description: "Build submitted via Travis CI"
+    notification_email: acnazarejr@gmail.com
+    build_command_prepend: "mkdir build; cd build; cmake -DBUILD_TESTS=ON .."
+    build_command:   "make"
+    branch_pattern: coverity_scan  
 
 before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
