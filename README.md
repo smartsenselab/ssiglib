@@ -2,6 +2,7 @@
 
 [![BSD License](https://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://travis-ci.org/ssig/ssf.svg?branch=develop)](https://travis-ci.org/ssig/ssf)
+[![Coverity Status](https://img.shields.io/coverity/scan/5274.svg)](https://scan.coverity.com/projects/5274)
 
 The Smart Surveillance Framework is a C/C++ library built to provide a set of functionalities to aid researchers not only on the development of surveillance systems but also on the creation of novel solutions for problems related to video surveillance.
 
