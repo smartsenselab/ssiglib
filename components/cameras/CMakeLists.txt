@@ -20,6 +20,12 @@ file(GLOB CAMERAS_PTZ_FILES			"${CAMERAS_PATH}/include/cameras/ip_video_camera_P
 									"${CAMERAS_PATH}/src/ip_video_camera_PTZ.cpp"
 									"${CAMERAS_PATH}/include/cameras/ip_video_camera_PTZ_Trend_Net7865.hpp"
 									"${CAMERAS_PATH}/src/ip_video_camera_PTZ_Trend_Net7865.cpp"
+									"${CAMERAS_PATH}/include/cameras/ip_onvif.hpp"
+									"${CAMERAS_PATH}/src/ip_onvif.cpp"
+									"${CAMERAS_PATH}/include/cameras/ip_fixa.hpp"
+									"${CAMERAS_PATH}/src/ip_fixa.cpp"
+									"${CAMERAS_PATH}/include/cameras/ip_onvif_ptz.hpp"
+									"${CAMERAS_PATH}/src/ip_onvif_ptz.cpp"
 									)
 
 file(GLOB CAMERAS_UTIL_FILES		"${CAMERAS_PATH}/include/cameras/cameras_defs.hpp"
