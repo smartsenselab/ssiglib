@@ -11,6 +11,7 @@ set(PROJECT_ACRONYM_STR "SSF")
 set(PROJECT_NAME_STR "Smart Surveillance Framework")
 project(${PROJECT_ACRONYM_STR} CXX)
 
+
 ###############################################################################
 # USER OPTIONS
 ###############################################################################
