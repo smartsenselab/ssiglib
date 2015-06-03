@@ -35,30 +35,46 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
-//#ifndef _SSF_API_API_EXCEPTION_HPP_
-//#define _SSF_API_API_EXCEPTION_HPP_
+//#include <gtest/gtest.h>
 //
-//#include <string>
-//#include <core/exception.hpp>
+//#include <configuration/configuration.hpp>
+//#include <configuration/module.hpp>
 //
-//#include "configuration/configuration_defs.hpp"
-//
-//namespace ssf{
-//
-//	class ConfigurationException : public Exception{
-//	
-//	public:
-//		CONFIG_EXPORT ConfigurationException(const std::string& moduleName, const std::string& message);
-//		CONFIG_EXPORT virtual ~ConfigurationException() throw();
-//		CONFIG_EXPORT virtual const char* what() const throw();
-//		CONFIG_EXPORT std::string getModuleName() const;
-//
-//	private:
-//		std::string mModuleName;
-//
-//	};
-//
+//TEST(Configuration, constructor) {
+//    EXPECT_NO_THROW(ssf::Configuration test_configuration);
 //}
 //
-//#endif // !_SSF_API_API_EXCEPTION_HPP_PP_
+//TEST(Configuration, addModule){
+//    ssf::Configuration test;
+//    test.addModule("moduleA", "typeA");
+//    EXPECT_ANY_THROW(test.addModule("moduleA", "type1"));
+//    EXPECT_NO_THROW(test.addModule("moduleB", "type1"));
+//    EXPECT_ANY_THROW(test.addModule("moduleA", "typeB"));
+//}
+//
+//
+//TEST(Configuration, setStream){
+//    ssf::Configuration test;
+//    test.addModule("ModuleA", "typeA");
+//    test.addModule("ModuleB", "typeA");
+//    
+//    EXPECT_NO_THROW(test.setStream("moduleA", "output1", "moduleB", "input1"));
+//    EXPECT_NO_THROW(test.setStream("moduleA", "output2", "moduleB", "input2"));
+//    EXPECT_NO_THROW(test.setStream("moduleA", "output3", "moduleB", "input3"));
+//    EXPECT_ANY_THROW(test.setStream("moduleA", "output1", "moduleB", "input1"));
+//    EXPECT_ANY_THROW(test.setStream("moduleA", "output2", "moduleB", "input2"));
+//    EXPECT_ANY_THROW(test.setStream("moduleA", "output3", "moduleB", "input3"));
+//    
+//}
+//
+//TEST(Configuration, setParameter){
+//    ssf::Configuration test;
+//    test.addModule("ModuleA", "typeA");
+//    
+//	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param1", 1));
+//	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param2", 2));
+//	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param3", 3));
+//	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param4", 4));
+//	EXPECT_NO_THROW(test.getModule("ModuleA").addParameter("param5", 5));
+//    
+//}
