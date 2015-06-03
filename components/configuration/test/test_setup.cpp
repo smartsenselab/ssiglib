@@ -48,6 +48,6 @@ TEST(Setup, writeToFile){
 
     
     
-    test.writeToFile("test");
+    //test.writeToFile("test");
 }
 
