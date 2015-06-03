@@ -1,23 +1,23 @@
-#include "configuration/stream.hpp"
+#include "configuration/stream_setup.hpp"
 #include <string>
 
 namespace ssf{
     
-    Stream::Stream(){
+    StreamSetup::StreamSetup(){
         
     }
 
-	Stream::Stream(const std::string& moduleIDProvider, const std::string& outputProvider, const std::string& moduleIDReceiver, const std::string inputReceiver){
+	StreamSetup::StreamSetup(const std::string& moduleIDProvider, const std::string& outputProvider, const std::string& moduleIDReceiver, const std::string inputReceiver){
         this->mModuleIDProvider = moduleIDProvider;
         this->mModuleIDReceiver = moduleIDReceiver;
         this->mOutputProvider = outputProvider;
         this->mInputReceiver = inputReceiver;
 	}
 
-	Stream::~Stream(){
+	StreamSetup::~StreamSetup(){
 	}
 
-	Stream::Stream(const Stream& rhs){
+	StreamSetup::StreamSetup(const StreamSetup& rhs){
         this->mModuleIDProvider = rhs.mModuleIDProvider;
         this->mModuleIDReceiver = rhs.mModuleIDReceiver;
         this->mOutputProvider = rhs.mOutputProvider;
@@ -25,7 +25,7 @@ namespace ssf{
 
 	}
 
-	Stream& Stream::operator=(const Stream& rhs){
+	StreamSetup& StreamSetup::operator=(const StreamSetup& rhs){
 		if (this != &rhs){
             this->mModuleIDProvider = rhs.mModuleIDProvider;
             this->mModuleIDReceiver = rhs.mModuleIDReceiver;
@@ -36,16 +36,16 @@ namespace ssf{
 	    return *this;
 	}
     
-    std::string Stream::getModuleIDProvider(){
+    std::string StreamSetup::getModuleIDProvider(){
         return mModuleIDProvider;
     }
-    std::string Stream::getModuleIDReceiver(){
+    std::string StreamSetup::getModuleIDReceiver(){
         return mModuleIDReceiver;
     }
-    std::string Stream::getOutputProvider(){
+    std::string StreamSetup::getOutputProvider(){
         return mOutputProvider;
     }
-    std::string Stream::getInputReceiver(){
+    std::string StreamSetup::getInputReceiver(){
         return mInputReceiver;
     }
 
