@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include <configuration/module_setup.hpp>
 
 TEST(ModuleSetup, constructor) {

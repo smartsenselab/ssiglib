@@ -31,6 +31,22 @@ TEST(Setup, writeToFile){
     ssf::Setup test;
     test.addModule("ModuleA", "TypeA");
     test.addModule("ModuleB", "TypeB");
+    test.addModule("ModuleC", "TypeA");
+    test.addModule("ModuleD", "TypeB");
+    test.addModule("ModuleE", "TypeA");
+    test.addModule("ModuleF", "TypeC");
+    
+    test.setStream("ModuleA", "any1", "ModuleB", "any2");
+    test.setStream("ModuleA", "any3", "ModuleB", "any4");
+    test.setStream("ModuleB", "any5", "ModuleC", "any6");
+    test.setStream("ModuleB", "any7", "ModuleC", "any8");
+    test.setStream("ModuleC", "any9", "ModuleD", "any10");
+    test.setStream("ModuleC", "any11", "ModuleD", "any12");
+    test.setStream("ModuleD", "any13", "ModuleF", "any14");
+    test.setStream("ModuleD", "any15", "ModuleF", "any16");
+
+
+    
     
     test.writeToFile("test");
 }

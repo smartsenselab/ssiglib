@@ -1,9 +1,7 @@
 #ifndef _SSF_API_SSF_CONFIGURATION_HPP_
 #define _SSF_API_SSF_CONFIGURATION_HPP_
-
 #include <string>
 #include <vector>
-#include <tuple>
 #include <map>
 #include "configuration/stream_setup.hpp"
 #include "configuration/module_setup.hpp"
