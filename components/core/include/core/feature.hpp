@@ -39,20 +39,28 @@
 #ifndef _SSF_CORE_MATRIX_HPP_
 #define _SSF_CORE_MATRIX_HPP_
 
-#include <opencv/cv.h>
+#include <memory>
+#include "core/core_defs.hpp"
+
+namespace cv{
+	class Mat;
+}
 
 namespace ssf{
 
-	class Matrix{
+	class Feature{
 	
 	public:
-		Matrix(void);
-		virtual ~Matrix(void);
-		Matrix(const Matrix& rhs);
-		Matrix& operator=(const Matrix& rhs);
+		CORE_EXPORT Feature(void);
+		CORE_EXPORT virtual ~Feature(void);
+		CORE_EXPORT Feature(const Feature& rhs);
+		CORE_EXPORT Feature& operator=(const Feature& rhs);
+
+		CORE_EXPORT cv::Mat data();
+		CORE_EXPORT Feature clone();
 
 	private:
-		//private members
+		std::shared_ptr<cv::Mat> mData;
 
 	};
 

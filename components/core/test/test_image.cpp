@@ -36,30 +36,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "core/matrix.hpp"
+#include <gtest/gtest.h>
 
-namespace ssf{
+#include <core/image.hpp>
 
-	Matrix::Matrix(){
-		//Constructor
-	}
+TEST(Image, constructor) {
+	ssf::Image img;
+	EXPECT_EQ(0, img.rows());
+	EXPECT_EQ(0, img.cols());
 
-	Matrix::~Matrix(){
-		//Destructor
-	}
-
-	Matrix::Matrix(const Matrix& rhs){
-		//Constructor Copy
-	}
-
-	Matrix& Matrix::operator=(const Matrix& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
-
+	ssf::Image img2("lena.jpg");
+	EXPECT_EQ(512, img2.rows());
+	EXPECT_EQ(512, img2.cols());
 }
-
-
-

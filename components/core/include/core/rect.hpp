@@ -206,6 +206,11 @@ namespace ssf{
 
 	};
 
+
+	typedef Rect<int> Recti;
+	typedef Rect<float> Rectf;
+	typedef Rect<double> Rectd;
+
 }
 
 #endif // !_SSF_CORE_RECT_HPP_PP_

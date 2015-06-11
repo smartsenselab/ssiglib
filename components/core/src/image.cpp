@@ -36,104 +36,62 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include <gtest/gtest.h>
+#include "core/image.hpp"
 
-#include <chrono>
-#include <thread>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
-#include <core/concurrent_queue.hpp>
-#include <core/blocking_concurrent_queue.hpp>
+namespace ssf{
 
-TEST(ConcurrentQueue, general) {
-	ssf::ConcurrentQueue<int> q;
-	int dequeued[100] = { 0 };
-	std::thread threads[20];
-
-	// Producers
-	for (int i = 0; i != 10; ++i) {
-		threads[i] = std::thread([&](int i) {
-			for (int j = 0; j != 10; ++j) {
-				q.push(i * 10 + j);
-			}
-		}, i);
+	Image::Image(){
+		this->mData = std::make_shared<cv::Mat>();
 	}
 
-	// Consumers
-	for (int i = 10; i != 20; ++i) {
-		threads[i] = std::thread([&]() {
-			int item;
-			for (int j = 0; j != 20; ++j) {
-				if (q.pop(item)) {
-					++dequeued[item];
-				}
-			}
-		});
+	Image::Image(std::string filename, ImgLoadType loadImgType /*= ImgLoadType::UNCHANGED*/){
+		this->mData = std::make_shared<cv::Mat>();
+		if (loadImgType == ImgLoadType::UNCHANGED)
+			*(this->mData) = cv::imread(filename, CV_LOAD_IMAGE_UNCHANGED);
+		else if (loadImgType == ImgLoadType::COLOR)
+			*(this->mData) = cv::imread(filename, CV_LOAD_IMAGE_COLOR);
+		else
+			*(this->mData) = cv::imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
 	}
 
-	// Wait for all threads
-	for (int i = 0; i != 20; ++i) {
-		threads[i].join();
+	Image::Image(cv::Mat data){
+		*(this->mData) = data.clone();
 	}
 
-	// Collect any leftovers (could be some if e.g. consumers finish before producers)
-	int item;
-	while (q.pop(item)) {
-		++dequeued[item];
+	Image::~Image(){
+		//Destructor
 	}
 
-	// Make sure everything went in and came back out!
-	for (int i = 0; i != 100; ++i) {
-		EXPECT_EQ(1, dequeued[i]);
+	Image::Image(const Image& rhs){
+		*(this->mData) = *(rhs.mData);
 	}
 
+	Image& Image::operator=(const Image& rhs){
+		if (this != &rhs){
+			*(this->mData) = *(rhs.mData);
+		}
+		return *this;
+	}
 
+	cv::Mat Image::data(){
+		return *(this->mData);
+	}
 
+	Image Image::clone(){
+		Image retImage;
+		*(retImage.mData) = this->mData->clone();
+		return retImage;
+	}
+
+	size_t Image::cols() const{
+		return this->mData->cols;
+	}
+
+	size_t Image::rows() const{
+		return this->mData->rows;
+	}
 }
 
-
-TEST(BlockingConcurrentQueue, general) {
-	ssf::BlockingConcurrentQueue<int> q;
-	int dequeued[100] = { 0 };
-	std::thread threads[20];
-
-	// Producers
-	for (int i = 0; i != 10; ++i) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(30));
-		threads[i] = std::thread([&](int i) {
-			for (int j = 0; j != 10; ++j) {
-				q.push(i * 10 + j);
-			}
-		}, i);
-	}
-
-	// Consumers
-	for (int i = 10; i != 20; ++i) {
-		threads[i] = std::thread([&]() {
-			int item;
-			for (int j = 0; j != 20; ++j) {
-				if (q.pop(item)) {
-					++dequeued[item];
-				}
-			}
-		});
-	}
-
-	// Wait for all threads
-	for (int i = 0; i != 20; ++i) {
-		threads[i].join();
-	}
-
-	// Collect any leftovers (could be some if e.g. consumers finish before producers)
-	int item;
-	while (q.pop(item)) {
-		++dequeued[item];
-	}
-
-	// Make sure everything went in and came back out!
-	for (int i = 0; i != 100; ++i) {
-		EXPECT_EQ(1, dequeued[i]);
-	}
-
-
-
-}

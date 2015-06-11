@@ -45,8 +45,10 @@ file(GLOB CORE_RESOURCE_FILES	 	"${CORE_PATH}/include/core/resource.hpp"
 									"${CORE_PATH}/src/resource_thread.cpp"
 									)
 
-file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
-									"${CORE_PATH}/src/matrix.cpp"
+file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/feature.hpp"
+									"${CORE_PATH}/src/feature.cpp"
+									"${CORE_PATH}/include/core/image.hpp"
+									"${CORE_PATH}/src/image.cpp"
 									"${CORE_PATH}/include/core/cube.hpp"
 									"${CORE_PATH}/include/core/point2d.hpp"
 									"${CORE_PATH}/src/point2d.cpp"
@@ -54,6 +56,7 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/matrix.hpp"
 									"${CORE_PATH}/src/point3d.cpp"
 									"${CORE_PATH}/include/core/rect.hpp"
 									"${CORE_PATH}/include/core/concurrent_queue.hpp"
+									"${CORE_PATH}/include/core/blocking_concurrent_queue.hpp"
 									"${CORE_PATH}/include/core/moodycamel_concurrent_queue.hpp"
 									)
 

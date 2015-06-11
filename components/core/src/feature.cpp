@@ -36,49 +36,42 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_DEFS_HPP_
-#define _SSF_CORE_DEFS_HPP_
+#include "core/feature.hpp"
+
+#include <opencv2/core/core.hpp>
 
 namespace ssf{
 
-//#if !defined _CRT_SECURE_NO_DEPRECATE && defined _MSC_VER && _MSC_VER > 1300
-//#  define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio warnings */
-//# define _SCL_SECURE_NO_WARNINGS
-//#endif
+	Feature::Feature(){
+		this->mData = std::make_shared<cv::Mat>();
+	}
 
-#ifndef CORE_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  CORE_API_EXPORTS
-			#define  CORE_EXPORT __declspec(dllexport)
-		#else
-			#define  CORE_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define CORE_EXPORT
-	#endif
-#endif
+	Feature::~Feature(){
+		//Destructor
+	}
 
+	Feature::Feature(const Feature& rhs){
+		*(this->mData) = *(rhs.mData);
+	}
 
-#ifndef SSF_DELETE_FUNCTION
-	#if defined(_MSC_VER) && _MSC_VER < 1800
-		#define SSF_DELETE_FUNCTION
-	#else
-		#define SSF_DELETE_FUNCTION = delete
-	#endif
-#endif
+	Feature& Feature::operator=(const Feature& rhs){
+		if (this != &rhs){
+			*(this->mData) = *(rhs.mData);
+		}
+	    return *this;
+	}
 
+	cv::Mat Feature::data(){
+		return *(this->mData);
+	}
 
-	CORE_EXPORT enum class ImgLoadType{
-		UNCHANGED,
-		COLOR,
-		GRAYSCALE
-	};
-
-	CORE_EXPORT enum class BlockType{
-		BLOCK,
-		UNBLOCK
-	};
+	Feature Feature::clone(){
+		Feature retFeature;
+		*(retFeature.mData) = this->mData->clone();
+		return retFeature;
+	}
 
 }
 
-#endif // !_SSF_CORE_DEFS_HPP_PP_
+
+

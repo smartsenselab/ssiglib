@@ -36,11 +36,12 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_CONCURRENT_QUEUE_HPP_
-#define _SSF_CORE_CONCURRENT_QUEUE_HPP_
+#ifndef _SSF_CORE_BLOCKING_CONCURRENT_QUEUE_HPP_
+#define _SSF_CORE_BLOCKING_CONCURRENT_QUEUE_HPP_
 
 #include <core/moodycamel_concurrent_queue.hpp>
 #include "core/core_defs.hpp"
+#include "core/conditional_mutex.hpp"
 
 
 namespace ssf{
@@ -54,22 +55,23 @@ namespace ssf{
 	 * 			<a href="https://github.com/cameron314/concurrentqueue"><i>Cameron's Concurrent Queue implementation</i>
 	 */
 	template<class T>
-	class ConcurrentQueue{
+	class BlockingConcurrentQueue{
 
 	public:
 
 		/**
 		 * @brief	Initializes a new instance of the ConcurrentQueue class.
 		 */
-		CORE_EXPORT ConcurrentQueue(void){
-
-			//this->mInternalQueue.
+		CORE_EXPORT BlockingConcurrentQueue(void){
+			std::unique_lock<std::mutex> ulck(this->mMutex);
+			this->mReadyStatus = false;
+			this->mClosed = false;
 		}
 
 		/**
 		 * @brief	Finalizes an instance of the ConcurrentQueue class.
 		 */
-		CORE_EXPORT virtual ~ConcurrentQueue(void){
+		CORE_EXPORT virtual ~BlockingConcurrentQueue(void){
 			//Destructor
 		}
 
@@ -81,7 +83,18 @@ namespace ssf{
 		 * @return	true if it succeeds, false if it fails.
 		 */
 		CORE_EXPORT bool push(T const& data){
-			return this->mInternalQueue.enqueue(data);
+			if (this->mClosed)
+				return false;
+			bool success = this->mInternalQueue.enqueue(data);
+			if (success){
+				this->mSize.fetch_add(1, std::memory_order_relaxed);
+				{
+					std::unique_lock<std::mutex> ulk(this->mMutex);
+					this->mReadyStatus = true;
+					this->mConditionVariable.notify_one();
+				}	
+			}
+			return success;
 		}
 
 		/**
@@ -91,8 +104,42 @@ namespace ssf{
 		 *
 		 * @return	true if it succeeds, false if it fails.
 		 */
-		CORE_EXPORT bool pop(T& data){
-			return this->mInternalQueue.try_dequeue(data);
+		CORE_EXPORT bool pop(T& data, const BlockType& block = BlockType::UNBLOCK){
+			if (block == BlockType::BLOCK){
+				std::unique_lock<std::mutex> popLock(this->mPopMutex);
+				while (!this->mReadyStatus && !this->mClosed)
+					this->mConditionVariable.wait(popLock);
+				bool success = this->mInternalQueue.try_dequeue(data);
+				if (success){
+					this->mSize.fetch_sub(1, std::memory_order_relaxed);
+					{
+						std::unique_lock<std::mutex> ulk(this->mMutex);
+						if (this->mSize <= 0)
+							this->mReadyStatus = false;
+					}
+				}
+				return success;
+			} else{
+				return this->mInternalQueue.try_dequeue(data);
+			}
+		}
+
+		/**
+		* @brief	Removes and returns the first queue object.
+		*
+		* @param	data	The data to pop.
+		*
+		* @return	true if it succeeds, false if it fails.
+		*/
+		CORE_EXPORT bool popBlock(T& data){
+			
+			return this->pop(data, true);
+		}
+
+		CORE_EXPORT void close(){
+			std::unique_lock<std::mutex> ulk(this->mMutex);
+			this->mClosed = true;
+			this->mConditionVariable.notify_all();
 		}
 
 		/**
@@ -100,8 +147,8 @@ namespace ssf{
 		 *
 		 * @return	The size of queue.
 		 */
-		CORE_EXPORT size_t sizeApprox(){
-			return this->mInternalQueue.size_approx();
+		CORE_EXPORT size_t size(){
+			return this->mSize;
 		}
 
 		/**
@@ -113,14 +160,20 @@ namespace ssf{
 		}
 
 
-		ConcurrentQueue(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
-		ConcurrentQueue& operator=(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
+		BlockingConcurrentQueue(const BlockingConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
+		BlockingConcurrentQueue& operator=(const BlockingConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
 
 	private:
-		moodycamel::ConcurrentQueue<T> mInternalQueue;  ///< Internal Concurrent Queue implementation
+		moodycamel::ConcurrentQueue<T> mInternalQueue;  ///< Internal Blocking Concurrent Queue implementation
+		std::mutex mMutex;  ///< The mutex used for lock
+		std::mutex mPopMutex;  ///< The mutex used for lock
+		std::condition_variable mConditionVariable; ///< The condition variable used for control
+		bool mReadyStatus;  ///< The queue status, true is ready
+		bool mClosed;  ///< The mutex status, true is ready
+		std::atomic<size_t> mSize;
 
 	};
 
 }
 
-#endif // !_SSF_CORE_CONCURRENT_QUEUE_HPP_
+#endif // !_SSF_CORE_BLOCKING_CONCURRENT_QUEUE_HPP_

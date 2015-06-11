@@ -36,49 +36,42 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_DEFS_HPP_
-#define _SSF_CORE_DEFS_HPP_
+#ifndef _SSF_CORE_IMAGE_HPP_
+#define _SSF_CORE_IMAGE_HPP_
+
+#include <memory>
+#include <string>
+
+#include "core/core_defs.hpp"
+
+namespace cv{
+	class Mat;
+}
 
 namespace ssf{
 
-//#if !defined _CRT_SECURE_NO_DEPRECATE && defined _MSC_VER && _MSC_VER > 1300
-//#  define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio warnings */
-//# define _SCL_SECURE_NO_WARNINGS
-//#endif
+	class Image{
+	
+	public:
+		CORE_EXPORT Image(void);
+		CORE_EXPORT explicit Image(std::string filename, ImgLoadType loadImgType = ImgLoadType::UNCHANGED);
+		CORE_EXPORT explicit Image(cv::Mat data);
+		CORE_EXPORT virtual ~Image(void);
+		
+		CORE_EXPORT Image(const Image& rhs);
+		CORE_EXPORT Image& operator=(const Image& rhs);
 
-#ifndef CORE_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  CORE_API_EXPORTS
-			#define  CORE_EXPORT __declspec(dllexport)
-		#else
-			#define  CORE_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define CORE_EXPORT
-	#endif
-#endif
+		CORE_EXPORT cv::Mat data();
+		CORE_EXPORT Image clone();
 
+		CORE_EXPORT size_t cols() const;
+		CORE_EXPORT size_t rows() const;
 
-#ifndef SSF_DELETE_FUNCTION
-	#if defined(_MSC_VER) && _MSC_VER < 1800
-		#define SSF_DELETE_FUNCTION
-	#else
-		#define SSF_DELETE_FUNCTION = delete
-	#endif
-#endif
+	private:
+		std::shared_ptr<cv::Mat> mData;
 
-
-	CORE_EXPORT enum class ImgLoadType{
-		UNCHANGED,
-		COLOR,
-		GRAYSCALE
-	};
-
-	CORE_EXPORT enum class BlockType{
-		BLOCK,
-		UNBLOCK
 	};
 
 }
 
-#endif // !_SSF_CORE_DEFS_HPP_PP_
+#endif // !_SSF_CORE_IMAGE_HPP_
