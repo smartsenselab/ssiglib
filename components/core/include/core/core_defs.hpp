@@ -67,6 +67,18 @@ namespace ssf{
 	#endif
 #endif
 
+
+	CORE_EXPORT enum class ImgLoadType{
+		UNCHANGED,
+		COLOR,
+		GRAYSCALE
+	};
+
+	CORE_EXPORT enum class BlockType{
+		BLOCK,
+		UNBLOCK
+	};
+
 }
 
 #endif // !_SSF_CORE_DEFS_HPP_PP_

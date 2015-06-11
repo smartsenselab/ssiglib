@@ -38,7 +38,11 @@
 
 #include <gtest/gtest.h>
 
+#include <chrono>
+#include <thread>
+
 #include <core/concurrent_queue.hpp>
+#include <core/blocking_concurrent_queue.hpp>
 
 TEST(ConcurrentQueue, general) {
 	ssf::ConcurrentQueue<int> q;
@@ -47,6 +51,54 @@ TEST(ConcurrentQueue, general) {
 
 	// Producers
 	for (int i = 0; i != 10; ++i) {
+		threads[i] = std::thread([&](int i) {
+			for (int j = 0; j != 10; ++j) {
+				q.push(i * 10 + j);
+			}
+		}, i);
+	}
+
+	// Consumers
+	for (int i = 10; i != 20; ++i) {
+		threads[i] = std::thread([&]() {
+			int item;
+			for (int j = 0; j != 20; ++j) {
+				if (q.pop(item)) {
+					++dequeued[item];
+				}
+			}
+		});
+	}
+
+	// Wait for all threads
+	for (int i = 0; i != 20; ++i) {
+		threads[i].join();
+	}
+
+	// Collect any leftovers (could be some if e.g. consumers finish before producers)
+	int item;
+	while (q.pop(item)) {
+		++dequeued[item];
+	}
+
+	// Make sure everything went in and came back out!
+	for (int i = 0; i != 100; ++i) {
+		EXPECT_EQ(1, dequeued[i]);
+	}
+
+
+
+}
+
+
+TEST(BlockingConcurrentQueue, general) {
+	ssf::BlockingConcurrentQueue<int> q;
+	int dequeued[100] = { 0 };
+	std::thread threads[20];
+
+	// Producers
+	for (int i = 0; i != 10; ++i) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(30));
 		threads[i] = std::thread([&](int i) {
 			for (int j = 0; j != 10; ++j) {
 				q.push(i * 10 + j);

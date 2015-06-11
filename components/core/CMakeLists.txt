@@ -56,6 +56,7 @@ file(GLOB CORE_STRUCTURES_FILES	 	"${CORE_PATH}/include/core/feature.hpp"
 									"${CORE_PATH}/src/point3d.cpp"
 									"${CORE_PATH}/include/core/rect.hpp"
 									"${CORE_PATH}/include/core/concurrent_queue.hpp"
+									"${CORE_PATH}/include/core/blocking_concurrent_queue.hpp"
 									"${CORE_PATH}/include/core/moodycamel_concurrent_queue.hpp"
 									)
 

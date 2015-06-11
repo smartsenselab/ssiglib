@@ -50,12 +50,6 @@ namespace cv{
 
 namespace ssf{
 
-	CORE_EXPORT enum class ImgLoadType{
-		UNCHANGED,
-		COLOR,
-		GRAYSCALE
-	};
-
 	class Image{
 	
 	public:
