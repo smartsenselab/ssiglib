@@ -36,26 +36,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_MATRIX_HPP_
-#define _SSF_CORE_MATRIX_HPP_
+#include <gtest/gtest.h>
 
-#include <opencv/cv.h>
+#include <core/image.hpp>
 
-namespace ssf{
+TEST(Image, constructor) {
+	ssf::Image img;
+	EXPECT_EQ(0, img.rows());
+	EXPECT_EQ(0, img.cols());
 
-	class Matrix{
-	
-	public:
-		Matrix(void);
-		virtual ~Matrix(void);
-		Matrix(const Matrix& rhs);
-		Matrix& operator=(const Matrix& rhs);
-
-	private:
-		//private members
-
-	};
-
+	ssf::Image img2("lena.jpg");
+	EXPECT_EQ(512, img2.rows());
+	EXPECT_EQ(512, img2.cols());
 }
-
-#endif // !_SSF_CORE_MATRIX_HPP_PP_

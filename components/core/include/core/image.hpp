@@ -36,30 +36,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "core/matrix.hpp"
+#ifndef _SSF_CORE_IMAGE_HPP_
+#define _SSF_CORE_IMAGE_HPP_
+
+#include <memory>
+#include <string>
+
+#include "core/core_defs.hpp"
+
+namespace cv{
+	class Mat;
+}
 
 namespace ssf{
 
-	Matrix::Matrix(){
-		//Constructor
-	}
+	CORE_EXPORT enum class ImgLoadType{
+		UNCHANGED,
+		COLOR,
+		GRAYSCALE
+	};
 
-	Matrix::~Matrix(){
-		//Destructor
-	}
+	class Image{
+	
+	public:
+		CORE_EXPORT Image(void);
+		CORE_EXPORT explicit Image(std::string filename, ImgLoadType loadImgType = ImgLoadType::UNCHANGED);
+		CORE_EXPORT explicit Image(cv::Mat data);
+		CORE_EXPORT virtual ~Image(void);
+		
+		CORE_EXPORT Image(const Image& rhs);
+		CORE_EXPORT Image& operator=(const Image& rhs);
 
-	Matrix::Matrix(const Matrix& rhs){
-		//Constructor Copy
-	}
+		CORE_EXPORT cv::Mat data();
+		CORE_EXPORT Image clone();
 
-	Matrix& Matrix::operator=(const Matrix& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
+		CORE_EXPORT size_t cols() const;
+		CORE_EXPORT size_t rows() const;
+
+	private:
+		std::shared_ptr<cv::Mat> mData;
+
+	};
 
 }
 
-
-
+#endif // !_SSF_CORE_IMAGE_HPP_

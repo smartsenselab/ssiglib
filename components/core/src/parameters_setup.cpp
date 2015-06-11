@@ -39,7 +39,7 @@
 #include "core/parameters_setup.hpp"
 
 #include <boost/lexical_cast.hpp>
-#include <opencv/cv.h>
+#include <opencv2/core/core.hpp>
 
 #include "core/param_exception.hpp"
 
