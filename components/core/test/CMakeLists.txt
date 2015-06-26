@@ -28,7 +28,5 @@ if(BUILD_TESTS)
 	
 	#Configure folder to core library
 	set_target_properties(test_core PROPERTIES FOLDER TESTS)
-
-	add_subdirectory(subtest_plugins )
 	
 endif()

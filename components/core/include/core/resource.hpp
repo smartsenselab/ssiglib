@@ -45,8 +45,6 @@
 
 #include "core/core_defs.hpp"
 #include "core/base_object.hpp"
-#include "core/parameters.hpp"
-#include "core/resource_info.hpp"
 
 namespace ssf{
 
@@ -84,103 +82,6 @@ namespace ssf{
 		 * @return	A shallow copy of this object.
 		 */
 		CORE_EXPORT Resource& operator=(const Resource& rhs);
-
-		/**
-		 * @brief	Gets the resource name.
-		 *
-		 * @return	A string with the resource name.
-		 */
-		CORE_EXPORT virtual std::string name() = 0;
-
-		/**
-		 * @brief	Gets the resource type.
-		 *
-		 * @return	A string with the resource type.
-		 */
-		CORE_EXPORT virtual std::string type() = 0;
-
-		/**
-		 * @brief	Gets the information about the resource.
-		 *
-		 * @return	A ResourceInfo.
-		 */
-		CORE_EXPORT virtual ResourceInfo info();
-
-		/**
-		 * @brief	Setups parameters values of resource by a parameter file.
-		 *
-		 * @param	paramFile	The parameter file.
-		 * @param	nodeID   	Identifier for the node.
-		 */
-		CORE_EXPORT virtual void setup(const std::string& paramFile, const std::string& nodeID);
-
-		/**
-		 * @brief	Setups parameters values of resource by a parameter file.
-		 *
-		 * @param	paramFile	The parameter file.
-		 * @param	nodeID   	Identifier for the node.
-		 */
-		CORE_EXPORT virtual void setup(const FileHandle& paramFile, const std::string& nodeID);
-
-		/**
-		 * @brief	Setups parameters values of resource by a ParametersSetup object.
-		 *
-		 * @param	paramSetup	The ParametersSetup.
-		 */
-		CORE_EXPORT virtual void setup(const ParametersSetup& paramSetup);
-
-	protected:		
-
-		/**
-		 * @brief	Sets an author.
-		 *
-		 * @param	author	The author.
-		 */
-		CORE_EXPORT virtual void setAuthor(const std::string& author);
-
-		/**
-		 * @brief	Sets a description.
-		 *
-		 * @param	description	The description.
-		 */
-		CORE_EXPORT virtual void setDescription(const std::string& description);
-
-		/**
-		 * @brief	Sets author email.
-		 *
-		 * @param	authorEmail	The author email.
-		 */
-		CORE_EXPORT virtual void setAuthorEmail(const std::string& authorEmail);
-
-		/**
-		 * @brief	Sets the minimum required version of SSF.
-		 *
-		 * @param	major	The major version.
-		 * @param	minor	The minor version.
-		 * @param	patch	The patch version.
-		 */
-		CORE_EXPORT virtual void setRequiredVersion(const unsigned short& major, const unsigned short& minor = 0, const unsigned short& patch = 0);
-
-		/**
-		 * @brief	Sets required version.Sets the minimum required version of SSF.
-		 *
-		 * @param	version	The version.
-		 */
-		CORE_EXPORT virtual void setRequiredVersion(const VersionInfo& version);
-
-		/**
-		 * @brief	Sets a string property.
-		 *
-		 * @param	propertyName 	Name of the property.
-		 * @param	propertyValue	The property value.
-		 */
-		CORE_EXPORT virtual void setProperty(const std::string& propertyName, const std::string& propertyValue);
-
-	private:
-		ResourceInfo mResourceInfo; ///< Information describing the resource
-
-	protected:
-		Parameters PARAMETERS;  ///< Options for controlling the operation
 
 		
 	};

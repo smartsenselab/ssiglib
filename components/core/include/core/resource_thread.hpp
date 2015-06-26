@@ -39,6 +39,8 @@
 #ifndef _SSF_CORE_RESOURCE_THREAD_HPP_
 #define _SSF_CORE_RESOURCE_THREAD_HPP_
 
+#include <memory>
+
 #include "core/resource.hpp"
 
 namespace boost{
