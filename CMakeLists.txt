@@ -126,6 +126,7 @@ endif()
 ###############################################################################
 include(cmake/SSFBoostUtil.cmake)
 include(cmake/SSFOpenCVUtil.cmake)
+include(cmake/SSFModules.cmake)
 include(cmake/SSFUtil.cmake)
 
 ###############################################################################
@@ -135,8 +136,8 @@ include(cmake/SSFUtil.cmake)
 #Add 3rdparty
 add_subdirectory(3rdparty)
 
-#Add components
-add_subdirectory(components)
+#Add modules
+add_subdirectory(modules)
 
 #Add documentation
 add_subdirectory(doc)
