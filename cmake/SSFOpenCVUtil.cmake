@@ -17,7 +17,7 @@ macro(ssf_find_opencv)
 	endif()
 	
 	find_package(OpenCV ${ssf_opencv_minimal_version} COMPONENTS ${SSF_FIND_OPENCV_COMPONENTS} ${ssf_options})
-	
+	mark_as_advanced(OPENCV_FOUND)
 endmacro()
 
 macro(ssf_link_opencv TARGET)

@@ -1,18 +1,22 @@
 macro(ssf_add_module _name)
 
-	message(STATUS " ")
-	message(STATUS "Add SSF Module: ${_name}")
 	set(module_options REQUIRED)
 	set(module_oneValueArgs "")
 	set(module_multiValueArgs DEPENDENCIES BOOST OPENCV)
 	cmake_parse_arguments(ADD_MODULE_ARGS "${module_options}" "${module_oneValueArgs}" "${module_multiValueArgs}" ${ARGN} )
-	
-	if(NOT REQUIRED)
-		message(STATUS "TESTE")
-	endif()
-	
-	set(MODULE_NAME ${_name})
+		
+	set(MODULE_NAME "ssf_${_name}")
 	set(MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/${_name}")
+		
+	if(NOT ${ADD_MODULE_ARGS_REQUIRED})
+		option(MODULES_${MODULE_NAME} "Build ${MODULE_NAME}" ON)
+		if(NOT MODULES_${MODULE_NAME})
+			return()
+		endif()
+	endif()
+
+	message(STATUS " ")
+	message(STATUS "Add SSF Module: ${_name}")
 	if(NOT EXISTS ${MODULE_PATH})
 		message(FATAL_ERROR "Directory ${MODULE_PATH} not found!")	
 	endif()
