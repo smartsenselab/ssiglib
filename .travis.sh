@@ -24,8 +24,6 @@ function coverage()
   cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSF_DIR
   make -j2
   make test -j3
-  cd $SSF_DIR
-  gcov `find build/modules -name '*.cpp.o'`  
 }
 
 case $TASK in
