@@ -176,7 +176,7 @@ namespace ssf{
 		 * @param	y	The y value as T.
 		 * @param	z	The z value as T.
 		 */
-		void set(const T& x, const T& y, const T& z){ this->mX = x; this->mY = y; this->mZ = z; }
+		void virtual set(const T& x, const T& y, const T& z){ this->mX = x; this->mY = y; this->mZ = z; }
 
 	protected:
 
@@ -251,7 +251,7 @@ namespace ssf{
 		*
 		* @param	cv::Point3f	A OpenCV point.
 		*/
-		Point3Df(const cv::Point3f& cvPoint);
+		explicit Point3Df(const cv::Point3f& cvPoint);
 
 		/**
 		* @brief	Converts this object to an OpenCV point.
@@ -295,7 +295,7 @@ namespace ssf{
 		*
 		* @param	cv::Point3d	A OpenCV point.
 		*/
-		Point3Dd(const cv::Point3d& cvPoint);
+		explicit Point3Dd(const cv::Point3d& cvPoint);
 
 		/**
 		* @brief	Converts this object to an OpenCV point.

@@ -42,8 +42,9 @@
 
 namespace ssf{
 
-	Feature::Feature(){
-		this->mData = std::make_shared<cv::Mat>();
+	Feature::Feature() 
+		: mData(std::make_shared<cv::Mat>()){
+
 	}
 
 	Feature::~Feature(){

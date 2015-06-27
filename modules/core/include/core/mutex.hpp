@@ -74,8 +74,9 @@ namespace ssf{
 		 */
 		CORE_EXPORT void unlock();
 
-		Mutex(const Mutex& rhs) SSF_DELETE_FUNCTION;
-		Mutex& operator=(const Mutex& rhs) SSF_DELETE_FUNCTION;
+	private:
+		Mutex(const Mutex& rhs);
+		Mutex& operator=(const Mutex& rhs);
 
 	private:
 		std::unique_lock<std::mutex> mLock; ///< The mutex used for lock

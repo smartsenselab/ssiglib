@@ -66,7 +66,7 @@ namespace ssf{
 	}
 
 	const char * FileException::what() const throw(){
-		const char* what_message = (mFileName + ": " + mMessage).c_str();
+		const char* what_message = (this->mFileName + ": " + this->mMessage).c_str();
 		return what_message;
 	}
 

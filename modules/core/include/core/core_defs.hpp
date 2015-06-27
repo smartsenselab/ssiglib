@@ -41,11 +41,6 @@
 
 namespace ssf{
 
-//#if !defined _CRT_SECURE_NO_DEPRECATE && defined _MSC_VER && _MSC_VER > 1300
-//#  define _CRT_SECURE_NO_DEPRECATE /* to avoid multiple Visual Studio warnings */
-//# define _SCL_SECURE_NO_WARNINGS
-//#endif
-
 #ifndef CORE_EXPORT
 	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
 		#if defined  CORE_API_EXPORTS
@@ -58,14 +53,6 @@ namespace ssf{
 	#endif
 #endif
 
-
-#ifndef SSF_DELETE_FUNCTION
-	#if defined(_MSC_VER) && _MSC_VER < 1800
-		#define SSF_DELETE_FUNCTION
-	#else
-		#define SSF_DELETE_FUNCTION = delete
-	#endif
-#endif
 
 
 	CORE_EXPORT enum class ImgLoadType{

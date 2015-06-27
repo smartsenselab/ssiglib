@@ -43,8 +43,8 @@
 
 namespace ssf{
 
-	Image::Image(){
-		this->mData = std::make_shared<cv::Mat>();
+	Image::Image() 
+		: mData(std::make_shared<cv::Mat>()){
 	}
 
 	Image::Image(std::string filename, ImgLoadType loadImgType /*= ImgLoadType::UNCHANGED*/){

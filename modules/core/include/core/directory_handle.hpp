@@ -69,7 +69,7 @@ namespace ssf{
 		 *
 		 * @param	directoryPathName	Full pathname of the directory file.
 		 */
-		CORE_EXPORT DirectoryHandle(const std::string& directoryPathName = "");
+		CORE_EXPORT explicit DirectoryHandle(const std::string& directoryPathName = "");
 
 		/**
 		 * @brief	Finalizes an instance of the DirectoryHandle class.

@@ -114,9 +114,8 @@ namespace ssf{
 			for (boost::filesystem::directory_iterator i(*(this->mPath)); i != end_itr; ++i){
 				if (!boost::filesystem::is_regular_file(i->path()))
 					continue;
-				std::string t = i->path().string();
-				FileHandle te = FileHandle(i->path().string());
-				list.insert(te);
+				FileHandle fileHandle = FileHandle(i->path().string());
+				list.insert(fileHandle);
 			}
 		}
 

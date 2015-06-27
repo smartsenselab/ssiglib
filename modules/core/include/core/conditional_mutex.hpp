@@ -85,8 +85,9 @@ namespace ssf{
 		 */
 		CORE_EXPORT void waitForReady();
 
-		ConditionalMutex(const ConditionalMutex& rhs) SSF_DELETE_FUNCTION;
-		ConditionalMutex& operator=(const ConditionalMutex& rhs) SSF_DELETE_FUNCTION;
+	private:
+		ConditionalMutex(const ConditionalMutex& rhs);
+		ConditionalMutex& operator=(const ConditionalMutex& rhs);
 
 	private:
 		std::mutex mMutex;  ///< The mutex used for lock
