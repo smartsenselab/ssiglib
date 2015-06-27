@@ -39,3 +39,6 @@ install:
 
 script:
   - bash .travis.sh
+  
+after_success:
+  - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;
