@@ -30,13 +30,14 @@ option(BUILD_APPS "Build APP's" ON)
 option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." ON)
 
 #Option to check if 'docs' will be build
-option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+option(BUILD_DOCS "Create and install the HTML based API documentation (requires Doxygen)" OFF)
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
 option(ENABLE_COVERAGE "Enable coverage collection with  GCov." OFF)
 
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH ENABLE_COVERAGE)
+mark_as_advanced(CMAKE_CONFIGURATION_TYPES CMAKE_INSTALL_PREFIX)
 
 ###############################################################################
 # CMake OPTIONS
@@ -126,6 +127,7 @@ endif()
 ###############################################################################
 include(cmake/SSFBoostUtil.cmake)
 include(cmake/SSFOpenCVUtil.cmake)
+include(cmake/SSFModules.cmake)
 include(cmake/SSFUtil.cmake)
 
 ###############################################################################
@@ -135,8 +137,8 @@ include(cmake/SSFUtil.cmake)
 #Add 3rdparty
 add_subdirectory(3rdparty)
 
-#Add components
-add_subdirectory(components)
+#Add modules
+add_subdirectory(modules)
 
 #Add documentation
 add_subdirectory(doc)

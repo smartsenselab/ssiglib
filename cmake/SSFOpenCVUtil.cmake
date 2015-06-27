@@ -3,7 +3,7 @@ include(CMakeParseArguments)
 set(ssf_opencv_minimal_version 2.4)
 
 macro(ssf_find_opencv)
-	set(ssf_options REQUIRED)
+	set(ssf_options REQUIRED QUIET)
 	set(ssf_multiValueArgs COMPONENTS)
 	cmake_parse_arguments(SSF_FIND_OPENCV "${ssf_options}" "${ssf_oneValueArgs}" "${ssf_multiValueArgs}" ${ARGN} )	
 	
@@ -12,8 +12,12 @@ macro(ssf_find_opencv)
 		set(ssf_options "REQUIRED")
 	endif()
 	
-	find_package(OpenCV ${ssf_opencv_minimal_version} COMPONENTS ${SSF_FIND_OPENCV_COMPONENTS} ${ssf_options})
+	if(${SSF_FIND_OPENCV_QUIET})
+		set(ssf_options "QUIET")
+	endif()
 	
+	find_package(OpenCV ${ssf_opencv_minimal_version} COMPONENTS ${SSF_FIND_OPENCV_COMPONENTS} ${ssf_options})
+	mark_as_advanced(OPENCV_FOUND)
 endmacro()
 
 macro(ssf_link_opencv TARGET)
