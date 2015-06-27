@@ -53,8 +53,9 @@ namespace ssf{
 		//Destructor
 	}
 
-	Exception::Exception(const Exception& rhs){
-		this->mMessage = rhs.mMessage;
+	Exception::Exception(const Exception& rhs)
+		: mMessage(rhs.mMessage){
+		
 	}
 
 	Exception& Exception::operator=(const Exception& rhs){

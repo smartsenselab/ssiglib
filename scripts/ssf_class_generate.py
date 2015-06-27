@@ -46,8 +46,8 @@ def main(argv):
 	with open('data/ssf_template_source.cpp', 'r') as fTemplateSource :
 		strTemplateSource = fTemplateSource.read()
 
-	headerPath = "../components/%s/include/%s/%s.hpp" % (component, component, fileName)
-	sourcePath = "../components/%s/src/%s.cpp" % (component, fileName)
+	headerPath = "../modules/%s/include/%s/%s.hpp" % (component, component, fileName)
+	sourcePath = "../modules/%s/src/%s.cpp" % (component, fileName)
 	
 	with open('data/ssf_template_license.txt', 'r') as fTemplateLicense :
 		strTemplateLicense = fTemplateLicense.read()

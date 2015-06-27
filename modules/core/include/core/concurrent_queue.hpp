@@ -112,9 +112,9 @@ namespace ssf{
 			while (this->mInternalQueue.try_dequeue(dummyData));
 		}
 
-
-		ConcurrentQueue(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
-		ConcurrentQueue& operator=(const ConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
+	private:
+		ConcurrentQueue(const ConcurrentQueue& rhs);
+		ConcurrentQueue& operator=(const ConcurrentQueue& rhs);
 
 	private:
 		moodycamel::ConcurrentQueue<T> mInternalQueue;  ///< Internal Concurrent Queue implementation

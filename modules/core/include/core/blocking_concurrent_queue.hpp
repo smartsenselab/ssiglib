@@ -50,8 +50,8 @@ namespace ssf{
 	 * @brief	Concurrent Queue Structure (Thread Safe).
 	 *
 	 * @tparam	T	Generic type parameter.
-	 * 				
-	 * @detail	This class uses the 
+	 *
+	 * @detail	This class uses the
 	 * 			<a href="https://github.com/cameron314/concurrentqueue"><i>Cameron's Concurrent Queue implementation</i>
 	 */
 	template<class T>
@@ -92,7 +92,7 @@ namespace ssf{
 					std::unique_lock<std::mutex> ulk(this->mMutex);
 					this->mReadyStatus = true;
 					this->mConditionVariable.notify_one();
-				}	
+				}
 			}
 			return success;
 		}
@@ -119,7 +119,8 @@ namespace ssf{
 					}
 				}
 				return success;
-			} else{
+			}
+			else{
 				return this->mInternalQueue.try_dequeue(data);
 			}
 		}
@@ -132,7 +133,7 @@ namespace ssf{
 		* @return	true if it succeeds, false if it fails.
 		*/
 		CORE_EXPORT bool popBlock(T& data){
-			
+
 			return this->pop(data, true);
 		}
 
@@ -159,9 +160,9 @@ namespace ssf{
 			while (this->mInternalQueue.try_dequeue(dummyData));
 		}
 
-
-		BlockingConcurrentQueue(const BlockingConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
-		BlockingConcurrentQueue& operator=(const BlockingConcurrentQueue& rhs) SSF_DELETE_FUNCTION;
+	private:
+		BlockingConcurrentQueue(const BlockingConcurrentQueue& rhs);
+		BlockingConcurrentQueue& operator=(const BlockingConcurrentQueue& rhs);
 
 	private:
 		moodycamel::ConcurrentQueue<T> mInternalQueue;  ///< Internal Blocking Concurrent Queue implementation

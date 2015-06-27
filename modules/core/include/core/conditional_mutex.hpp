@@ -63,7 +63,7 @@ namespace ssf{
 		 *
 		 * @param	ready	Initial condition. If ready is false, the mutex status is lock.
 		 */
-		CORE_EXPORT ConditionalMutex(const bool& ready = false);
+		CORE_EXPORT explicit ConditionalMutex(const bool& ready = false);
 
 		/**
 		 * @brief	Finalizes an instance of the ConditionalMutex class.
@@ -85,8 +85,9 @@ namespace ssf{
 		 */
 		CORE_EXPORT void waitForReady();
 
-		ConditionalMutex(const ConditionalMutex& rhs) SSF_DELETE_FUNCTION;
-		ConditionalMutex& operator=(const ConditionalMutex& rhs) SSF_DELETE_FUNCTION;
+	private:
+		ConditionalMutex(const ConditionalMutex& rhs);
+		ConditionalMutex& operator=(const ConditionalMutex& rhs);
 
 	private:
 		std::mutex mMutex;  ///< The mutex used for lock

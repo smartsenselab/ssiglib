@@ -86,8 +86,9 @@ namespace ssf{
 		 */
 		CORE_EXPORT void unlockWrite();
 
-		RWMutex(const RWMutex& rhs) SSF_DELETE_FUNCTION;
-		RWMutex& operator=(const RWMutex& rhs) SSF_DELETE_FUNCTION;
+	private:
+		RWMutex(const RWMutex& rhs);
+		RWMutex& operator=(const RWMutex& rhs);
 
 	private:
 		std::mutex mMutex;  ///< The mutex use for lock

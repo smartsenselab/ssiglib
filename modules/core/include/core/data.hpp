@@ -36,53 +36,24 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_MUTEX_HPP_
-#define _SSF_CORE_MUTEX_HPP_
-
-#include <mutex>
-#include "core/core_defs.hpp"
+#ifndef _SSF_CORE_DATA_HPP_
+#define _SSF_CORE_DATA_HPP_
 
 namespace ssf{
 
-	/**
-	 * @brief	SSF Mutex.
-	 * 			
-	 * @detail	We decided for our own Mutex class because in future we can change or 
-	 * 			optimize the mutex implementation without carry big changes on code.
-	 */
-	class Mutex{
+	class Data{
 	
 	public:
-
-		/**
-		 * @brief	Initializes a new instance of the Mutex class.
-		 */
-		CORE_EXPORT Mutex(void);
-
-		/**
-		 * @brief	Finalizes an instance of the Mutex class.
-		 */
-		CORE_EXPORT virtual ~Mutex(void);
-
-		/**
-		 * @brief	Locks the mutex.
-		 */
-		CORE_EXPORT void lock();
-
-		/**
-		 * @brief	Unlocks the mutex.
-		 */
-		CORE_EXPORT void unlock();
+		Data(void);
+		virtual ~Data(void);
+		Data(const Data& rhs);
+		Data& operator=(const Data& rhs);
 
 	private:
-		Mutex(const Mutex& rhs);
-		Mutex& operator=(const Mutex& rhs);
-
-	private:
-		std::unique_lock<std::mutex> mLock; ///< The mutex used for lock
+		//private members
 
 	};
 
 }
 
-#endif // !_SSF_CORE_MUTEX_HPP_PP_
+#endif // !_SSF_CORE_DATA_HPP_

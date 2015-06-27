@@ -185,7 +185,7 @@ namespace ssf{
 		 *
 		 * @param	cv::Point	A OpenCV point.
 		 */
-		Point2Di(const cv::Point& cvPoint);
+		explicit Point2Di(const cv::Point& cvPoint);
 
 		/**
 		 * @brief	Converts this object to an OpenCV point.
@@ -200,7 +200,7 @@ namespace ssf{
 		 * @param	x	The x value as int.
 		 * @param	y	The y value as int.
 		 */
-		void set(const int& x, const int& y);
+		virtual void set(const int& x, const int& y) override;
 
 		/**
 		 * @brief	Sets x and y coordinates by OpenCV point.
@@ -228,7 +228,7 @@ namespace ssf{
 		 *
 		 * @param	cv::Point2f	A OpenCV point.
 		 */
-		Point2Df(const cv::Point2f& cvPoint);
+		explicit Point2Df(const cv::Point2f& cvPoint);
 
 		/**
 		 * @brief	Converts this object to an OpenCV point.
@@ -243,7 +243,7 @@ namespace ssf{
 		 * @param	x	The x value as float.
 		 * @param	y	The y value as float.
 		 */
-		void set(const float& x, const float& y);
+		virtual void set(const float& x, const float& y) override;
 
 		/**
 		 * @brief	Sets x and y coordinates by OpenCV point.
@@ -271,7 +271,7 @@ namespace ssf{
 		 *
 		 * @param	cv::Point2d	A OpenCV point.
 		 */
-		Point2Dd(const cv::Point2d& cvPoint);
+		explicit Point2Dd(const cv::Point2d& cvPoint);
 
 		/**
 		 * @brief	Converts this object to an OpenCV point.
@@ -286,7 +286,7 @@ namespace ssf{
 		 * @param	x	The x coordinate as double.
 		 * @param	y	The y coordinate as double.
 		 */
-		void set(const double& x, const double& y);
+		virtual void set(const double& x, const double& y) override;
 
 		/**
 		 * @brief	Sets x and y coordinates by OpenCV point.
