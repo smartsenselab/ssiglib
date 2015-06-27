@@ -18,7 +18,16 @@ function test()
   make test -j3
 }
 
+function coverage()
+{
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSF_DIR
+  make -j2
+  make test -j3
+}
+
 case $TASK in
   build ) build;;
   test ) test;;
+  coverage ) coverage;;
 esac
