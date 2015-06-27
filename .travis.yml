@@ -9,9 +9,9 @@ matrix:
     - compiler: clang
       env: TASK="build"
     - compiler: gcc
-      env: TASK="build"
-    - compiler: gcc
       env: TASK="test"
+    - compiler: gcc
+      env: TASK="coverage"
 
 addons:
   coverity_scan:
