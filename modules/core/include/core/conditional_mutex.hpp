@@ -63,7 +63,7 @@ namespace ssf{
 		 *
 		 * @param	ready	Initial condition. If ready is false, the mutex status is lock.
 		 */
-		CORE_EXPORT ConditionalMutex(const bool& ready = false);
+		CORE_EXPORT explicit ConditionalMutex(const bool& ready = false);
 
 		/**
 		 * @brief	Finalizes an instance of the ConditionalMutex class.

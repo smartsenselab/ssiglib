@@ -207,7 +207,7 @@ namespace ssf{
 		 *
 		 * @param	cvPoint	A OpenCV point.
 		 */
-		Point3Di(const cv::Point3i& cvPoint);
+		explicit Point3Di(const cv::Point3i& cvPoint);
 
 		/**
 		 * @brief	Converts this object to an OpenCV point.
