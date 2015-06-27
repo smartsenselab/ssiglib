@@ -9,9 +9,9 @@ matrix:
     - compiler: clang
       env: TASK="build"
     - compiler: gcc
-      env: TASK="build"
-    - compiler: gcc
       env: TASK="test"
+    - compiler: gcc
+      env: TASK="coverage"
 
 addons:
   coverity_scan:
@@ -35,7 +35,11 @@ install:
   - sudo apt-get install -qq libboost-filesystem1.54-dev libboost-log1.54-dev libboost-date-time1.54-dev libboost-thread1.54-dev 
   - sudo apt-get install -qq libcv-dev libcvaux-dev libhighgui-dev libopencv-dev
   - sudo apt-get install -qq gcc-4.8 g++-4.8
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90  
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90  
 
 script:
   - bash .travis.sh
+  
+after_success:
+  - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;
