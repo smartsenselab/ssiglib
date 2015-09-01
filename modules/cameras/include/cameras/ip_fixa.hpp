@@ -15,7 +15,7 @@ namespace ssf{
 		CAMERAS_EXPORT CameraFixa& operator=(const CameraFixa& rhs);
 
 		CAMERAS_EXPORT  virtual int getFPS() = 0; //Reports actual status of the FPS camera
-		CAMERAS_EXPORT  virtual Point2Di getResolution() = 0; //Reports actual status of the resolution camera
+		//CAMERAS_EXPORT  virtual Point2Di getResolution() = 0; //Reports actual status of the resolution camera
 		
 
 	private:
