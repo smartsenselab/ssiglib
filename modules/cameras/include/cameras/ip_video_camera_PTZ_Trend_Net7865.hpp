@@ -20,7 +20,7 @@ namespace ssf{
 		CAMERAS_EXPORT IPVideoCameraPTZTrendNet7865& operator=(const IPVideoCameraPTZTrendNet7865& rhs);
 
 		CAMERAS_EXPORT virtual int getFPS() { return 0; } //Reports actual status of the FPS camera
-		CAMERAS_EXPORT virtual Point2Di getResolution() { return Point2Di(); } //Reports actual status of the resolution camera
+		//CAMERAS_EXPORT virtual Point2Di getResolution() { return Point2Di(); } //Reports actual status of the resolution camera
 
 		CAMERAS_EXPORT virtual float getCurrentZoom(){ return 0; } //Reports actual status of the zoom camera.
 		CAMERAS_EXPORT virtual float getCurrentPan(){ return 0; } //Reports actual status of the pan camera

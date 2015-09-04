@@ -36,34 +36,23 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_CORE_MATRIX_HPP_
-#define _SSF_CORE_MATRIX_HPP_
-
-#include <memory>
-#include "core/core_defs.hpp"
-
-namespace cv{
-	class Mat;
-}
+#ifndef _SSF_ALG_DEFS_HPP_
+#define _SSF_ALG_DEFS_HPP_
 
 namespace ssf{
 
-	class Feature{
-	
-	public:
-		CORE_EXPORT Feature(void);
-		CORE_EXPORT virtual ~Feature(void);
-		CORE_EXPORT Feature(const Feature& rhs);
-		CORE_EXPORT Feature& operator=(const Feature& rhs);
-
-		CORE_EXPORT cv::Mat data();
-		CORE_EXPORT Feature clone();
-
-	private:
-		std::shared_ptr<cv::Mat> mData;
-
-	};
+#ifndef ALG_EXPORT
+	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
+		#if defined  ALG_API_EXPORTS
+			#define  ALG_EXPORT __declspec(dllexport)
+		#else
+			#define  ALG_EXPORT __declspec(dllimport)
+		#endif
+	#else
+		#define ALG_EXPORT
+	#endif
+#endif
 
 }
 
-#endif // !_SSF_CORE_MATRIX_HPP_PP_
+#endif // !_SSF_ALG_DEFS_HPP_PP_

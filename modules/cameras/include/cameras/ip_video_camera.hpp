@@ -4,7 +4,6 @@
 
 #include "cameras/ip_camera.hpp"
 #include <iostream>
-#include <core/point2d.hpp>
 
 
 namespace ssf{
@@ -18,7 +17,7 @@ namespace ssf{
 		CAMERAS_EXPORT IPVideoCamera& operator=(const IPVideoCamera& rhs);
 
 		CAMERAS_EXPORT virtual int getFPS() = 0;
-		CAMERAS_EXPORT virtual Point2Di getResolution() = 0;
+		//CAMERAS_EXPORT virtual Point2Di getResolution() = 0;
 
 		CAMERAS_EXPORT virtual void setAddress(std::string IP);
 		CAMERAS_EXPORT virtual std::string getAddress();

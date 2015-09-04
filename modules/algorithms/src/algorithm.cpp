@@ -36,16 +36,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include <gtest/gtest.h>
+#include "algorithms/algorithm.hpp"
 
-#include <core/image.hpp>
+namespace ssf{
 
-TEST(Image, constructor) {
-	ssf::Image img;
-	EXPECT_EQ(0, img.rows());
-	EXPECT_EQ(0, img.cols());
+	Algorithm::Algorithm(){
+		//Constructor
+	}
 
-	ssf::Image img2("lena.jpg");
-	EXPECT_EQ(512, img2.rows());
-	EXPECT_EQ(512, img2.cols());
+	Algorithm::~Algorithm(){
+		//Destructor
+	}
+
+	Algorithm::Algorithm(const Algorithm& rhs){
+		//Constructor Copy
+	}
+
+	Algorithm& Algorithm::operator=(const Algorithm& rhs){
+		if (this != &rhs){
+			//code here
+		}
+	    return *this;
+	}
+
 }
+
