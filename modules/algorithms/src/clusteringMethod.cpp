@@ -51,8 +51,4 @@ void ClusteringMethod::setup
 void ClusteringMethod::addInitialClustering(const std::vector<Cluster>& init){
   clusters_ = init;
 }
-
-bool ClusteringMethod::isReady(){
-  return ready_;
-}
 }

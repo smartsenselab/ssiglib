@@ -36,62 +36,99 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
-#define _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
-
-#include <opencv2/core.hpp>
-#include <memory>
-#include <vector>
-#include "learningMethod.hpp"
-
-#include "alg_defs.hpp"
+#include "Algorithms/svmClassifier.hpp"
+#include <opencv2/ml.hpp>
 
 namespace ssf{
-typedef std::vector<int> Cluster;
 
-struct ClusteringParams{
-  int K;
-  int maxIterations;
-};
-
-class ClusteringMethod : public
-  ssf::UnsupervisedLearningMethod<cv::Mat_<float>,
-                                  cv::Mat_<float>,
-                                  ClusteringParams>{
-public:
-  ALG_EXPORT ClusteringMethod(void) = default;
-  ALG_EXPORT virtual ~ClusteringMethod(void) = default;
-
-  ALG_EXPORT virtual void addInitialClustering(
-    const std::vector<Cluster>& init);
-
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) = 0;
-
-  ALG_EXPORT void learn(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) override = 0;
-
-  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp)const override = 0;
-
-  ALG_EXPORT virtual std::vector<Cluster> getClustering()const = 0;
-
-  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const = 0;
-
-  ALG_EXPORT virtual bool empty() const override = 0;
-  ALG_EXPORT virtual bool isTrained() const override = 0;
-  ALG_EXPORT virtual bool isClassifier() const override = 0;
-
-  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
-  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
-
-protected:
-  cv::Mat_<float> samples_;
-  std::vector<Cluster> clusters_;
-  std::unique_ptr<ClusteringParams> params_;
-  bool ready_;
-};
-
+SVMClassifier::SVMClassifier(){
+  //Constructor
 }
 
-#endif // !_SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+SVMClassifier::~SVMClassifier(){
+  //Destructor
+}
 
+SVMClassifier::SVMClassifier(const SVMClassifier& rhs){
+  //Constructor Copy
+}
+
+SVMClassifier& SVMClassifier::operator=(const SVMClassifier& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
+
+void SVMClassifier::setup(cv::Mat_<float>& input, ClassificationParams* parameters){
+  samples_ = input;
+  cv::TermCriteria termCrit(parameters->termType, parameters->maxIt, parameters->eps);
+  auto p = reinterpret_cast<SVMParameters*>(parameters);
+
+  kernelType_ = p->kernelType;
+  modelType_ = p->modelType;
+
+  c_ = p->c;
+  gamma_ = p->gamma;
+  nu_ = p->nu;
+  coef_ = p->coef;
+  degree_ = p->degree;
+
+  if(!weights_.empty()){
+    classWeights_ = cv::Mat::ones(static_cast<int>(weights_.size()), 1, CV_32F);
+    for(auto& it : weights_){
+      classWeights_.at<float>(it.first) = it.second;
+    }
+    weights_.clear();
+  }
+
+  cv::ml::SVM::Params cvSVMparams(modelType_, kernelType_, degree_, gamma_,
+                                  coef_, c_, nu_, p_, classWeights_, termCrit);
+
+  svm_ = cv::ml::SVM::create(cvSVMparams);
+}
+
+void SVMClassifier::addLabels(cv::Mat_<int>& labels){
+  labels_ = labels;
+}
+
+void SVMClassifier::learn(cv::Mat_<float>& input,
+                          cv::Mat_<int>& labels,
+                          ClassificationParams* parameters){
+  setup(input, parameters);
+  if(!labels.empty())
+    addLabels(labels);
+
+  svm_->train(samples_, cv::ml::ROW_SAMPLE, labels_);
+}
+
+void SVMClassifier::predict(cv::Mat_<float>& inp,
+                            cv::Mat_<float>& resp) const{
+  svm_->predict(inp, resp);
+}
+
+cv::Mat_<int> SVMClassifier::getLabels() const{
+  return labels_;
+}
+
+void SVMClassifier::setClassWeights(const int classLabel, const float weight){
+  weights_[classLabel] = weight;
+}
+
+bool SVMClassifier::empty() const{
+  return svm_.empty();
+}
+
+bool SVMClassifier::isTrained() const{
+  return svm_->isTrained();
+}
+
+bool SVMClassifier::isClassifier() const{
+  return svm_->isClassifier();
+}
+
+
+void SVMClassifier::load(const std::string& filename, const std::string& nodename){ }
+
+void SVMClassifier::save(const std::string& filename, const std::string& nodename) const{ }
+}

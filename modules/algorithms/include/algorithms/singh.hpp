@@ -50,20 +50,7 @@ public:
   ALG_EXPORT Singh(void) = default;
   ALG_EXPORT virtual ~Singh(void) = default;
   
-  ALG_EXPORT cv::Mat_<float> predict(cv::Mat_<float>& sample) const override;
-  ALG_EXPORT void load(const std::string& filename, const std::string& nodename) override;
-  ALG_EXPORT void save(const std::string& filename, const std::string& nodename) const override;
-  ALG_EXPORT void clear() override;
-  ALG_EXPORT cv::Mat_<float> getCentroids() const override;
-protected:
-  void precondition() override;
-  void initializeClassifiers() override;
-  void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) override;
-  bool isFinished() override;
-  void postCondition() override;
-  std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) override;
-
-private:
+ private:
   //private members
 
 };

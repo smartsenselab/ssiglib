@@ -41,7 +41,6 @@
 
 #include "alg_defs.hpp"
 
-#include "statisticalModel.hpp"
 #include "clusteringMethod.hpp"
 #include "classification.hpp"
 #include "iterableMethod.hpp"
@@ -55,34 +54,36 @@ struct ClassifierClusteringParams : ClusteringParams{
 
 class ClassifierClustering : public ClusteringMethod,
                              IterableMethod{
-private:
-  cv::Mat_<float> getState()const override{
-    return samples_;
-  };
-
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void) = default;
   ClassifierClustering(const ClassifierClustering& rhs);
   ClassifierClustering& operator=(const ClassifierClustering& rhs);
 
-  ALG_EXPORT virtual cv::Mat_<float> predict(cv::Mat_<float>& sample)const override = 0;
-
-  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
-  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename)const override = 0;
-
-  ALG_EXPORT virtual void clear() override = 0;
-
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
                                 ClusteringParams* parameters) override;
+
+  ALG_EXPORT void learn(cv::Mat_<float>& input,
+                        ClusteringParams* parameters) override;
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override = 0;
+
+  ALG_EXPORT virtual std::vector<Cluster> getClustering() const override;
+  ALG_EXPORT virtual bool empty() const override = 0;
+  ALG_EXPORT virtual bool isTrained() const override = 0;
+  ALG_EXPORT virtual bool isClassifier() const override = 0;
+
   ALG_EXPORT bool iterate() override;
 
-  ALG_EXPORT virtual std::vector<Cluster> learn(
-    cv::Mat_<float>& input, ClusteringParams* parameters) override;
-  ALG_EXPORT std::vector<Cluster> getResults()const override;
   ALG_EXPORT virtual cv::Mat_<float> getCentroids()const override = 0;
 
+  ALG_EXPORT virtual void load(const std::string& filename,
+                               const std::string& nodename) override = 0;
+  ALG_EXPORT virtual void save(const std::string& filename,
+                               const std::string& nodename)const override = 0;
+
 protected:
-  virtual void precondition() override = 0;
+  virtual void precondition() = 0;
 
   virtual void initializeClusterings() = 0;
   virtual void initializeClassifiers() = 0;
@@ -93,7 +94,7 @@ protected:
 
   virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) = 0;
 
-protected:
+  //Attributes /////////
   int maximumK_;
   int minimumK_;
   int m_;

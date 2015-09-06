@@ -37,7 +37,6 @@
 *************************************************************************************************L*/
 #include <unordered_map>
 #include "algorithms/kmeans.hpp"
-#include <core/log.hpp>
 
 
 namespace ssf{
@@ -63,7 +62,7 @@ void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
 
 }
 
-std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
+void Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
   setup(input, parameters);
   cv::Mat labels;
   setupLabelMatFromInitialization(labels);
@@ -82,21 +81,18 @@ std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* par
     auto cluster = clusters[i];
     clusters_.push_back(cluster);
   }
-
-  return clusters_;
 }
 
-cv::Mat_<float> Kmeans::predict(cv::Mat_<float>& sample)const{
+void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp)const{
   const int n = centroids_.rows;
-  cv::Mat_<float> prediction = cv::Mat_<float>::zeros(1, n);
+  resp = cv::Mat_<float>::zeros(1, n);
   for(int i = 0; i < n; ++i){
-    prediction[0][i] = static_cast<float>(
+    resp[0][i] = static_cast<float>(
       cv::norm(sample - centroids_.row(i), predicitonDistanceType_));
   }
-  return prediction;
 }
 
-std::vector<Cluster> Kmeans::getResults()const{
+std::vector<Cluster> Kmeans::getClustering() const{
   return clusters_;
 }
 
@@ -104,8 +100,16 @@ cv::Mat_<float> Kmeans::getCentroids()const{
   return centroids_;
 }
 
-cv::Mat_<float> Kmeans::getState()const{
-  return samples_;
+bool Kmeans::empty() const{
+  return centroids_.empty();
+}
+
+bool Kmeans::isTrained() const{
+  return !centroids_.empty();
+}
+
+bool Kmeans::isClassifier() const{
+  return false;
 }
 
 void Kmeans::load(const std::string& filename, const std::string& nodename){

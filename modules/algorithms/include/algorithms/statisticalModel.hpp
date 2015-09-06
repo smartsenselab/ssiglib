@@ -39,23 +39,28 @@
 #ifndef _SSF_ALGORITHMS_STATISTICALMODEL_HPP_
 #define _SSF_ALGORITHMS_STATISTICALMODEL_HPP_
 
-#include "learningMethod.hpp"
+#include <string>
+
 #include "alg_defs.hpp"
+#include "algorithm.hpp"
 
 namespace ssf{
 
-template<class InputType, class OutputType, class PredictionType, class SetupType>
-class StatisticalModel : public LearningMethod<
-    InputType,
-    OutputType,
-    PredictionType,
-    SetupType>{
+template<class InputType, class PredictionType>
+class StatisticalModel : public Algorithm{
 public:
   ALG_EXPORT StatisticalModel(void) = default;
   ALG_EXPORT virtual ~StatisticalModel(void) = default;
   ALG_EXPORT virtual bool empty() const = 0;
   ALG_EXPORT virtual bool isTrained() const = 0;
   ALG_EXPORT virtual bool isClassifier() const = 0;
+
+  ALG_EXPORT virtual void predict(InputType& inp, PredictionType& resp) const = 0;
+
+  ALG_EXPORT virtual void load(const std::string& filename,
+                               const std::string& nodename = "") = 0;
+  ALG_EXPORT virtual void save(const std::string& filename,
+                               const std::string& nodename = "")const = 0;
 private:
   //private members
 

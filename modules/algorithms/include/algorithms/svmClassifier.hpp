@@ -36,28 +36,71 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "Algorithms/classification.hpp"
+#ifndef _SSF_ALGORITHMS_SVMCLASSIFIER_HPP_
+#define _SSF_ALGORITHMS_SVMCLASSIFIER_HPP_
+#include "classification.hpp"
+#include <opencv2/ml/ml.hpp>
+#include <unordered_map>
 
 namespace ssf{
 
-	Classification::Classification(){
-		//Constructor
-	}
+struct SVMParameters : ClassificationParams{
+  int kernelType;
+  int modelType;
+  float c;
+  float gamma;
+  float p;
+  float nu;
+  float coef;
+  float degree;
+};
 
-	Classification::~Classification(){
-		//Destructor
-	}
+class SVMClassifier : public Classification{
 
-	Classification::Classification(const Classification& rhs){
-		//Constructor Copy
-	}
+public:
+  ALG_EXPORT SVMClassifier(void);
+  ALG_EXPORT virtual ~SVMClassifier(void);
+  ALG_EXPORT SVMClassifier(const SVMClassifier& rhs);
+  ALG_EXPORT SVMClassifier& operator=(const SVMClassifier& rhs);
 
-	Classification& Classification::operator=(const Classification& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClassificationParams* parameters) override;
+
+  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override;
+
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input,
+                                cv::Mat_<int>& labels,
+                                ClassificationParams* parameters) override;
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) override;
+
+
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+private:
+  //private members
+  cv::Ptr<cv::ml::SVM> svm_;
+  int kernelType_;
+  int modelType_;
+  float c_;
+  float gamma_;
+  float p_;
+  float nu_;
+  float coef_;
+  float degree_;
+  cv::Mat classWeights_;
+
+  std::unordered_map<int, float> weights_;
+
+};
 
 }
+
+#endif // !_SSF_ALGORITHMS_SVMCLASSIFIER_HPP_
 

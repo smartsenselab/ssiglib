@@ -59,7 +59,7 @@ TEST(KmeansClustering, SanityClusteringTest){
 
   ssf::Kmeans kmeans;
   kmeans.learn(inp, params);
-  auto clusters = kmeans.getResults();
+  auto clusters = kmeans.getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, clusters.size());

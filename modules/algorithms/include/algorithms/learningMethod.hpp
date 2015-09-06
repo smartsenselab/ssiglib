@@ -41,30 +41,56 @@
 
 #include <string>
 #include "alg_defs.hpp"
-#include "algorithm.hpp"
+#include "statisticalModel.hpp"
 
 namespace ssf{
-template<class InputType, class ReturnType, class PredictionType, class SetupType>
-class LearningMethod : public Algorithm{
+
+template<class InputType, class PredictionType, class LabelType, class SetupType>
+class SupervisedLearningMethod :
+  public ssf::StatisticalModel<
+    InputType,
+    PredictionType>{
 
 public:
-  ALG_EXPORT virtual ~LearningMethod(void) = default;
-  ALG_EXPORT virtual void precondition(){};
+  ALG_EXPORT virtual ~SupervisedLearningMethod(void) = default;
 
-  ALG_EXPORT virtual void setup(InputType& input,
+  ALG_EXPORT virtual void addLabels(LabelType& labels) = 0;
+  ALG_EXPORT virtual void learn(InputType& input,
+                                LabelType& labels,
                                 SetupType* parameters) = 0;
-  ALG_EXPORT virtual ReturnType learn(InputType& input,
-                                      SetupType* parameters) = 0;
-  ALG_EXPORT virtual PredictionType predict(InputType& sample)const = 0;
-  ALG_EXPORT virtual ReturnType getResults()const = 0;
-  ALG_EXPORT virtual InputType getState()const = 0;
 
-  ALG_EXPORT virtual bool isReady() = 0;
+  ALG_EXPORT virtual LabelType getLabels() const = 0;
 
-  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename = "") = 0;
-  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename = "")const = 0;
+  virtual bool empty() const override = 0;
+  virtual bool isTrained() const override = 0;
+  virtual bool isClassifier() const override = 0;
+  virtual void predict(InputType& inp, PredictionType& resp) const override = 0;
+  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
 
-  ALG_EXPORT virtual void clear() = 0;
+private:
+  //private members
+
+};
+
+template<class InputType, class PredictionType, class SetupType>
+class UnsupervisedLearningMethod :
+  public StatisticalModel<
+    InputType,
+    PredictionType>{
+public:
+  ALG_EXPORT virtual ~UnsupervisedLearningMethod(void) = default;
+
+  ALG_EXPORT virtual void learn(InputType& input,
+                                SetupType* parameters) = 0;
+
+  virtual bool empty() const override = 0;
+  virtual bool isTrained() const override = 0;
+  virtual bool isClassifier() const override = 0;
+  virtual void predict(InputType& inp, PredictionType& resp) const override = 0;
+  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
 
 private:
   //private members

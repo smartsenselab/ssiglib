@@ -36,62 +36,24 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
-#define _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
-
-#include <opencv2/core.hpp>
-#include <memory>
-#include <vector>
-#include "learningMethod.hpp"
-
-#include "alg_defs.hpp"
+#ifndef _SSF_ALGORITHMS_PLSCLASSIFIER_HPP_
+#define _SSF_ALGORITHMS_PLSCLASSIFIER_HPP_
 
 namespace ssf{
-typedef std::vector<int> Cluster;
 
-struct ClusteringParams{
-  int K;
-  int maxIterations;
-};
+	class PLSClassifier{
+	
+	public:
+		PLSClassifier(void);
+		virtual ~PLSClassifier(void);
+		PLSClassifier(const PLSClassifier& rhs);
+		PLSClassifier& operator=(const PLSClassifier& rhs);
 
-class ClusteringMethod : public
-  ssf::UnsupervisedLearningMethod<cv::Mat_<float>,
-                                  cv::Mat_<float>,
-                                  ClusteringParams>{
-public:
-  ALG_EXPORT ClusteringMethod(void) = default;
-  ALG_EXPORT virtual ~ClusteringMethod(void) = default;
+	private:
+		//private members
 
-  ALG_EXPORT virtual void addInitialClustering(
-    const std::vector<Cluster>& init);
-
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) = 0;
-
-  ALG_EXPORT void learn(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) override = 0;
-
-  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp)const override = 0;
-
-  ALG_EXPORT virtual std::vector<Cluster> getClustering()const = 0;
-
-  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const = 0;
-
-  ALG_EXPORT virtual bool empty() const override = 0;
-  ALG_EXPORT virtual bool isTrained() const override = 0;
-  ALG_EXPORT virtual bool isClassifier() const override = 0;
-
-  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
-  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
-
-protected:
-  cv::Mat_<float> samples_;
-  std::vector<Cluster> clusters_;
-  std::unique_ptr<ClusteringParams> params_;
-  bool ready_;
-};
+	};
 
 }
 
-#endif // !_SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
-
+#endif // !_SSF_ALGORITHMS_PLSCLASSIFIER_HPP_

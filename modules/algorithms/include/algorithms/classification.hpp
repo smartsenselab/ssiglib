@@ -38,22 +38,55 @@
 
 #ifndef _SSF_ALGORITHMS_CLASSIFICATION_HPP_
 #define _SSF_ALGORITHMS_CLASSIFICATION_HPP_
+#include "learningMethod.hpp"
+#include <opencv2/core/mat.hpp>
 
 namespace ssf{
+struct ClassificationParams{
+  int termType;
+  float eps;
+  int maxIt;
+};
 
-	class Classification{
-	
-	public:
-		Classification(void);
-		virtual ~Classification(void);
-		Classification(const Classification& rhs);
-		Classification& operator=(const Classification& rhs);
+class Classification : public ssf::SupervisedLearningMethod<
+    cv::Mat_<float>,
+    cv::Mat_<float>,
+    cv::Mat_<int>,
+    ClassificationParams
+  >{
+public:
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
+                                ClassificationParams* parameters) = 0;
 
-	private:
-		//private members
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override = 0;
 
-	};
+  ALG_EXPORT Classification(void) = default;
+  ALG_EXPORT virtual ~Classification(void) = default;
+
+  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override = 0;
+
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels,
+                                ClassificationParams* parameters) override = 0;
+
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override = 0;
+
+  ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) = 0;
+
+  ALG_EXPORT virtual bool empty() const override = 0;
+  ALG_EXPORT virtual bool isTrained() const override = 0;
+  ALG_EXPORT virtual bool isClassifier() const override = 0;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
+private:
+  //private members
+protected:
+  cv::Mat_<float> samples_;
+  cv::Mat_<int> labels_;
+};
 
 }
 
 #endif // !_SSF_ALGORITHMS_CLASSIFICATION_HPP_
+

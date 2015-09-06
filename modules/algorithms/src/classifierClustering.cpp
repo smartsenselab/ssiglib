@@ -53,6 +53,10 @@ ClassifierClustering& ClassifierClustering::operator=(const ClassifierClustering
   return *this;
 }
 
+std::vector<Cluster> ClassifierClustering::getClustering() const{
+  return newClusters_;
+}
+
 void ClassifierClustering::setup(cv::Mat_<float>& input,
                                  ClusteringParams* parameters){
   if(clusters_.empty()){
@@ -91,7 +95,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
 }
 
 bool ClassifierClustering::iterate(){
-  if(!isReady()){
+  if(!ready_){
     ssf::Log::ERROR("Setup method must be called First!");
   }
   int order = it_ % 2;
@@ -106,7 +110,7 @@ bool ClassifierClustering::iterate(){
   return isFinished();
 }
 
-std::vector<Cluster> ClassifierClustering::learn(
+void ClassifierClustering::learn(
   cv::Mat_<float>& input, ClusteringParams* parameters){
   setup(input, parameters);
   /********
@@ -121,11 +125,5 @@ std::vector<Cluster> ClassifierClustering::learn(
   clusters_ = newClusters_;
   trainClassifiers(clusters_, discovery_[order], natural_[order]);
   postCondition();
-
-  return getResults();
-}
-
-std::vector<Cluster> ClassifierClustering::getResults() const{
-  return newClusters_;
 }
 }

@@ -56,18 +56,23 @@ public:
   Kmeans& operator=(const Kmeans& rhs);
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClusteringParams* parameters) override;
-  ALG_EXPORT std::vector<std::vector<int>> learn(
+  ALG_EXPORT void learn(
     cv::Mat_<float>& input, ClusteringParams* parameters) override;
 
-  ALG_EXPORT cv::Mat_<float> predict(cv::Mat_<float>& sample)const override;
-  ALG_EXPORT std::vector<Cluster> getResults()const override;
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, 
+    cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT std::vector<Cluster> getClustering()const override;
   ALG_EXPORT cv::Mat_<float> getCentroids() const override;
 
-  ALG_EXPORT cv::Mat_<float> getState()const override;
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+
   ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
   ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
-  ALG_EXPORT void clear() override;
 
+  void clear();
 private:
   //private members
   cv::Mat_<float> centroids_;
