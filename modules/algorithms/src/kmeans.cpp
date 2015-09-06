@@ -35,26 +35,95 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
+#include <unordered_map>
+#include "algorithms/kmeans.hpp"
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+Kmeans::Kmeans(const Kmeans& rhs){
+  //Constructor Copy
+}
 
-	private:
-		//private members
+Kmeans& Kmeans::operator=(const Kmeans& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
 
-	};
+void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
+  samples_ = input;
+  params_ = std::unique_ptr<ClusteringParams>(parameters);
+  auto p = static_cast<KmeansParams*>(parameters);//might throw an exception
+  flags_ = p->flags;
+  nAttempts_ = p->nAttempts;
+  predicitonDistanceType_ = p->predicitonDistanceType;
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
+  setup(input, parameters);
+  cv::Mat_<int> labels;
+  cv::TermCriteria term;
+  term.maxCount = params_->maxIterations;
+  term.type = term.MAX_ITER;
+
+  cv::kmeans(samples_, params_->K, labels, term, nAttempts_, flags_, centroids_);
+
+  std::unordered_map<int, Cluster> clusters;
+  for(int i = 0; i < labels.rows; ++i){
+    clusters[labels[i][0]].push_back(i);
+  }
+  clusters_.assign(clusters.begin(), clusters.end());
+
+  return clusters_;
+}
+
+cv::Mat_<float> Kmeans::predict(cv::Mat_<float>& sample){
+  const int n = centroids_.rows;
+  cv::Mat_<float> prediction = cv::Mat_<float>::zeros(1, n);
+  for(int i = 0; i < n; ++i){
+    prediction[0][i] = cv::norm(sample - centroids_.row(i), predicitonDistanceType_);
+  }
+  return prediction;
+}
+
+std::vector<Cluster> Kmeans::getResults(){
+  return clusters_;
+}
+
+cv::Mat_<float> Kmeans::getCentroids(){
+  return centroids_;
+}
+
+cv::Mat_<float> Kmeans::getState(){
+  return samples_;
+}
+
+void Kmeans::load(const std::string& filename, const std::string& nodename){
+  cv::FileStorage stg;
+  stg.open(filename, cv::FileStorage::READ);
+
+  stg["Kmeans" + nodename] >> centroids_;
+
+  stg.release();
+}
+
+void Kmeans::save(const std::string& filename, const std::string& nodename){
+  cv::FileStorage stg;
+  stg.open(filename, cv::FileStorage::WRITE);
+  stg << "Kmeans" + nodename << "{";
+
+  stg << "Centroids" << centroids_;
+
+  stg << "}";
+  stg.release();
+}
+
+void Kmeans::clear(){
+  centroids_.release();
+  samples_.release();
+  clusters_.clear();
+}
+}

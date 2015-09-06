@@ -36,25 +36,46 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+#define _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+
+#include <opencv2/core.hpp>
+#include <memory>
+#include "algorithm.hpp"
+#include <vector>
+#include "learningMethod.hpp"
 
 namespace ssf{
+typedef std::vector<int> Cluster;
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+struct ClusteringParams{
+  int K;
+  int maxIterations;
+  std::vector<Cluster> initialClustering;
+};
 
-	private:
-		//private members
+class ClusteringMethod : public
+  ssf::LearningMethod<cv::Mat_<float>,
+                      std::vector<Cluster>,
+                      cv::Mat_<float>,
+                      ClusteringParams>{
+public:
+  ClusteringMethod(void) = default;
+  virtual ~ClusteringMethod(void) = default;
 
-	};
+  virtual void setup(cv::Mat_<float>& input, ClusteringParams* parameters);
+  virtual std::vector<Cluster> learn(cv::Mat_<float>& input,
+                                     ClusteringParams* parameters) override = 0;
+  virtual std::vector<Cluster> getResults() override = 0;
+  virtual cv::Mat_<float> getCentroids() = 0;
+
+  protected:
+  cv::Mat_<float> samples_;
+  std::vector<Cluster> clusters_;
+  std::unique_ptr<ClusteringParams> params_;
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+

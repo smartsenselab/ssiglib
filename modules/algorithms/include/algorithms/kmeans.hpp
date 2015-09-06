@@ -36,25 +36,45 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
+#define _SSF_ALGORITHMS_KMEANS_HPP_
+
+#include "clusteringMethod.hpp"
 
 namespace ssf{
+struct KmeansParams : ClusteringParams{
+  int flags = cv::KMEANS_RANDOM_CENTERS;
+  int nAttempts = 1;
+  int predicitonDistanceType = cv::NORM_L2;
+};
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+class Kmeans : ClusteringMethod{
+public:
+  Kmeans(void) = default;
+  virtual ~Kmeans(void) = default;
+  Kmeans(const Kmeans& rhs);
+  Kmeans& operator=(const Kmeans& rhs);
+  void setup(cv::Mat_<float>& input, ClusteringParams* parameters) override;
+  std::vector<Cluster> learn(cv::Mat_<float>& input, ClusteringParams* parameters) override;
+  cv::Mat_<float> predict(cv::Mat_<float>& sample) override;
+  std::vector<Cluster> getResults() override;
+  cv::Mat_<float> getCentroids() override;
 
-	private:
-		//private members
+  cv::Mat_<float> getState() override;
+  void load(const std::string& filename, const std::string &nodename = "") override;
+  void save(const std::string& filename, const std::string &nodename = "") override;
+  void clear() override;
 
-	};
+private:
+  //private members
+  cv::Mat_<float> centroids_;
+  int flags_;
+  int nAttempts_;
+  int predicitonDistanceType_;
+
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
+

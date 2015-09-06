@@ -36,19 +36,18 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_CORE_CLASS_HPP_
+#define _SSF_CORE_CLASS_HPP_
 
 namespace ssf{
 
-  
-	class Algorithm{
+	class Class{
 	
 	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+		Class(void);
+		virtual ~Class(void);
+		Class(const Class& rhs);
+		Class& operator=(const Class& rhs);
 
 	private:
 		//private members
@@ -57,4 +56,4 @@ namespace ssf{
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_CORE_CLASS_HPP_

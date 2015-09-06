@@ -36,25 +36,27 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#include "algorithms/iterableMethod.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
-
-	private:
-		//private members
-
-	};
-
+IterableMethod::IterableMethod(){
+  //Constructor
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+IterableMethod::~IterableMethod(){
+  //Destructor
+}
+
+IterableMethod::IterableMethod(const IterableMethod& rhs){
+  //Constructor Copy
+}
+
+IterableMethod& IterableMethod::operator=(const IterableMethod& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
+
+}

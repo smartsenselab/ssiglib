@@ -36,25 +36,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#include "Algorithms/learningMethod.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+	LearningMethod::LearningMethod(){
+		//Constructor
+	}
 
-	private:
-		//private members
+	LearningMethod::~LearningMethod(){
+		//Destructor
+	}
 
-	};
+	LearningMethod::LearningMethod(const LearningMethod& rhs){
+		//Constructor Copy
+	}
+
+	LearningMethod& LearningMethod::operator=(const LearningMethod& rhs){
+		if (this != &rhs){
+			//code here
+		}
+	    return *this;
+	}
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_

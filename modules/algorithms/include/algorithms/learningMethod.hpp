@@ -36,20 +36,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+#define _SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+
+#include <string>
+#include "algorithm.hpp"
 
 namespace ssf{
-
-  
-	class Algorithm{
+  template<class InputType, class ReturnType, class PredictionType, class SetupType>
+	class LearningMethod : public Algorithm{
 	
 	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+		virtual ~LearningMethod(void) = default;
+    
+    virtual ReturnType learn(InputType& input, SetupType* parameters) = 0;
+    virtual PredictionType predict(InputType& sample) = 0;
+    virtual ReturnType getResults() = 0;
+    virtual InputType getState() = 0;
 
+    virtual void load(const std::string &filename, const std::string &nodename = "") = 0;
+    virtual void save(const std::string &filename, const std::string &nodename = "") = 0;
+
+    virtual void clear() = 0;
 	private:
 		//private members
 
@@ -57,4 +65,4 @@ namespace ssf{
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_LEARNINGMETHOD_HPP_

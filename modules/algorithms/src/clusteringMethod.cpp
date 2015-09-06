@@ -36,25 +36,13 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#include "algorithms/clusteringMethod.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
-
-	private:
-		//private members
-
-	};
-
+void ClusteringMethod::setup
+(cv::Mat_<float>& input, ClusteringParams* parameters){
+  samples_ = input;
+  params_ = std::unique_ptr<ClusteringParams>(parameters);
 }
-
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+}
