@@ -47,11 +47,9 @@ namespace ssf{
 class Singh : public ClassifierClustering{
 
 public:
-  ALG_EXPORT Singh(void);
-  ALG_EXPORT virtual ~Singh(void);
-  ALG_EXPORT Singh(const Singh& rhs);
-  ALG_EXPORT Singh& operator=(const Singh& rhs);
-
+  ALG_EXPORT Singh(void) = default;
+  ALG_EXPORT virtual ~Singh(void) = default;
+  
   ALG_EXPORT cv::Mat_<float> predict(cv::Mat_<float>& sample) const override;
   ALG_EXPORT void load(const std::string& filename, const std::string& nodename) override;
   ALG_EXPORT void save(const std::string& filename, const std::string& nodename) const override;

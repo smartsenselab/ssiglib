@@ -62,8 +62,8 @@ private:
 
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void) = default;
-  ALG_EXPORT ClassifierClustering(const ClassifierClustering& rhs);
-  ALG_EXPORT ClassifierClustering& operator=(const ClassifierClustering& rhs);
+  ClassifierClustering(const ClassifierClustering& rhs);
+  ClassifierClustering& operator=(const ClassifierClustering& rhs);
 
   ALG_EXPORT virtual cv::Mat_<float> predict(cv::Mat_<float>& sample)const override = 0;
 
@@ -84,6 +84,7 @@ public:
 protected:
   virtual void precondition() override = 0;
 
+  virtual void initializeClusterings() = 0;
   virtual void initializeClassifiers() = 0;
   virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) = 0;
   virtual bool isFinished() = 0;

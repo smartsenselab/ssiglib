@@ -68,14 +68,15 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
 
   precondition();
 
-  discovery_.resize(2);
+  discovery_.resize(2);//Discoveries subsets are inferred from the input samples
   natural_.resize(2);
   const int N = samples_.rows;
   int half = static_cast<int>(ceil(N / 2));
   for(int i = 0; i < half; ++i){
     discovery_[0].push_back(i);
-
-    discovery_[1].push_back(i + N / 2);
+  }
+  for(int i = half; i < N; ++i){
+    discovery_[1].push_back(i);
   }
 
   params_->K = std::min(static_cast<int>(half / 4), maximumK_);
@@ -96,7 +97,6 @@ bool ClassifierClustering::iterate(){
   int order = it_ % 2;
   clusters_ = newClusters_;
   trainClassifiers(clusters_, discovery_[order], natural_[order]);
-  //clustersVisualization ("partial_" + this->GetName () + "_" + std::to_string (it) + ".png");
   newClusters_.clear();
   order = (order + 1) % 2;
   newClusters_ = assignment(m_, discovery_[order]);
@@ -126,6 +126,6 @@ std::vector<Cluster> ClassifierClustering::learn(
 }
 
 std::vector<Cluster> ClassifierClustering::getResults() const{
-  return clusters_;
+  return newClusters_;
 }
 }

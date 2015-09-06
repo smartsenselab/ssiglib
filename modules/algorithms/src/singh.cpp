@@ -40,24 +40,25 @@
 
 namespace ssf{
 
-	Singh::Singh(){
-		//Constructor
-	}
-
-	Singh::~Singh(){
-		//Destructor
-	}
-
-	Singh::Singh(const Singh& rhs){
-		//Constructor Copy
-	}
-
-	Singh& Singh::operator=(const Singh& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
-
+cv::Mat_<float> Singh::predict(cv::Mat_<float>& sample) const{
+  
 }
 
+void Singh::load(const std::string& filename, const std::string& nodename){
+  
+}
+
+void Singh::save(const std::string& filename, const std::string& nodename) const{
+  
+}
+
+void Singh::clear(){
+}
+
+cv::Mat_<float> Singh::getCentroids() const{
+  return{};
+}
+
+void Singh::initializeClassifiers(){
+}
+}

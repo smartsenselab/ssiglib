@@ -37,7 +37,6 @@
 *************************************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include <fstream>
 #include <opencv2/core.hpp>
 
 #include <algorithms/kmeans.hpp>
