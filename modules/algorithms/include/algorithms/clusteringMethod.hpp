@@ -41,7 +41,6 @@
 
 #include <opencv2/core.hpp>
 #include <memory>
-#include "algorithm.hpp"
 #include <vector>
 #include "learningMethod.hpp"
 
