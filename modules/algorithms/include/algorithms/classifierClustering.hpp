@@ -36,45 +36,78 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
-#define _SSF_ALGORITHMS_KMEANS_HPP_
+#ifndef _SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_
+#define _SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_
 
+#include "alg_defs.hpp"
+
+#include "statisticalModel.hpp"
 #include "clusteringMethod.hpp"
+#include "classification.hpp"
+#include "iterableMethod.hpp"
 
 namespace ssf{
-struct KmeansParams : ClusteringParams{
-  int flags = cv::KMEANS_RANDOM_CENTERS;
-  int nAttempts = 1;
-  int predicitonDistanceType = cv::NORM_L2;
+struct ClassifierClusteringParams : ClusteringParams{
+  int m = 5;
+  int minimumK = 20;
+  int maximumK = static_cast<int>(1.0e6);
 };
 
-class Kmeans : ClusteringMethod{
-public:
-  Kmeans(void) = default;
-  virtual ~Kmeans(void) = default;
-  Kmeans(const Kmeans& rhs);
-  Kmeans& operator=(const Kmeans& rhs);
-  void setup(cv::Mat_<float>& input, const std::vector<Cluster> & initialClustering, ClusteringParams* parameters) override;
-  std::vector<Cluster> learn(cv::Mat_<float>& input, ClusteringParams* parameters) override;
-  cv::Mat_<float> predict(cv::Mat_<float>& sample)const override;
-  std::vector<Cluster> getResults()const override;
-  cv::Mat_<float> getCentroids() const override;
+class ClassifierClustering : public ClusteringMethod,
+                             IterableMethod{
+private:
+  cv::Mat_<float> getState()const override{
+    return samples_;
+  };
 
-  cv::Mat_<float> getState()const override;
-  void load(const std::string& filename, const std::string& nodename = "") override;
-  void save(const std::string& filename, const std::string& nodename = "")const override;
-  void clear() override;
+public:
+  ALG_EXPORT virtual ~ClassifierClustering(void) = default;
+  ALG_EXPORT ClassifierClustering(const ClassifierClustering& rhs);
+  ALG_EXPORT ClassifierClustering& operator=(const ClassifierClustering& rhs);
+
+  ALG_EXPORT virtual cv::Mat_<float> predict(cv::Mat_<float>& sample)const override = 0;
+
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename)const override = 0;
+
+  ALG_EXPORT virtual void clear() override = 0;
+
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, const std::vector<Cluster>& initialClustering, ClusteringParams* parameters) override;
+  ALG_EXPORT bool iterate() override;
+
+  ALG_EXPORT virtual std::vector<Cluster> learn() override;
+  ALG_EXPORT std::vector<Cluster> getResults()const override;
+  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const override = 0;
+
+protected:
+  virtual void precondition() override = 0;
+
+  virtual void initializeClassifiers() = 0;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) = 0;
+  virtual bool isFinished() = 0;
+
+  virtual void postCondition() = 0;
+
+  virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) = 0;
+
+protected:
+  int maximumK_;
+  int minimumK_;
+  int m_;
+  int it_;
 
 private:
   //private members
-  cv::Mat_<float> centroids_;
-  int flags_;
-  int nAttempts_;
-  int predicitonDistanceType_;
+  std::vector<std::unique_ptr<Classification>> classifiers_;
+  std::vector<std::vector<int>> discovery_;
+  std::vector<std::vector<int>> natural_;
+
+  std::vector<Cluster> clustersOld_, newClusters_;
+
 
 };
 
 }
 
-#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
+#endif // !_SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_
 

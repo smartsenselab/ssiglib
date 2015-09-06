@@ -52,7 +52,7 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs){
   return *this;
 }
 
-void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
+void Kmeans::setup(cv::Mat_<float>& input, const std::vector<Cluster> & initialClustering, ClusteringParams* parameters){
   samples_ = input;
   params_ = std::unique_ptr<ClusteringParams>(parameters);
   auto p = static_cast<KmeansParams*>(parameters);//might throw an exception
@@ -63,7 +63,7 @@ void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
 }
 
 std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
-  setup(input, parameters);
+  setup(input,, parameters);
   cv::Mat_<int> labels;
   cv::TermCriteria term;
   term.maxCount = params_->maxIterations;
@@ -75,29 +75,33 @@ std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* par
   for(int i = 0; i < labels.rows; ++i){
     clusters[labels[i][0]].push_back(i);
   }
-  clusters_.assign(clusters.begin(), clusters.end());
+  for(int i = 0; i < clusters.size(); ++i){
+    auto cluster = clusters[i];
+    clusters_.push_back(cluster);
+  }
 
   return clusters_;
 }
 
-cv::Mat_<float> Kmeans::predict(cv::Mat_<float>& sample){
+cv::Mat_<float> Kmeans::predict(cv::Mat_<float>& sample)const{
   const int n = centroids_.rows;
   cv::Mat_<float> prediction = cv::Mat_<float>::zeros(1, n);
   for(int i = 0; i < n; ++i){
-    prediction[0][i] = cv::norm(sample - centroids_.row(i), predicitonDistanceType_);
+    prediction[0][i] = static_cast<float>(
+      cv::norm(sample - centroids_.row(i), predicitonDistanceType_));
   }
   return prediction;
 }
 
-std::vector<Cluster> Kmeans::getResults(){
+std::vector<Cluster> Kmeans::getResults()const{
   return clusters_;
 }
 
-cv::Mat_<float> Kmeans::getCentroids(){
+cv::Mat_<float> Kmeans::getCentroids()const{
   return centroids_;
 }
 
-cv::Mat_<float> Kmeans::getState(){
+cv::Mat_<float> Kmeans::getState()const{
   return samples_;
 }
 
@@ -105,15 +109,15 @@ void Kmeans::load(const std::string& filename, const std::string& nodename){
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::READ);
 
-  stg["Kmeans" + nodename] >> centroids_;
+  stg["ssf_Kmeans_" + nodename] >> centroids_;
 
   stg.release();
 }
 
-void Kmeans::save(const std::string& filename, const std::string& nodename){
+void Kmeans::save(const std::string& filename, const std::string& nodename)const{
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::WRITE);
-  stg << "Kmeans" + nodename << "{";
+  stg << "ssf_Kmeans_" + nodename << "{";
 
   stg << "Centroids" << centroids_;
 

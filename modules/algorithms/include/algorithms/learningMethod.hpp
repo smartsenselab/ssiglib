@@ -40,29 +40,38 @@
 #define _SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
 
 #include <string>
+#include "alg_defs.hpp"
 #include "algorithm.hpp"
 
 namespace ssf{
-  template<class InputType, class ReturnType, class PredictionType, class SetupType>
-	class LearningMethod : public Algorithm{
-	
-	public:
-		virtual ~LearningMethod(void) = default;
-    
-    virtual ReturnType learn(InputType& input, SetupType* parameters) = 0;
-    virtual PredictionType predict(InputType& sample) = 0;
-    virtual ReturnType getResults() = 0;
-    virtual InputType getState() = 0;
+template<class InputType, class ReturnType, class PredictionType, class SetupType>
+class LearningMethod : public Algorithm{
 
-    virtual void load(const std::string &filename, const std::string &nodename = "") = 0;
-    virtual void save(const std::string &filename, const std::string &nodename = "") = 0;
+public:
+  ALG_EXPORT virtual ~LearningMethod(void) = default;
+  ALG_EXPORT virtual void precondition(){};
 
-    virtual void clear() = 0;
-	private:
-		//private members
+  ALG_EXPORT virtual void setup(InputType& input,
+                                const ReturnType& initialClustering,
+                                SetupType* parameters) = 0;
+  ALG_EXPORT virtual ReturnType learn() = 0;
+  ALG_EXPORT virtual PredictionType predict(InputType& sample)const = 0;
+  ALG_EXPORT virtual ReturnType getResults()const = 0;
+  ALG_EXPORT virtual InputType getState()const = 0;
 
-	};
+  ALG_EXPORT virtual bool isReady() = 0;
+
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename = "") = 0;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename = "")const = 0;
+
+  ALG_EXPORT virtual void clear() = 0;
+ 
+private:
+  //private members
+
+};
 
 }
 
 #endif // !_SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+

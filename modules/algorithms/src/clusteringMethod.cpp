@@ -41,8 +41,15 @@
 namespace ssf{
 
 void ClusteringMethod::setup
-(cv::Mat_<float>& input, ClusteringParams* parameters){
+(cv::Mat_<float>& input, const std::vector<Cluster>& initialClustering, 
+ClusteringParams* parameters){
+  ready_ = true;
   samples_ = input;
+  clusters_ = initialClustering;
   params_ = std::unique_ptr<ClusteringParams>(parameters);
+}
+
+bool ClusteringMethod::isReady(){
+  return ready_;
 }
 }

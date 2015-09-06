@@ -35,46 +35,96 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
+#include <cassert>
+#include "core/log.hpp"
 
-#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
-#define _SSF_ALGORITHMS_KMEANS_HPP_
-
-#include "clusteringMethod.hpp"
+#include "algorithms/classifierClustering.hpp"
 
 namespace ssf{
-struct KmeansParams : ClusteringParams{
-  int flags = cv::KMEANS_RANDOM_CENTERS;
-  int nAttempts = 1;
-  int predicitonDistanceType = cv::NORM_L2;
-};
 
-class Kmeans : ClusteringMethod{
-public:
-  Kmeans(void) = default;
-  virtual ~Kmeans(void) = default;
-  Kmeans(const Kmeans& rhs);
-  Kmeans& operator=(const Kmeans& rhs);
-  void setup(cv::Mat_<float>& input, const std::vector<Cluster> & initialClustering, ClusteringParams* parameters) override;
-  std::vector<Cluster> learn(cv::Mat_<float>& input, ClusteringParams* parameters) override;
-  cv::Mat_<float> predict(cv::Mat_<float>& sample)const override;
-  std::vector<Cluster> getResults()const override;
-  cv::Mat_<float> getCentroids() const override;
-
-  cv::Mat_<float> getState()const override;
-  void load(const std::string& filename, const std::string& nodename = "") override;
-  void save(const std::string& filename, const std::string& nodename = "")const override;
-  void clear() override;
-
-private:
-  //private members
-  cv::Mat_<float> centroids_;
-  int flags_;
-  int nAttempts_;
-  int predicitonDistanceType_;
-
-};
-
+ClassifierClustering::ClassifierClustering(const ClassifierClustering& rhs){
+  //Constructor Copy
 }
 
-#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
+ClassifierClustering& ClassifierClustering::operator=(const ClassifierClustering& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
 
+void ClassifierClustering::setup(cv::Mat_<float>& input,
+                                 const std::vector<Cluster>& initialClustering,
+                                 ClusteringParams* parameters){
+  assert(!initialClustering.empty());
+  samples_ = input;
+  params_ = std::unique_ptr<ClusteringParams>(parameters);
+  auto p = static_cast<ClassifierClusteringParams*>(parameters);
+  m_ = p->m;
+  maximumK_ = p->maximumK;
+  minimumK_ = p->minimumK;
+
+  precondition();
+
+  discovery_.resize(2);
+  natural_.resize(2);
+  const int N = samples_.rows;
+  int half = static_cast<int>(ceil(N / 2));
+  for(int i = 0; i < half; ++i){
+    discovery_[0].push_back(i);
+
+    discovery_[1].push_back(i + N / 2);
+  }
+
+  params_->K = std::min(static_cast<int>(half / 4), maximumK_);
+
+
+  clusters_ = initialClustering;
+  initializeClassifiers();
+  trainClassifiers(clusters_, discovery_[0], natural_[0]);
+
+  newClusters_ = assignment(m_, discovery_[0]);
+  clustersOld_ = clusters_;
+
+  ready_ = true;
+}
+
+bool ClassifierClustering::iterate(){
+  if(!isReady()){
+    ssf::Log::ERROR("Setup method must be called First!");
+  }
+  int order = it_ % 2;
+  clusters_ = newClusters_;
+  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  //clustersVisualization ("partial_" + this->GetName () + "_" + std::to_string (it) + ".png");
+  newClusters_.clear();
+  order = (order + 1) % 2;
+  newClusters_ = assignment(m_, discovery_[order]);
+  clustersOld_ = clusters_;
+  it_++;
+
+  return isFinished();
+}
+
+std::vector<Cluster> ClassifierClustering::learn(){
+  //Setup must have been called before
+  /********
+  **main loop
+  ********/
+  it_ = 0;
+  bool terminated = false;
+  do{
+    terminated = iterate();
+  } while(!terminated);
+  int order = it_ % 2;
+  clusters_ = newClusters_;
+  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  postCondition();
+
+  return getResults();
+}
+
+std::vector<Cluster> ClassifierClustering::getResults() const{
+  return clusters_;
+}
+}

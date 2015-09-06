@@ -44,13 +44,14 @@
 #include <vector>
 #include "learningMethod.hpp"
 
+#include "alg_defs.hpp"
+
 namespace ssf{
 typedef std::vector<int> Cluster;
 
 struct ClusteringParams{
   int K;
   int maxIterations;
-  std::vector<Cluster> initialClustering;
 };
 
 class ClusteringMethod : public
@@ -59,19 +60,23 @@ class ClusteringMethod : public
                       cv::Mat_<float>,
                       ClusteringParams>{
 public:
-  ClusteringMethod(void) = default;
-  virtual ~ClusteringMethod(void) = default;
+  ALG_EXPORT ClusteringMethod(void) = default;
+  ALG_EXPORT virtual ~ClusteringMethod(void) = default;
 
-  virtual void setup(cv::Mat_<float>& input, ClusteringParams* parameters);
-  virtual std::vector<Cluster> learn(cv::Mat_<float>& input,
-                                     ClusteringParams* parameters) override = 0;
-  virtual std::vector<Cluster> getResults() override = 0;
-  virtual cv::Mat_<float> getCentroids() = 0;
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
+                                const std::vector<Cluster>& initialClustering,
+                                ClusteringParams* parameters) override;
 
-  protected:
+  ALG_EXPORT std::vector<std::vector<int>> learn() override = 0;
+  ALG_EXPORT virtual std::vector<Cluster> getResults()const override = 0;
+  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const = 0;
+  ALG_EXPORT virtual bool isReady() override;
+
+protected:
   cv::Mat_<float> samples_;
   std::vector<Cluster> clusters_;
   std::unique_ptr<ClusteringParams> params_;
+  bool ready_;
 };
 
 }

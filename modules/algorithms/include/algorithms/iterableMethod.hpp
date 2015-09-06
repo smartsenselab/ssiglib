@@ -39,17 +39,15 @@
 #ifndef _SSF_ALGORITHMS_ITERABLEMETHOD_HPP_
 #define _SSF_ALGORITHMS_ITERABLEMETHOD_HPP_
 
-#include "learningMethod.hpp"
+#include "alg_defs.hpp"
 
 namespace ssf{
 
-template<class InputType, class ReturnType, class SetupType>
 class IterableMethod{
 
 public:
-  virtual ~IterableMethod() = default;
-  virtual bool iterate() = 0;
-  virtual void setup(InputType& input, SetupType* parameters) = 0;
+  ALG_EXPORT virtual ~IterableMethod() = default;
+  ALG_EXPORT virtual bool iterate() = 0;
 };
 
 }
