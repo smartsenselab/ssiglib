@@ -63,11 +63,14 @@ public:
   ALG_EXPORT ClusteringMethod(void) = default;
   ALG_EXPORT virtual ~ClusteringMethod(void) = default;
 
+  ALG_EXPORT virtual void addInitialClustering(
+    const std::vector<Cluster>& init);
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                                const std::vector<Cluster>& initialClustering,
                                 ClusteringParams* parameters) override;
 
-  ALG_EXPORT std::vector<std::vector<int>> learn() override = 0;
+  ALG_EXPORT std::vector<std::vector<int>> learn
+  (cv::Mat_<float>& input,
+   ClusteringParams* parameters) override = 0;
   ALG_EXPORT virtual std::vector<Cluster> getResults()const override = 0;
   ALG_EXPORT virtual cv::Mat_<float> getCentroids()const = 0;
   ALG_EXPORT virtual bool isReady() override;

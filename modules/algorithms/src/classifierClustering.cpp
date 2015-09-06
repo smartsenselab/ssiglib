@@ -54,9 +54,11 @@ ClassifierClustering& ClassifierClustering::operator=(const ClassifierClustering
 }
 
 void ClassifierClustering::setup(cv::Mat_<float>& input,
-                                 const std::vector<Cluster>& initialClustering,
                                  ClusteringParams* parameters){
-  assert(!initialClustering.empty());
+  if(clusters_.empty()){
+    ssf::Log::ERROR("Call ssf::addInitialClustering First!");
+  }
+  assert(!clusters_.empty());
   samples_ = input;
   params_ = std::unique_ptr<ClusteringParams>(parameters);
   auto p = static_cast<ClassifierClusteringParams*>(parameters);
@@ -78,8 +80,6 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
 
   params_->K = std::min(static_cast<int>(half / 4), maximumK_);
 
-
-  clusters_ = initialClustering;
   initializeClassifiers();
   trainClassifiers(clusters_, discovery_[0], natural_[0]);
 
@@ -106,8 +106,9 @@ bool ClassifierClustering::iterate(){
   return isFinished();
 }
 
-std::vector<Cluster> ClassifierClustering::learn(){
-  //Setup must have been called before
+std::vector<Cluster> ClassifierClustering::learn(
+  cv::Mat_<float>& input, ClusteringParams* parameters){
+  setup(input, parameters);
   /********
   **main loop
   ********/

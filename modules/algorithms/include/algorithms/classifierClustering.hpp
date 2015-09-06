@@ -72,10 +72,12 @@ public:
 
   ALG_EXPORT virtual void clear() override = 0;
 
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, const std::vector<Cluster>& initialClustering, ClusteringParams* parameters) override;
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
+                                ClusteringParams* parameters) override;
   ALG_EXPORT bool iterate() override;
 
-  ALG_EXPORT virtual std::vector<Cluster> learn() override;
+  ALG_EXPORT virtual std::vector<Cluster> learn(
+    cv::Mat_<float>& input, ClusteringParams* parameters) override;
   ALG_EXPORT std::vector<Cluster> getResults()const override;
   ALG_EXPORT virtual cv::Mat_<float> getCentroids()const override = 0;
 

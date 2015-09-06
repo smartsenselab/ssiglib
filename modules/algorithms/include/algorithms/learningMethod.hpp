@@ -52,9 +52,9 @@ public:
   ALG_EXPORT virtual void precondition(){};
 
   ALG_EXPORT virtual void setup(InputType& input,
-                                const ReturnType& initialClustering,
                                 SetupType* parameters) = 0;
-  ALG_EXPORT virtual ReturnType learn() = 0;
+  ALG_EXPORT virtual ReturnType learn(InputType& input,
+                                      SetupType* parameters) = 0;
   ALG_EXPORT virtual PredictionType predict(InputType& sample)const = 0;
   ALG_EXPORT virtual ReturnType getResults()const = 0;
   ALG_EXPORT virtual InputType getState()const = 0;
@@ -65,7 +65,7 @@ public:
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename = "")const = 0;
 
   ALG_EXPORT virtual void clear() = 0;
- 
+
 private:
   //private members
 

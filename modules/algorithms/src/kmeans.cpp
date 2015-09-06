@@ -37,6 +37,7 @@
 *************************************************************************************************L*/
 #include <unordered_map>
 #include "algorithms/kmeans.hpp"
+#include <core/log.hpp>
 
 
 namespace ssf{
@@ -52,7 +53,7 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs){
   return *this;
 }
 
-void Kmeans::setup(cv::Mat_<float>& input, const std::vector<Cluster> & initialClustering, ClusteringParams* parameters){
+void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
   samples_ = input;
   params_ = std::unique_ptr<ClusteringParams>(parameters);
   auto p = static_cast<KmeansParams*>(parameters);//might throw an exception
@@ -63,17 +64,19 @@ void Kmeans::setup(cv::Mat_<float>& input, const std::vector<Cluster> & initialC
 }
 
 std::vector<Cluster> Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
-  setup(input,, parameters);
-  cv::Mat_<int> labels;
+  setup(input, parameters);
+  cv::Mat labels;
+  setupLabelMatFromInitialization(labels);
   cv::TermCriteria term;
   term.maxCount = params_->maxIterations;
   term.type = term.MAX_ITER;
 
+  cv::Mat centroids = centroids_;
   cv::kmeans(samples_, params_->K, labels, term, nAttempts_, flags_, centroids_);
 
   std::unordered_map<int, Cluster> clusters;
   for(int i = 0; i < labels.rows; ++i){
-    clusters[labels[i][0]].push_back(i);
+    clusters[labels.at<int>(i, 0)].push_back(i);
   }
   for(int i = 0; i < clusters.size(); ++i){
     auto cluster = clusters[i];
@@ -129,5 +132,15 @@ void Kmeans::clear(){
   centroids_.release();
   samples_.release();
   clusters_.clear();
+}
+
+void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels){
+  if(clusters_.empty()) return;
+  labels = cv::Mat_<int>::zeros(samples_.rows, samples_.cols);
+  for(int c = 0; c < clusters_.size(); ++c){
+    for(int s = 0; s < clusters_[c].size(); ++s){
+      labels.at<int>(clusters_[c][s], 0) = c;
+    }
+  }
 }
 }
