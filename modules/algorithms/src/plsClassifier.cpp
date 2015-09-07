@@ -40,24 +40,70 @@
 
 namespace ssf{
 
-	PLSClassifier::PLSClassifier(){
-		//Constructor
-	}
-
-	PLSClassifier::~PLSClassifier(){
-		//Destructor
-	}
-
-	PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
-		//Constructor Copy
-	}
-
-	PLSClassifier& PLSClassifier::operator=(const PLSClassifier& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
-
+PLSClassifier::PLSClassifier(){
+  //Constructor
 }
 
+PLSClassifier::~PLSClassifier(){
+  //Destructor
+}
+
+PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
+  //Constructor Copy
+}
+
+PLSClassifier& PLSClassifier::operator=(const PLSClassifier& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
+
+void PLSClassifier::predict(cv::Mat_<float>& inp,
+                            cv::Mat_<float>& resp) const{
+  pls_->ProjectionBstar(inp, resp);
+}
+
+void PLSClassifier::addLabels(cv::Mat_<int>& labels){
+  labels_ = labels;
+}
+
+void PLSClassifier::learn(cv::Mat_<float>& input,
+                          cv::Mat_<int>& labels,
+                          ClassificationParams* parameters){
+  if(!labels.empty())addLabels(labels);
+  pls_ = std::make_unique<PLS>();
+  cv::Mat_<float> l;
+  nfactors_ = static_cast<PLSParameters*>(parameters)->factors;
+  labels_.convertTo(l, CV_32F);
+  auto X = input.clone();
+  pls_->runpls(X, l, nfactors_);
+
+  trained_ = true;
+}
+
+cv::Mat_<int> PLSClassifier::getLabels() const{
+  return labels_;
+}
+
+bool PLSClassifier::empty() const{
+  return bool(pls_);
+}
+
+bool PLSClassifier::isTrained() const{
+  return trained_;
+}
+
+bool PLSClassifier::isClassifier() const{
+  return true;
+}
+
+void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
+
+
+void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
+
+void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
+
+
+}

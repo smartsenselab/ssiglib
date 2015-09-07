@@ -56,14 +56,12 @@ struct SVMParameters : ClassificationParams{
 };
 
 class SVMClassifier : public Classification{
-
+  virtual void setup(cv::Mat_<float>& input, ClassificationParams* parameters);
 public:
   ALG_EXPORT SVMClassifier(void);
   ALG_EXPORT virtual ~SVMClassifier(void);
   ALG_EXPORT SVMClassifier(const SVMClassifier& rhs);
   ALG_EXPORT SVMClassifier& operator=(const SVMClassifier& rhs);
-
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClassificationParams* parameters) override;
 
   ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override;
 

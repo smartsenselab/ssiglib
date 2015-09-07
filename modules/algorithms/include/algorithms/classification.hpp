@@ -55,9 +55,6 @@ class Classification : public ssf::SupervisedLearningMethod<
     ClassificationParams
   >{
 public:
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                                ClassificationParams* parameters) = 0;
-
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                   cv::Mat_<float>& resp) const override = 0;
 
