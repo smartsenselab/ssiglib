@@ -36,25 +36,37 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_STATISTICALMODEL_HPP_
+#define _SSF_ALGORITHMS_STATISTICALMODEL_HPP_
+
+#include <string>
+
+#include "alg_defs.hpp"
+#include "algorithm.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+template<class InputType, class PredictionType>
+class StatisticalModel : public Algorithm{
+public:
+  ALG_EXPORT StatisticalModel(void) = default;
+  ALG_EXPORT virtual ~StatisticalModel(void) = default;
+  ALG_EXPORT virtual bool empty() const = 0;
+  ALG_EXPORT virtual bool isTrained() const = 0;
+  ALG_EXPORT virtual bool isClassifier() const = 0;
 
-	private:
-		//private members
+  ALG_EXPORT virtual void predict(InputType& inp, PredictionType& resp) const = 0;
 
-	};
+  ALG_EXPORT virtual void load(const std::string& filename,
+                               const std::string& nodename = "") = 0;
+  ALG_EXPORT virtual void save(const std::string& filename,
+                               const std::string& nodename = "")const = 0;
+private:
+  //private members
+
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_STATISTICALMODEL_HPP_
+

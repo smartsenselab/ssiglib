@@ -36,25 +36,55 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
+#define _SSF_ALGORITHMS_KMEANS_HPP_
+
+#include "clusteringMethod.hpp"
 
 namespace ssf{
+struct KmeansParams : ClusteringParams{
+  int flags = cv::KMEANS_RANDOM_CENTERS;
+  int nAttempts = 1;
+  int predicitonDistanceType = cv::NORM_L2;
+};
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+class Kmeans : ClusteringMethod{
+public:
+  ALG_EXPORT Kmeans(void) = default;
+  ALG_EXPORT virtual ~Kmeans(void) = default;
+  Kmeans(const Kmeans& rhs);
+  Kmeans& operator=(const Kmeans& rhs);
 
-	private:
-		//private members
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClusteringParams* parameters) override;
+  ALG_EXPORT void learn(
+    cv::Mat_<float>& input, ClusteringParams* parameters) override;
 
-	};
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, 
+    cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT std::vector<Cluster> getClustering()const override;
+  ALG_EXPORT cv::Mat_<float> getCentroids() const override;
+
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+
+  ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
+  ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
+
+  void clear();
+private:
+  //private members
+  cv::Mat_<float> centroids_;
+  int flags_;
+  int nAttempts_;
+  int predicitonDistanceType_;
+
+  void setupLabelMatFromInitialization(cv::Mat& labels);
+
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
+

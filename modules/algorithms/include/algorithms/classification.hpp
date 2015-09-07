@@ -36,25 +36,56 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_CLASSIFICATION_HPP_
+#define _SSF_ALGORITHMS_CLASSIFICATION_HPP_
+#include "learningMethod.hpp"
+#include <opencv2/core/mat.hpp>
+#include <unordered_map>
 
 namespace ssf{
+struct ClassificationParams{
+  int termType;
+  float eps;
+  int maxIt;
+};
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+class Classification : public ssf::SupervisedLearningMethod<
+    cv::Mat_<float>,
+    cv::Mat_<float>,
+    cv::Mat_<int>,
+    ClassificationParams
+  >{
+public:
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override = 0;
 
-	private:
-		//private members
+  ALG_EXPORT Classification(void) = default;
+  ALG_EXPORT virtual ~Classification(void) = default;
 
-	};
+  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override = 0;
+
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels,
+                                ClassificationParams* parameters) override = 0;
+
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override = 0;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
+
+  ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) = 0;
+
+  ALG_EXPORT virtual bool empty() const override = 0;
+  ALG_EXPORT virtual bool isTrained() const override = 0;
+  ALG_EXPORT virtual bool isClassifier() const override = 0;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
+private:
+  //private members
+protected:
+  cv::Mat_<float> samples_;
+  cv::Mat_<int> labels_;
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_CLASSIFICATION_HPP_
+

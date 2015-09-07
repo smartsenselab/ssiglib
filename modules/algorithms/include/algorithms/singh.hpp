@@ -36,25 +36,26 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_SINGH_HPP_
+#define _SSF_ALGORITHMS_SINGH_HPP_
+#include "classifierClustering.hpp"
+
+#include "alg_defs.hpp"
 
 namespace ssf{
 
+class Singh : public ClassifierClustering{
+
+public:
+  ALG_EXPORT Singh(void) = default;
+  ALG_EXPORT virtual ~Singh(void) = default;
   
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+ private:
+  //private members
 
-	private:
-		//private members
-
-	};
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_SINGH_HPP_
+

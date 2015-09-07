@@ -36,25 +36,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#include "Algorithms/plsImageClustering.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+	PLSImageClustering::PLSImageClustering(){
+		//Constructor
+	}
 
-	private:
-		//private members
+	PLSImageClustering::~PLSImageClustering(){
+		//Destructor
+	}
 
-	};
+	PLSImageClustering::PLSImageClustering(const PLSImageClustering& rhs){
+		//Constructor Copy
+	}
+
+	PLSImageClustering& PLSImageClustering::operator=(const PLSImageClustering& rhs){
+		if (this != &rhs){
+			//code here
+		}
+	    return *this;
+	}
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_

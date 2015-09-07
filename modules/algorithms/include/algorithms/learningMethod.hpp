@@ -36,25 +36,68 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+#define _SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+
+#include <string>
+#include "alg_defs.hpp"
+#include "statisticalModel.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+template<class InputType, class PredictionType, class LabelType, class SetupType>
+class SupervisedLearningMethod :
+  public ssf::StatisticalModel<
+    InputType,
+    PredictionType>{
 
-	private:
-		//private members
+public:
+  ALG_EXPORT virtual ~SupervisedLearningMethod(void) = default;
 
-	};
+  ALG_EXPORT virtual void addLabels(LabelType& labels) = 0;
+  ALG_EXPORT virtual void learn(InputType& input,
+                                LabelType& labels,
+                                SetupType* parameters) = 0;
+
+  ALG_EXPORT virtual LabelType getLabels() const = 0;
+
+  virtual bool empty() const override = 0;
+  virtual bool isTrained() const override = 0;
+  virtual bool isClassifier() const override = 0;
+  virtual void predict(InputType& inp, PredictionType& resp) const override = 0;
+  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
+private:
+  //private members
+
+};
+
+template<class InputType, class PredictionType, class SetupType>
+class UnsupervisedLearningMethod :
+  public StatisticalModel<
+    InputType,
+    PredictionType>{
+public:
+  ALG_EXPORT virtual ~UnsupervisedLearningMethod(void) = default;
+
+  ALG_EXPORT virtual void learn(InputType& input,
+                                SetupType* parameters) = 0;
+
+  virtual bool empty() const override = 0;
+  virtual bool isTrained() const override = 0;
+  virtual bool isClassifier() const override = 0;
+  virtual void predict(InputType& inp, PredictionType& resp) const override = 0;
+  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
+
+private:
+  //private members
+
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_LEARNINGMETHOD_HPP_
+

@@ -36,25 +36,21 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ALGORITHMS_ITERABLEMETHOD_HPP_
+#define _SSF_ALGORITHMS_ITERABLEMETHOD_HPP_
+
+#include "alg_defs.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+class IterableMethod{
 
-	private:
-		//private members
-
-	};
+public:
+  ALG_EXPORT virtual ~IterableMethod() = default;
+  ALG_EXPORT virtual bool iterate() = 0;
+};
 
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+#endif // !_SSF_ALGORITHMS_ITERABLEMETHOD_HPP_
+

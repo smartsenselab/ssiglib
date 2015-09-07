@@ -35,26 +35,95 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
+#include <cassert>
+#include "core/log.hpp"
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#include "algorithms/classifierClustering.hpp"
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
-
-	private:
-		//private members
-
-	};
-
+ClassifierClustering::ClassifierClustering(const ClassifierClustering& rhs){
+  //Constructor Copy
 }
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_
+ClassifierClustering& ClassifierClustering::operator=(const ClassifierClustering& rhs){
+  if(this != &rhs){
+    //code here
+  }
+  return *this;
+}
+
+std::vector<Cluster> ClassifierClustering::getClustering() const{
+  return newClusters_;
+}
+
+void ClassifierClustering::setup(cv::Mat_<float>& input,
+                                 ClusteringParams* parameters){
+  if(clusters_.empty()){
+    ssf::Log::ERROR("Call ssf::addInitialClustering First!");
+  }
+  assert(!clusters_.empty());
+  samples_ = input;
+  params_ = std::unique_ptr<ClusteringParams>(parameters);
+  auto p = static_cast<ClassifierClusteringParams*>(parameters);
+  m_ = p->m;
+  maximumK_ = p->maximumK;
+  minimumK_ = p->minimumK;
+
+  precondition();
+
+  discovery_.resize(2);//Discoveries subsets are inferred from the input samples
+  natural_.resize(2);
+  const int N = samples_.rows;
+  int half = static_cast<int>(ceil(N / 2));
+  for(int i = 0; i < half; ++i){
+    discovery_[0].push_back(i);
+  }
+  for(int i = half; i < N; ++i){
+    discovery_[1].push_back(i);
+  }
+
+  params_->K = std::min(static_cast<int>(half / 4), maximumK_);
+
+  initializeClassifiers();
+  trainClassifiers(clusters_, discovery_[0], natural_[0]);
+
+  newClusters_ = assignment(m_, discovery_[0]);
+  clustersOld_ = clusters_;
+
+  ready_ = true;
+}
+
+bool ClassifierClustering::iterate(){
+  if(!ready_){
+    ssf::Log::ERROR("Setup method must be called First!");
+  }
+  int order = it_ % 2;
+  clusters_ = newClusters_;
+  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  newClusters_.clear();
+  order = (order + 1) % 2;
+  newClusters_ = assignment(m_, discovery_[order]);
+  clustersOld_ = clusters_;
+  it_++;
+
+  return isFinished();
+}
+
+void ClassifierClustering::learn(
+  cv::Mat_<float>& input, ClusteringParams* parameters){
+  setup(input, parameters);
+  /********
+  **main loop
+  ********/
+  it_ = 0;
+  bool terminated = false;
+  do{
+    terminated = iterate();
+  } while(!terminated);
+  int order = it_ % 2;
+  clusters_ = newClusters_;
+  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  postCondition();
+}
+}

@@ -16,9 +16,9 @@ matrix:
 addons:
   coverity_scan:
     project:
-      name: "ssig/ssf"
+      name: "rbkloss/ssf"
       description: "Build submitted via Travis CI"
-    notification_email: acnazarejr@gmail.com
+    notification_email: rbk@dcc.ufmg.br
     build_command_prepend: "mkdir build; cd build; cmake -DBUILD_TESTS=ON .."
     build_command:   "make"
     branch_pattern: coverity_scan  
