@@ -36,7 +36,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "Algorithms/plsClassifier.hpp"
+#include <algorithms/plsClassifier.hpp>
 
 namespace ssf{
 
