@@ -60,6 +60,19 @@ SVMClassifier& SVMClassifier::operator=(const SVMClassifier& rhs){
   return *this;
 }
 
+std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
+  std::unordered_map<int, int> ans;
+  ans[labels_[0][0]] = 0;
+  for(int i = 0; i < labels_.rows; ++i){
+    int label = labels_[i][0];
+    if(label != ans[0]){
+      ans[label] = 1;
+      break;
+    }
+  }
+  return ans;
+}
+
 void SVMClassifier::setup(cv::Mat_<float>& input, ClassificationParams* parameters){
   samples_ = input;
   cv::TermCriteria termCrit(parameters->termType, parameters->maxIt, parameters->eps);

@@ -73,6 +73,8 @@ public:
                                   cv::Mat_<float>& resp) const override;
 
   ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
+
   ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) override;
 
 

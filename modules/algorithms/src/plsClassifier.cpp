@@ -52,13 +52,6 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
   //Constructor Copy
 }
 
-PLSClassifier& PLSClassifier::operator=(const PLSClassifier& rhs){
-  if(this != &rhs){
-    //code here
-  }
-  return *this;
-}
-
 void PLSClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
   pls_->ProjectionBstar(inp, resp);
@@ -84,6 +77,19 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
 
 cv::Mat_<int> PLSClassifier::getLabels() const{
   return labels_;
+}
+
+std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
+  std::unordered_map<int, int> ans;
+  ans[labels_[0][0]] = 0;
+  for(int i = 0; i < labels_.rows; ++i){
+    int label = labels_[i][0];
+    if(label != ans[0]){
+      ans[label] = 1;
+      break;
+    }
+  }
+  return ans;
 }
 
 bool PLSClassifier::empty() const{

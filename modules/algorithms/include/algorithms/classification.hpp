@@ -40,6 +40,7 @@
 #define _SSF_ALGORITHMS_CLASSIFICATION_HPP_
 #include "learningMethod.hpp"
 #include <opencv2/core/mat.hpp>
+#include <unordered_map>
 
 namespace ssf{
 struct ClassificationParams{
@@ -67,6 +68,7 @@ public:
                                 ClassificationParams* parameters) override = 0;
 
   ALG_EXPORT virtual cv::Mat_<int> getLabels() const override = 0;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
 
   ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) = 0;
 
