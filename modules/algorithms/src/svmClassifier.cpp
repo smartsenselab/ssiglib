@@ -35,7 +35,7 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
+#include <cassert>
 #include <algorithms/svmClassifier.hpp>
 #include <opencv2/ml.hpp>
 
@@ -109,8 +109,8 @@ void SVMClassifier::learn(cv::Mat_<float>& input,
                           cv::Mat_<int>& labels,
                           ClassificationParams* parameters){
   setup(input, parameters);
-  if(!labels.empty())
-    addLabels(labels);
+  assert(!labels.empty()); 
+  addLabels(labels);
 
   svm_->train(samples_, cv::ml::ROW_SAMPLE, labels_);
 }

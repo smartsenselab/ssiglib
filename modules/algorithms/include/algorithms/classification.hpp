@@ -62,8 +62,6 @@ public:
   ALG_EXPORT Classification(void) = default;
   ALG_EXPORT virtual ~Classification(void) = default;
 
-  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override = 0;
-
   ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels,
                                 ClassificationParams* parameters) override = 0;
 

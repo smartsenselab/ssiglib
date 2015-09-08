@@ -35,7 +35,7 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
+#include <cassert>
 #include <algorithms/plsClassifier.hpp>
 
 namespace ssf{
@@ -64,7 +64,8 @@ void PLSClassifier::addLabels(cv::Mat_<int>& labels){
 void PLSClassifier::learn(cv::Mat_<float>& input,
                           cv::Mat_<int>& labels,
                           ClassificationParams* parameters){
-  if(!labels.empty())addLabels(labels);
+  addLabels(labels);
+  assert(!labels.empty());
   pls_ = std::make_unique<PLS>();
   cv::Mat_<float> l;
   nfactors_ = static_cast<PLSParameters*>(parameters)->factors;

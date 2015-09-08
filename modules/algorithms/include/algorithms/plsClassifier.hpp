@@ -51,14 +51,13 @@ struct PLSParameters : ClassificationParams{
 };
 
 class PLSClassifier : public Classification{
-
+  virtual void addLabels(cv::Mat_<int>& labels);
 public:
   ALG_EXPORT PLSClassifier(void);
   ALG_EXPORT virtual ~PLSClassifier(void);
   ALG_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
-  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels) override;
   ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels, ClassificationParams* parameters) override;
   ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
   ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
