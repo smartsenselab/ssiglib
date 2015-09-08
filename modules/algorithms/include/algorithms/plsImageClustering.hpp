@@ -38,22 +38,42 @@
 
 #ifndef _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+#include "classifierClustering.hpp"
 
 namespace ssf{
 
-	class PLSImageClustering{
-	
-	public:
-		PLSImageClustering(void);
-		virtual ~PLSImageClustering(void);
-		PLSImageClustering(const PLSImageClustering& rhs);
-		PLSImageClustering& operator=(const PLSImageClustering& rhs);
+class PLSImageClustering : public ClassifierClustering{
 
-	private:
-		//private members
+public:
+  PLSImageClustering(void);
+  virtual ~PLSImageClustering(void);
+  PLSImageClustering(const PLSImageClustering& rhs);
+  PLSImageClustering& operator=(const PLSImageClustering& rhs);
 
-	};
+  virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  virtual bool empty() const override;
+  virtual bool isTrained() const override;
+  virtual bool isClassifier() const override;
+  virtual cv::Mat_<float> getCentroids() const override;
+  virtual void load(const std::string& filename, const std::string& nodename) override;
+  virtual void save(const std::string& filename, const std::string& nodename) const override;
+protected:
+  virtual void precondition() override;
+  virtual void initializeClusterings() override;
+  virtual void initializeClassifiers() override;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) override;
+  virtual bool isFinished() override;
+  virtual void postCondition() override;
+  virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) override;
+
+  virtual void merge();
+
+private:
+  //private members
+
+};
 
 }
 
 #endif // !_SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+

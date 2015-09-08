@@ -39,7 +39,7 @@
 #ifndef _SSF_ALGORITHMS_CLASSIFICATION_HPP_
 #define _SSF_ALGORITHMS_CLASSIFICATION_HPP_
 #include "learningMethod.hpp"
-#include <opencv2/core/mat.hpp>
+#include <opencv2/core.hpp>
 #include <unordered_map>
 
 namespace ssf{
