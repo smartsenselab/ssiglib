@@ -12,7 +12,8 @@ matrix:
       env: TASK="test"
     - compiler: gcc
       env: TASK="coverage"
-
+env:
+    - OpenCV_INCLUDE_DIR=/home/travis/build/rbkloss/opencv/include 
 addons:
   coverity_scan:
     project:
