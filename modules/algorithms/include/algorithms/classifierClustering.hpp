@@ -107,6 +107,8 @@ protected:
   ClassificationParams* classificationParams_;;
 
   std::vector<Cluster> clustersOld_, newClusters_;
+  std::vector<std::vector<float>> clustersResponses_;
+  std::vector<int> clustersIds_;
 private:
   //private members
 };

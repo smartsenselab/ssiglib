@@ -235,43 +235,45 @@ void Singh<ClassificationType>::postCondition(){}
 
 template<class ClassificationType>
 std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
-  std::vector<int> assignmentSet){
-  std::vector<std::pair<int, float> > responsesVec;
+                                                           std::vector<int> assignmentSet){
+  std::vector<std::pair<int, float>> responsesVec;
   std::vector<Cluster> clusters;
   std::vector<int> ids;
   clustersResponses_.clear();
-  for (int c = 0; c < clusters_.size(); c++) {
+  for(int c = 0; c < clusters_.size(); c++){
     int firings = 0;
     responsesVec.clear();
 
-    for (int i = 0; i < D[subsetOrder].size(); i++) {
-      cv::Mat_<float> featMat = dataX_.row(D[subsetOrder][i]);
+    for(int i = 0; i < assignmentSet.size(); i++){
+      cv::Mat_<float> featMat = samples_.row(assignmentSet[i]);
       cv::Mat_<float> responses;
       classifiers_[c]->predict(featMat, responses);
       auto labelCol = classifiers_[c]->retrieveResponseClassIDPosition(std::to_string(c));
-      if (responses[0][labelCol] > -1) {
+      if(responses[0][labelCol] > -1){
         firings++;
       }
-      responsesVec.push_back(std::pair<int, float>(D[subsetOrder][i], responses[0][labelCol]));
+      responsesVec.push_back(std::pair<int, float>(assignmentSet[i], responses[0][labelCol]));
     }
-    if (firings > 2) {
-      std::sort(responsesVec.begin(), responsesVec.end(), [](std::pair<int, float> i, std::pair<int, float> j) {
-        return i.second > j.second;
-      });
+    if(firings > 2){
+      std::sort(responsesVec.begin(), responsesVec.end(),
+                [](std::pair<int, float> i, std::pair<int, float> j){
+                  return i.second > j.second;
+                });
 
       Cluster newCluster;
       clustersResponses_.push_back(std::vector<float>());
       ids.push_back(clustersIds_[c]);
-      for (int i = 0; i < M; i++) {
+      for(int i = 0; i < clusterSize; i++){
         newCluster.push_back(responsesVec[i].first);
         clustersResponses_[clusters.size()].push_back(responsesVec[i].second);
       }
       clusters.push_back(newCluster);
     }
   }
-  newClusters_out = clusters;
   clustersIds_ = ids;
+  return clusters;
 }
+
 }
 
 #endif // !_SSF_ALGORITHMS_SINGH_HPP_
