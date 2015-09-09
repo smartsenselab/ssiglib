@@ -69,10 +69,12 @@ protected:
   virtual void precondition() override;
   virtual void initializeClusterings() override;
   virtual void initializeClassifiers() override;
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) override;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
+                                std::vector<int> negativeLearningSet) override;
   virtual bool isFinished() override;
   virtual void postCondition() override;
-  virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) override;
+  virtual std::vector<Cluster> assignment(int clusterSize,
+                                          std::vector<int> assignmentSet) override;
 
 private:
   //private members
@@ -162,8 +164,11 @@ void Singh<ClassificationType>::initializeClassifiers(){
 
 template<class ClassificationType>
 void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clusters,
-                                                 std::vector<int> learningSet,
                                                  std::vector<int> negativeLearningSet){
+  cv::Mat_<float> natural;
+  for(int id : negativeLearningSet){
+    natural.push_back(naturalSamples_.row(id));
+  }
   classifiers_.clear();
   classifiers_.resize(clusters.size());
   for(int clusterNum = 0; clusterNum < clusters.size(); clusterNum++){
@@ -174,25 +179,20 @@ void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clu
     } else{
       classifiers_[clusterNum] = new ClassificationType();
     }
-    Cluster clusterSet = clusters[clusterNum];
+    Cluster cluster = clusters[clusterNum];
+    cv::Mat_<int> labels = cv::Mat_<int>::zeros(negativeLearningSet.size()
+                                                + cluster.size(), 1);
+    labels = -1;
     //Positives
-    cv::Mat_<float> feature;
+    cv::Mat_<float> trainSamples =
+      cv::Mat_<float>::zeros(clusterSet.size(), samples_.cols);
+    int i = 0;
     for(int sample : clusterSet){
-      dataX_.row(sample);
-      classifiers_[clusterNum]->addSamples(feature, std::to_string(clusterNum));
+      trainSamples.row(i) = samples_.row(sample);
+      labels[i][0] = 1;
+      ++i;
     }
-
-    ///Negatives
-    cv::Mat_<float> naturalFeat;
-    for(int row : negativeLearningSet){
-       = extraData_.row(row);
-      classifiers_[clusterNum]->addSamples(naturalFeat, -1);
-    }
-    for(int row : negativeLearningSet){
-      cv::Mat_<float> naturalFeat = extraData_.row(row);
-      classifiers_[clusterNum]->addExtraSamples(naturalFeat, -1);
-    }
-
+    trainSamples.push_back()
     classifiers_[clusterNum]->learn();
   }
 }

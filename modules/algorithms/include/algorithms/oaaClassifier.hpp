@@ -48,13 +48,13 @@ namespace ssf{
 
 template<class UnderlyingClassifier>
 class OAAClassifier : Classification{
-
+  virtual void addLabels(cv::Mat_<int>& labels);
 public:
   OAAClassifier(void) = default;
   virtual ~OAAClassifier(void) = default;
 
   virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
-  virtual void addLabels(cv::Mat_<int>& labels) override;
+
   virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels, ClassificationParams* parameters) override;
   virtual cv::Mat_<int> getLabels() const override;
   virtual std::unordered_map<int, int> getLabelsOrdering() const override;

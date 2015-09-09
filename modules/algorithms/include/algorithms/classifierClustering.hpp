@@ -42,7 +42,6 @@
 #include "alg_defs.hpp"
 
 #include "clusteringMethod.hpp"
-#include "classification.hpp"
 #include "iterableMethod.hpp"
 
 namespace ssf{
@@ -50,6 +49,7 @@ struct ClassifierClusteringParams : ClusteringParams{
   int m = 5;
   int minimumK = 20;
   int maximumK = static_cast<int>(1.0e6);
+  int d1Len;
 };
 
 class ClassifierClustering : public ClusteringMethod,
@@ -59,6 +59,8 @@ public:
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
                                 ClusteringParams* parameters) override;
+
+  ALG_EXPORT void addExtraSamples(cv::Mat_<float> &extra);
 
   ALG_EXPORT void learn(cv::Mat_<float>& input,
                         ClusteringParams* parameters) override;
@@ -85,7 +87,7 @@ protected:
 
   virtual void initializeClusterings() = 0;
   virtual void initializeClassifiers() = 0;
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) = 0;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> negativeLearningSet) = 0;
   virtual bool isFinished() = 0;
 
   virtual void postCondition() = 0;
@@ -93,6 +95,7 @@ protected:
   virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) = 0;
 
   //Attributes /////////
+  cv::Mat_<float> naturalSamples_;
   int maximumK_;
   int minimumK_;
   int m_;

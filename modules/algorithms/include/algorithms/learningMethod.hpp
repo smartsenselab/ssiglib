@@ -53,8 +53,6 @@ class SupervisedLearningMethod :
 
 public:
   ALG_EXPORT virtual ~SupervisedLearningMethod(void) = default;
-
-  ALG_EXPORT virtual void addLabels(LabelType& labels) = 0;
   ALG_EXPORT virtual void learn(InputType& input,
                                 LabelType& labels,
                                 SetupType* parameters) = 0;

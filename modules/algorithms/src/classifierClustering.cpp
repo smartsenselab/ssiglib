@@ -55,6 +55,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
   ClusteringMethod::setup(input, parameters);
   auto p = static_cast<ClassifierClusteringParams*>(parameters);
   m_ = p->m;
+  int d1Len = p->d1Len;
   maximumK_ = p->maximumK;
   minimumK_ = p->minimumK;
 
@@ -63,23 +64,37 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
   discovery_.resize(2);//Discoveries subsets are inferred from the input samples
   natural_.resize(2);
   const int N = samples_.rows;
-  int half = static_cast<int>(ceil(N / 2));
-  for(int i = 0; i < half; ++i){
+  for(int i = 0; i < d1Len; ++i){
     discovery_[0].push_back(i);
   }
-  for(int i = half; i < N; ++i){
+  for(int i = d1Len; i < N; ++i){
     discovery_[1].push_back(i);
   }
 
-  K_ = std::min(static_cast<int>(half / 4), maximumK_);
+  if(naturalSamples_.rows > 0){
+    int len = naturalSamples_.rows;
+    int halfLen = len / 2;
+    for(int i = 0; i < halfLen; ++i){
+      natural_[0].push_back(i);
+    }
+    for(int i = halfLen; i < len; ++i){
+      natural_[1].push_back(i);
+    }
+  }
+
+  K_ = std::min(static_cast<int>(d1Len / 4), maximumK_);
 
   initializeClassifiers();
-  trainClassifiers(clusters_, discovery_[0], natural_[0]);
+  trainClassifiers(clusters_, natural_[0]);
 
   newClusters_ = assignment(m_, discovery_[0]);
   clustersOld_ = clusters_;
 
   ready_ = true;
+}
+
+void ClassifierClustering::addExtraSamples(cv::Mat_<float>& extra) {
+  naturalSamples_ = extra;
 }
 
 bool ClassifierClustering::iterate(){
@@ -88,7 +103,7 @@ bool ClassifierClustering::iterate(){
   }
   int order = it_ % 2;
   clusters_ = newClusters_;
-  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  trainClassifiers(clusters_, natural_[order]);
   newClusters_.clear();
   order = (order + 1) % 2;
   newClusters_ = assignment(m_, discovery_[order]);
@@ -111,7 +126,7 @@ void ClassifierClustering::learn(
   } while(!terminated);
   int order = it_ % 2;
   clusters_ = newClusters_;
-  trainClassifiers(clusters_, discovery_[order], natural_[order]);
+  trainClassifiers(clusters_, natural_[order]);
   postCondition();
 }
 }
