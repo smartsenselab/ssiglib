@@ -45,4 +45,5 @@
 TEST(Singh, SeparationTest){
   //TODO:
 
+  ssf::Singh<ssf::SVMClassifier> clustering;
 }

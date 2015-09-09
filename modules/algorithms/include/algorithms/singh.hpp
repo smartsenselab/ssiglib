@@ -248,11 +248,12 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
       cv::Mat_<float> featMat = samples_.row(assignmentSet[i]);
       cv::Mat_<float> responses;
       classifiers_[c]->predict(featMat, responses);
-      auto labelCol = classifiers_[c]->retrieveResponseClassIDPosition(std::to_string(c));
-      if(responses[0][labelCol] > -1){
+      auto labelOrdering = classifiers_[c]->getLabelsOrdering();
+      int labelIdx = labelOrdering[c];
+      if (responses[0][labelIdx] > -1) {
         firings++;
       }
-      responsesVec.push_back(std::pair<int, float>(assignmentSet[i], responses[0][labelCol]));
+      responsesVec.push_back(std::pair<int, float>(assignmentSet[i], responses[0][labelIdx]));
     }
     if(firings > 2){
       std::sort(responsesVec.begin(), responsesVec.end(),
