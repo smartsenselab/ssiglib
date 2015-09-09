@@ -43,6 +43,7 @@
 
 #include "clusteringMethod.hpp"
 #include "iterableMethod.hpp"
+#include "classification.hpp"
 
 namespace ssf{
 struct ClassifierClusteringParams : ClusteringParams{
@@ -50,12 +51,13 @@ struct ClassifierClusteringParams : ClusteringParams{
   int minimumK = 20;
   int maximumK = static_cast<int>(1.0e6);
   int d1Len;
+  ClassificationParams* params;
 };
 
 class ClassifierClustering : public ClusteringMethod,
                              IterableMethod{
 public:
-  ALG_EXPORT virtual ~ClassifierClustering(void) = default;
+  ALG_EXPORT virtual ~ClassifierClustering(void);
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
                                 ClusteringParams* parameters) override;
@@ -102,6 +104,7 @@ protected:
   int it_;
   std::vector<std::vector<int>> discovery_;
   std::vector<std::vector<int>> natural_;
+  ClassificationParams* classificationParams_;;
 
   std::vector<Cluster> clustersOld_, newClusters_;
 private:

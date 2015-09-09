@@ -61,8 +61,6 @@ class SVMClassifier : public Classification{
 public:
   ALG_EXPORT SVMClassifier(void);
   ALG_EXPORT virtual ~SVMClassifier(void);
-  ALG_EXPORT SVMClassifier(const SVMClassifier& rhs);
-  ALG_EXPORT SVMClassifier& operator=(const SVMClassifier& rhs);
 
    ALG_EXPORT virtual void learn(cv::Mat_<float>& input,
                                 cv::Mat_<int>& labels,

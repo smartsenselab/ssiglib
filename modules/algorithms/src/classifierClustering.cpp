@@ -46,6 +46,10 @@ std::vector<Cluster> ClassifierClustering::getClustering() const{
   return newClusters_;
 }
 
+ClassifierClustering::~ClassifierClustering(){
+  delete classificationParams_;
+}
+
 void ClassifierClustering::setup(cv::Mat_<float>& input,
                                  ClusteringParams* parameters){
   if(clusters_.empty()){
@@ -58,6 +62,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
   int d1Len = p->d1Len;
   maximumK_ = p->maximumK;
   minimumK_ = p->minimumK;
+  classificationParams_ = p->params;
 
   precondition();
 
@@ -93,7 +98,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
   ready_ = true;
 }
 
-void ClassifierClustering::addExtraSamples(cv::Mat_<float>& extra) {
+void ClassifierClustering::addExtraSamples(cv::Mat_<float>& extra){
   naturalSamples_ = extra;
 }
 

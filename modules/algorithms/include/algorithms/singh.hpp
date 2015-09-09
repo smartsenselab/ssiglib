@@ -53,7 +53,7 @@ class Singh : public ClassifierClustering{
 
 public:
   ALG_EXPORT Singh(void) = default;
-  ALG_EXPORT virtual ~Singh(void) = default;
+  ALG_EXPORT virtual ~Singh(void);
 
   virtual void setup(cv::Mat_<float>& input,
                      ClusteringParams* parameters) override;
@@ -78,10 +78,16 @@ protected:
 
 private:
   //private members
-  std::vector<std::unique_ptr<ClassificationType*>> classifiers_;
+  std::vector<ClassificationType*> classifiers_;
   float lambda_;
   bool trained_;
 };
+
+template<class ClassificationType>
+Singh<ClassificationType>::~Singh(){
+  for(auto& label : classifiers_)
+    delete label;
+}
 
 template<class ClassificationType>
 void Singh<ClassificationType>::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
@@ -123,6 +129,17 @@ template<class ClassificationType>
 cv::Mat_<float> Singh<ClassificationType>::getCentroids() const{
   //TODO:
   return{};
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::load(const std::string& filename, const std::string& nodename){
+  //TODO:
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::save(const std::string& filename,
+                                     const std::string& nodename) const{
+  //TODO:
 }
 
 template<class ClassificationType>
@@ -180,21 +197,80 @@ void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clu
       classifiers_[clusterNum] = new ClassificationType();
     }
     Cluster cluster = clusters[clusterNum];
-    cv::Mat_<int> labels = cv::Mat_<int>::zeros(negativeLearningSet.size()
-                                                + cluster.size(), 1);
+    cv::Mat_<int> labels = cv::Mat_<int>::zeros(static_cast<int>(negativeLearningSet.size())
+                                                + static_cast<int>(cluster.size()), 1);
     labels = -1;
     //Positives
     cv::Mat_<float> trainSamples =
-      cv::Mat_<float>::zeros(clusterSet.size(), samples_.cols);
+      cv::Mat_<float>::zeros(static_cast<int>(cluster.size()), samples_.cols);
     int i = 0;
-    for(int sample : clusterSet){
+    for(int sample : cluster){
       trainSamples.row(i) = samples_.row(sample);
       labels[i][0] = 1;
       ++i;
     }
-    trainSamples.push_back()
-    classifiers_[clusterNum]->learn();
+    trainSamples.push_back(natural);
+    classifiers_[clusterNum]->learn(trainSamples, labels, classificationParams_);
   }
+}
+
+template<class ClassificationType>
+bool Singh<ClassificationType>::isFinished(){
+  if(maxIterations_ > 0 && (it_ > maxIterations_)){
+    //ReportStatus("Convergence due to max number of iterations reached");
+    return true;
+  }
+  if(minimumK_){
+    auto kConvergence = (newClusters_.size() <= minimumK_);
+    if(kConvergence){
+      //ReportStatus("Converged due to minimum K!");
+      return true;
+    }
+  }
+  return false;
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::postCondition(){}
+
+template<class ClassificationType>
+std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
+  std::vector<int> assignmentSet){
+  std::vector<std::pair<int, float> > responsesVec;
+  std::vector<Cluster> clusters;
+  std::vector<int> ids;
+  clustersResponses_.clear();
+  for (int c = 0; c < clusters_.size(); c++) {
+    int firings = 0;
+    responsesVec.clear();
+
+    for (int i = 0; i < D[subsetOrder].size(); i++) {
+      cv::Mat_<float> featMat = dataX_.row(D[subsetOrder][i]);
+      cv::Mat_<float> responses;
+      classifiers_[c]->predict(featMat, responses);
+      auto labelCol = classifiers_[c]->retrieveResponseClassIDPosition(std::to_string(c));
+      if (responses[0][labelCol] > -1) {
+        firings++;
+      }
+      responsesVec.push_back(std::pair<int, float>(D[subsetOrder][i], responses[0][labelCol]));
+    }
+    if (firings > 2) {
+      std::sort(responsesVec.begin(), responsesVec.end(), [](std::pair<int, float> i, std::pair<int, float> j) {
+        return i.second > j.second;
+      });
+
+      Cluster newCluster;
+      clustersResponses_.push_back(std::vector<float>());
+      ids.push_back(clustersIds_[c]);
+      for (int i = 0; i < M; i++) {
+        newCluster.push_back(responsesVec[i].first);
+        clustersResponses_[clusters.size()].push_back(responsesVec[i].second);
+      }
+      clusters.push_back(newCluster);
+    }
+  }
+  newClusters_out = clusters;
+  clustersIds_ = ids;
 }
 }
 

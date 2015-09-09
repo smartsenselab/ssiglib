@@ -49,17 +49,6 @@ SVMClassifier::~SVMClassifier(){
   //Destructor
 }
 
-SVMClassifier::SVMClassifier(const SVMClassifier& rhs){
-  //Constructor Copy
-}
-
-SVMClassifier& SVMClassifier::operator=(const SVMClassifier& rhs){
-  if(this != &rhs){
-    //code here
-  }
-  return *this;
-}
-
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
   std::unordered_map<int, int> ans;
   ans[labels_[0][0]] = 0;

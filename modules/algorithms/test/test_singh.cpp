@@ -40,7 +40,9 @@
 #include <opencv2/core.hpp>
 
 #include <algorithms/singh.hpp>
+#include <algorithms/svmClassifier.hpp>
 
 TEST(Singh, SeparationTest){
   //TODO:
+
 }
