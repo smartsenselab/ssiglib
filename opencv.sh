@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir opencv
-cd ~/opencv
+cd opencv
 git clone https://github.com/Itseez/opencv.git
 
 mkdir release
@@ -18,4 +18,4 @@ sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
 echo "OpenCV installed."
 
-cd ~/
+cd ../../
