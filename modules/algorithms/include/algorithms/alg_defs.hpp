@@ -43,7 +43,7 @@ namespace ssf{
 
 #ifndef ALG_EXPORT
 	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALG_API_EXPORTS
+		#if defined  ALGORITHMS_API_EXPORTS
 			#define  ALG_EXPORT __declspec(dllexport)
 		#else
 			#define  ALG_EXPORT __declspec(dllimport)

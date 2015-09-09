@@ -39,40 +39,8 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <algorithms/kmeans.hpp>
+#include <algorithms/singh.hpp>
 
-TEST(KmeansClustering, SanityClusteringTest){
-  ssf::KmeansParams* params = new ssf::KmeansParams();
-  cv::Mat_<float> inp;
-  inp = cv::Mat_<float>::zeros(6, 2);
-  for(int i = 0; i < 3; ++i){
-    inp[i][0] = static_cast<float>(rand() % 5);
-    inp[i][1] = static_cast<float>(rand() % 5);
-    inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
-  }
-
-  params->K = 2;
-  params->flags = cv::KMEANS_RANDOM_CENTERS;
-  params->nAttempts = 1;
-  params->maxIterations = 500;
-
-  ssf::Kmeans kmeans;
-  kmeans.learn(inp, params);
-  auto clusters = kmeans.getClustering();
-  std::vector<int> gt1 = {0, 1, 2};
-  std::vector<int> gt2 = {3, 4, 5};
-  ASSERT_EQ(2, clusters.size());
-  for(auto& cluster : clusters){
-    if(cluster != gt1){
-      ASSERT_EQ(cluster, gt2);
-    } else{
-      ASSERT_EQ(cluster, gt1);
-    }
-  }
-}
-
-TEST(KmeansClustering, Persistence){
+TEST(Singh, SeparationTest){
   //TODO:
-
 }

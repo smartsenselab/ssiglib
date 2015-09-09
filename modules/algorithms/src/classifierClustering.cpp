@@ -42,17 +42,6 @@
 
 namespace ssf{
 
-ClassifierClustering::ClassifierClustering(const ClassifierClustering& rhs){
-  //Constructor Copy
-}
-
-ClassifierClustering& ClassifierClustering::operator=(const ClassifierClustering& rhs){
-  if(this != &rhs){
-    //code here
-  }
-  return *this;
-}
-
 std::vector<Cluster> ClassifierClustering::getClustering() const{
   return newClusters_;
 }
@@ -63,8 +52,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
     ssf::Log::ERROR("Call ssf::addInitialClustering First!");
   }
   assert(!clusters_.empty());
-  samples_ = input;
-  params_ = std::unique_ptr<ClusteringParams>(parameters);
+  ClusteringMethod::setup(input, parameters);
   auto p = static_cast<ClassifierClusteringParams*>(parameters);
   m_ = p->m;
   maximumK_ = p->maximumK;
@@ -83,7 +71,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
     discovery_[1].push_back(i);
   }
 
-  params_->K = std::min(static_cast<int>(half / 4), maximumK_);
+  K_ = std::min(static_cast<int>(half / 4), maximumK_);
 
   initializeClassifiers();
   trainClassifiers(clusters_, discovery_[0], natural_[0]);

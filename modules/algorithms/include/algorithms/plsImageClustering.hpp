@@ -39,16 +39,17 @@
 #ifndef _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #include "classifierClustering.hpp"
+#include "plsClassifier.hpp"
+#include "oaaClassifier.hpp"
 
 namespace ssf{
 
+template<class ClassificationType>
 class PLSImageClustering : public ClassifierClustering{
 
 public:
-  PLSImageClustering(void);
-  virtual ~PLSImageClustering(void);
-  PLSImageClustering(const PLSImageClustering& rhs);
-  PLSImageClustering& operator=(const PLSImageClustering& rhs);
+  PLSImageClustering(void) = default;
+  virtual ~PLSImageClustering(void) = default;
 
   virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
   virtual bool empty() const override;
@@ -70,7 +71,7 @@ protected:
 
 private:
   //private members
-
+OAAClassifier<ClassificationType> classifier_;
 };
 
 }

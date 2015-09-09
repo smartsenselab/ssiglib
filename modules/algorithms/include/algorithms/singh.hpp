@@ -39,22 +39,114 @@
 #ifndef _SSF_ALGORITHMS_SINGH_HPP_
 #define _SSF_ALGORITHMS_SINGH_HPP_
 #include "classifierClustering.hpp"
-
+#include "kmeans.hpp"
 #include "alg_defs.hpp"
 
 namespace ssf{
 
+  struct SinghParameters : ClassifierClusteringParams{
+    float lambda = 1.0;
+  };
+
+template<class ClassificationType>
 class Singh : public ClassifierClustering{
 
 public:
   ALG_EXPORT Singh(void) = default;
   ALG_EXPORT virtual ~Singh(void) = default;
-  
- private:
-  //private members
 
+  virtual void setup(cv::Mat_<float>& input,
+    ClusteringParams* parameters) override;
+  virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  virtual bool empty() const override;
+  virtual bool isTrained() const override;
+  virtual bool isClassifier() const override;
+  virtual cv::Mat_<float> getCentroids() const override;
+
+  virtual void load(const std::string& filename, const std::string& nodename) override;
+  virtual void save(const std::string& filename, const std::string& nodename) const override;
+protected:
+  virtual void precondition() override;
+  virtual void initializeClusterings() override;
+  virtual void initializeClassifiers() override;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) override;
+  virtual bool isFinished() override;
+  virtual void postCondition() override;
+  virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) override;
+
+private:
+  //private members
+  std::vector<std::unique_ptr<ClassificationType>> classifiers_;
+  float lambda_;
+  bool trained_;
 };
 
+template<class ClassificationType>
+void Singh<ClassificationType>::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
+  ClassifierClustering::setup(input, parameters);
+  auto p = static_cast<SinghParameters*>(parameters);
+  lambda_ = p->lambda;
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::predict(
+  cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) const{
+  resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(classifiers_.size()));
+  for(int r = 0; r < inp.rows; ++r){
+    for(int i = 0; i < classifiers_.size(); ++i){
+      cv::Mat_<float> sampleResp;
+      classifiers_[i].predict(inp.row(r), sampleResp);
+      resp[r][i] = sampleResp[0][0];
+    }
+  }
+}
+
+template<class ClassificationType>
+bool Singh<ClassificationType>::empty() const{
+  return classifiers_.empty();
+}
+
+template<class ClassificationType>
+bool Singh<ClassificationType>::isTrained() const{
+  return trained_;
+}
+
+template<class ClassificationType>
+bool Singh<ClassificationType>::isClassifier() const {
+  return false;
+}
+
+template<class ClassificationType>
+cv::Mat_<float> Singh<ClassificationType>::getCentroids() const{
+  //TODO:
+  return{};
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::precondition(){
+  
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::initializeClusterings(){
+  cv::Mat_<float> feats;
+  for (int row : discovery_[0]){
+    feats.push_back(samples_.row(row));
+  }
+  ssf::Kmeans kmeans;
+  ssf::KmeansParams p;
+  p.K = K_;
+  p.flags = cv::KMEANS_RANDOM_CENTERS;
+  p.nAttempts = 1;
+  p.predicitonDistanceType = cv::NORM_L2;
+  p.maxIterations = 1000;
+
+  kmeans.learn(feats, &p);
+  auto initialClustering = kmeans.getClustering();
+  cv::Mat_<float> centroids = kmeans.getCentroids();
+
+}
 }
 
 #endif // !_SSF_ALGORITHMS_SINGH_HPP_

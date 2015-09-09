@@ -53,8 +53,8 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs){
 }
 
 void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
+  ClusteringMethod::setup(input, parameters);
   samples_ = input;
-  params_ = std::unique_ptr<ClusteringParams>(parameters);
   auto p = static_cast<KmeansParams*>(parameters);//might throw an exception
   flags_ = p->flags;
   nAttempts_ = p->nAttempts;
@@ -67,11 +67,11 @@ void Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
   cv::Mat labels;
   setupLabelMatFromInitialization(labels);
   cv::TermCriteria term;
-  term.maxCount = params_->maxIterations;
+  term.maxCount = maxIterations_;
   term.type = term.MAX_ITER;
 
   cv::Mat centroids = centroids_;
-  cv::kmeans(samples_, params_->K, labels, term, nAttempts_, flags_, centroids_);
+  cv::kmeans(samples_, K_, labels, term, nAttempts_, flags_, centroids_);
 
   std::unordered_map<int, Cluster> clusters;
   for(int i = 0; i < labels.rows; ++i){

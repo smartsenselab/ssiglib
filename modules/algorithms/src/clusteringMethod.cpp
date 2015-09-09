@@ -45,7 +45,8 @@ void ClusteringMethod::setup
  ClusteringParams* parameters){
   ready_ = true;
   samples_ = input;
-  params_ = std::unique_ptr<ClusteringParams>(parameters);
+  K_ = parameters->K;
+  maxIterations_ = parameters->maxIterations;
 }
 
 void ClusteringMethod::addInitialClustering(const std::vector<Cluster>& init){

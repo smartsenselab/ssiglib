@@ -56,8 +56,6 @@ class ClassifierClustering : public ClusteringMethod,
                              IterableMethod{
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void) = default;
-  ClassifierClustering(const ClassifierClustering& rhs);
-  ClassifierClustering& operator=(const ClassifierClustering& rhs);
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
                                 ClusteringParams* parameters) override;
@@ -99,18 +97,13 @@ protected:
   int minimumK_;
   int m_;
   int it_;
-
-private:
-  //private members
-  std::vector<std::unique_ptr<Classification>> classifiers_;
   std::vector<std::vector<int>> discovery_;
   std::vector<std::vector<int>> natural_;
 
   std::vector<Cluster> clustersOld_, newClusters_;
-
-
+private:
+  //private members
 };
-
 }
 
 #endif // !_SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_

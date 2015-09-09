@@ -87,7 +87,8 @@ public:
 protected:
   cv::Mat_<float> samples_;
   std::vector<Cluster> clusters_;
-  std::unique_ptr<ClusteringParams> params_;
+  int K_;
+  int maxIterations_;
   bool ready_;
 };
 

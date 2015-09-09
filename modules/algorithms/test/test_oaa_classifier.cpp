@@ -168,4 +168,6 @@ TEST(SVMOAAClassifier, TernaryClassification){
 }
 
 
-TEST(OAAClassifier, Persistence){}
+TEST(OAAClassifier, Persistence){
+  //TODO:
+}

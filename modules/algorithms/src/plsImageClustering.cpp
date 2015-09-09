@@ -35,29 +35,8 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
-#include "Algorithms/plsImageClustering.hpp"
+#include "algorithms/plsImageClustering.hpp"
 
 namespace ssf{
-
-	PLSImageClustering::PLSImageClustering(){
-		//Constructor
-	}
-
-	PLSImageClustering::~PLSImageClustering(){
-		//Destructor
-	}
-
-	PLSImageClustering::PLSImageClustering(const PLSImageClustering& rhs){
-		//Constructor Copy
-	}
-
-	PLSImageClustering& PLSImageClustering::operator=(const PLSImageClustering& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
-
+  
 }
-
