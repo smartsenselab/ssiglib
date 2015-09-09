@@ -110,7 +110,9 @@ void OAAClassifier<UnderlyingClassifier>::predict(cv::Mat_<float>& inp,
       auto& classifier = it.second;
       cv::Mat_<float> auxResp;
       classifier.predict(inp, auxResp);
-      resp[r][c++] = auxResp[0][0];
+      auto ordering = classifier.getLabelsOrdering();
+      int idx = ordering[1];
+      resp[r][c++] = auxResp[0][idx];
     }
   }
 }

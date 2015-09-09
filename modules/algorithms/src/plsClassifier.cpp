@@ -55,6 +55,13 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
 void PLSClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
   pls_->ProjectionBstar(inp, resp);
+  cv::Mat_<float> r;
+  r.create(inp.rows, 2);
+  for(int row = 0; row < inp.rows; ++row){
+    r[row][0] = resp[row][0];
+    r[row][1] = -1 * resp[row][0];
+  }
+  resp = r;
 }
 
 void PLSClassifier::addLabels(cv::Mat_<int>& labels){
@@ -64,6 +71,7 @@ void PLSClassifier::addLabels(cv::Mat_<int>& labels){
 void PLSClassifier::learn(cv::Mat_<float>& input,
                           cv::Mat_<int>& labels,
                           ClassificationParams* parameters){
+  //TODO: assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
   pls_ = std::make_unique<PLS>();
@@ -80,8 +88,8 @@ cv::Mat_<int> PLSClassifier::getLabels() const{
   return labels_;
 }
 
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  return{ { 1, 0 }, { -1, 0 } };
+std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const{
+  return{{1, 0},{-1, 1}};
 }
 
 bool PLSClassifier::empty() const{

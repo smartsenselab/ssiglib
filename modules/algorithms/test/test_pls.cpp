@@ -41,7 +41,7 @@
 
 #include <algorithms/plsClassifier.hpp>
 
-TEST(PLSClassifier, SanityClassification){
+TEST(PLSClassifier, BinaryClassification){
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
   inp = cv::Mat_<float>::zeros(6, 2);
@@ -65,9 +65,12 @@ TEST(PLSClassifier, SanityClassification){
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
-  ASSERT_GE(resp[0][0], 0);
+  auto ordering = classifier.getLabelsOrdering();
+  int idx = ordering[1];
+  EXPECT_GE(resp[0][idx], 0);
   classifier.predict(query2, resp);
-  ASSERT_LE(resp[0][0], 0);
+  idx = ordering[-1];
+  EXPECT_GE(resp[0][idx], 0);
 
   delete p;
 }

@@ -51,7 +51,7 @@ SVMClassifier::~SVMClassifier(){
 
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const{
   //TODO:Create Test for this
-  return{ { 1, 0 }, { -1, 0 } };
+  return{{1, 0},{-1, 1}};
 }
 
 void SVMClassifier::setup(cv::Mat_<float>& input, ClassificationParams* parameters){
@@ -101,10 +101,18 @@ void SVMClassifier::predict(cv::Mat_<float>& inp,
   cv::Mat_<float> label;
   svm_->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
   svm_->predict(inp, label);
+  cv::Mat_<float> ans;
+  ans.create(resp.rows, 2);
   for(int r = 0; r < resp.rows; ++r){
-    if(label[r][0] * resp[r][0] < 0)
-      resp[r][0] = -1 * resp[r][0];
+    if(label[r][0] * resp[r][0] < 0){
+      ans[r][0] = -1 * resp[r][0];
+      ans[r][1] = resp[r][0];
+    } else{
+      ans[r][0] = resp[r][0];
+      ans[r][1] = -1 * resp[r][0];
+    }
   }
+  resp = ans;
 }
 
 cv::Mat_<int> SVMClassifier::getLabels() const{
