@@ -44,9 +44,9 @@
 
 namespace ssf{
 
-  struct SinghParameters : ClassifierClusteringParams{
-    float lambda = 1.0;
-  };
+struct SinghParameters : ClassifierClusteringParams{
+  float lambda = 1.0;
+};
 
 template<class ClassificationType>
 class Singh : public ClassifierClustering{
@@ -56,7 +56,7 @@ public:
   ALG_EXPORT virtual ~Singh(void) = default;
 
   virtual void setup(cv::Mat_<float>& input,
-    ClusteringParams* parameters) override;
+                     ClusteringParams* parameters) override;
   virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
   virtual bool empty() const override;
   virtual bool isTrained() const override;
@@ -76,7 +76,7 @@ protected:
 
 private:
   //private members
-  std::vector<std::unique_ptr<ClassificationType>> classifiers_;
+  std::vector<std::unique_ptr<ClassificationType*>> classifiers_;
   float lambda_;
   bool trained_;
 };
@@ -96,7 +96,7 @@ void Singh<ClassificationType>::predict(
   for(int r = 0; r < inp.rows; ++r){
     for(int i = 0; i < classifiers_.size(); ++i){
       cv::Mat_<float> sampleResp;
-      classifiers_[i].predict(inp.row(r), sampleResp);
+      classifiers_[i]->predict(inp.row(r), sampleResp);
       resp[r][i] = sampleResp[0][0];
     }
   }
@@ -113,7 +113,7 @@ bool Singh<ClassificationType>::isTrained() const{
 }
 
 template<class ClassificationType>
-bool Singh<ClassificationType>::isClassifier() const {
+bool Singh<ClassificationType>::isClassifier() const{
   return false;
 }
 
@@ -124,14 +124,12 @@ cv::Mat_<float> Singh<ClassificationType>::getCentroids() const{
 }
 
 template<class ClassificationType>
-void Singh<ClassificationType>::precondition(){
-  
-}
+void Singh<ClassificationType>::precondition(){ }
 
 template<class ClassificationType>
 void Singh<ClassificationType>::initializeClusterings(){
   cv::Mat_<float> feats;
-  for (int row : discovery_[0]){
+  for(int row : discovery_[0]){
     feats.push_back(samples_.row(row));
   }
   ssf::Kmeans kmeans;
@@ -146,6 +144,57 @@ void Singh<ClassificationType>::initializeClusterings(){
   auto initialClustering = kmeans.getClustering();
   cv::Mat_<float> centroids = kmeans.getCentroids();
 
+  for(auto it = initialClustering.begin(); it != initialClustering.end(); ++it){
+    if(it->size() < 3){
+      initialClustering.erase(it);
+    }
+  }
+  clusters_ = initialClustering;
+
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::initializeClassifiers(){
+  classifiers_.resize(clusters_.size());
+  for(int c = 0; c < classifiers_.size(); c++)
+    classifiers_[c] = nullptr;
+}
+
+template<class ClassificationType>
+void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clusters,
+                                                 std::vector<int> learningSet,
+                                                 std::vector<int> negativeLearningSet){
+  classifiers_.clear();
+  classifiers_.resize(clusters.size());
+  for(int clusterNum = 0; clusterNum < clusters.size(); clusterNum++){
+    //Initialization
+    if(classifiers_[clusterNum] != nullptr){
+      delete classifiers_[clusterNum];
+      classifiers_[clusterNum] = new ClassificationType();
+    } else{
+      classifiers_[clusterNum] = new ClassificationType();
+    }
+    Cluster clusterSet = clusters[clusterNum];
+    //Positives
+    cv::Mat_<float> feature;
+    for(int sample : clusterSet){
+      dataX_.row(sample);
+      classifiers_[clusterNum]->addSamples(feature, std::to_string(clusterNum));
+    }
+
+    ///Negatives
+    cv::Mat_<float> naturalFeat;
+    for(int row : negativeLearningSet){
+       = extraData_.row(row);
+      classifiers_[clusterNum]->addSamples(naturalFeat, -1);
+    }
+    for(int row : negativeLearningSet){
+      cv::Mat_<float> naturalFeat = extraData_.row(row);
+      classifiers_[clusterNum]->addExtraSamples(naturalFeat, -1);
+    }
+
+    classifiers_[clusterNum]->learn();
+  }
 }
 }
 

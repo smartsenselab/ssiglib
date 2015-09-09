@@ -36,7 +36,18 @@ install:
   - sudo apt-get install -qq libcv-dev libcvaux-dev libhighgui-dev libopencv-dev
   - sudo apt-get install -qq gcc-4.8 g++-4.8
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90  
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90 
+
+  - mkdir opencv
+  - cd opencv
+  - wget https://github.com/Itseez/opencv/archive/3.0.0-alpha.zip -O opencv-3.0.0-alpha.zip
+  - unzip opencv-3.0.0-alpha.zip  
+  - cd opencv-3.0.0-alpha
+  - mkdir build
+  - cd build
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON ..
+  - make -j $(nproc)
+  - sudo make install
   - sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
   - sudo ldconfig
 
