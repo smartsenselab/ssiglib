@@ -6,7 +6,7 @@ env:
 
 matrix:
   include:
-    - compiler: clang
+    - compiler: gcc
       env: TASK="build"
     - compiler: gcc
       env: TASK="test"
@@ -45,12 +45,12 @@ before_install:
   - sudo apt-get -y install libvorbis-dev libxvidcore-dev x264 v4l-utils unzip
   - mkdir opencv
   - cd opencv
-  - wget https://github.com/Itseez/opencv/archive/3.0.0-beta.zip
-  - unzip -qq 3.0.0-beta.zip
-  - cd opencv-3.0.0-beta
+  - wget https://github.com/Itseez/opencv/archive/3.0.0.zip
+  - unzip -qq 3.0.0.zip
+  - cd opencv-3.0.0
   - mkdir build
   - cd build
-  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_QT=ON -D WITH_OPENGL=ON ..
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_V4L=ON -D WITH_OPENGL=ON ..
   - make
   - sudo make install
   - sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
@@ -59,23 +59,12 @@ before_install:
 install:
   - g++ --version
 
-    # build this project
-  - cmake .
-  - cmake --build .
-
-
 script:
   - bash .travis.sh
 
   
 after_success:
   - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;
-
-notifications:
-    email:
-        recipients: tatsy.mail@gmail.com
-        on_success: change
-        on_failure: always
 
 #http://answers.opencv.org/question/21977/best-way-to-depend-on-opencv-master-in-a-travis-ci-build-bot-instance/
 #  https://gist.github.com/cgddrd/9d397fda0d72fe617c0e
