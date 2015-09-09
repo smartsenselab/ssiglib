@@ -81,16 +81,7 @@ cv::Mat_<int> PLSClassifier::getLabels() const{
 }
 
 std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  std::unordered_map<int, int> ans;
-  ans[labels_[0][0]] = 0;
-  for(int i = 0; i < labels_.rows; ++i){
-    int label = labels_[i][0];
-    if(label != ans[0]){
-      ans[label] = 1;
-      break;
-    }
-  }
-  return ans;
+  return{ { 1, 0 }, { -1, 0 } };
 }
 
 bool PLSClassifier::empty() const{

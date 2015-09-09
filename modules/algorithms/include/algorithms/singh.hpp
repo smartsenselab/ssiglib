@@ -38,9 +38,11 @@
 
 #ifndef _SSF_ALGORITHMS_SINGH_HPP_
 #define _SSF_ALGORITHMS_SINGH_HPP_
+#include <cstdlib>
 #include "classifierClustering.hpp"
 #include "kmeans.hpp"
 #include "alg_defs.hpp"
+#include <iostream>
 
 namespace ssf{
 
@@ -167,21 +169,17 @@ void Singh<ClassificationType>::initializeClusterings(){
             [](const Cluster& i, const Cluster& j)->bool{
               return i.size() > j.size();
             });
-  std::vector<Cluster>::iterator pos;
-  int i = 0;
-  for(; i < initialClustering.size(); ++i){
-    if(initialClustering[i].size() < 3){
+  int pos = 0;
+  for(; pos < initialClustering.size(); ++pos){
+    if(initialClustering[pos].size() < 3){
       break;
     }
   }
-  initialClustering.erase(initialClustering.begin() + i, initialClustering.end());
-
-  clusters_ = initialClustering;
-
-  for(int i = 0; i < clusters_.size(); ++i){
+  initialClustering.erase(initialClustering.begin() + pos, initialClustering.end());
+  for (int i = 0; i < initialClustering.size(); ++i) {
     clustersIds_.push_back(i);
   }
-
+  clusters_ = initialClustering;
 }
 
 template<class ClassificationType>
@@ -200,26 +198,28 @@ void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clu
   }
   classifiers_.clear();
   classifiers_.resize(clusters.size());
-  for(int clusterNum = 0; clusterNum < clusters.size(); clusterNum++){
+  for (int clusterNum = 0; clusterNum < static_cast<int>(clusters.size()); ++clusterNum) {
     //Initialization
-    if(classifiers_[clusterNum] != nullptr){
+    if (classifiers_[clusterNum] != nullptr) {
       delete classifiers_[clusterNum];
       classifiers_[clusterNum] = new ClassificationType();
-    } else{
+    } else {
       classifiers_[clusterNum] = new ClassificationType();
     }
+  }
+  for(int clusterNum = 0; clusterNum < static_cast<int>(clusters.size()); ++clusterNum){
     Cluster cluster = clusters[clusterNum];
     cv::Mat_<int> labels = cv::Mat_<int>::zeros(static_cast<int>(negativeLearningSet.size())
                                                 + static_cast<int>(cluster.size()), 1);
     labels = -1;
-    //Positives
+
     cv::Mat_<float> trainSamples =
       cv::Mat_<float>::zeros(static_cast<int>(cluster.size()), samples_.cols);
     int i = 0;
     for(int sample : cluster){
       samples_.row(sample).copyTo(trainSamples.row(i));
       labels[i][0] = 1;
-      
+
       ++i;
     }
     trainSamples.push_back(natural);
@@ -230,13 +230,13 @@ void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clu
 template<class ClassificationType>
 bool Singh<ClassificationType>::isFinished(){
   if(maxIterations_ > 0 && (it_ > maxIterations_)){
-    //ReportStatus("Convergence due to max number of iterations reached");
+    printf("Convergence due to max number of iterations reached\n");
     return true;
   }
   if(minimumK_){
     auto kConvergence = (newClusters_.size() <= minimumK_);
     if(kConvergence){
-      //ReportStatus("Converged due to minimum K!");
+      printf("Converged due to minimum K!\n");
       return true;
     }
   }
@@ -253,20 +253,23 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
   std::vector<Cluster> clusters;
   std::vector<int> ids;
   clustersResponses_.clear();
+  cv::Mat_<float> responses;
   for(int c = 0; c < clusters_.size(); c++){
-    int firings = 0;
     responsesVec.clear();
 
+    int firings = 0;
+    responses.release();
     for(int i = 0; i < assignmentSet.size(); i++){
+      cv::Mat_<float> response;
       cv::Mat_<float> featMat = samples_.row(assignmentSet[i]);
-      cv::Mat_<float> responses;
-      classifiers_[c]->predict(featMat, responses);
+      classifiers_[c]->predict(featMat, response);
       auto labelOrdering = classifiers_[c]->getLabelsOrdering();
       int labelIdx = labelOrdering[c];
-      if(responses[0][labelIdx] > -1){
+      if(response[0][labelIdx] > -1){
         firings++;
       }
-      responsesVec.push_back(std::pair<int, float>(assignmentSet[i], responses[0][labelIdx]));
+      responses.push_back(response);
+      responsesVec.push_back(std::pair<int, float>(assignmentSet[i], response[0][labelIdx]));
     }
     if(firings > 2){
       std::sort(responsesVec.begin(), responsesVec.end(),
@@ -282,6 +285,8 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
         clustersResponses_[clusters.size()].push_back(responsesVec[i].second);
       }
       clusters.push_back(newCluster);
+    } else{
+      std::cout << "Cluster [" << clustersIds_[c] << "] is being eliminated" << std::endl;
     }
   }
   clustersIds_ = ids;
