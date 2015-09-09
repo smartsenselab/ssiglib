@@ -285,8 +285,6 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
         clustersResponses_[clusters.size()].push_back(responsesVec[i].second);
       }
       clusters.push_back(newCluster);
-    } else{
-      std::cout << "Cluster [" << clustersIds_[c] << "] is being eliminated" << std::endl;
     }
   }
   clustersIds_ = ids;
