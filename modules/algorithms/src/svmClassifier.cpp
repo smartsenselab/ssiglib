@@ -49,7 +49,7 @@ SVMClassifier::~SVMClassifier(){
   //Destructor
 }
 
-std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
+std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const{
   std::unordered_map<int, int> ans;
   ans[labels_[0][0]] = 0;
   for(int i = 0; i < labels_.rows; ++i){
@@ -98,7 +98,7 @@ void SVMClassifier::learn(cv::Mat_<float>& input,
                           cv::Mat_<int>& labels,
                           ClassificationParams* parameters){
   setup(input, parameters);
-  assert(!labels.empty()); 
+  assert(!labels.empty());
   addLabels(labels);
 
   svm_->train(samples_, cv::ml::ROW_SAMPLE, labels_);
@@ -106,7 +106,13 @@ void SVMClassifier::learn(cv::Mat_<float>& input,
 
 void SVMClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
-  svm_->predict(inp, resp);
+  cv::Mat_<float> label;
+  svm_->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
+  svm_->predict(inp, label);
+  for(int r = 0; r < resp.rows; ++r){
+    if(label[r][0] * resp[r][0] < 0)
+      resp[r][0] = -1 * resp[r][0];
+  }
 }
 
 cv::Mat_<int> SVMClassifier::getLabels() const{

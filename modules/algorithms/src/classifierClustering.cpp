@@ -52,10 +52,6 @@ ClassifierClustering::~ClassifierClustering(){
 
 void ClassifierClustering::setup(cv::Mat_<float>& input,
                                  ClusteringParams* parameters){
-  if(clusters_.empty()){
-    ssf::Log::ERROR("Call ssf::addInitialClustering First!");
-  }
-  assert(!clusters_.empty());
   ClusteringMethod::setup(input, parameters);
   auto p = static_cast<ClassifierClusteringParams*>(parameters);
   m_ = p->m;
@@ -89,6 +85,7 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
 
   K_ = std::min(static_cast<int>(d1Len / 4), maximumK_);
 
+  initializeClusterings();
   initializeClassifiers();
   trainClassifiers(clusters_, natural_[0]);
 

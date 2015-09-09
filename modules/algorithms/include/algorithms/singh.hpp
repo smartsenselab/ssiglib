@@ -163,12 +163,24 @@ void Singh<ClassificationType>::initializeClusterings(){
   auto initialClustering = kmeans.getClustering();
   cv::Mat_<float> centroids = kmeans.getCentroids();
 
-  for(auto it = initialClustering.begin(); it != initialClustering.end(); ++it){
-    if(it->size() < 3){
-      initialClustering.erase(it);
+  std::sort(initialClustering.begin(), initialClustering.end(),
+            [](const Cluster& i, const Cluster& j)->bool{
+              return i.size() > j.size();
+            });
+  std::vector<Cluster>::iterator pos;
+  int i = 0;
+  for(; i < initialClustering.size(); ++i){
+    if(initialClustering[i].size() < 3){
+      break;
     }
   }
+  initialClustering.erase(initialClustering.begin() + i, initialClustering.end());
+
   clusters_ = initialClustering;
+
+  for(int i = 0; i < clusters_.size(); ++i){
+    clustersIds_.push_back(i);
+  }
 
 }
 
@@ -205,8 +217,9 @@ void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clu
       cv::Mat_<float>::zeros(static_cast<int>(cluster.size()), samples_.cols);
     int i = 0;
     for(int sample : cluster){
-      trainSamples.row(i) = samples_.row(sample);
+      samples_.row(sample).copyTo(trainSamples.row(i));
       labels[i][0] = 1;
+      
       ++i;
     }
     trainSamples.push_back(natural);
@@ -250,7 +263,7 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
       classifiers_[c]->predict(featMat, responses);
       auto labelOrdering = classifiers_[c]->getLabelsOrdering();
       int labelIdx = labelOrdering[c];
-      if (responses[0][labelIdx] > -1) {
+      if(responses[0][labelIdx] > -1){
         firings++;
       }
       responsesVec.push_back(std::pair<int, float>(assignmentSet[i], responses[0][labelIdx]));

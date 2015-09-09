@@ -69,9 +69,9 @@ TEST(SVMClassifier, SanityClassification){
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
-  ASSERT_GE(1, resp[0][0]);
+  ASSERT_GE(resp[0][0], 0);
   classifier.predict(query2, resp);
-  ASSERT_GE(-1, resp[0][0]);
+  ASSERT_LE(resp[0][0], 0);
 
   delete p;
 }
