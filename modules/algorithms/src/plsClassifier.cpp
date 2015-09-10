@@ -74,7 +74,7 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
   //TODO: assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
-  pls_ = std::make_unique<PLS>();
+  pls_ = std::unique_ptr<PLS>(new PLS());
   cv::Mat_<float> l;
   nfactors_ = static_cast<PLSParameters*>(parameters)->factors;
   labels_.convertTo(l, CV_32F);
