@@ -39,9 +39,10 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <algorithms/singh.hpp>
-#include <algorithms/svmClassifier.hpp>
-#include <algorithms/plsClassifier.hpp>
+#include "algorithms/singh.hpp"
+#include "algorithms/classification.hpp"
+#include "algorithms/svmClassifier.hpp"
+#include "algorithms/plsClassifier.hpp"
 
 TEST(Singh, SVMSeparationTest){
   srand(0);

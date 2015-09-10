@@ -104,9 +104,10 @@ void Singh<ClassificationType>::predict(
   cv::Mat_<float>& resp) const{
   resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(classifiers_.size()));
   for(int r = 0; r < inp.rows; ++r){
-    for(int i = 0; i < classifiers_.size(); ++i){
+    for(int i = 0; i < static_cast<int>(classifiers_.size()); ++i){
       cv::Mat_<float> sampleResp;
-      classifiers_[i]->predict(inp.row(r), sampleResp);
+      cv::Mat_<float> sample = inp.row(r);
+      classifiers_[i]->predict(sample, sampleResp);
       resp[r][i] = sampleResp[0][0];
     }
   }
@@ -170,13 +171,13 @@ void Singh<ClassificationType>::initializeClusterings(){
               return i.size() > j.size();
             });
   int pos = 0;
-  for(; pos < initialClustering.size(); ++pos){
+  for(; pos < static_cast<int>(initialClustering.size()); ++pos){
     if(initialClustering[pos].size() < 3){
       break;
     }
   }
   initialClustering.erase(initialClustering.begin() + pos, initialClustering.end());
-  for (int i = 0; i < initialClustering.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(initialClustering.size()); ++i) {
     clustersIds_.push_back(i);
   }
   clusters_ = initialClustering;
@@ -234,7 +235,7 @@ bool Singh<ClassificationType>::isFinished(){
     return true;
   }
   if(minimumK_){
-    auto kConvergence = (newClusters_.size() <= minimumK_);
+    auto kConvergence = (static_cast<int>(newClusters_.size()) <= minimumK_);
     if(kConvergence){
       printf("Converged due to minimum K!\n");
       return true;
@@ -254,12 +255,12 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
   std::vector<int> ids;
   clustersResponses_.clear();
   cv::Mat_<float> responses;
-  for(int c = 0; c < clusters_.size(); c++){
+  for(int c = 0; c <static_cast<int>(clusters_.size()); c++){
     responsesVec.clear();
 
     int firings = 0;
     responses.release();
-    for(int i = 0; i < assignmentSet.size(); i++){
+    for(int i = 0; i <static_cast<int>(assignmentSet.size()); i++){
       cv::Mat_<float> response;
       cv::Mat_<float> featMat = samples_.row(assignmentSet[i]);
       classifiers_[c]->predict(featMat, response);
