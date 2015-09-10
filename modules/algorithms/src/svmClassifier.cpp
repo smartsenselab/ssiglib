@@ -76,10 +76,17 @@ void SVMClassifier::setup(cv::Mat_<float>& input, ClassificationParams* paramete
     weights_.clear();
   }
 
-  cv::ml::SVM::Params cvSVMparams(modelType_, kernelType_, degree_, gamma_,
-                                  coef_, c_, nu_, p_, classWeights_, termCrit);
-
-  svm_ = cv::ml::SVM::create(cvSVMparams);
+  svm_ = cv::ml::SVM::create();
+  svm_->setC(c_);
+  svm_->setType(modelType_);
+  svm_->setKernel(kernelType_);
+  svm_->setDegree(degree_);
+  svm_->setClassWeights(classWeights_);
+  svm_->setTermCriteria(termCrit);
+  svm_->setGamma(gamma_);
+  svm_->setCoef0(coef_);
+  svm_->setNu(nu_);
+  svm_->setP(p_);
 }
 
 void SVMClassifier::addLabels(cv::Mat_<int>& labels){
