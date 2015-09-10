@@ -45,45 +45,15 @@
 #include "algorithms/plsClassifier.hpp"
 
 TEST(Singh, SVMSeparationTest){
-  srand(0);
-//  cv::theRNG().state = 0;
-  
   ssf::SinghParameters params;
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
 
-  cv::Mat_<double> auxNeg = cv::Mat_<double>::zeros(6 * N, 2);
-
-  cv::Mat_<double> d1_1 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d1_2 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d2_1 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d2_2 = cv::Mat_<double>::zeros(N / 4, 2);
-
-
-  cv::Mat_<double> mean1 = (cv::Mat_<double>(1, 1) << 10);
-  cv::Mat_<double> std1 = (cv::Mat_<double>(1, 1) << 5);
-  cv::Mat_<double> mean2 = (cv::Mat_<double>(1, 1) << 1000.0);
-  cv::Mat_<double> std2 = (cv::Mat_<double>(1, 1) << 5.00);
-  cv::randn(d1_1, mean1, std1);
-  cv::randn(d1_2, mean2, std2);
-  cv::randn(d2_1, mean1, std1);
-  cv::randn(d2_2, mean2, std2);
-
-  cv::Mat_<double> aux;
-  aux.push_back(d1_1);
-  aux.push_back(d1_2);
-  aux.push_back(d2_1);
-  aux.push_back(d2_2);
-
-  cv::Mat_<double> mean3 = (cv::Mat_<double>(1, 1) << 500.0);
-  cv::Mat_<double> std3 = (cv::Mat_<double>(1, 1) << 1000.0);
-
-  cv::randn(auxNeg, mean3, std3);
-  auxNeg.convertTo(neg, CV_32F);
-
-
-  aux.convertTo(inp, CV_32F);
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  stg["discovery"] >> inp;
+  stg["natural"] >> neg;
+  stg.release();
 
   auto classifierParam = new ssf::SVMParameters();
   classifierParam->kernelType = cv::ml::SVM::LINEAR;
@@ -130,9 +100,6 @@ TEST(Singh, SVMSeparationTest){
 }
 
 TEST(Singh, PLSSeparationTest){
-  srand(0);
-  //  cv::theRNG().state = 0;
-
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
@@ -149,37 +116,10 @@ TEST(Singh, PLSSeparationTest){
   params.maxIterations = 8;
   params.params = classifierParam;
 
-  cv::Mat_<double> auxNeg = cv::Mat_<double>::zeros(6 * N, 2);
-
-  cv::Mat_<double> d1_1 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d1_2 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d2_1 = cv::Mat_<double>::zeros(N / 4, 2);
-  cv::Mat_<double> d2_2 = cv::Mat_<double>::zeros(N / 4, 2);
-
-
-  cv::Mat_<double> mean1 = (cv::Mat_<double>(1, 1) << 10);
-  cv::Mat_<double> std1 = (cv::Mat_<double>(1, 1) << 5);
-  cv::Mat_<double> mean2 = (cv::Mat_<double>(1, 1) << 1000.0);
-  cv::Mat_<double> std2 = (cv::Mat_<double>(1, 1) << 5.00);
-  cv::randn(d1_1, mean1, std1);
-  cv::randn(d1_2, mean2, std2);
-  cv::randn(d2_1, mean1, std1);
-  cv::randn(d2_2, mean2, std2);
-
-  cv::Mat_<double> aux;
-  aux.push_back(d1_1);
-  aux.push_back(d1_2);
-  aux.push_back(d2_1);
-  aux.push_back(d2_2);
-
-  cv::Mat_<double> mean3 = (cv::Mat_<double>(1, 1) << 500.0);
-  cv::Mat_<double> std3 = (cv::Mat_<double>(1, 1) << 1000.0);
-
-  cv::randn(auxNeg, mean3, std3);
-  auxNeg.convertTo(neg, CV_32F);
-
-
-  aux.convertTo(inp, CV_32F);
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  stg["discovery"] >> inp;
+  stg["natural"] >> neg;
+  stg.release();
 
   ssf::Singh<ssf::PLSClassifier> clustering;
   clustering.addExtraSamples(neg);

@@ -79,21 +79,11 @@ TEST(PLSOAAClassifier, BinaryClassification){
 }
 
 TEST(PLSOAAClassifier, TernaryClassification){
-  srand(0);
   cv::Mat_<float> inp;
-  cv::Mat_<int> labels = cv::Mat_<int>::zeros(9, 1);
-  inp = cv::Mat_<float>::zeros(9, 2);
-  for(int i = 0; i < 3; ++i){
-    inp[i][0] = static_cast<float>(rand() % 5);
-    inp[i][1] = static_cast<float>(rand() % 5);
-    labels[i][0] = 1;
-    inp[3 + i][0] = static_cast<float>(1000 + rand() % 5);
-    inp[3 + i][1] = static_cast<float>(1000 + rand() % 5);
-    labels[3 + i][0] = 2;
-    inp[6 + i][0] = static_cast<float>(10000 + rand() % 5);
-    inp[6 + i][1] = static_cast<float>(10000 + rand() % 5);
-    labels[6 + i][0] = 3;
-  }
+  cv::Mat_<int> labels;
+  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
+  stg["inp"] >> inp;
+  stg["labels"] >> labels;
 
   auto p = new ssf::PLSParameters;
   p->factors = 2;
@@ -123,21 +113,12 @@ TEST(PLSOAAClassifier, TernaryClassification){
 }
 
 TEST(SVMOAAClassifier, TernaryClassification){
-  srand(0);
   cv::Mat_<float> inp;
-  cv::Mat_<int> labels = cv::Mat_<int>::zeros(9, 1);
-  inp = cv::Mat_<float>::zeros(9, 2);
-  for(int i = 0; i < 3; ++i){
-    inp[i][0] = static_cast<float>(rand() % 5);
-    inp[i][1] = static_cast<float>(rand() % 5);
-    labels[i][0] = 1;
-    inp[3 + i][0] = static_cast<float>(1000 + rand() % 5);
-    inp[3 + i][1] = static_cast<float>(1000 + rand() % 5);
-    labels[3 + i][0] = 2;
-    inp[6 + i][0] = static_cast<float>(10000 + rand() % 5);
-    inp[6 + i][1] = static_cast<float>(10000 + rand() % 5);
-    labels[6 + i][0] = 3;
-  }
+  cv::Mat_<int> labels;
+
+  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
+  stg["inp"] >> inp;
+  stg["labels"] >> labels;
 
   ssf::SVMParameters* p = new ssf::SVMParameters;
   p->kernelType = cv::ml::SVM::LINEAR;
