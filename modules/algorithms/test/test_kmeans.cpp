@@ -62,7 +62,7 @@ TEST(KmeansClustering, SanityClusteringTest){
   auto clusters = kmeans.getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
-  ASSERT_EQ(2, clusters.size());
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
   for(auto& cluster : clusters){
     if(cluster != gt1){
       ASSERT_EQ(cluster, gt2);

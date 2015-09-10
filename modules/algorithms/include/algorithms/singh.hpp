@@ -186,7 +186,7 @@ void Singh<ClassificationType>::initializeClusterings(){
 template<class ClassificationType>
 void Singh<ClassificationType>::initializeClassifiers(){
   classifiers_.resize(clusters_.size());
-  for(int c = 0; c < classifiers_.size(); c++)
+  for(int c = 0; c < static_cast<int>(classifiers_.size()); c++)
     classifiers_[c] = nullptr;
 }
 

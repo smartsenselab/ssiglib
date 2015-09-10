@@ -452,16 +452,18 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   nsamples = X.rows;
 
   // permutation to perform the k-fold
-  for(int i = 1; i < nsamples; ++i) featurePerm.push_back(i);
+  for(i = 1; i < static_cast<int>(nsamples); ++i){
+    featurePerm.push_back(i);
+  }
   std::shuffle(featurePerm.begin(), featurePerm.end(), std::default_random_engine());
 
-  for(i = 0; i < folds; i++){
+  for(i = 0; i < static_cast<int>(folds); i++){
     permTrain.push_back(std::vector<size_t>());
     permTest.push_back(std::vector<size_t>());
   }
 
   for(i = 0; i < static_cast<int>(featurePerm.size()); i++){
-    for(k = 0; k < folds; k++){
+    for(k = 0; k <static_cast<int>(folds); k++){
       if(i % folds == 0)
         permTest[k].push_back(featurePerm[i]);
       else
