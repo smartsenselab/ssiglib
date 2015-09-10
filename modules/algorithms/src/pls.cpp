@@ -463,7 +463,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   }
 
   for(i = 0; i < static_cast<int>(featurePerm.size()); i++){
-    for(k = 0; k <static_cast<int>(folds); k++){
+    for(k = 0; k < static_cast<size_t>(folds); k++){
       if(i % folds == 0)
         permTest[k].push_back(featurePerm[i]);
       else
@@ -472,7 +472,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   }
 
   // run for each fold
-  for(k = 0; k < folds; k++){
+  for(k = 0; k < static_cast<size_t>(folds); k++){
 
     // compose X matrix
     setMatrix(X, Xtmp, permTrain[k]);

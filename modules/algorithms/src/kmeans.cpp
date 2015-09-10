@@ -142,7 +142,7 @@ void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels){
   if(clusters_.empty()) return;
   labels = cv::Mat_<int>::zeros(samples_.rows, samples_.cols);
   for(int c = 0; c < static_cast<int>(clusters_.size()); ++c){
-    for(int s = 0; s < clusters_[c].size(); ++s){
+    for(int s = 0; s < static_cast<int>(clusters_[c].size()); ++s){
       labels.at<int>(clusters_[c][s], 0) = c;
     }
   }

@@ -133,10 +133,21 @@ TEST(Singh, PLSSeparationTest){
   srand(0);
   //  cv::theRNG().state = 0;
 
-  ssf::SinghParameters params;
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
+  ssf::SinghParameters params;
+  auto classifierParam = new ssf::PLSParameters();
+  classifierParam->factors = 2;
+  classifierParam->termType = cv::TermCriteria::MAX_ITER;
+  classifierParam->eps = 0.01f;
+
+  params.minimumK = 2;
+  params.lambda = 0.1f;
+  params.d1Len = N / 2;
+  params.m = 5;
+  params.maxIterations = 8;
+  params.params = classifierParam;
 
   cv::Mat_<double> auxNeg = cv::Mat_<double>::zeros(6 * N, 2);
 
@@ -169,19 +180,6 @@ TEST(Singh, PLSSeparationTest){
 
 
   aux.convertTo(inp, CV_32F);
-
-  auto classifierParam = new ssf::PLSParameters();
-  classifierParam->factors = 2;
-  classifierParam->termType = cv::TermCriteria::MAX_ITER;
-  classifierParam->eps = 0.01f;
-
-  params.minimumK = 2;
-  params.lambda = 0.1f;
-  params.d1Len = N / 2;
-  params.m = 5;
-  params.maxIterations = 8;
-  params.params = classifierParam;
-
 
   ssf::Singh<ssf::PLSClassifier> clustering;
   clustering.addExtraSamples(neg);

@@ -44,6 +44,7 @@
 #include <algorithms/svmClassifier.hpp>
 
 TEST(PLSOAAClassifier, BinaryClassification){
+  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
   inp = cv::Mat_<float>::zeros(6, 2);
@@ -78,6 +79,7 @@ TEST(PLSOAAClassifier, BinaryClassification){
 }
 
 TEST(PLSOAAClassifier, TernaryClassification){
+  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(9, 1);
   inp = cv::Mat_<float>::zeros(9, 2);
@@ -121,6 +123,7 @@ TEST(PLSOAAClassifier, TernaryClassification){
 }
 
 TEST(SVMOAAClassifier, TernaryClassification){
+  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(9, 1);
   inp = cv::Mat_<float>::zeros(9, 2);

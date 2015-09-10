@@ -66,4 +66,5 @@ after_success:
   - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;
 
 #http://answers.opencv.org/question/21977/best-way-to-depend-on-opencv-master-in-a-travis-ci-build-bot-instance/
-#  https://gist.github.com/cgddrd/9d397fda0d72fe617c0e
+# https://gist.github.com/cgddrd/9d397fda0d72fe617c0e
+# https://github.com/tatsy/lime

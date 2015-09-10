@@ -42,6 +42,7 @@
 #include <algorithms/plsClassifier.hpp>
 
 TEST(PLSClassifier, BinaryClassification){
+  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
   inp = cv::Mat_<float>::zeros(6, 2);
