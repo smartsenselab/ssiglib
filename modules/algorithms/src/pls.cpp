@@ -314,8 +314,7 @@ void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
     aux = X.row(y);
 
     if(aux.cols != Xmean.cols){
-      fprintf(stderr, "Inconsistent data matrix");
-      throw(1);
+      throw("Inconsistent data matrix");
     }
 
     // zscore
@@ -336,8 +335,7 @@ void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
 void PLS::Save(cv::FileStorage& storage){
 
   if(storage.isOpened() == false){
-    fprintf(stderr, "Invalid file storage!");
-    throw(1);
+    throw("Invalid file storage!");
   }
 
   storage << "PLS" << "{";
