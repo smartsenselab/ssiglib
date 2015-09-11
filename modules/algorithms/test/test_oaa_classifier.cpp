@@ -99,18 +99,27 @@ TEST(PLSOAAClassifier, TernaryClassification){
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
   int label1 = ordering[1];
-  EXPECT_TRUE(ordering.find(1) != ordering.end());
-  EXPECT_GE(resp[0][label1], 0);
-
   int label2 = ordering[2];
-  classifier.predict(query2, resp);
-  EXPECT_TRUE(ordering.find(2) != ordering.end());
-  EXPECT_GE(resp[0][label2], 0);
-
   int label3 = ordering[3];
+
+  double maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+
+  classifier.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
   classifier.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
-  EXPECT_GE(resp[0][label3], 0);
+  EXPECT_GE(resp[0][label3], maxResp);
 
   delete p;
 }
@@ -141,19 +150,29 @@ TEST(SVMOAAClassifier, TernaryClassification){
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
+
   int label1 = ordering[1];
-  EXPECT_TRUE(ordering.find(1) != ordering.end());
-  EXPECT_GE(resp[0][label1], 0);
-
   int label2 = ordering[2];
-  classifier.predict(query2, resp);
-  EXPECT_TRUE(ordering.find(2) != ordering.end());
-  EXPECT_GE(resp[0][label2], 0);
-
   int label3 = ordering[3];
+
+  double maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+
+  classifier.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
   classifier.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
-  EXPECT_GE(resp[0][label3], 0);
+  EXPECT_GE(resp[0][label3], maxResp);
 
   delete p;
 }
