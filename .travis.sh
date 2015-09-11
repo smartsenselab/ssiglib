@@ -15,7 +15,7 @@ function test()
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON $SSF_DIR
   make -j2
-  make test  ARGS="--output-on-failure" -j3
+  make test  ARGS="--output-on-failure"
 }
 
 function coverage()
