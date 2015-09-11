@@ -41,7 +41,6 @@
 #include "classification.hpp"
 #include <unordered_map>
 #include <set>
-#include <map>
 
 namespace ssf{
 

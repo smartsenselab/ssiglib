@@ -98,16 +98,19 @@ TEST(PLSOAAClassifier, TernaryClassification){
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
-  int idx = ordering[1];
-  EXPECT_GE(resp[0][idx], 0);
+  int label1 = ordering[1];
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], 0);
 
-  idx = ordering[2];
+  int label2 = ordering[2];
   classifier.predict(query2, resp);
-  EXPECT_GE(resp[0][idx], 0);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], 0);
 
-  idx = ordering[3];
+  int label3 = ordering[3];
   classifier.predict(query3, resp);
-  EXPECT_GE(resp[0][idx], 0);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], 0);
 
   delete p;
 }
@@ -137,16 +140,19 @@ TEST(SVMOAAClassifier, TernaryClassification){
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
-  int idx = ordering[1];
-  EXPECT_GE(resp[0][idx], 0);
+  int label1 = ordering[1];
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], 0);
 
-  idx = ordering[2];
+  int label2 = ordering[2];
   classifier.predict(query2, resp);
-  EXPECT_GE(resp[0][idx], 0);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], 0);
 
-  idx = ordering[3];
+  int label3 = ordering[3];
   classifier.predict(query3, resp);
-  EXPECT_GE(resp[0][idx], 0);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], 0);
 
   delete p;
 }
