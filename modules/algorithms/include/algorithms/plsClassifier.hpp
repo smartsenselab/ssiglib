@@ -69,9 +69,9 @@ public:
 
 private:
   //private members
-  std::unique_ptr<PLS> pls_;
-  int nfactors_;
-  bool trained_;
+  std::unique_ptr<PLS> mPls;
+  int mNFactors;
+  bool mTrained;
 
   virtual void setClassWeights(const int classLabel, const float weight) override;
 };

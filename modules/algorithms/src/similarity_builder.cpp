@@ -35,81 +35,48 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-#include <cassert>
-#include <algorithms/plsClassifier.hpp>
+#include <opencv2/core.hpp>
+#include "algorithms/similarity_builder.hpp"
 
 namespace ssf{
 
-PLSClassifier::PLSClassifier(){
-  //Constructor
-}
+cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input){
+  int len = input.rows;
+  cv::Mat_<float> similarity(len, len);
+  similarity = 0;
+  for(int i = 0; i < len; ++i){
+    for(int j = i; j < len; ++j){
+      auto x = input.row(i);
+      auto y = input.row(j);
 
-PLSClassifier::~PLSClassifier(){
-  //Destructor
-}
-
-PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
-  //Constructor Copy
-}
-
-void PLSClassifier::predict(cv::Mat_<float>& inp,
-                            cv::Mat_<float>& resp) const{
-  mPls->ProjectionBstar(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for(int row = 0; row < inp.rows; ++row){
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
+      similarity[i][j] = similarityFunction(x, y);
+    }
   }
-  resp = r;
+  return similarity;
 }
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels){
-  labels_ = labels;
+float CosineSimilarity::similarityFunction(const cv::Mat_<float>& x,
+                                           const cv::Mat_<float>& y){
+  return static_cast<float>(x.dot(y) /
+    (cv::norm(x, cv::NORM_L2) * cv::norm(y, cv::NORM_L2)));
 }
 
-void PLSClassifier::learn(cv::Mat_<float>& input,
-                          cv::Mat_<int>& labels,
-                          ClassificationParams* parameters){
-  //TODO: assert labels between -1 and 1
-  addLabels(labels);
-  assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
-  cv::Mat_<float> l;
-  mNFactors = static_cast<PLSParameters*>(parameters)->factors;
-  labels_.convertTo(l, CV_32F);
-  auto X = input.clone();
-  mPls->runpls(X, l, mNFactors);
+float CorrelationSimilarity::similarityFunction(const cv::Mat_<float>& x,
+                                                const cv::Mat_<float>& y){
+  float correlation = 0;
+  float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
+  int n = x.cols;
+  for(int s = 0; s < n; ++s){
+    i += x[0][s];
+    ii += x[0][s] * x[0][s];
 
-  mTrained = true;
+    j += y[0][s];
+    jj += y[0][s] * y[0][s];
+
+    ij += x[0][s] * y[0][s];
+  }
+  correlation = (n * ij - i * j) /
+    (sqrt(n * ii - i * i) * sqrt(n * jj - j * j));
+  return correlation;
 }
-
-cv::Mat_<int> PLSClassifier::getLabels() const{
-  return labels_;
-}
-
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const{
-  return{{1, 0},{-1, 1}};
-}
-
-bool PLSClassifier::empty() const{
-  return bool(mPls);
-}
-
-bool PLSClassifier::isTrained() const{
-  return mTrained;
-}
-
-bool PLSClassifier::isClassifier() const{
-  return true;
-}
-
-void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
-
-
-void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
-
-void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
-
-
 }

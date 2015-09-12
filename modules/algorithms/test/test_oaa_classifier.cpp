@@ -39,7 +39,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <algorithms/oaaClassifier.hpp>
+#include <algorithms/oaa_classifier.hpp>
 #include <algorithms/plsClassifier.hpp>
 #include <algorithms/svmClassifier.hpp>
 

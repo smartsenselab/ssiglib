@@ -35,81 +35,39 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-#include <cassert>
-#include <algorithms/plsClassifier.hpp>
+
+#ifndef _SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+#define _SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+#include <opencv2/core/mat.hpp>
+#include <algorithms/alg_defs.hpp>
 
 namespace ssf{
 
-PLSClassifier::PLSClassifier(){
-  //Constructor
-}
+class SimilarityBuilder{
+protected:
+  ALG_EXPORT virtual float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) = 0;
+public:
+  virtual ~SimilarityBuilder() = default;
+  ALG_EXPORT cv::Mat_<float> buildSimilarity(const cv::Mat_<float>& input);
+};
 
-PLSClassifier::~PLSClassifier(){
-  //Destructor
-}
+class CosineSimilarity : public SimilarityBuilder{
 
-PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
-  //Constructor Copy
-}
+protected:
+  ALG_EXPORT float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) override;
+public:
+  ~CosineSimilarity() override = default;
+};
 
-void PLSClassifier::predict(cv::Mat_<float>& inp,
-                            cv::Mat_<float>& resp) const{
-  mPls->ProjectionBstar(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for(int row = 0; row < inp.rows; ++row){
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
-  }
-  resp = r;
-}
+class CorrelationSimilarity : public SimilarityBuilder{
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels){
-  labels_ = labels;
-}
-
-void PLSClassifier::learn(cv::Mat_<float>& input,
-                          cv::Mat_<int>& labels,
-                          ClassificationParams* parameters){
-  //TODO: assert labels between -1 and 1
-  addLabels(labels);
-  assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
-  cv::Mat_<float> l;
-  mNFactors = static_cast<PLSParameters*>(parameters)->factors;
-  labels_.convertTo(l, CV_32F);
-  auto X = input.clone();
-  mPls->runpls(X, l, mNFactors);
-
-  mTrained = true;
-}
-
-cv::Mat_<int> PLSClassifier::getLabels() const{
-  return labels_;
-}
-
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const{
-  return{{1, 0},{-1, 1}};
-}
-
-bool PLSClassifier::empty() const{
-  return bool(mPls);
-}
-
-bool PLSClassifier::isTrained() const{
-  return mTrained;
-}
-
-bool PLSClassifier::isClassifier() const{
-  return true;
-}
-
-void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
-
-
-void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
-
-void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
-
+protected:
+  ALG_EXPORT float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) override;
+public:
+  ~CorrelationSimilarity() override = default;
+};
 
 }
+
+#endif // !_SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+

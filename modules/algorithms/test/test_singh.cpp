@@ -51,6 +51,7 @@ TEST(Singh, SVMSeparationTest){
   int N = 60;
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
   stg["discovery"] >> inp;
   stg["natural"] >> neg;
   stg.release();
@@ -117,6 +118,7 @@ TEST(Singh, PLSSeparationTest){
   params.params = classifierParam;
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
   stg["discovery"] >> inp;
   stg["natural"] >> neg;
   stg.release();

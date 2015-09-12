@@ -71,12 +71,10 @@ protected:
   virtual void precondition() override;
   virtual void initializeClusterings() override;
   virtual void initializeClassifiers() override;
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                std::vector<int> negativeLearningSet) override;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters, const std::vector<int> & negativeLearningSet) override;
   virtual bool isFinished() override;
   virtual void postCondition() override;
-  virtual std::vector<Cluster> assignment(int clusterSize,
-                                          std::vector<int> assignmentSet) override;
+  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int> & assignmentSet) override;
 
 private:
   //private members
@@ -191,8 +189,7 @@ void Singh<ClassificationType>::initializeClassifiers(){
 }
 
 template<class ClassificationType>
-void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clusters,
-                                                 std::vector<int> negativeLearningSet){
+void Singh<ClassificationType>::trainClassifiers(const std::vector<Cluster>& clusters, const std::vector<int> & negativeLearningSet){
   cv::Mat_<float> natural;
   for(int id : negativeLearningSet){
     natural.push_back(naturalSamples_.row(id));
@@ -248,8 +245,7 @@ template<class ClassificationType>
 void Singh<ClassificationType>::postCondition(){}
 
 template<class ClassificationType>
-std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize,
-                                                           std::vector<int> assignmentSet){
+std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize, const std::vector<int> & assignmentSet){
   std::vector<std::pair<int, float>> responsesVec;
   std::vector<Cluster> clusters;
   std::vector<int> ids;

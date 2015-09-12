@@ -39,10 +39,15 @@
 #ifndef _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #include "classifierClustering.hpp"
-#include "plsClassifier.hpp"
-#include "oaaClassifier.hpp"
+#include "oaa_classifier.hpp"
+#include "merger.hpp"
+#include "similarity_builder.hpp"
 
 namespace ssf{
+struct PLSICParams: ClassifierClusteringParams{
+  SimilarityBuilder& simBuilder;
+};
+
 
 template<class ClassificationType>
 class PLSImageClustering : public ClassifierClustering{
@@ -62,18 +67,44 @@ protected:
   virtual void precondition() override;
   virtual void initializeClusterings() override;
   virtual void initializeClassifiers() override;
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters, std::vector<int> learningSet, std::vector<int> negativeLearningSet) override;
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
+                                const std::vector<int>& negativeLearningSet) override;
   virtual bool isFinished() override;
   virtual void postCondition() override;
-  virtual std::vector<Cluster> assignment(int clusterSize, std::vector<int> assignmentSet) override;
+  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int>& assignmentSet) override;
 
   virtual void merge();
-
+private:
+  std::vector<Cluster> joinClosestClusters(cv::Mat& similarityMatrix);
 private:
   //private members
-OAAClassifier<ClassificationType> classifier_;
+  OAAClassifier<ClassificationType> mClassifier;
+  SimilarityBuilder* mSimBuilder;
 };
 
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::predict(cv::Mat_<float>& inp,
+                                                     cv::Mat_<float>& resp) const{
+  resp.release();
+  mClassifier.predict(inp, resp);
+}
+
+template<class ClassificationType>
+bool PLSImageClustering<ClassificationType>::empty() const{
+  return mClassifier.empty();
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::initializeClusterings(){
+  if(!clusters_.empty()) return;
+  //Make the standard initial Clustering
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::merge(){
+  cv::Mat_<float> similarity = mSimBuilder->buildSimilarity();
+  auto mergeResult = mMerger->merge(similarity);
+}
 }
 
 #endif // !_SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
