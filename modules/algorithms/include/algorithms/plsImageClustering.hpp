@@ -42,7 +42,6 @@
 #include <core/util.hpp>
 #include "classifierClustering.hpp"
 #include "oaa_classifier.hpp"
-#include "merger.hpp"
 #include "similarity_builder.hpp"
 
 namespace ssf{
