@@ -171,7 +171,7 @@ TEST(PLSIC, AssignmentTest){
   const int nClusters = 5;
 
   std::vector<int> d1, ids;
-  std::vector<std::vector<float>> responses(nClusters, {});
+  std::vector<std::vector<float>> responses;
   for(int i = 0; i < N / 2; ++i){
     d1.push_back(i);
   }
@@ -184,5 +184,4 @@ TEST(PLSIC, AssignmentTest){
   auto v = plsic.getClustering();
   std::vector<ssf::Cluster> clustering;
   plsic.assignment(5, static_cast<int>(v.size()), d1, responses, ids, clustering);
-
 }
