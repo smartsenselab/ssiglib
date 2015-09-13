@@ -107,13 +107,13 @@ protected:
 
   //Attributes /////////
   cv::Mat_<float> mNaturalSamples;
-  int mInitialK;
-  int mMaximumK;
-  int m_;
-  int it_;
+  int mInitialK = 0;
+  int mMaximumK = 100;
+  int m_ = 5;
+  int it_ = 0;
   std::vector<std::vector<int>> discovery_;
   std::vector<std::vector<int>> natural_;
-  ClassificationParams* classificationParams_;;
+  ClassificationParams* classificationParams_ = nullptr;
 
   std::vector<Cluster> clustersOld_, newClusters_;
   std::vector<std::vector<float>> clustersResponses_;

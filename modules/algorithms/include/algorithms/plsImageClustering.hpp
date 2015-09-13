@@ -284,6 +284,10 @@ void PLSImageClustering<ClassificationType>::assignment(
   cv::Mat_<int> ordering;
   cv::sortIdx(responsesMatrix, ordering, cv::SORT_DESCENDING + cv::SORT_EVERY_ROW);
 
+  cv::FileStorage s("responseMat.yml", cv::FileStorage::WRITE);
+  s << "responses" << responsesMatrix;
+  s << "ordering" << ordering;
+
   //Loop consists of two steps
   // calculating the sum of responses
   // picking the fittest cluster
@@ -336,6 +340,11 @@ void PLSImageClustering<ClassificationType>::assignment(
   clustersIds = ids;
 
   //MERGING
+  s << "Clustering" << "{";
+  for (int i = 0; i < (int)clusters.size(); ++i) {
+    s << "cluster" + std::to_string(i) << clusters[i];
+  }
+  s << "}";
   merge(clusters);
   out = clusters;
 }
@@ -391,6 +400,12 @@ void PLSImageClustering<ClassificationType>::merge(std::vector<Cluster>& cluster
     buildClusterRepresentation(samples_, clusters, clusterRepresentation);
 
     cv::Mat_<float> similarity = mSimBuilder->buildSimilarity(clusterRepresentation);
+
+      cv::FileStorage stg("sim.yml", cv::FileStorage::WRITE);
+      stg << "rep" << clusterRepresentation;
+      stg << "similarity" << similarity;
+      exit(0);
+
     std::pair<int, int> mergedPair;
     hasMerged = findClosestClusters(similarity, mMergeThreshold, mergedPair);
     if(hasMerged){

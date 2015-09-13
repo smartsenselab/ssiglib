@@ -66,7 +66,8 @@ public:
 
 private:
   //private members
-  std::unordered_map<int, UnderlyingClassifier> classifiers_;
+  std::unordered_map<int, int> labelOrderings_;
+  std::vector<UnderlyingClassifier> classifiers_;
   cv::Mat_<int> labels_;
 
   bool trained_ = false;
@@ -81,13 +82,17 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
     classifiers_.clear();
   }
   samples_.release();
+  labels_.release();
+
   samples_ = input;
   addLabels(labels);
   std::set<int> labelsSet;
   for(int i = 0; i < labels.rows; ++i){
     labelsSet.insert(labels[0][i]);
   }
-  labels_ = cv::Mat_<int>::zeros(static_cast<int>(labelsSet.size()), 1);
+  
+  classifiers_.resize(labelsSet.size());
+  int c = -1;
   for(auto& label: labelsSet){
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
     for(int i = 0; i < labels.rows; ++i){
@@ -97,7 +102,8 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
         localLabels[i][0] = -1;
       }
     }
-    classifiers_[label].learn(samples_, localLabels, parameters);
+    labelOrderings_[label] = ++c;
+    classifiers_[c].learn(samples_, localLabels, parameters);
   }
   trained_ = true;
 }
@@ -108,14 +114,13 @@ void OAAClassifier<UnderlyingClassifier>::predict(cv::Mat_<float>& inp,
   resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(classifiers_.size()));
 
   for(int r = 0; r < inp.rows; ++r){
-    int c = 0;
-    for(auto& it : classifiers_){
-      auto& classifier = it.second;
+    int c = -1;
+    for(auto& classifier : classifiers_){
       cv::Mat_<float> auxResp;
       classifier.predict(inp, auxResp);
       auto ordering = classifier.getLabelsOrdering();
-      int idx = ordering[1];
-      resp[r][c++] = auxResp[0][idx];
+      const int idx = ordering[1];
+      resp[r][++c] = auxResp[0][idx];
     }
   }
 }
@@ -127,12 +132,7 @@ cv::Mat_<int> OAAClassifier<UnderlyingClassifier>::getLabels() const{
 
 template<class UnderlyingClassifier>
 std::unordered_map<int, int> OAAClassifier<UnderlyingClassifier>::getLabelsOrdering() const{
-  std::unordered_map<int, int> ans;
-  int i = 0;
-  for(auto& it : classifiers_){
-    ans[it.first] = i++;
-  }
-  return ans;
+  return labelOrderings_;
 }
 
 template<class UnderlyingClassifier>
