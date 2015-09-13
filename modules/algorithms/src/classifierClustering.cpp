@@ -35,30 +35,29 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-#include <cassert>
-#include "core/log.hpp"
-
-#include "algorithms/classifierClustering.hpp"
+#include <algorithms/classifierClustering.hpp>
 
 namespace ssf{
 
-std::vector<Cluster> ClassifierClustering::getClustering() const{
+std::vector<Cluster> ClassifierClustering::
+getClustering() const{
   return newClusters_;
 }
 
-ClassifierClustering::~ClassifierClustering(){
+ClassifierClustering::
+~ClassifierClustering(){
   delete classificationParams_;
 }
 
-void ClassifierClustering::setup(cv::Mat_<float>& input,
-                                 ClusteringParams* parameters){
+void ClassifierClustering::
+setup(cv::Mat_<float>& input,
+      ClusteringParams* parameters){
   ClusteringMethod::setup(input, parameters);
   auto p = static_cast<ClassifierClusteringParams*>(parameters);
   m_ = p->m;
   int d1Len = p->d1Len;
-  maximumK_ = p->maximumK;
-  minimumK_ = p->minimumK;
-  classificationParams_ = p->params;
+  mMaximumK = p->maximumK;
+  classificationParams_ = p->classifierParams;
 
   precondition();
 
@@ -72,8 +71,8 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
     discovery_[1].push_back(i);
   }
 
-  if(naturalSamples_.rows > 0){
-    int len = naturalSamples_.rows;
+  if(mNaturalSamples.rows > 0){
+    int len = mNaturalSamples.rows;
     int halfLen = len / 2;
     for(int i = 0; i < halfLen; ++i){
       natural_[0].push_back(i);
@@ -83,23 +82,26 @@ void ClassifierClustering::setup(cv::Mat_<float>& input,
     }
   }
 
-  K_ = std::min(static_cast<int>(d1Len / 4), maximumK_);
+  mInitialK = std::min(static_cast<int>(d1Len / 4), mMaximumK);
 
-  initializeClusterings();
+  initializeClusterings(discovery_[0]);
   initializeClassifiers();
   trainClassifiers(clusters_, natural_[0]);
 
-  newClusters_ = assignment(m_, discovery_[0]);
+  newClusters_ = assignment(m_, discovery_[1]);
   clustersOld_ = clusters_;
 
   ready_ = true;
+  it_ = 0;
 }
 
-void ClassifierClustering::addExtraSamples(cv::Mat_<float>& extra){
-  naturalSamples_ = extra;
+void ClassifierClustering::
+addExtraSamples(cv::Mat_<float>& extra){
+  mNaturalSamples = extra;
 }
 
-bool ClassifierClustering::iterate(){
+bool ClassifierClustering::
+iterate(){
   if(!ready_){
     ssf::Log::ERROR("Setup method must be called First!");
   }
@@ -115,12 +117,13 @@ bool ClassifierClustering::iterate(){
   return isFinished();
 }
 
-void ClassifierClustering::learn(
+void ClassifierClustering::
+learn(
   cv::Mat_<float>& input, ClusteringParams* parameters){
   setup(input, parameters);
   /********
-  **main loop
-  ********/
+    **main loop
+    ********/
   it_ = 0;
   bool terminated = false;
   do{
@@ -131,4 +134,5 @@ void ClassifierClustering::learn(
   trainClassifiers(clusters_, natural_[order]);
   postCondition();
 }
+
 }

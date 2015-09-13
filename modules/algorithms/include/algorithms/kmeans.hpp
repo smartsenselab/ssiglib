@@ -59,11 +59,12 @@ public:
   ALG_EXPORT void learn(
     cv::Mat_<float>& input, ClusteringParams* parameters) override;
 
-  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, 
-    cv::Mat_<float>& resp) const override;
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override;
 
   ALG_EXPORT std::vector<Cluster> getClustering()const override;
-  ALG_EXPORT cv::Mat_<float> getCentroids() const override;
+
+  ALG_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
   ALG_EXPORT virtual bool empty() const override;
   ALG_EXPORT virtual bool isTrained() const override;

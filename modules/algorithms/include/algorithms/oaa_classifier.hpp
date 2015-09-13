@@ -77,6 +77,10 @@ template<class UnderlyingClassifier>
 void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
                                                 cv::Mat_<int>& labels,
                                                 ClassificationParams* parameters){
+  if(!classifiers_.empty()){
+    classifiers_.clear();
+  }
+  samples_.release();
   samples_ = input;
   addLabels(labels);
   std::set<int> labelsSet;
@@ -164,6 +168,7 @@ void OAAClassifier<UnderlyingClassifier>::save(const std::string& filename, cons
 
 template<class UnderlyingClassifier>
 void OAAClassifier<UnderlyingClassifier>::addLabels(cv::Mat_<int>& labels){
+  labels_.release();
   labels_ = labels;
 }
 

@@ -44,9 +44,9 @@
 
 namespace ssf{
 struct ClassificationParams{
-  int termType;
-  float eps;
-  int maxIt;
+  int termType = cv::TermCriteria::MAX_ITER;
+  float eps = 0.001f;
+  int maxIt = static_cast<int>(1e4);
 };
 
 class Classification : public ssf::SupervisedLearningMethod<

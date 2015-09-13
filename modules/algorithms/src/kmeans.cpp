@@ -96,8 +96,8 @@ std::vector<Cluster> Kmeans::getClustering() const{
   return clusters_;
 }
 
-cv::Mat_<float> Kmeans::getCentroids()const{
-  return centroids_;
+void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
+  centroidsMatrix = centroids_.clone();
 }
 
 bool Kmeans::empty() const{

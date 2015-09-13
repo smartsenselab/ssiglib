@@ -45,7 +45,7 @@ cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input)
   cv::Mat_<float> similarity(len, len);
   similarity = 0;
   for(int i = 0; i < len; ++i){
-    for(int j = i; j < len; ++j){
+    for(int j = i + 1; j < len; ++j){
       auto x = input.row(i);
       auto y = input.row(j);
 

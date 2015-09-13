@@ -75,7 +75,7 @@ public:
 
   ALG_EXPORT virtual std::vector<Cluster> getClustering()const = 0;
 
-  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const = 0;
+  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
 
   ALG_EXPORT virtual bool empty() const override = 0;
   ALG_EXPORT virtual bool isTrained() const override = 0;

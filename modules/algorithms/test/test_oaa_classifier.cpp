@@ -137,8 +137,9 @@ TEST(SVMOAAClassifier, TernaryClassification){
   p->kernelType = cv::ml::SVM::LINEAR;
   p->modelType = cv::ml::SVM::C_SVC;
   p->c = 0.1f;
-  p->termType = cv::TermCriteria::MAX_ITER;
-  p->eps = 0.01f;
+  p->termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
+  p->maxIt = 10000;
+  p->eps = 1e-6f;
 
   ssf::OAAClassifier<ssf::SVMClassifier> classifier;
   classifier.learn(inp, labels, p);

@@ -39,6 +39,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
+#include "algorithms/kmeans.hpp"
 #include "algorithms/classification.hpp"
 #include "algorithms/plsClassifier.hpp"
 #include "algorithms/plsImageClustering.hpp"
@@ -46,33 +47,66 @@
 #include "algorithms/similarity_builder.hpp"
 
 
+TEST(PLSIC, ClusteringTest){
+  cv::Mat_<float> inp;
+  cv::Mat_<float> neg;
+  int N = 60;
+  ssf::PLSICParams params;
+  auto classifierParam = new ssf::PLSParameters();
+  classifierParam->factors = 2;
+  classifierParam->termType = cv::TermCriteria::MAX_ITER;
+  classifierParam->eps = 0.01f;
 
-TEST(PLSIC, SimillarClustersTest) {
+  params.K = 2;
+  params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
+  params.mergeThreshold = 0.8f;
+  ssf::CorrelationSimilarity sim;
+  params.simBuilder = &sim;
+  params.d1Len = N / 2;
+  params.m = 5;
+  params.maxIterations = 8;
+  params.classifierParams = classifierParam;
 
-}
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["discovery"] >> inp;
+  stg["natural"] >> neg;
+  stg.release();
 
-TEST(PLSIC, ClusteringTest) {
+  ssf::PLSImageClustering<ssf::PLSClassifier> clustering;
+  cv::Mat_<float> kmeansInput = inp(cv::Rect(0, 0, inp.cols, 30));
+  ssf::Kmeans kmeans;
+  ssf::KmeansParams kmeansParams;
+  kmeansParams.K = 7;
+  kmeansParams.flags = cv::KMEANS_RANDOM_CENTERS;
+  kmeansParams.nAttempts = 1;
+  kmeansParams.predicitonDistanceType = cv::NORM_L2;
+  kmeans.learn(kmeansInput, &kmeansParams);
+  auto initialClustering = kmeans.getClustering();
+  clustering.addInitialClustering(initialClustering);
+  clustering.learn(inp, &params);
 
-}
+  auto clusters = clustering.getClustering();
+  EXPECT_EQ(2, clusters.size());
 
-TEST(Cosine, CosineSimilarityTest) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2,2)<<0,1,1,0);
-  
-
-  ssf::CosineSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
-
-  ASSERT_FLOAT_EQ(0, simMat[0][1]);
-}
-
-TEST(PLSIC, CorrelationSimilarityTest) {
-
-}
-
-TEST(PLSIC, MergeTest) {
-
-}
-
-TEST(PLSIC, AssignmentTest) {
-
+  bool label1 = false;
+  bool label2 = false;
+  for(auto& cluster : clusters){
+    std::vector<int> label1Vector;
+    std::vector<int> label2Vector;
+    for(auto& el : cluster){
+      if((el < 15 && el >= 0) || (el >= 30 && el < 45)){
+        label1Vector.push_back(el);
+      } else{
+        label2Vector.push_back(el);
+      }
+    }
+    if(label1Vector.empty() ^ label2Vector.empty()){
+      if(label1Vector.empty())
+        label2 = true;
+      else
+        label1 = true;
+    }
+  }
+  EXPECT_TRUE(label1 && label2);
 }

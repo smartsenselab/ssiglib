@@ -45,14 +45,14 @@
 namespace ssf{
 
 struct SVMParameters : ClassificationParams{
-  int kernelType;
-  int modelType;
-  float c;
-  float gamma;
-  float p;
-  float nu;
-  float coef;
-  float degree;
+  int kernelType = cv::ml::SVM::LINEAR;
+  int modelType = cv::ml::SVM::C_SVC;
+  float c = 0.1f;
+  float gamma = 0.1f;
+  float p = 0.1f;
+  float nu = 0.1f;
+  float coef = 0.1f;
+  float degree = 0.1f;
 };
 
 class SVMClassifier : public Classification{
@@ -62,7 +62,7 @@ public:
   ALG_EXPORT SVMClassifier(void);
   ALG_EXPORT virtual ~SVMClassifier(void);
 
-   ALG_EXPORT virtual void learn(cv::Mat_<float>& input,
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input,
                                 cv::Mat_<int>& labels,
                                 ClassificationParams* parameters) override;
 

@@ -41,7 +41,6 @@
 
 #include "algorithms/similarity_builder.hpp"
 
-
 TEST(Cosine, PerpendicularitySimilarityTest){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 1 , 0);
 
@@ -72,7 +71,7 @@ TEST(Cosine, SimpleTest){
   ASSERT_FLOAT_EQ(0.9838699101f, simMat[0][1]);
 }
 
-TEST(Cosine, DimensionalityTest){
+TEST(Cosine, OddDimensionalityTest){
   cv::Mat_<float> samples = (cv::Mat_<float>(3, 3) <<
     0 , 0 , 1 ,
     0 , 1 , 0 ,
@@ -99,10 +98,10 @@ TEST(Correlation, CorrelatedCheck){
   ASSERT_GT(simMat[0][1], 0.5);
 }
 
-TEST(Correlation, InverseCorrelatedCheck) {
+TEST(Correlation, InverseCorrelatedCheck){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) <<
-    1, 2,
-   -1,-2);
+    1 , 2 ,
+    -1 , -2);
 
 
   ssf::CorrelationSimilarity simbuilder;
@@ -123,10 +122,10 @@ TEST(Correlation, CorrelatedOddSized){
   ASSERT_GT(simMat[0][1], 0.5);
 }
 
-TEST(Correlation, InverseCorrelatedOddSized) {
+TEST(Correlation, InverseCorrelatedOddSized){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) <<
-    3, 5, 7,
-    -6, -18, -14);
+    3 , 5 , 7 ,
+    -6 , -18 , -14);
 
 
   ssf::CorrelationSimilarity simbuilder;
@@ -135,10 +134,10 @@ TEST(Correlation, InverseCorrelatedOddSized) {
   ASSERT_LT(simMat[0][1], -0.5);
 }
 
-TEST(Correlation, UncorrelatedOddSized) {
+TEST(Correlation, UncorrelatedOddSized){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) <<
-    3, 5, 7,
-    1,-5,2);
+    3 , 5 , 7 ,
+    1 , -5 , 2);
 
 
   ssf::CorrelationSimilarity simbuilder;

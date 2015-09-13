@@ -41,6 +41,8 @@
 
 #include "alg_defs.hpp"
 
+#include "core/log.hpp"
+
 #include "clusteringMethod.hpp"
 #include "iterableMethod.hpp"
 #include "classification.hpp"
@@ -48,21 +50,21 @@
 namespace ssf{
 struct ClassifierClusteringParams : ClusteringParams{
   int m = 5;
-  int minimumK = 20;
   int maximumK = static_cast<int>(1.0e6);
   int d1Len;
-  ClassificationParams* params;
+  ClassificationParams* classifierParams;
 };
 
+
 class ClassifierClustering : public ClusteringMethod,
-                             IterableMethod{
+                             public IterableMethod{
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void);
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
                                 ClusteringParams* parameters) override;
 
-  ALG_EXPORT void addExtraSamples(cv::Mat_<float> &extra);
+  ALG_EXPORT void addExtraSamples(cv::Mat_<float>& extra);
 
   ALG_EXPORT void learn(cv::Mat_<float>& input,
                         ClusteringParams* parameters) override;
@@ -77,7 +79,7 @@ public:
 
   ALG_EXPORT bool iterate() override;
 
-  ALG_EXPORT virtual cv::Mat_<float> getCentroids()const override = 0;
+  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override = 0;
 
   ALG_EXPORT virtual void load(const std::string& filename,
                                const std::string& nodename) override = 0;
@@ -87,20 +89,20 @@ public:
 protected:
   virtual void precondition() = 0;
 
-  virtual void initializeClusterings() = 0;
+  virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;
   virtual void initializeClassifiers() = 0;
   virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-    const std::vector<int> & negativeLearningSet) = 0;
+                                const std::vector<int>& negativeLearningSet) = 0;
   virtual bool isFinished() = 0;
 
   virtual void postCondition() = 0;
 
-  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int> & assignmentSet) = 0;
+  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int>& assignmentSet) = 0;
 
   //Attributes /////////
-  cv::Mat_<float> naturalSamples_;
-  int maximumK_;
-  int minimumK_;
+  cv::Mat_<float> mNaturalSamples;
+  int mInitialK;
+  int mMaximumK;
   int m_;
   int it_;
   std::vector<std::vector<int>> discovery_;
@@ -110,9 +112,12 @@ protected:
   std::vector<Cluster> clustersOld_, newClusters_;
   std::vector<std::vector<float>> clustersResponses_;
   std::vector<int> clustersIds_;
+
 private:
   //private members
 };
+
+
 }
 
 #endif // !_SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_

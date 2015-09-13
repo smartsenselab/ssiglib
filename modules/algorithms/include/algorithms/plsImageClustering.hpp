@@ -38,49 +38,95 @@
 
 #ifndef _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+#include <random>
+#include <core/util.hpp>
 #include "classifierClustering.hpp"
 #include "oaa_classifier.hpp"
 #include "merger.hpp"
 #include "similarity_builder.hpp"
 
 namespace ssf{
+
 struct PLSICParams: ClassifierClusteringParams{
-  SimilarityBuilder& simBuilder;
+  SimilarityBuilder* simBuilder;
+  int clusterRepresentationType;
+  float mergeThreshold;
+};
+
+enum ClusterRepresentationType{
+  Centroids,
+  ClustersResponses
 };
 
 
 template<class ClassificationType>
-class PLSImageClustering : public ClassifierClustering{
-
+class PLSImageClustering :
+  public ClassifierClustering{
 public:
-  PLSImageClustering(void) = default;
-  virtual ~PLSImageClustering(void) = default;
+  ALG_EXPORT PLSImageClustering(void) = default;
 
-  virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
-  virtual bool empty() const override;
-  virtual bool isTrained() const override;
-  virtual bool isClassifier() const override;
-  virtual cv::Mat_<float> getCentroids() const override;
-  virtual void load(const std::string& filename, const std::string& nodename) override;
-  virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual ~PLSImageClustering(void);
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT virtual bool empty() const override;
+
+  ALG_EXPORT virtual bool isTrained() const override;
+
+  ALG_EXPORT void setup(cv::Mat_<float>& input, ClusteringParams* parameters) override;
+
+  ALG_EXPORT virtual bool isClassifier() const override;
+
+  ALG_EXPORT virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
 protected:
+
   virtual void precondition() override;
-  virtual void initializeClusterings() override;
+
+  virtual void initializeClusterings(
+    const std::vector<int>& assignmentSet) override;
+
   virtual void initializeClassifiers() override;
+
   virtual void trainClassifiers(const std::vector<Cluster>& clusters,
                                 const std::vector<int>& negativeLearningSet) override;
-  virtual bool isFinished() override;
-  virtual void postCondition() override;
-  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int>& assignmentSet) override;
 
-  virtual void merge();
+  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
+                                const std::vector<int>& negativeLearningSet,
+                                OAAClassifier<ClassificationType>& classifier) const;
+
+  virtual bool isFinished() override;
+
+  virtual void postCondition() override;
+
+  virtual std::vector<Cluster> assignment(
+    int clusterSize,
+    const std::vector<int>& assignmentSet) override;
+
+  virtual void merge(std::vector<Cluster>& clusters);
 private:
-  std::vector<Cluster> joinClosestClusters(cv::Mat& similarityMatrix);
+  bool findClosestClusters(const cv::Mat& similarityMatrix,
+                           const float threshold,
+                           std::pair<int, int>& closestPair);
+  void buildClusterRepresentation(const cv::Mat_<float>& samples,
+                                  const std::vector<std::vector<int>>& clusters,
+                                  cv::Mat_<float>& clusterRepresentation) const;
 private:
   //private members
   OAAClassifier<ClassificationType> mClassifier;
   SimilarityBuilder* mSimBuilder;
+
+  int mRepresentationType;
+
+  float mMergeThreshold;
+  bool mMergeOcurred;
 };
+
+template<class ClassificationType>
+PLSImageClustering<ClassificationType>::~PLSImageClustering(){}
 
 template<class ClassificationType>
 void PLSImageClustering<ClassificationType>::predict(cv::Mat_<float>& inp,
@@ -95,15 +141,286 @@ bool PLSImageClustering<ClassificationType>::empty() const{
 }
 
 template<class ClassificationType>
-void PLSImageClustering<ClassificationType>::initializeClusterings(){
-  if(!clusters_.empty()) return;
-  //Make the standard initial Clustering
+bool PLSImageClustering<ClassificationType>::isTrained() const{
+  return mClassifier.isTrained();
 }
 
 template<class ClassificationType>
-void PLSImageClustering<ClassificationType>::merge(){
-  cv::Mat_<float> similarity = mSimBuilder->buildSimilarity();
-  auto mergeResult = mMerger->merge(similarity);
+void PLSImageClustering<ClassificationType>::setup(cv::Mat_<float>& input,
+                                                   ClusteringParams* parameters){
+  auto p = static_cast<PLSICParams*>(parameters);
+  mMergeThreshold = p->mergeThreshold;
+  mSimBuilder = p->simBuilder;
+  mRepresentationType = p->clusterRepresentationType;
+  ClassifierClustering
+    ::setup(input, parameters);
+}
+
+template<class ClassificationType>
+bool PLSImageClustering<ClassificationType>::isClassifier() const{
+  return false;
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
+  cv::Mat_<float> centroids;
+  buildClusterRepresentation(samples_, clusters_, centroids);
+  centroidsMatrix = centroids;
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::load(const std::string& filename, const std::string& nodename){
+  //TODO
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::save(const std::string& filename, const std::string& nodename) const{
+  //TODO:
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::precondition(){}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::initializeClusterings(
+  const std::vector<int>& assignmentSet){
+  if(!clusters_.empty()){
+    for(int i = 0; i < clusters_.size(); ++i){
+      clustersIds_.push_back(i);
+    }
+    return;
+  }
+  //Make the standard initial Clustering
+  std::vector<int> chosen;
+  for(int i = 0; i < static_cast<int>(assignmentSet.size()); ++i){
+    chosen.push_back(i);
+  }
+  std::shuffle(chosen.begin(), chosen.end(), std::default_random_engine());
+  for(int i = 0; i < mInitialK; ++i){
+    clusters_.push_back({chosen[i]});
+    clustersIds_.push_back(i);
+  }
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::initializeClassifiers(){}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::trainClassifiers(
+  const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet){
+  trainClassifiers(clusters, negativeLearningSet, mClassifier);
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::trainClassifiers(
+  const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet,
+  OAAClassifier<ClassificationType>& classifier) const{
+  cv::Mat_<float> inp;
+  cv::Mat_<int> labels;
+  int label = 0;
+  for(auto& cluster : clusters){
+    ++label;
+    for(auto id : cluster){
+      inp.push_back(samples_.row(id));
+      labels.push_back(label);
+    }
+  }
+
+  classifier.learn(inp, labels, classificationParams_);
+}
+
+template<class ClassificationType>
+bool PLSImageClustering<ClassificationType>::isFinished(){
+  if(maxIterations_ > 0 && (it_ > maxIterations_)){
+    printf("Convergence due to max number of iterations reached\n");
+    return true;
+  }
+  if(K_){
+    auto kConvergence = (static_cast<int>(newClusters_.size()) <= K_);
+    if(kConvergence){
+      printf("Converged due to minimum K!\n");
+      return true;
+    }
+  }
+  if(!mMergeOcurred){
+    return true;
+  }
+  return false;
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::postCondition(){}
+
+template<class ClassificationType>
+std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
+  int clusterSize,
+  const std::vector<int>& assignmentSet){
+  std::unordered_map<int, bool> pointAvailability;
+  std::vector<Cluster> clusters;
+  clustersResponses_.clear();
+  std::vector<int> ids;
+
+  cv::Mat_<float> responsesMatrix(static_cast<int>(assignmentSet.size()),
+                                  static_cast<int>(clusters_.size()));
+  for(int sample = 0; sample < assignmentSet.size(); ++sample){
+    cv::Mat_<float> response;
+    cv::Mat_<float> feat = samples_.row(sample);
+    mClassifier.predict(feat, response);
+    response.copyTo(responsesMatrix.row(sample));
+  }
+  cv::transpose(responsesMatrix, responsesMatrix);
+
+  cv::Mat_<int> ordering;
+  cv::sortIdx(responsesMatrix, ordering, cv::SORT_DESCENDING + cv::SORT_EVERY_ROW);
+
+  //Loop consists of two steps
+  // calculating the sum of responses
+  // picking the fittest cluster
+  int nAssignment = 0;
+  const int C = static_cast<int>(MIN(clusters_.size(), assignmentSet.size() / m_));
+  std::vector<bool> clusterAssigned(clusters_.size(), false);
+  while(nAssignment < C){
+    Cluster newCluster;
+    //step one:
+    float maxSum = -FLT_MAX;
+    int chosenClusterId = -1;
+    for(int clusterId = 0; clusterId < static_cast<int>(clusters_.size());
+        ++clusterId){
+      if(clusterAssigned[clusterId])continue;
+
+      int m = 0;
+      int i = 0;
+      float sum = 0;
+      Cluster clusterSet;
+      clusterSet.reserve(m_);
+      do{
+        int sampleId = ordering[clusterId][i];
+        auto it = pointAvailability.find(sampleId);
+        bool availability = (it == pointAvailability.end()) || it->second;
+        if(availability){
+          sum += responsesMatrix[clusterId][sampleId];
+          clusterSet.push_back(sampleId);
+          ++m;
+        }
+        ++i;
+      } while(m < m_);
+      if(sum > maxSum){
+        maxSum = sum;
+        chosenClusterId = clusterId;
+        newCluster = clusterSet;
+      }
+    }
+
+    //step two
+    clusterAssigned[chosenClusterId] = true;
+    clustersResponses_.push_back({});
+    ids.push_back(clustersIds_[chosenClusterId]);
+    for(int p = 0; p < static_cast<int>(newCluster.size()); p++){
+      clustersResponses_[clusters.size()].push_back(0);
+    }
+    clusters.push_back(newCluster);
+    for(auto& sampleId : newCluster){
+      pointAvailability[sampleId] = true;
+    }
+    nAssignment++;
+  }
+  clustersIds_ = ids;
+
+  //MERGING
+  merge(clusters);
+  return clusters;
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::buildClusterRepresentation(
+  const cv::Mat_<float>& samples,
+  const std::vector<std::vector<int>>& clusters,
+  cv::Mat_<float>& clusterRepresentation) const{
+  if(mRepresentationType == Centroids){
+    const int dimensions = samples.cols;
+    clusterRepresentation.create(static_cast<int>(clusters.size()), dimensions);
+    int i = 0;
+    for(auto cluster : clusters){
+      cv::Mat_<float> sample(1, dimensions);
+      sample = 0;
+      for(auto id : cluster){
+        sample = sample + samples.row(id);
+      }
+      cv::Mat_<float> value = (sample / static_cast<int>(cluster.size()));
+      value.copyTo(clusterRepresentation.row(i));
+      ++i;
+    }
+  } else if(mRepresentationType == ClustersResponses){
+    OAAClassifier<ClassificationType> classifier;
+    trainClassifiers(clusters, natural_[0], classifier);
+    const int dimensions = static_cast<int>(clusters.size());
+
+    clusterRepresentation.create(samples.rows, dimensions);
+    clusterRepresentation = 0;
+    for(int r = 0; r < samples.rows; ++r){
+      cv::Mat_<float> resp;
+      classifier.predict(samples.row(r), resp);
+      resp.copyTo(clusterRepresentation.row(r));
+    }
+    cv::transpose(clusterRepresentation, clusterRepresentation);
+  }
+}
+
+template<class ClassificationType>
+void PLSImageClustering<ClassificationType>::merge(std::vector<Cluster>& clusters){
+  mMergeOcurred = false;
+
+  bool hasMerged = false;
+  std::vector<Cluster> ans;
+  do{
+    if(clusters.size() <= K_){
+      ans = clusters;
+      break;
+    }
+    cv::Mat_<float> clusterRepresentation;
+    buildClusterRepresentation(samples_, clusters, clusterRepresentation);
+
+    cv::Mat_<float> similarity = mSimBuilder->buildSimilarity(clusterRepresentation);
+    std::pair<int, int> mergedPair;
+    hasMerged = findClosestClusters(similarity, mMergeThreshold, mergedPair);
+    if(hasMerged){
+      mMergeOcurred = true;
+      int id1 = mergedPair.first;
+      int id2 = mergedPair.second;
+
+      clusters[id1].insert(clusters[id1].end(),
+                           clusters[id2].begin(),
+                           clusters[id2].end());
+
+      Cluster mergeResult;
+      mergeResult.insert(mergeResult.end(), clusters[id1].begin(),
+                         clusters[id1].end());
+      mergeResult.insert(mergeResult.end(), clusters[id2].begin(),
+                         clusters[id2].end());
+
+      clusters.erase(clusters.begin() + id2);
+      clusters.erase(clusters.begin() + id1);
+
+      ans.push_back(mergeResult);
+    }
+
+    similarity.release();
+  } while(hasMerged);
+  clusters = ans;
+}
+
+template<class ClassificationType>
+bool PLSImageClustering<ClassificationType>::findClosestClusters(
+  const cv::Mat& similarityMatrix,
+  const float threshold,
+  std::pair<int, int>& closestPair){
+  double max = 0;
+  int idxs[] = {0, 0};
+  cv::minMaxIdx(similarityMatrix, nullptr, &max, nullptr, idxs);
+  closestPair = std::make_pair(idxs[0], idxs[1]);
+  return max >= threshold;
 }
 }
 
