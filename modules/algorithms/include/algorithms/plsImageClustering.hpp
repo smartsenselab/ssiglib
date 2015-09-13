@@ -184,7 +184,7 @@ template<class ClassificationType>
 void PLSImageClustering<ClassificationType>::initializeClusterings(
   const std::vector<int>& assignmentSet){
   if(!clusters_.empty()){
-    for(int i = 0; i < clusters_.size(); ++i){
+    for(int i = 0; i < static_cast<int>(clusters_.size()); ++i){
       clustersIds_.push_back(i);
     }
     return;
@@ -263,7 +263,7 @@ std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
 
   cv::Mat_<float> responsesMatrix(static_cast<int>(assignmentSet.size()),
                                   static_cast<int>(clusters_.size()));
-  for(int sample = 0; sample < assignmentSet.size(); ++sample){
+  for(int sample = 0; sample < static_cast<int>(assignmentSet.size()); ++sample){
     cv::Mat_<float> response;
     cv::Mat_<float> feat = samples_.row(sample);
     mClassifier.predict(feat, response);
@@ -360,7 +360,8 @@ void PLSImageClustering<ClassificationType>::buildClusterRepresentation(
     clusterRepresentation = 0;
     for(int r = 0; r < samples.rows; ++r){
       cv::Mat_<float> resp;
-      classifier.predict(samples.row(r), resp);
+      cv::Mat_<float> feat = samples.row(r);
+      classifier.predict(feat, resp);
       resp.copyTo(clusterRepresentation.row(r));
     }
     cv::transpose(clusterRepresentation, clusterRepresentation);
@@ -374,7 +375,7 @@ void PLSImageClustering<ClassificationType>::merge(std::vector<Cluster>& cluster
   bool hasMerged = false;
   std::vector<Cluster> ans;
   do{
-    if(clusters.size() <= K_){
+    if(static_cast<int>(clusters.size()) <= K_){
       ans = clusters;
       break;
     }

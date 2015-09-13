@@ -87,7 +87,7 @@ TEST(PLSIC, ClusteringTest){
   clustering.learn(inp, &params);
 
   auto clusters = clustering.getClustering();
-  EXPECT_EQ(2, clusters.size());
+  EXPECT_EQ(2, static_cast<int>(clusters.size()));
 
   bool label1 = false;
   bool label2 = false;
