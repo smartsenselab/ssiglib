@@ -106,8 +106,6 @@ TEST(PLSIC, ClusteringTest){
         label1 = true;
     }
   }
-
-
   EXPECT_TRUE(label1 && label2);
 }
 

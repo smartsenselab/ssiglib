@@ -405,8 +405,6 @@ void PLSImageClustering<ClassificationType>::merge(std::vector<Cluster>& cluster
       Cluster mergeResult;
       mergeResult.insert(mergeResult.end(), clusters[id1].begin(),
                          clusters[id1].end());
-      mergeResult.insert(mergeResult.end(), clusters[id2].begin(),
-                         clusters[id2].end());
 
       clusters.erase(clusters.begin() + id2);
       clusters.erase(clusters.begin() + id1);
