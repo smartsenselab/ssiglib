@@ -38,11 +38,9 @@
 
 #ifndef _SSF_ALGORITHMS_SINGH_HPP_
 #define _SSF_ALGORITHMS_SINGH_HPP_
-#include <cstdlib>
 #include "classifierClustering.hpp"
 #include "kmeans.hpp"
 #include "alg_defs.hpp"
-#include <iostream>
 
 namespace ssf{
 
@@ -76,7 +74,12 @@ protected:
                                 const std::vector<int>& negativeLearningSet) override;
   virtual bool isFinished() override;
   virtual void postCondition() override;
-  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int>& assignmentSet) override;
+  virtual void assignment(const int clusterSize,
+                          const int nClusters,
+                          const std::vector<int>& assignmentSet,
+                          std::vector<std::vector<float>>& clustersResponses,
+                          std::vector<int>& clustersIds,
+                          std::vector<Cluster>& out) override;
 
 private:
   //private members
@@ -251,13 +254,18 @@ template<class ClassificationType>
 void Singh<ClassificationType>::postCondition(){}
 
 template<class ClassificationType>
-std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize, const std::vector<int>& assignmentSet){
+void Singh<ClassificationType>::assignment(const int clusterSize,
+                                           const int nClusters,
+                                           const std::vector<int>& assignmentSet,
+                                           std::vector<std::vector<float>>& clustersResponses,
+                                           std::vector<int>& clustersIds,
+                                           std::vector<Cluster>& out){
   std::vector<std::pair<int, float>> responsesVec;
   std::vector<Cluster> clusters;
   std::vector<int> ids;
   clustersResponses_.clear();
   cv::Mat_<float> responses;
-  for(int c = 0; c < static_cast<int>(clusters_.size()); c++){
+  for(int c = 0; c < nClusters; c++){
     responsesVec.clear();
 
     int firings = 0;
@@ -281,17 +289,17 @@ std::vector<Cluster> Singh<ClassificationType>::assignment(int clusterSize, cons
                 });
 
       Cluster newCluster;
-      clustersResponses_.push_back(std::vector<float>());
-      ids.push_back(clustersIds_[c]);
+      clustersResponses.push_back(std::vector<float>());
+      ids.push_back(clustersIds[c]);
       for(int i = 0; i < clusterSize; i++){
         newCluster.push_back(responsesVec[i].first);
-        clustersResponses_[clusters.size()].push_back(responsesVec[i].second);
+        clustersResponses[clusters.size()].push_back(responsesVec[i].second);
       }
       clusters.push_back(newCluster);
     }
   }
-  clustersIds_ = ids;
-  return clusters;
+  clustersIds = ids;
+  out = clusters;
 }
 
 }

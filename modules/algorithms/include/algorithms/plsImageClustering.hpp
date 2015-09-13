@@ -46,15 +46,15 @@
 
 namespace ssf{
 
-struct PLSICParams: ClassifierClusteringParams{
-  SimilarityBuilder* simBuilder;
-  int clusterRepresentationType;
-  float mergeThreshold;
-};
-
 enum ClusterRepresentationType{
   Centroids,
   ClustersResponses
+};
+
+struct PLSICParams: ClassifierClusteringParams{
+  SimilarityBuilder* simBuilder = nullptr;
+  int clusterRepresentationType = Centroids;
+  float mergeThreshold = 0.75f;
 };
 
 
@@ -83,29 +83,33 @@ public:
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
 protected:
 
-  virtual void precondition() override;
+  ALG_EXPORT virtual void precondition() override;
 
-  virtual void initializeClusterings(
+  ALG_EXPORT virtual void initializeClusterings(
     const std::vector<int>& assignmentSet) override;
 
-  virtual void initializeClassifiers() override;
+  ALG_EXPORT virtual void initializeClassifiers() override;
 
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                const std::vector<int>& negativeLearningSet) override;
+  ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
+                                           const std::vector<int>& negativeLearningSet) override;
 
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                const std::vector<int>& negativeLearningSet,
-                                OAAClassifier<ClassificationType>& classifier) const;
+  ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
+                                           const std::vector<int>& negativeLearningSet,
+                                           OAAClassifier<ClassificationType>& classifier) const;
 
-  virtual bool isFinished() override;
+  ALG_EXPORT virtual bool isFinished() override;
 
-  virtual void postCondition() override;
+  ALG_EXPORT virtual void postCondition() override;
 
-  virtual std::vector<Cluster> assignment(
-    int clusterSize,
-    const std::vector<int>& assignmentSet) override;
+  ALG_EXPORT virtual void assignment(
+    const int clusterSize,
+    const int nClusters,
+    const std::vector<int>& assignmentSet,
+    std::vector<std::vector<float>>& clusterResponses,
+    std::vector<int>& clusterIds,
+    std::vector<Cluster>& out) override;
 
-  virtual void merge(std::vector<Cluster>& clusters);
+  ALG_EXPORT virtual void merge(std::vector<Cluster>& clusters);
 private:
   bool findClosestClusters(const cv::Mat& similarityMatrix,
                            const float threshold,
@@ -253,16 +257,22 @@ template<class ClassificationType>
 void PLSImageClustering<ClassificationType>::postCondition(){}
 
 template<class ClassificationType>
-std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
-  int clusterSize,
-  const std::vector<int>& assignmentSet){
+void PLSImageClustering<ClassificationType>::assignment(
+  const int clusterSize,
+  const int nClusters,
+  const std::vector<int>& assignmentSet,
+  std::vector<std::vector<float>>& clustersResponses,
+  std::vector<int>& clustersIds,
+  std::vector<Cluster>& out){
+
+  const int C = static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
+  const int nLabels = static_cast<int>(mClassifier.getLabelsOrdering().size());
   std::unordered_map<int, bool> pointAvailability;
   std::vector<Cluster> clusters;
-  clustersResponses_.clear();
+  clustersResponses.clear();
   std::vector<int> ids;
-
-  cv::Mat_<float> responsesMatrix(static_cast<int>(assignmentSet.size()),
-                                  static_cast<int>(clusters_.size()));
+  cv::Mat_<float> responsesMatrix(
+    static_cast<int>(assignmentSet.size()), nLabels);
   for(int sample = 0; sample < static_cast<int>(assignmentSet.size()); ++sample){
     cv::Mat_<float> response;
     cv::Mat_<float> feat = samples_.row(sample);
@@ -278,22 +288,20 @@ std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
   // calculating the sum of responses
   // picking the fittest cluster
   int nAssignment = 0;
-  const int C = static_cast<int>(MIN(clusters_.size(), assignmentSet.size() / m_));
-  std::vector<bool> clusterAssigned(clusters_.size(), false);
+  std::vector<bool> clusterAssigned(nClusters, false);
   while(nAssignment < C){
     Cluster newCluster;
     //step one:
     float maxSum = -FLT_MAX;
     int chosenClusterId = -1;
-    for(int clusterId = 0; clusterId < static_cast<int>(clusters_.size());
-        ++clusterId){
+    for(int clusterId = 0; clusterId < nClusters; ++clusterId){
       if(clusterAssigned[clusterId])continue;
 
       int m = 0;
       int i = 0;
       float sum = 0;
       Cluster clusterSet;
-      clusterSet.reserve(m_);
+      clusterSet.reserve(clusterSize);
       do{
         int sampleId = ordering[clusterId][i];
         auto it = pointAvailability.find(sampleId);
@@ -304,7 +312,7 @@ std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
           ++m;
         }
         ++i;
-      } while(m < m_);
+      } while(m < clusterSize);
       if(sum > maxSum){
         maxSum = sum;
         chosenClusterId = clusterId;
@@ -314,22 +322,22 @@ std::vector<Cluster> PLSImageClustering<ClassificationType>::assignment(
 
     //step two
     clusterAssigned[chosenClusterId] = true;
-    clustersResponses_.push_back({});
-    ids.push_back(clustersIds_[chosenClusterId]);
+    clustersResponses.push_back({});
+    ids.push_back(clustersIds[chosenClusterId]);
     for(int p = 0; p < static_cast<int>(newCluster.size()); p++){
-      clustersResponses_[clusters.size()].push_back(0);
+      clustersResponses[clusters.size()].push_back(0);
     }
     clusters.push_back(newCluster);
     for(auto& sampleId : newCluster){
-      pointAvailability[sampleId] = true;
+      pointAvailability[sampleId] = false;
     }
     nAssignment++;
   }
-  clustersIds_ = ids;
+  clustersIds = ids;
 
   //MERGING
   merge(clusters);
-  return clusters;
+  out = clusters;
 }
 
 template<class ClassificationType>

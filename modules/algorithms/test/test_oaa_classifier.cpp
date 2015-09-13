@@ -43,7 +43,7 @@
 #include <algorithms/plsClassifier.hpp>
 #include <algorithms/svmClassifier.hpp>
 
-TEST(PLSOAAClassifier, BinaryClassification){
+TEST(OAAClassifier, PLSBinaryClassification){
   cv::Mat_<float> inp;
   cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
   inp = cv::Mat_<float>::zeros(6, 2);
@@ -56,11 +56,11 @@ TEST(PLSOAAClassifier, BinaryClassification){
     labels[3 + i][0] = -1;
   }
 
-  auto p = new ssf::PLSParameters;
-  p->factors = 2;
+  ssf::PLSParameters p;
+  p.factors = 2;
 
   ssf::OAAClassifier<ssf::PLSClassifier> classifier;
-  classifier.learn(inp, labels, p);
+  classifier.learn(inp, labels, &p);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
@@ -73,11 +73,9 @@ TEST(PLSOAAClassifier, BinaryClassification){
   idx = ordering[-1];
   classifier.predict(query2, resp);
   ASSERT_GE(resp[0][idx], 0);
-
-  delete p;
 }
 
-TEST(PLSOAAClassifier, TernaryClassification){
+TEST(OAAClassifier, PLSTernaryClassification){
   cv::Mat_<float> inp;
   cv::Mat_<int> labels;
   cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
@@ -85,11 +83,11 @@ TEST(PLSOAAClassifier, TernaryClassification){
   stg["inp"] >> inp;
   stg["labels"] >> labels;
 
-  auto p = new ssf::PLSParameters;
-  p->factors = 2;
+  ssf::PLSParameters p;
+  p.factors = 2;
 
   ssf::OAAClassifier<ssf::PLSClassifier> classifier;
-  classifier.learn(inp, labels, p);
+  classifier.learn(inp, labels, &p);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
@@ -120,11 +118,9 @@ TEST(PLSOAAClassifier, TernaryClassification){
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
-
-  delete p;
 }
 
-TEST(SVMOAAClassifier, TernaryClassification){
+TEST(OAAClassifier, SVMTernaryClassification){
   cv::Mat_<float> inp;
   cv::Mat_<int> labels;
 
@@ -133,16 +129,16 @@ TEST(SVMOAAClassifier, TernaryClassification){
   stg["inp"] >> inp;
   stg["labels"] >> labels;
 
-  ssf::SVMParameters* p = new ssf::SVMParameters;
-  p->kernelType = cv::ml::SVM::LINEAR;
-  p->modelType = cv::ml::SVM::C_SVC;
-  p->c = 0.1f;
-  p->termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
-  p->maxIt = 10000;
-  p->eps = 1e-6f;
+  ssf::SVMParameters p;
+  p.kernelType = cv::ml::SVM::LINEAR;
+  p.modelType = cv::ml::SVM::C_SVC;
+  p.c = 0.1f;
+  p.termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
+  p.maxIt = 10000;
+  p.eps = 1e-6f;
 
   ssf::OAAClassifier<ssf::SVMClassifier> classifier;
-  classifier.learn(inp, labels, p);
+  classifier.learn(inp, labels, &p);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
@@ -174,8 +170,6 @@ TEST(SVMOAAClassifier, TernaryClassification){
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
-
-  delete p;
 }
 
 

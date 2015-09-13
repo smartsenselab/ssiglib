@@ -88,7 +88,13 @@ setup(cv::Mat_<float>& input,
   initializeClassifiers();
   trainClassifiers(clusters_, natural_[0]);
 
-  newClusters_ = assignment(m_, discovery_[1]);
+  assignment(m_,
+             static_cast<int>(clusters_.size()),
+             discovery_[1],
+             clustersResponses_,
+             clustersIds_,
+             newClusters_);
+
   clustersOld_ = clusters_;
 
   ready_ = true;
@@ -110,7 +116,12 @@ iterate(){
   trainClassifiers(clusters_, natural_[order]);
   newClusters_.clear();
   order = (order + 1) % 2;
-  newClusters_ = assignment(m_, discovery_[order]);
+  assignment(m_,
+             static_cast<int>(clusters_.size()),
+             discovery_[order],
+             clustersResponses_,
+             clustersIds_,
+             newClusters_);
   clustersOld_ = clusters_;
   it_++;
 

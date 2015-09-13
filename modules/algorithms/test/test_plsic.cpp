@@ -40,7 +40,6 @@
 #include <opencv2/core.hpp>
 
 #include "algorithms/kmeans.hpp"
-#include "algorithms/classification.hpp"
 #include "algorithms/plsClassifier.hpp"
 #include "algorithms/plsImageClustering.hpp"
 
@@ -54,8 +53,6 @@ TEST(PLSIC, ClusteringTest){
   ssf::PLSICParams params;
   auto classifierParam = new ssf::PLSParameters();
   classifierParam->factors = 2;
-  classifierParam->termType = cv::TermCriteria::MAX_ITER;
-  classifierParam->eps = 0.01f;
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
@@ -83,6 +80,7 @@ TEST(PLSIC, ClusteringTest){
   kmeansParams.predicitonDistanceType = cv::NORM_L2;
   kmeans.learn(kmeansInput, &kmeansParams);
   auto initialClustering = kmeans.getClustering();
+
   clustering.addInitialClustering(initialClustering);
   clustering.learn(inp, &params);
 
@@ -108,5 +106,83 @@ TEST(PLSIC, ClusteringTest){
         label1 = true;
     }
   }
+
+
   EXPECT_TRUE(label1 && label2);
+}
+
+struct TestPlsic : ssf::PLSImageClustering<ssf::PLSClassifier>{
+  void assignment(const int clusterSize,
+                  const int nClusters,
+                  const std::vector<int>& assignmentSet,
+                  std::vector<std::vector<float>>& clusterResponses,
+                  std::vector<int>& clusterIds,
+                  std::vector<ssf::Cluster>& out) override{
+    ssf::PLSImageClustering<ssf::PLSClassifier>::assignment(clusterSize,
+                                                            nClusters,
+                                                            assignmentSet,
+                                                            clusterResponses,
+                                                            clusterIds,
+                                                            out);
+  }
+
+  void merge(std::vector<ssf::Cluster>& clusters) override{
+    ssf::PLSImageClustering<ssf::PLSClassifier>::merge(clusters);
+  }
+};
+
+TEST(PLSIC, AssignmentTest){
+  cv::Mat_<float> inp;
+  cv::Mat_<float> neg;
+  int N = 60;
+  ssf::PLSICParams params;
+  auto classifierParam = new ssf::PLSParameters();
+  classifierParam->factors = 2;
+
+  params.K = 2;
+  params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
+  params.mergeThreshold = 0.8f;
+  ssf::CorrelationSimilarity sim;
+  params.simBuilder = &sim;
+  params.d1Len = N / 2;
+  params.m = 5;
+  params.maxIterations = 8;
+  params.classifierParams = classifierParam;
+
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["discovery"] >> inp;
+  stg["natural"] >> neg;
+  stg.release();
+
+  TestPlsic plsic;
+  cv::Mat_<float> kmeansInput = inp(cv::Rect(0, 0, inp.cols, 30));
+  ssf::Kmeans kmeans;
+  ssf::KmeansParams kmeansParams;
+  kmeansParams.K = 7;
+  kmeansParams.flags = cv::KMEANS_RANDOM_CENTERS;
+  kmeansParams.nAttempts = 1;
+  kmeansParams.predicitonDistanceType = cv::NORM_L2;
+  kmeans.learn(kmeansInput, &kmeansParams);
+  auto initialClustering = kmeans.getClustering();
+  plsic.addInitialClustering(initialClustering);
+  plsic.setup(inp, &params);
+
+  const int nClusters = 5;
+
+  std::vector<int> d1, ids;
+  std::vector<std::vector<float>> responses(nClusters, {});
+  for(int i = 0; i < N / 2; ++i){
+    d1.push_back(i);
+  }
+  for(auto& response : responses){
+    response.assign(nClusters, 0);
+  }
+  for(int i = 0; i < nClusters; ++i){
+    ids.push_back(i);
+  }
+  auto v = plsic.getClustering();
+  std::vector<ssf::Cluster> clustering;
+  plsic.assignment(5, static_cast<int>(v.size()), d1, responses, ids, clustering);
+
 }

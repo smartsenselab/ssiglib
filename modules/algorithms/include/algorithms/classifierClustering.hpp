@@ -50,8 +50,8 @@
 namespace ssf{
 struct ClassifierClusteringParams : ClusteringParams{
   int m = 5;
-  int maximumK = static_cast<int>(1.0e6);
-  int d1Len;
+  int maximumK = static_cast<int>(1.0e4);
+  int d1Len = 0;;
   ClassificationParams* classifierParams;
 };
 
@@ -97,7 +97,13 @@ protected:
 
   virtual void postCondition() = 0;
 
-  virtual std::vector<Cluster> assignment(int clusterSize, const std::vector<int>& assignmentSet) = 0;
+  virtual void assignment(const int clusterSize,
+                          const int nClusters,
+                          const std::vector<int>& assignmentSet,
+                          std::vector<std::vector<float>>& clusterResponses,
+                          std::vector<int>& clusterIds,
+                          std::vector<Cluster>& out
+  ) = 0;
 
   //Attributes /////////
   cv::Mat_<float> mNaturalSamples;
