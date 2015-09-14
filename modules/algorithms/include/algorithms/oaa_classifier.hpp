@@ -83,6 +83,7 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
   }
   samples_.release();
   labels_.release();
+  labelOrderings_.clear();
 
   samples_ = input;
   addLabels(labels);
