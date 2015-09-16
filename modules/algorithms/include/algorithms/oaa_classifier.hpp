@@ -89,11 +89,11 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
   addLabels(labels);
   int c = -1;
   for(int i = 0; i < labels.rows; ++i){
-    if(labelOrderings_.find(labels[0][i]) 
+    auto label = labels[0][i];
+    if(labelOrderings_.find(label)
       ==
       labelOrderings_.end()){
-      
-      labelOrderings_[labels[0][i]] = ++c;
+      labelOrderings_[label] = ++c;
     }
   }
 

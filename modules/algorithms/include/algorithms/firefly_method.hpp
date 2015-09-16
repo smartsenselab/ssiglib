@@ -88,7 +88,7 @@ cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::
 randomVector(){
   const int d = population_.cols;
   cv::Mat_<float> vec(1, d);
-  cv::randu(vec, cv::Scalar::all(-5), cv::Scalar::all(5));
+  cv::randu(vec, cv::Scalar::all(-0.5), cv::Scalar::all(0.5));
   return vec;
 }
 
