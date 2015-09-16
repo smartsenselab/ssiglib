@@ -56,20 +56,20 @@ TEST(Singh, SVMSeparationTest){
   stg["natural"] >> neg;
   stg.release();
 
-  auto classifierParam = new ssf::SVMParameters();
-  classifierParam->kernelType = cv::ml::SVM::LINEAR;
-  classifierParam->modelType = cv::ml::SVM::C_SVC;
-  classifierParam->c = 0.1f;
-  classifierParam->termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
-  classifierParam->maxIt = 8000;
-  classifierParam->eps = 1e-6f;
+  ssf::SVMParameters classifierParam;
+  classifierParam.kernelType = cv::ml::SVM::LINEAR;
+  classifierParam.modelType = cv::ml::SVM::C_SVC;
+  classifierParam.c = 0.1f;
+  classifierParam.termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
+  classifierParam.maxIt = 8000;
+  classifierParam.eps = 1e-6f;
 
   params.K = 2;
   params.lambda = 0.1f;
   params.d1Len = N / 2;
   params.m = 5;
   params.maxIterations = 8;
-  params.classifierParams = classifierParam;
+  params.classifierParams = &classifierParam;
 
 
   ssf::Singh<ssf::SVMClassifier> clustering;
@@ -105,17 +105,17 @@ TEST(Singh, PLSSeparationTest){
   cv::Mat_<float> neg;
   int N = 60;
   ssf::SinghParameters params;
-  auto classifierParam = new ssf::PLSParameters();
-  classifierParam->factors = 2;
-  classifierParam->termType = cv::TermCriteria::MAX_ITER;
-  classifierParam->eps = 0.01f;
+  ssf::PLSParameters classifierParam;
+  classifierParam.factors = 2;
+  classifierParam.termType = cv::TermCriteria::MAX_ITER;
+  classifierParam.eps = 0.01f;
 
   params.K = 2;
   params.lambda = 0.1f;
   params.d1Len = N / 2;
   params.m = 5;
   params.maxIterations = 8;
-  params.classifierParams = classifierParam;
+  params.classifierParams = &classifierParam;
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
   ASSERT_TRUE(stg.isOpened());
