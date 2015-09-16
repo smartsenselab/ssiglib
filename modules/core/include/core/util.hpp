@@ -107,7 +107,7 @@ public:
 
   template<class C>
   CORE_EXPORT static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
-    for(int i = 0; i < len; ++i){
+    for(int i = 0; i < static_cast<int>(len); ++i){
       ordering.push_back(i);
     }
     std::sort(ordering.begin(), ordering.end(),
