@@ -80,6 +80,38 @@ private:
   float annealling_ = 0.97f;
   float step_ = 0.01f;
   cv::RNG rng_;
+public:
+  float getAbsorption() const{
+    return absorption_;
+  }
+
+  void setAbsorption(float absorption){
+    absorption_ = absorption;
+  }
+
+  int getMaxIterations() const{
+    return maxIterations_;
+  }
+
+  void setMaxIterations(int maxIterations){
+    maxIterations_ = maxIterations;
+  }
+
+  float getAnnealling() const{
+    return annealling_;
+  }
+
+  void setAnnealling(float annealling){
+    annealling_ = annealling;
+  }
+
+  float getStep() const{
+    return step_;
+  }
+
+  void setStep(float step){
+    step_ = step;
+  }
 
 };
 

@@ -57,7 +57,7 @@ TEST(PLSIC, CorrelationClusteringTest){
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
-  params.mergeThreshold = 0.80f;
+  params.mergeThreshold = 0.7f;
   ssf::CorrelationSimilarity sim;
   params.simBuilder = &sim;
   params.d1Len = N / 2;
@@ -118,7 +118,7 @@ TEST(PLSIC, CosineClusteringTest){
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
-  params.mergeThreshold = 0.80f;
+  params.mergeThreshold = 0.7f;
   ssf::CosineSimilarity sim;
   params.simBuilder = &sim;
   params.d1Len = N / 2;
