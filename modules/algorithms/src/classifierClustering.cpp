@@ -45,9 +45,7 @@ getClustering() const{
 }
 
 ClassifierClustering::
-~ClassifierClustering(){
-  delete classificationParams_;
-}
+~ClassifierClustering(){}
 
 void ClassifierClustering::
 setup(cv::Mat_<float>& input,
