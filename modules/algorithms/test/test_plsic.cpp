@@ -52,8 +52,8 @@ TEST(PLSIC, CorrelationClusteringTest){
   cv::Mat_<float> neg;
   int N = 60;
   ssf::PLSICParams params;
-  auto classifierParam = new ssf::PLSParameters();
-  classifierParam->factors = 2;
+  ssf::PLSParameters classifierParam;
+  classifierParam.factors = 2;
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
@@ -63,7 +63,7 @@ TEST(PLSIC, CorrelationClusteringTest){
   params.d1Len = N / 2;
   params.m = 5;
   params.maxIterations = 8;
-  params.classifierParams = classifierParam;
+  params.classifierParams = &classifierParam;
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
   ASSERT_TRUE(stg.isOpened());
@@ -113,8 +113,8 @@ TEST(PLSIC, CosineClusteringTest){
   cv::Mat_<float> neg;
   int N = 60;
   ssf::PLSICParams params;
-  auto classifierParam = new ssf::PLSParameters();
-  classifierParam->factors = 2;
+  ssf::PLSParameters classifierParam;
+  classifierParam.factors = 2;
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
@@ -124,7 +124,7 @@ TEST(PLSIC, CosineClusteringTest){
   params.d1Len = N / 2;
   params.m = 5;
   params.maxIterations = 8;
-  params.classifierParams = classifierParam;
+  params.classifierParams = &classifierParam;
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
   ASSERT_TRUE(stg.isOpened());
