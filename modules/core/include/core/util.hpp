@@ -100,7 +100,7 @@ public:
   CORE_EXPORT static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
     out = collection;
     auto o = ordering;
-    for(int i = 0; i < ordering.size(); ++i){
+    for(int i = 0; i < static_cast<int>(ordering.size()); ++i){
       out[i] = collection[o[i]];
     }
   }

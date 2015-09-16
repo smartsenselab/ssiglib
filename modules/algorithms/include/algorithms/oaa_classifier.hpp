@@ -98,7 +98,7 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
   }
 
   classifiers_.resize(labelOrderings_.size());
-  c = -1;
+  c = 0;
   for(auto& labelIdx: labelOrderings_){
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
     for(int i = 0; i < labels.rows; ++i){
@@ -108,7 +108,8 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
         localLabels[i][0] = -1;
       }
     }
-    classifiers_[++c].learn(samples_, localLabels, parameters);
+    classifiers_[c].learn(samples_, localLabels, parameters);
+    ++c;
   }
   trained_ = true;
 }
@@ -119,13 +120,14 @@ void OAAClassifier<UnderlyingClassifier>::predict(cv::Mat_<float>& inp,
   resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(classifiers_.size()));
 
   for(int r = 0; r < inp.rows; ++r){
-    int c = -1;
+    int c = 0;
     for(auto& classifier : classifiers_){
       cv::Mat_<float> auxResp;
       classifier.predict(inp, auxResp);
       auto ordering = classifier.getLabelsOrdering();
       const int idx = ordering[1];
-      resp[r][++c] = auxResp[0][idx];
+      resp[r][c] = auxResp[0][idx];
+      ++c;
     }
   }
 }

@@ -67,8 +67,10 @@ TEST(OAAClassifier, PLSBinaryClassification){
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
   int idx = ordering[1];
+  EXPECT_EQ(0, idx);
   EXPECT_GE(resp[0][idx], 0);
   idx = ordering[-1];
+  EXPECT_EQ(1, idx);
   classifier.predict(query2, resp);
   EXPECT_GE(resp[0][idx], 0);
 }

@@ -103,7 +103,7 @@ TEST(Utils, StlReorder){
   }
   auto gt = a;
   std::sort(gt.begin(), gt.end());
-  auto sorted = ssf::Util::sort(a, (a.size()), o);
+  auto sorted = ssf::Util::sort(a, a.size(), o);
   ASSERT_EQ(sorted, gt);
 }
 
