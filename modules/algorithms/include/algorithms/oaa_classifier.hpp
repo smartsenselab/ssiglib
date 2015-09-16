@@ -87,24 +87,28 @@ void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
 
   samples_ = input;
   addLabels(labels);
-  std::set<int> labelsSet;
-  for(int i = 0; i < labels.rows; ++i){
-    labelsSet.insert(labels[0][i]);
-  }
-  
-  classifiers_.resize(labelsSet.size());
   int c = -1;
-  for(auto& label: labelsSet){
+  for(int i = 0; i < labels.rows; ++i){
+    if(labelOrderings_.find(labels[0][i]) 
+      ==
+      labelOrderings_.end()){
+      
+      labelOrderings_[labels[0][i]] = ++c;
+    }
+  }
+
+  classifiers_.resize(labelOrderings_.size());
+  c = -1;
+  for(auto& labelIdx: labelOrderings_){
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
     for(int i = 0; i < labels.rows; ++i){
-      if(labels[i][0] == label){
+      if(labels[i][0] == labelIdx.first){
         localLabels[i][0] = 1;
       } else{
         localLabels[i][0] = -1;
       }
     }
-    labelOrderings_[label] = ++c;
-    classifiers_[c].learn(samples_, localLabels, parameters);
+    classifiers_[++c].learn(samples_, localLabels, parameters);
   }
   trained_ = true;
 }

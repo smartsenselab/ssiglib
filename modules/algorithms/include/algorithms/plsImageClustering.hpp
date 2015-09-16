@@ -187,22 +187,24 @@ void PLSImageClustering<ClassificationType>::precondition(){}
 template<class ClassificationType>
 void PLSImageClustering<ClassificationType>::initializeClusterings(
   const std::vector<int>& assignmentSet){
-  if(!clusters_.empty()){
+  if(clusters_.empty()){
+    //Make the standard initial Clustering
+    std::vector<int> chosen;
+    for(int i = 0; i < static_cast<int>(assignmentSet.size()); ++i){
+      chosen.push_back(i);
+    }
+    std::shuffle(chosen.begin(), chosen.end(), std::default_random_engine());
+    for(int i = 0; i < mInitialK; ++i){
+      clusters_.push_back({chosen[i]});
+      clustersIds_.push_back(i);
+    }
+  } else{
     for(int i = 0; i < static_cast<int>(clusters_.size()); ++i){
       clustersIds_.push_back(i);
     }
-    return;
   }
-  //Make the standard initial Clustering
-  std::vector<int> chosen;
-  for(int i = 0; i < static_cast<int>(assignmentSet.size()); ++i){
-    chosen.push_back(i);
-  }
-  std::shuffle(chosen.begin(), chosen.end(), std::default_random_engine());
-  for(int i = 0; i < mInitialK; ++i){
-    clusters_.push_back({chosen[i]});
-    clustersIds_.push_back(i);
-  }
+  // The following is still experimental it was not used in the sibgrapi paper
+  //merge(clusters_);
 }
 
 template<class ClassificationType>
@@ -275,7 +277,7 @@ void PLSImageClustering<ClassificationType>::assignment(
     static_cast<int>(assignmentSet.size()), nLabels);
   for(int sample = 0; sample < static_cast<int>(assignmentSet.size()); ++sample){
     cv::Mat_<float> response;
-    cv::Mat_<float> feat = samples_.row(sample);
+    cv::Mat_<float> feat = samples_.row(assignmentSet[sample]);
     mClassifier.predict(feat, response);
     response.copyTo(responsesMatrix.row(sample));
   }
@@ -303,7 +305,7 @@ void PLSImageClustering<ClassificationType>::assignment(
       Cluster clusterSet;
       clusterSet.reserve(clusterSize);
       do{
-        int sampleId = ordering[clusterId][i];
+        int sampleId = assignmentSet[ordering[clusterId][i]];
         auto it = pointAvailability.find(sampleId);
         bool availability = (it == pointAvailability.end()) || it->second;
         if(availability){
@@ -383,15 +385,14 @@ void PLSImageClustering<ClassificationType>::merge(std::vector<Cluster>& cluster
   bool hasMerged = false;
   std::vector<Cluster> ans;
   do{
-    if(static_cast<int>(clusters.size()) <= K_){
-      ans = clusters;
+    if(static_cast<int>(clusters.size() + ans.size()) <= K_){
       break;
     }
     cv::Mat_<float> clusterRepresentation;
     buildClusterRepresentation(samples_, clusters, clusterRepresentation);
 
     cv::Mat_<float> similarity = mSimBuilder->buildSimilarity(clusterRepresentation);
-
+    //similarity = cv::abs(similarity);
     std::pair<int, int> mergedPair;
     hasMerged = findClosestClusters(similarity, mMergeThreshold, mergedPair);
     if(hasMerged){

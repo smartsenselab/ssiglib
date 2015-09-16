@@ -88,9 +88,7 @@ cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::
 randomVector(){
   const int d = population_.cols;
   cv::Mat_<float> vec(1, d);
-  for(int i = 0; i < d; ++i){
-    vec[0][i] = static_cast<float>(rng_.gaussian(2.0));
-  }
+  cv::randu(vec, cv::Scalar::all(-5), cv::Scalar::all(5));
   return vec;
 }
 
@@ -107,9 +105,11 @@ setup(cv::Mat_<float>& input,
   iterations_ = 0;
   population_ = input;
   utilities_ = cv::Mat::zeros(population_.rows, 1, CV_32F);
+
   for(int i = 0; i < population_.rows; ++i){
     utilities_[0][i] = evaluateUtility(population_.row(i));
   }
+
   rng_ = cv::theRNG();
 
   cv::Mat_<int> order;
@@ -131,13 +131,14 @@ bool Firefly<UtilityFunction, DistanceFunction>::iterate(){
         auto xj = population_.row(j);
         auto xi = population_.row(i);
         auto dist = evaluateDistance(xi, xj);
-        auto attractiveness = utilities_[0][j] / (1 + absorption_ * dist * dist);
+        auto attractiveness = utilities_[0][j] / cv::exp(absorption_ * dist * dist);
         population_.row(i) = xi * (1 - attractiveness) +
           attractiveness * (xj) + step_ * randomVector();
       }
     }
   }
   UtilityFunction evaluateUtility;
+
   for(int i = 0; i < population_.rows; ++i){
     utilities_[0][i] = evaluateUtility(population_.row(i));
   }

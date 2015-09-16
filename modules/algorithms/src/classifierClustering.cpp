@@ -94,6 +94,7 @@ setup(cv::Mat_<float>& input,
              clustersResponses_,
              clustersIds_,
              newClusters_);
+  trainClassifiers(clusters_, natural_[1]);
 
   clustersOld_ = clusters_;
 
@@ -113,24 +114,31 @@ iterate(){
   }
   int order = it_ % 2;
   clusters_ = newClusters_;
-  trainClassifiers(clusters_, natural_[order]);
   newClusters_.clear();
-  order = (order + 1) % 2;
+
   assignment(m_,
              static_cast<int>(clusters_.size()),
              discovery_[order],
              clustersResponses_,
              clustersIds_,
              newClusters_);
+  trainClassifiers(newClusters_, natural_[order]);
+
   clustersOld_ = clusters_;
+
   it_++;
 
-  return isFinished();
+  auto termination = isFinished();
+  if(termination){
+    clusters_ = newClusters_;
+  }
+  return termination;
 }
 
 void ClassifierClustering::
 learn(
-  cv::Mat_<float>& input, ClusteringParams* parameters){
+  cv::Mat_<float>& input,
+  ClusteringParams* parameters){
   setup(input, parameters);
   /********
     **main loop
@@ -140,9 +148,7 @@ learn(
   do{
     terminated = iterate();
   } while(!terminated);
-  int order = it_ % 2;
-  clusters_ = newClusters_;
-  trainClassifiers(clusters_, natural_[order]);
+
   postCondition();
 }
 

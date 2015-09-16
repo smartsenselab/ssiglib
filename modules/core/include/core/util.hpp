@@ -39,6 +39,8 @@
 #ifndef _SSF_CORE_UTIL_HPP_
 #define _SSF_CORE_UTIL_HPP_
 
+#include "core_defs.hpp"
+
 #include <algorithm> 
 #include <functional> 
 #include <cctype>
@@ -82,8 +84,12 @@ public:
 		 */
   static std::string trim(std::string str);
 
+  CORE_EXPORT static void reorder(const cv::Mat& collection,
+                                  cv::Mat_<int>& ordering, cv::Mat& out);
+
   template<class T>
-  static void reorder(const cv::Mat_<T>& collection, cv::Mat_<int>& ordering, cv::Mat_<T>& out){
+  CORE_EXPORT static void reorder(const cv::Mat_<T>& collection,
+                                  cv::Mat_<int>& ordering, cv::Mat_<T>& out){
     out = cv::Mat_<T>::zeros(collection.rows, collection.cols);
     for(int i = 0; i < ordering.rows; ++i){
       collection.row(ordering[i][0]).copyTo(out.row(i));
@@ -91,17 +97,16 @@ public:
   }
 
   template<class C>
-  static C reorder(const C& collection, const std::vector<int>& ordering){
-    auto c = collection;
+  CORE_EXPORT static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
+    out = collection;
     auto o = ordering;
     for(int i = 0; i < ordering.size(); ++i){
-      c[i] = collection[o[i]];
+      out[i] = collection[o[i]];
     }
-    return c;
   }
 
   template<class C>
-  static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
+  CORE_EXPORT static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
     for(int i = 0; i < len; ++i){
       ordering.push_back(i);
     }
@@ -111,8 +116,9 @@ public:
                 if(ans){ }
                 return ans;
               });
-
-    return reorder<C>(collection, ordering);
+    C out;
+    reorder<C>(collection, ordering, out);
+    return out;
   }
 
 };

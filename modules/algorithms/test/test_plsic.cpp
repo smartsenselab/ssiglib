@@ -46,7 +46,8 @@
 #include "algorithms/similarity_builder.hpp"
 
 
-TEST(PLSIC, ClusteringTest){
+TEST(PLSIC, CorrelationClusteringTest){
+  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
@@ -56,7 +57,7 @@ TEST(PLSIC, ClusteringTest){
 
   params.K = 2;
   params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
-  params.mergeThreshold = 0.75f;
+  params.mergeThreshold = 0.80f;
   ssf::CorrelationSimilarity sim;
   params.simBuilder = &sim;
   params.d1Len = N / 2;
@@ -71,16 +72,8 @@ TEST(PLSIC, ClusteringTest){
   stg.release();
 
   ssf::PLSImageClustering<ssf::PLSClassifier> clustering;
-  cv::Mat_<float> kmeansInput = inp(cv::Rect(0, 0, inp.cols, 30));
-  ssf::Kmeans kmeans;
-  ssf::KmeansParams kmeansParams;
-  kmeansParams.K = 7;
-  kmeansParams.flags = cv::KMEANS_RANDOM_CENTERS;
-  kmeansParams.nAttempts = 1;
-  kmeansParams.predicitonDistanceType = cv::NORM_L2;
-  kmeans.learn(kmeansInput, &kmeansParams);
-  auto initialClustering = kmeans.getClustering();
-  cv::FileStorage s("kmenas.yml", cv::FileStorage::WRITE);
+
+  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
 
   clustering.addInitialClustering(initialClustering);
   clustering.setup(inp, &params);
@@ -90,6 +83,66 @@ TEST(PLSIC, ClusteringTest){
     finished = clustering.iterate();
   } while(!finished);
 
+  auto clusters = clustering.getClustering();
+
+  bool label1 = false;
+  bool label2 = false;
+  for(auto& cluster : clusters){
+    std::vector<int> label1Vector;
+    std::vector<int> label2Vector;
+    for(auto& el : cluster){
+      if((el < 15 && el >= 0) || (el >= 30 && el < 45)){
+        label1Vector.push_back(el);
+      } else{
+        label2Vector.push_back(el);
+      }
+    }
+    if(label1Vector.empty() ^ label2Vector.empty()){
+      if(label1Vector.empty())
+        label2 = true;
+      else
+        label1 = true;
+    }
+  }
+  EXPECT_TRUE(label1 && label2);
+}
+
+TEST(PLSIC, CosineClusteringTest){
+  srand(0);
+  cv::Mat_<float> inp;
+  cv::Mat_<float> neg;
+  int N = 60;
+  ssf::PLSICParams params;
+  auto classifierParam = new ssf::PLSParameters();
+  classifierParam->factors = 2;
+
+  params.K = 2;
+  params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
+  params.mergeThreshold = 0.80f;
+  ssf::CosineSimilarity sim;
+  params.simBuilder = &sim;
+  params.d1Len = N / 2;
+  params.m = 5;
+  params.maxIterations = 8;
+  params.classifierParams = classifierParam;
+
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["discovery"] >> inp;
+  stg["natural"] >> neg;
+  stg.release();
+
+  ssf::PLSImageClustering<ssf::PLSClassifier> clustering;
+
+  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+
+  clustering.addInitialClustering(initialClustering);
+  clustering.setup(inp, &params);
+  bool finished = false;
+  do{
+    auto c = clustering.getClustering();
+    finished = clustering.iterate();
+  } while(!finished);
 
   auto clusters = clustering.getClustering();
 
