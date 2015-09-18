@@ -54,15 +54,15 @@ TEST(SVMClassifier, BinaryClassification){
     labels[3 + i][0] = -1;
   }
 
-  ssf::SVMParameters p;
-  p.kernelType = cv::ml::SVM::LINEAR;
-  p.modelType = cv::ml::SVM::C_SVC;
-  p.c = 0.1f;
-  p.termType = cv::TermCriteria::MAX_ITER;
-  p.eps = 0.01f;
-
   ssf::SVMClassifier classifier;
-  classifier.learn(inp, labels, &p);
+  classifier.setC(0.1f);
+  classifier.setKernelType(cv::ml::SVM::LINEAR);
+  classifier.setModelType(cv::ml::SVM::C_SVC);
+
+  classifier.setTermType(cv::TermCriteria::MAX_ITER);
+  classifier.setEpsilon(0.01f);
+
+  classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);

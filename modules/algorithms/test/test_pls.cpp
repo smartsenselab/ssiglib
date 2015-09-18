@@ -55,11 +55,9 @@ TEST(PLSClassifier, BinaryClassification){
     labels[3 + i][0] = -1;
   }
 
-  auto p = new ssf::PLSParameters;
-  p->factors = 2;
-
   ssf::PLSClassifier classifier;
-  classifier.learn(inp, labels, p);
+  classifier.setNumberOfFactors(2);
+  classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
@@ -72,8 +70,6 @@ TEST(PLSClassifier, BinaryClassification){
   classifier.predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
-
-  delete p;
 }
 
 TEST(PLSClassifier, Persistence){}

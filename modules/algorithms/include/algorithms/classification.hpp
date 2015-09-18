@@ -41,20 +41,14 @@
 #include "learningMethod.hpp"
 #include <opencv2/core.hpp>
 #include <unordered_map>
+#include <memory>
 
 namespace ssf{
-struct ClassificationParams{
-  int termType = cv::TermCriteria::MAX_ITER;
-  float eps = 0.001f;
-  int maxIt = static_cast<int>(1e4);
-};
 
 class Classification : public ssf::SupervisedLearningMethod<
     cv::Mat_<float>,
     cv::Mat_<float>,
-    cv::Mat_<int>,
-    ClassificationParams
-  >{
+    cv::Mat_<int>>{
 public:
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                   cv::Mat_<float>& resp) const override = 0;
@@ -62,13 +56,14 @@ public:
   ALG_EXPORT Classification(void) = default;
   ALG_EXPORT virtual ~Classification(void) = default;
 
-  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels,
-                                ClassificationParams* parameters) override = 0;
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override = 0;
 
   ALG_EXPORT virtual cv::Mat_<int> getLabels() const override = 0;
   ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
 
-  ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight) = 0;
+  ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight);
+  ALG_EXPORT virtual void setClassWeights(const std::unordered_map<int, float>& weights);
+  ALG_EXPORT virtual std::unordered_map<int, float> getClassWeights() const;
 
   ALG_EXPORT virtual bool empty() const override = 0;
   ALG_EXPORT virtual bool isTrained() const override = 0;
@@ -76,13 +71,73 @@ public:
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
 
-private:
-  //private members
+  ALG_EXPORT virtual Classification* clone() const = 0;
+
+  int getTermType() const;
+
+  void setTermType(int termType);
+
+  float getEpsilon() const;
+
+  void setEpsilon(float epsilon);
+
+  int getMaxIterations() const;
+
+  void setMaxIterations(int maxIterations);
+
 protected:
+  virtual void precondition();
   cv::Mat_<float> samples_;
   cv::Mat_<int> labels_;
+
+  std::unordered_map<int, float> mWeights;
+
+  int mTermType = cv::TermCriteria::MAX_ITER;
+
+  float mEpsilon = 0.001f;
+  int mMaxIterations = static_cast<int>(1e4);
+
 };
 
+inline void Classification::setClassWeights(const int classLabel, const float weight){
+  mWeights[classLabel] = weight;
+}
+
+inline void Classification::setClassWeights(const std::unordered_map<int, float>& weights){
+  mWeights = weights;
+}
+
+inline std::unordered_map<int, float> Classification::getClassWeights() const{
+  return mWeights;
+}
+
+inline int Classification::getTermType() const{
+  return mTermType;
+}
+
+inline void Classification::setTermType(int termType){
+  mTermType = termType;
+}
+
+inline float Classification::getEpsilon() const{
+  return mEpsilon;
+}
+
+inline void Classification::setEpsilon(float epsilon){
+  mEpsilon = epsilon;
+}
+
+inline int Classification::getMaxIterations() const{
+  return mMaxIterations;
+}
+
+inline void Classification::setMaxIterations(int maxIterations){
+  mMaxIterations = maxIterations;
+}
+
+inline void Classification::precondition(){
+  //TODO: precondition
+}
 }
 
 #endif // !_SSF_ALGORITHMS_CLASSIFICATION_HPP_

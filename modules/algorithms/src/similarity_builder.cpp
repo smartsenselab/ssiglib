@@ -40,7 +40,8 @@
 
 namespace ssf{
 
-cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input){
+
+cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input, const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> similarityFunction){
   int len = input.rows;
   cv::Mat_<float> similarity(len, len);
   similarity = 0;
@@ -55,17 +56,16 @@ cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input)
   return similarity;
 }
 
-float CosineSimilarity::similarityFunction(const cv::Mat_<float>& x,
-                                           const cv::Mat_<float>& y){
+float SimilarityBuilder::cosineFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y){
   return static_cast<float>(x.dot(y) /
     (cv::norm(x, cv::NORM_L2) * cv::norm(y, cv::NORM_L2)));
 }
 
-float CorrelationSimilarity::similarityFunction(const cv::Mat_<float>& x,
-                                                const cv::Mat_<float>& y){
+float SimilarityBuilder::correlationFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y){
   float correlation = 0;
   float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
-  int n = x.cols;
+  const int n = x.cols;
+
   for(int s = 0; s < n; ++s){
     i += x[0][s];
     ii += x[0][s] * x[0][s];
@@ -79,4 +79,5 @@ float CorrelationSimilarity::similarityFunction(const cv::Mat_<float>& x,
     (sqrt(n * ii - i * i) * sqrt(n * jj - j * j));
   return correlation;
 }
+
 }

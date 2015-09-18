@@ -46,11 +46,8 @@
 
 namespace ssf{
 
-struct PLSParameters : ClassificationParams{
-  int factors;
-};
-
 class PLSClassifier : public Classification{
+private:
   virtual void addLabels(cv::Mat_<int>& labels);
 public:
   ALG_EXPORT PLSClassifier(void);
@@ -58,7 +55,7 @@ public:
   ALG_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
-  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels, ClassificationParams* parameters) override;
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
   ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
   ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
   ALG_EXPORT virtual bool empty() const override;
@@ -66,11 +63,16 @@ public:
   ALG_EXPORT virtual bool isClassifier() const override;
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual Classification* clone()const override;
 
+  ALG_EXPORT int getNumberOfFactors() const;
+
+  ALG_EXPORT void setNumberOfFactors(int numberOfFactors);
 private:
   //private members
   std::unique_ptr<PLS> mPls;
-  int mNFactors;
+  int mNumberOfFactors;
+
   bool mTrained;
 
   virtual void setClassWeights(const int classLabel, const float weight) override;

@@ -41,107 +41,116 @@ namespace ssf{
 
 std::vector<Cluster> ClassifierClustering::
 getClustering() const{
-  return newClusters_;
+  return mNewClusters;
 }
 
 ClassifierClustering::
 ~ClassifierClustering(){}
 
 void ClassifierClustering::
-setup(cv::Mat_<float>& input,
-      ClusteringParams* parameters){
-  ClusteringMethod::setup(input, parameters);
-  auto p = static_cast<ClassifierClusteringParams*>(parameters);
-  m_ = p->m;
-  int d1Len = p->d1Len;
-  mMaximumK = p->maximumK;
-  classificationParams_ = p->classifierParams;
-
+setup(cv::Mat_<float>& input){
+  ClusteringMethod::setup(input);
   precondition();
 
-  discovery_.resize(2);//Discoveries subsets are inferred from the input samples
-  natural_.resize(2);
-  const int N = samples_.rows;
-  for(int i = 0; i < d1Len; ++i){
-    discovery_[0].push_back(i);
-  }
-  for(int i = d1Len; i < N; ++i){
-    discovery_[1].push_back(i);
-  }
+  const int N = mSamples.rows;
+  const int k = static_cast<int>(N / 8);
 
-  if(mNaturalSamples.rows > 0){
-    int len = mNaturalSamples.rows;
-    int halfLen = len / 2;
-    for(int i = 0; i < halfLen; ++i){
-      natural_[0].push_back(i);
-    }
-    for(int i = halfLen; i < len; ++i){
-      natural_[1].push_back(i);
-    }
-  }
 
-  mInitialK = std::min(static_cast<int>(d1Len / 4), mMaximumK);
+  mInitialK = std::min(static_cast<int>(k), mMaximumK);
 
-  initializeClusterings(discovery_[0]);
+  initializeClusterings(mDiscovery[0]);
   initializeClassifiers();
-  trainClassifiers(clusters_, natural_[0]);
+  trainClassifiers(mClusters, mNatural[0]);
 
-  assignment(m_,
-             static_cast<int>(clusters_.size()),
-             discovery_[1],
-             clustersResponses_,
-             clustersIds_,
-             newClusters_);
-  trainClassifiers(clusters_, natural_[1]);
+  assignment(mMValue,
+             static_cast<int>(mClusters.size()),
+             mDiscovery[1],
+             mClustersResponses,
+             mClustersIds,
+             mNewClusters);
+  trainClassifiers(mClusters, mNatural[1]);
 
-  clustersOld_ = clusters_;
+  mClustersOld = mClusters;
 
-  ready_ = true;
-  it_ = 0;
-}
-
-void ClassifierClustering::
-addExtraSamples(cv::Mat_<float>& extra){
-  mNaturalSamples = extra;
+  mReady = true;
+  mIt = 0;
 }
 
 bool ClassifierClustering::
 iterate(){
-  if(!ready_){
+  if(!mReady){
     ssf::Log::ERROR("Setup method must be called First!");
   }
-  int order = it_ % 2;
-  clusters_ = newClusters_;
-  newClusters_.clear();
+  int order = mIt % 2;
+  mClusters = mNewClusters;
+  mNewClusters.clear();
 
-  assignment(m_,
-             static_cast<int>(clusters_.size()),
-             discovery_[order],
-             clustersResponses_,
-             clustersIds_,
-             newClusters_);
-  trainClassifiers(newClusters_, natural_[order]);
+  assignment(mMValue,
+             static_cast<int>(mClusters.size()),
+             mDiscovery[order],
+             mClustersResponses,
+             mClustersIds,
+             mNewClusters);
+  trainClassifiers(mNewClusters, mNatural[order]);
 
-  clustersOld_ = clusters_;
+  mClustersOld = mClusters;
 
-  it_++;
+  mIt++;
 
   auto termination = isFinished();
   if(termination){
-    clusters_ = newClusters_;
+    mClusters = mNewClusters;
   }
   return termination;
 }
 
+void ClassifierClustering::addNaturalWorld(cv::Mat_<float>& natSamples,
+                                           std::vector<std::vector<int>>& distribution){
+  mNatural = distribution;
+  mNaturalSamples = natSamples;
+}
+
+int ClassifierClustering::getInitialK() const{
+  return mInitialK;
+}
+
+void ClassifierClustering::setInitialK(int mInitialK1){
+  mInitialK = mInitialK1;
+}
+
+int ClassifierClustering::getMValue() const{
+  return mMValue;
+}
+
+void ClassifierClustering::setMValue(int m){
+  mMValue = m;
+}
+
+std::vector<std::vector<int>> ClassifierClustering::getDiscovery() const{
+  return mDiscovery;
+}
+
+void ClassifierClustering::setDiscoveryConfiguration(const std::vector<std::vector<int>>& discovery){
+  mDiscovery = discovery;
+}
+
+void ClassifierClustering::precondition(){
+  if(mSamples.rows <= 0){
+    throw std::exception("Argument not Set");
+  }
+
+  if(mDiscovery.size() <= 0)
+    throw std::exception("Argument not Set");
+}
+
 void ClassifierClustering::
 learn(
-  cv::Mat_<float>& input,
-  ClusteringParams* parameters){
-  setup(input, parameters);
+  cv::Mat_<float>& input){
+  setup(input);
   /********
     **main loop
     ********/
-  it_ = 0;
+  mIt = 0;
   bool terminated = false;
   do{
     terminated = iterate();

@@ -69,17 +69,15 @@ void PLSClassifier::addLabels(cv::Mat_<int>& labels){
 }
 
 void PLSClassifier::learn(cv::Mat_<float>& input,
-                          cv::Mat_<int>& labels,
-                          ClassificationParams* parameters){
+                          cv::Mat_<int>& labels){
   //TODO: assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
   mPls = std::unique_ptr<PLS>(new PLS());
   cv::Mat_<float> l;
-  mNFactors = static_cast<PLSParameters*>(parameters)->factors;
   labels_.convertTo(l, CV_32F);
   auto X = input.clone();
-  mPls->runpls(X, l, mNFactors);
+  mPls->runpls(X, l, mNumberOfFactors);
 
   mTrained = true;
 }
@@ -111,5 +109,19 @@ void PLSClassifier::load(const std::string& filename, const std::string& nodenam
 
 void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
 
+Classification* PLSClassifier::clone() const{
+  auto copy = new PLSClassifier;
 
+  copy->setNumberOfFactors(getNumberOfFactors());
+
+  return copy;
+}
+
+int PLSClassifier::getNumberOfFactors() const{
+  return mNumberOfFactors;
+}
+
+void PLSClassifier::setNumberOfFactors(int numberOfFactors){
+  mNumberOfFactors = numberOfFactors;
+}
 }

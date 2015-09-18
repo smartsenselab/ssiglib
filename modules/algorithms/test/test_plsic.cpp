@@ -41,7 +41,7 @@
 
 #include "algorithms/kmeans.hpp"
 #include "algorithms/plsClassifier.hpp"
-#include "algorithms/plsImageClustering.hpp"
+#include "algorithms/pls_image_clustering.hpp"
 
 #include "algorithms/similarity_builder.hpp"
 
@@ -51,32 +51,42 @@ TEST(PLSIC, CorrelationClusteringTest){
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
-  ssf::PLSICParams params;
-  ssf::PLSParameters classifierParam;
-  classifierParam.factors = 2;
 
-  params.K = 2;
-  params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
-  params.mergeThreshold = 0.7f;
-  ssf::CorrelationSimilarity sim;
-  params.simBuilder = &sim;
-  params.d1Len = N / 2;
-  params.m = 5;
-  params.maxIterations = 8;
-  params.classifierParams = &classifierParam;
+  ssf::OAAClassifier oaaclassifier;
+  ssf::PLSClassifier plsclassifier;
+  plsclassifier.setNumberOfFactors(2);
+
+  oaaclassifier.setUnderlyingClassifier(plsclassifier);
+
+  std::vector<ssf::Cluster> discoverySubsets;
+  discoverySubsets.resize(2);
+  for(int i = 0; i < 2; ++i){
+    for(int j = 0; j < 30; ++j){
+      discoverySubsets[i].push_back(j + (30 * i));
+    }
+  }
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
   ASSERT_TRUE(stg.isOpened());
   stg["discovery"] >> inp;
-  stg["natural"] >> neg;
   stg.release();
 
-  ssf::PLSImageClustering<ssf::PLSClassifier> clustering;
+  ssf::PLSImageClustering clustering;
+  clustering.setK(2);
+  clustering.setClusterRepresentationType(ssf::ClusterRepresentationType::ClustersResponses);
+  clustering.setMergeThreshold(0.7f);
+  clustering.setSimBuilder(ssf::SimilarityBuilder::correlationFunction);
+  clustering.setDiscoveryConfiguration(discoverySubsets);
+  clustering.setMValue(5);
+  clustering.setMaxIterations(8);
+  clustering.addClassifier(oaaclassifier);
 
   std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+  std::vector<ssf::Cluster> natVector = {{},{}};
+  clustering.addNaturalWorld(neg, natVector);
 
   clustering.addInitialClustering(initialClustering);
-  clustering.setup(inp, &params);
+  clustering.setup(inp);
   bool finished = false;
   do{
     auto c = clustering.getClustering();
@@ -112,32 +122,44 @@ TEST(PLSIC, CosineClusteringTest){
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
   int N = 60;
-  ssf::PLSICParams params;
-  ssf::PLSParameters classifierParam;
-  classifierParam.factors = 2;
 
-  params.K = 2;
-  params.clusterRepresentationType = ssf::ClusterRepresentationType::ClustersResponses;
-  params.mergeThreshold = 0.7f;
-  ssf::CosineSimilarity sim;
-  params.simBuilder = &sim;
-  params.d1Len = N / 2;
-  params.m = 5;
-  params.maxIterations = 8;
-  params.classifierParams = &classifierParam;
+  ssf::OAAClassifier oaaclassifier;
+  ssf::PLSClassifier plsclassifier;
+  plsclassifier.setNumberOfFactors(2);
+
+  oaaclassifier.setUnderlyingClassifier(plsclassifier);
+
+  std::vector<ssf::Cluster> discoverySubsets;
+  discoverySubsets.resize(2);
+  for(int i = 0; i < 2; ++i){
+    for(int j = 0; j < 30; ++j){
+      discoverySubsets[i].push_back(j + (30 * i));
+    }
+  }
 
   cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
   ASSERT_TRUE(stg.isOpened());
   stg["discovery"] >> inp;
-  stg["natural"] >> neg;
   stg.release();
 
-  ssf::PLSImageClustering<ssf::PLSClassifier> clustering;
+  ssf::PLSImageClustering clustering;
+  clustering.setK(2);
+  clustering.setClusterRepresentationType(ssf::ClusterRepresentationType::ClustersResponses);
+  clustering.setMergeThreshold(0.7f);
+
+  clustering.setSimBuilder(ssf::SimilarityBuilder::cosineFunction);
+  std::vector<ssf::Cluster> natVector = {{},{}};
+  clustering.addNaturalWorld(neg, natVector);
+
+  clustering.setDiscoveryConfiguration(discoverySubsets);
+  clustering.setMValue(5);
+  clustering.setMaxIterations(8);
+  clustering.addClassifier(oaaclassifier);
 
   std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
 
   clustering.addInitialClustering(initialClustering);
-  clustering.setup(inp, &params);
+  clustering.setup(inp);
   bool finished = false;
   do{
     auto c = clustering.getClustering();
@@ -167,23 +189,3 @@ TEST(PLSIC, CosineClusteringTest){
   }
   EXPECT_TRUE(label1 && label2);
 }
-
-struct TestPlsic : ssf::PLSImageClustering<ssf::PLSClassifier>{
-  void assignment(const int clusterSize,
-                  const int nClusters,
-                  const std::vector<int>& assignmentSet,
-                  std::vector<std::vector<float>>& clusterResponses,
-                  std::vector<int>& clusterIds,
-                  std::vector<ssf::Cluster>& out) override{
-    ssf::PLSImageClustering<ssf::PLSClassifier>::assignment(clusterSize,
-                                                            nClusters,
-                                                            assignmentSet,
-                                                            clusterResponses,
-                                                            clusterIds,
-                                                            out);
-  }
-
-  void merge(std::vector<ssf::Cluster>& clusters) override{
-    ssf::PLSImageClustering<ssf::PLSClassifier>::merge(clusters);
-  }
-};

@@ -50,43 +50,32 @@ SVMClassifier::~SVMClassifier(){
 }
 
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const{
-  //TODO:Create Test for this
   return{{1, 0},{-1, 1}};
 }
 
-void SVMClassifier::setup(cv::Mat_<float>& input, ClassificationParams* parameters){
+void SVMClassifier::setup(cv::Mat_<float>& input){
   samples_ = input;
-  cv::TermCriteria termCrit(parameters->termType, parameters->maxIt, parameters->eps);
-  auto p = reinterpret_cast<SVMParameters*>(parameters);
+  cv::TermCriteria termCrit(mTermType, mMaxIterations, mEpsilon);
 
-  kernelType_ = p->kernelType;
-  modelType_ = p->modelType;
-
-  c_ = p->c;
-  gamma_ = p->gamma;
-  nu_ = p->nu;
-  coef_ = p->coef;
-  degree_ = p->degree;
-
-  if(!weights_.empty()){
-    classWeights_ = cv::Mat::ones(static_cast<int>(weights_.size()), 1, CV_32F);
-    for(auto& it : weights_){
-      classWeights_.at<float>(it.first) = it.second;
+  if(!mWeights.empty()){
+    mClassWeights = cv::Mat::ones(static_cast<int>(mWeights.size()), 1, CV_32F);
+    for(auto& it : mWeights){
+      mClassWeights.at<float>(it.first) = it.second;
     }
-    weights_.clear();
+    mWeights.clear();
   }
 
-  svm_ = cv::ml::SVM::create();
-  svm_->setC(c_);
-  svm_->setType(modelType_);
-  svm_->setKernel(kernelType_);
-  svm_->setDegree(degree_);
-  svm_->setClassWeights(classWeights_);
-  svm_->setTermCriteria(termCrit);
-  svm_->setGamma(gamma_);
-  svm_->setCoef0(coef_);
-  svm_->setNu(nu_);
-  svm_->setP(p_);
+  mSvm = cv::ml::SVM::create();
+  mSvm->setC(mC);
+  mSvm->setType(mModelType);
+  mSvm->setKernel(mKernelType);
+  mSvm->setDegree(mDegree);
+  mSvm->setClassWeights(mClassWeights);
+  mSvm->setTermCriteria(termCrit);
+  mSvm->setGamma(mGamma);
+  mSvm->setCoef0(mCoef);
+  mSvm->setNu(mNu);
+  mSvm->setP(mP);
 }
 
 void SVMClassifier::addLabels(cv::Mat_<int>& labels){
@@ -94,20 +83,19 @@ void SVMClassifier::addLabels(cv::Mat_<int>& labels){
 }
 
 void SVMClassifier::learn(cv::Mat_<float>& input,
-                          cv::Mat_<int>& labels,
-                          ClassificationParams* parameters){
-  setup(input, parameters);
+                          cv::Mat_<int>& labels){
+  setup(input);
   assert(!labels.empty());
   addLabels(labels);
 
-  svm_->train(samples_, cv::ml::ROW_SAMPLE, labels_);
+  mSvm->train(samples_, cv::ml::ROW_SAMPLE, labels_);
 }
 
 void SVMClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
   cv::Mat_<float> label;
-  svm_->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
-  svm_->predict(inp, label);
+  mSvm->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
+  mSvm->predict(inp, label);
   cv::Mat_<float> ans;
   ans.create(resp.rows, 2);
   for(int r = 0; r < resp.rows; ++r){
@@ -127,23 +115,95 @@ cv::Mat_<int> SVMClassifier::getLabels() const{
 }
 
 void SVMClassifier::setClassWeights(const int classLabel, const float weight){
-  weights_[classLabel] = weight;
+  mWeights[classLabel] = weight;
 }
 
 bool SVMClassifier::empty() const{
-  return svm_.empty();
+  return mSvm.empty();
 }
 
 bool SVMClassifier::isTrained() const{
-  return svm_->isTrained();
+  return mSvm->isTrained();
 }
 
 bool SVMClassifier::isClassifier() const{
-  return svm_->isClassifier();
+  return mSvm->isClassifier();
 }
 
 
 void SVMClassifier::load(const std::string& filename, const std::string& nodename){ }
 
 void SVMClassifier::save(const std::string& filename, const std::string& nodename) const{ }
+
+
+Classification* SVMClassifier::clone() const{
+  //TODO: clone
+  auto copy = new SVMClassifier();
+  return copy;
+}
+
+int SVMClassifier::getKernelType() const{
+  return mKernelType;
+}
+
+void SVMClassifier::setKernelType(int kernelType){
+  mKernelType = kernelType;
+}
+
+int SVMClassifier::getModelType() const{
+  return mModelType;
+}
+
+void SVMClassifier::setModelType(int modelType){
+  mModelType = modelType;
+}
+
+float SVMClassifier::getC() const{
+  return mC;
+}
+
+void SVMClassifier::setC(float c){
+  mC = c;
+}
+
+float SVMClassifier::getGamma() const{
+  return mGamma;
+}
+
+void SVMClassifier::setGamma(float gamma){
+  mGamma = gamma;
+}
+
+float SVMClassifier::getP() const{
+  return mP;
+}
+
+void SVMClassifier::setP(float p){
+  mP = p;
+}
+
+float SVMClassifier::getNu() const{
+  return mNu;
+}
+
+void SVMClassifier::setNu(float nu){
+  mNu = nu;
+}
+
+float SVMClassifier::getCoef() const{
+  return mCoef;
+}
+
+void SVMClassifier::setCoef(float coef){
+  mCoef = coef;
+}
+
+float SVMClassifier::getDegree() const{
+  return mDegree;
+}
+
+void SVMClassifier::setDegree(float degree){
+  mDegree = degree;
+}
+
 }

@@ -52,26 +52,20 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs){
   return *this;
 }
 
-void Kmeans::setup(cv::Mat_<float>& input, ClusteringParams* parameters){
-  ClusteringMethod::setup(input, parameters);
-  samples_ = input;
-  auto p = static_cast<KmeansParams*>(parameters);//might throw an exception
-  flags_ = p->flags;
-  nAttempts_ = p->nAttempts;
-  predicitonDistanceType_ = p->predicitonDistanceType;
+void Kmeans::learn(cv::Mat_<float>& input){
+  centroids_.release();
+  mSamples.release();
+  mClusters.clear();
 
-}
-
-void Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
-  setup(input, parameters);
+  setup(input);
   cv::Mat labels;
   setupLabelMatFromInitialization(labels);
   cv::TermCriteria term;
-  term.maxCount = maxIterations_;
+  term.maxCount = mMaxIterations;
   term.type = term.MAX_ITER;
 
   cv::Mat centroids = centroids_;
-  cv::kmeans(samples_, K_, labels, term, nAttempts_, flags_, centroids_);
+  cv::kmeans(mSamples, mK, labels, term, nAttempts_, flags_, centroids_);
 
   std::unordered_map<int, Cluster> clusters;
   for(int i = 0; i < labels.rows; ++i){
@@ -79,7 +73,7 @@ void Kmeans::learn(cv::Mat_<float>& input, ClusteringParams* parameters){
   }
   for(int i = 0; i < static_cast<int>(clusters.size()); ++i){
     auto cluster = clusters[i];
-    clusters_.push_back(cluster);
+    mClusters.push_back(cluster);
   }
 }
 
@@ -93,7 +87,7 @@ void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp)const{
 }
 
 std::vector<Cluster> Kmeans::getClustering() const{
-  return clusters_;
+  return mClusters;
 }
 
 void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
@@ -110,6 +104,10 @@ bool Kmeans::isTrained() const{
 
 bool Kmeans::isClassifier() const{
   return false;
+}
+
+void Kmeans::setup(cv::Mat_<float>& input){
+  mSamples = input;
 }
 
 void Kmeans::load(const std::string& filename, const std::string& nodename){
@@ -132,18 +130,36 @@ void Kmeans::save(const std::string& filename, const std::string& nodename)const
   stg.release();
 }
 
-void Kmeans::clear(){
-  centroids_.release();
-  samples_.release();
-  clusters_.clear();
+int Kmeans::getFlags() const{
+  return flags_;
+}
+
+void Kmeans::setFlags(int flags){
+  flags_ = flags;
+}
+
+int Kmeans::getNAttempts() const{
+  return nAttempts_;
+}
+
+void Kmeans::setNAttempts(int nAttempts){
+  nAttempts_ = nAttempts;
+}
+
+int Kmeans::getPredicitonDistanceType() const{
+  return predicitonDistanceType_;
+}
+
+void Kmeans::setPredicitonDistanceType(cv::NormTypes predicitonDistanceType){
+  predicitonDistanceType_ = predicitonDistanceType;
 }
 
 void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels){
-  if(clusters_.empty()) return;
-  labels = cv::Mat_<int>::zeros(samples_.rows, samples_.cols);
-  for(int c = 0; c < static_cast<int>(clusters_.size()); ++c){
-    for(int s = 0; s < static_cast<int>(clusters_[c].size()); ++s){
-      labels.at<int>(clusters_[c][s], 0) = c;
+  if(mClusters.empty()) return;
+  labels = cv::Mat_<int>::zeros(mSamples.rows, mSamples.cols);
+  for(int c = 0; c < static_cast<int>(mClusters.size()); ++c){
+    for(int s = 0; s < static_cast<int>(mClusters[c].size()); ++s){
+      labels.at<int>(mClusters[c][s], 0) = c;
     }
   }
 }

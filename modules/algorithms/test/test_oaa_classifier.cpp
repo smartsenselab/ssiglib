@@ -54,11 +54,12 @@ TEST(OAAClassifier, PLSBinaryClassification){
     104 , 105 ,
     99 , 101);
 
-  ssf::PLSParameters p;
-  p.factors = 2;
 
-  ssf::OAAClassifier<ssf::PLSClassifier> classifier;
-  classifier.learn(inp, labels, &p);
+  ssf::PLSClassifier underlying;
+  underlying.setNumberOfFactors(2);
+  ssf::OAAClassifier classifier;
+  classifier.setUnderlyingClassifier(underlying);
+  classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
@@ -83,11 +84,11 @@ TEST(OAAClassifier, PLSTernaryClassification){
   stg["inp"] >> inp;
   stg["labels"] >> labels;
 
-  ssf::PLSParameters p;
-  p.factors = 2;
-
-  ssf::OAAClassifier<ssf::PLSClassifier> classifier;
-  classifier.learn(inp, labels, &p);
+  ssf::PLSClassifier underlying;
+  underlying.setNumberOfFactors(2);
+  ssf::OAAClassifier classifier;
+  classifier.setUnderlyingClassifier(underlying);
+  classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
@@ -129,16 +130,18 @@ TEST(OAAClassifier, SVMTernaryClassification){
   stg["inp"] >> inp;
   stg["labels"] >> labels;
 
-  ssf::SVMParameters p;
-  p.kernelType = cv::ml::SVM::LINEAR;
-  p.modelType = cv::ml::SVM::C_SVC;
-  p.c = 0.1f;
-  p.termType = cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER;
-  p.maxIt = 10000;
-  p.eps = 1e-6f;
 
-  ssf::OAAClassifier<ssf::SVMClassifier> classifier;
-  classifier.learn(inp, labels, &p);
+  ssf::SVMClassifier underlying;
+  underlying.setKernelType(cv::ml::SVM::LINEAR);
+  underlying.setModelType(cv::ml::SVM::C_SVC);
+  underlying.setC(0.1f);
+  underlying.setTermType(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER);
+  underlying.setMaxIterations(8000);
+  underlying.setEpsilon(1e-6f);
+
+  ssf::OAAClassifier classifier;
+  classifier.setUnderlyingClassifier(underlying);
+  classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);

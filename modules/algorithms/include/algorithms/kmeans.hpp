@@ -42,22 +42,16 @@
 #include "clusteringMethod.hpp"
 
 namespace ssf{
-struct KmeansParams : ClusteringParams{
-  int flags = cv::KMEANS_RANDOM_CENTERS;
-  int nAttempts = 1;
-  int predicitonDistanceType = cv::NORM_L2;
-};
 
-class Kmeans : ClusteringMethod{
+class Kmeans : public ClusteringMethod{
 public:
   ALG_EXPORT Kmeans(void) = default;
   ALG_EXPORT virtual ~Kmeans(void) = default;
   Kmeans(const Kmeans& rhs);
   Kmeans& operator=(const Kmeans& rhs);
 
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClusteringParams* parameters) override;
   ALG_EXPORT void learn(
-    cv::Mat_<float>& input, ClusteringParams* parameters) override;
+    cv::Mat_<float>& input) override;
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                   cv::Mat_<float>& resp) const override;
@@ -70,10 +64,23 @@ public:
   ALG_EXPORT virtual bool isTrained() const override;
   ALG_EXPORT virtual bool isClassifier() const override;
 
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) override;
+
   ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
   ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
 
-  void clear();
+  ALG_EXPORT int getFlags() const;
+
+  ALG_EXPORT void setFlags(int flags);
+
+  ALG_EXPORT int getNAttempts() const;
+
+  ALG_EXPORT void setNAttempts(int nAttempts);
+
+  ALG_EXPORT int getPredicitonDistanceType() const;
+
+  ALG_EXPORT void setPredicitonDistanceType(cv::NormTypes predicitonDistanceType);
+
 private:
   //private members
   cv::Mat_<float> centroids_;
@@ -81,6 +88,7 @@ private:
   int nAttempts_;
   int predicitonDistanceType_;
 
+private:
   void setupLabelMatFromInitialization(cv::Mat& labels);
 
 };

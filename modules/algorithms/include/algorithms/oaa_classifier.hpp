@@ -40,144 +40,47 @@
 #define _SSF_ALGORITHMS_OAACLASSIFIER_HPP_
 #include "classification.hpp"
 #include <unordered_map>
-#include <set>
+#include <memory>
 
 namespace ssf{
 
 
-template<class UnderlyingClassifier>
-class OAAClassifier : Classification{
-  virtual void addLabels(cv::Mat_<int>& labels);
+class OAAClassifier : public Classification{
+private:
+  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
 public:
   OAAClassifier(void) = default;
   virtual ~OAAClassifier(void) = default;
 
-  virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
 
-  virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels, ClassificationParams* parameters) override;
-  virtual cv::Mat_<int> getLabels() const override;
-  virtual std::unordered_map<int, int> getLabelsOrdering() const override;
-  virtual void setClassWeights(const int classLabel, const float weight) override;
-  virtual bool empty() const override;
-  virtual bool isTrained() const override;
-  virtual bool isClassifier() const override;
-  virtual void load(const std::string& filename, const std::string& nodename) override;
-  virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual Classification* clone() const override;
+
+  ALG_EXPORT std::shared_ptr<Classification> getUnderlyingClassifier() const;
+  ALG_EXPORT void setUnderlyingClassifier(const Classification& underlyingClassifier);
+
 
 private:
   //private members
   std::unordered_map<int, int> labelOrderings_;
-  std::vector<UnderlyingClassifier> classifiers_;
+  std::vector<std::shared_ptr<Classification>> mClassifiers;
+  std::unique_ptr<Classification> mUnderlyingClassifier;
+
+
+private:
   cv::Mat_<int> labels_;
 
   bool trained_ = false;
 };
 
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::learn(cv::Mat_<float>& input,
-                                                cv::Mat_<int>& labels,
-                                                ClassificationParams* parameters){
-  if(!classifiers_.empty()){
-    classifiers_.clear();
-  }
-  samples_.release();
-  labels_.release();
-  labelOrderings_.clear();
-
-  samples_ = input;
-  addLabels(labels);
-  int c = -1;
-  for(int i = 0; i < labels.rows; ++i){
-    auto label = labels[0][i];
-    if(labelOrderings_.find(label)
-      ==
-      labelOrderings_.end()){
-      labelOrderings_[label] = ++c;
-    }
-  }
-
-  classifiers_.resize(labelOrderings_.size());
-  for(auto& labelIdx: labelOrderings_){
-    cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
-    for(int i = 0; i < labels.rows; ++i){
-      if(labels[i][0] == labelIdx.first){
-        localLabels[i][0] = 1;
-      } else{
-        localLabels[i][0] = -1;
-      }
-    }
-    classifiers_[labelIdx.second].learn(samples_, localLabels, parameters);
-  }
-  trained_ = true;
 }
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::predict(cv::Mat_<float>& inp,
-                                                  cv::Mat_<float>& resp) const{
-  resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(classifiers_.size()));
-
-  for(int r = 0; r < inp.rows; ++r){
-    int c = 0;
-    for(auto& classifier : classifiers_){
-      cv::Mat_<float> auxResp;
-      classifier.predict(inp, auxResp);
-      auto ordering = classifier.getLabelsOrdering();
-      const int idx = ordering[1];
-      resp[r][c] = auxResp[0][idx];
-      ++c;
-    }
-  }
-}
-
-template<class UnderlyingClassifier>
-cv::Mat_<int> OAAClassifier<UnderlyingClassifier>::getLabels() const{
-  return labels_;
-}
-
-template<class UnderlyingClassifier>
-std::unordered_map<int, int> OAAClassifier<UnderlyingClassifier>::getLabelsOrdering() const{
-  return labelOrderings_;
-}
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::setClassWeights(const int classLabel,
-                                                          const float weight){
-  //TODO:
-}
-
-template<class UnderlyingClassifier>
-bool OAAClassifier<UnderlyingClassifier>::empty() const{
-  return classifiers_.empty();
-}
-
-template<class UnderlyingClassifier>
-bool OAAClassifier<UnderlyingClassifier>::isTrained() const{
-  return trained_;
-}
-
-template<class UnderlyingClassifier>
-bool OAAClassifier<UnderlyingClassifier>::isClassifier() const{
-  return true;
-}
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::load(const std::string& filename, const std::string& nodename){
-  //TODO:
-}
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::save(const std::string& filename, const std::string& nodename) const{
-  //TODO:
-}
-
-template<class UnderlyingClassifier>
-void OAAClassifier<UnderlyingClassifier>::addLabels(cv::Mat_<int>& labels){
-  labels_.release();
-  labels_ = labels;
-}
-
-}
-
 #endif // !_SSF_ALGORITHMS_OAACLASSIFIER_HPP_
 

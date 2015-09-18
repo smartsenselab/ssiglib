@@ -40,31 +40,22 @@
 #define _SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
 #include <opencv2/core/mat.hpp>
 #include <algorithms/alg_defs.hpp>
+#include <functional>
 
 namespace ssf{
 
 class SimilarityBuilder{
-protected:
-  ALG_EXPORT virtual float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) = 0;
 public:
-  virtual ~SimilarityBuilder() = default;
-  ALG_EXPORT cv::Mat_<float> buildSimilarity(const cv::Mat_<float>& input);
+
+enum SimilarityType{
+  Cosine,
+  Correlation
 };
 
-class CosineSimilarity : public SimilarityBuilder{
-
-protected:
-  ALG_EXPORT float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) override;
-public:
-  ~CosineSimilarity() override = default;
-};
-
-class CorrelationSimilarity : public SimilarityBuilder{
-
-protected:
-  ALG_EXPORT float similarityFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y) override;
-public:
-  ~CorrelationSimilarity() override = default;
+  ALG_EXPORT static cv::Mat_<float> buildSimilarity(const cv::Mat_<float>& input,
+                                                    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> similarityFunction);
+  ALG_EXPORT static float cosineFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y);
+  ALG_EXPORT static float correlationFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y);
 };
 
 }

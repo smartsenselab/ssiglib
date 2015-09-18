@@ -46,18 +46,15 @@
 
 #include "alg_defs.hpp"
 
+/**
+
+*/
 namespace ssf{
 typedef std::vector<int> Cluster;
 
-struct ClusteringParams{
-  int K;
-  int maxIterations;
-};
-
 class ClusteringMethod : public
-  ssf::UnsupervisedLearningMethod<cv::Mat_<float>,
-                                  cv::Mat_<float>,
-                                  ClusteringParams>{
+  UnsupervisedLearningMethod<cv::Mat_<float>,
+                                  cv::Mat_<float>>{
 public:
   ALG_EXPORT ClusteringMethod(void) = default;
   ALG_EXPORT virtual ~ClusteringMethod(void) = default;
@@ -65,11 +62,9 @@ public:
   ALG_EXPORT virtual void addInitialClustering(
     const std::vector<Cluster>& init);
 
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) = 0;
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
 
-  ALG_EXPORT void learn(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) override = 0;
+  ALG_EXPORT void learn(cv::Mat_<float>& input) override = 0;
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp)const override = 0;
 
@@ -84,12 +79,28 @@ public:
   virtual void load(const std::string& filename, const std::string& nodename) override = 0;
   virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
 
+  ALG_EXPORT int getK() const{
+    return mK;
+  }
+
+  ALG_EXPORT void setK(int k){
+    mK = k;
+  }
+
+  ALG_EXPORT int getMaxIterations() const{
+    return mMaxIterations;
+  }
+
+  ALG_EXPORT void setMaxIterations(int maxIterations){
+    mMaxIterations = maxIterations;
+  }
+
 protected:
-  cv::Mat_<float> samples_;
-  std::vector<Cluster> clusters_;
-  int K_;
-  int maxIterations_;
-  bool ready_;
+  cv::Mat_<float> mSamples;
+  std::vector<Cluster> mClusters;
+  int mK;
+  int mMaxIterations;
+  bool mReady;
 };
 
 }

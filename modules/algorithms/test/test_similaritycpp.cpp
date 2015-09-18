@@ -44,9 +44,7 @@
 TEST(Cosine, PerpendicularitySimilarityTest){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 1 , 0);
 
-
-  ssf::CosineSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
   ASSERT_FLOAT_EQ(0, simMat[0][1]);
 }
@@ -55,8 +53,7 @@ TEST(Cosine, OposityTest){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 0 , -1);
 
 
-  ssf::CosineSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
   ASSERT_FLOAT_EQ(-1, simMat[0][1]);
 }
@@ -65,8 +62,7 @@ TEST(Cosine, SimpleTest){
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 3 , 4 , 1 , 2);
 
 
-  ssf::CosineSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
   ASSERT_FLOAT_EQ(0.9838699101f, simMat[0][1]);
 }
@@ -77,9 +73,7 @@ TEST(Cosine, OddDimensionalityTest){
     0 , 1 , 0 ,
     0 , -1 , 0);
 
-
-  ssf::CosineSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
   ASSERT_FLOAT_EQ(0, simMat[0][1]);
   ASSERT_FLOAT_EQ(0, simMat[0][2]);
@@ -92,8 +86,7 @@ TEST(Correlation, CorrelatedCheck){
     3 , 4);
 
 
-  ssf::CorrelationSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
   ASSERT_GT(simMat[0][1], 0.5);
 }
@@ -103,9 +96,7 @@ TEST(Correlation, InverseCorrelatedCheck){
     1 , 2 ,
     -1 , -2);
 
-
-  ssf::CorrelationSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
   ASSERT_LT(simMat[0][1], -0.5);
 }
@@ -116,8 +107,7 @@ TEST(Correlation, CorrelatedOddSized){
     6 , 18 , 14);
 
 
-  ssf::CorrelationSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
   ASSERT_GT(simMat[0][1], 0.5);
 }
@@ -128,8 +118,7 @@ TEST(Correlation, InverseCorrelatedOddSized){
     -6 , -18 , -14);
 
 
-  ssf::CorrelationSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
   ASSERT_LT(simMat[0][1], -0.5);
 }
@@ -140,8 +129,7 @@ TEST(Correlation, UncorrelatedOddSized){
     1 , -5 , 2);
 
 
-  ssf::CorrelationSimilarity simbuilder;
-  cv::Mat_<float> simMat = simbuilder.buildSimilarity(samples);
+  cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
   ASSERT_LT(abs(simMat[0][1]), 0.5);
 }

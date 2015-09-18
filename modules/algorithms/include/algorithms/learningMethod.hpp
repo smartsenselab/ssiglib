@@ -45,7 +45,7 @@
 
 namespace ssf{
 
-template<class InputType, class PredictionType, class LabelType, class SetupType>
+template<class InputType, class PredictionType, class LabelType>
 class SupervisedLearningMethod :
   public ssf::StatisticalModel<
     InputType,
@@ -54,8 +54,7 @@ class SupervisedLearningMethod :
 public:
   ALG_EXPORT virtual ~SupervisedLearningMethod(void) = default;
   ALG_EXPORT virtual void learn(InputType& input,
-                                LabelType& labels,
-                                SetupType* parameters) = 0;
+                                LabelType& labels) = 0;
 
   ALG_EXPORT virtual LabelType getLabels() const = 0;
 
@@ -71,7 +70,7 @@ private:
 
 };
 
-template<class InputType, class PredictionType, class SetupType>
+template<class InputType, class PredictionType>
 class UnsupervisedLearningMethod :
   public StatisticalModel<
     InputType,
@@ -79,8 +78,7 @@ class UnsupervisedLearningMethod :
 public:
   ALG_EXPORT virtual ~UnsupervisedLearningMethod(void) = default;
 
-  ALG_EXPORT virtual void learn(InputType& input,
-                                SetupType* parameters) = 0;
+  ALG_EXPORT virtual void learn(InputType& input) = 0;
 
   virtual bool empty() const override = 0;
   virtual bool isTrained() const override = 0;

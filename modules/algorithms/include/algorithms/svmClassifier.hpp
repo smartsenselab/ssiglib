@@ -44,27 +44,15 @@
 
 namespace ssf{
 
-struct SVMParameters : ClassificationParams{
-  int kernelType = cv::ml::SVM::LINEAR;
-  int modelType = cv::ml::SVM::C_SVC;
-  float c = 0.1f;
-  float gamma = 0.1f;
-  float p = 0.1f;
-  float nu = 0.1f;
-  float coef = 0.1f;
-  float degree = 0.1f;
-};
-
 class SVMClassifier : public Classification{
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input, ClassificationParams* parameters);
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input);
   ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
 public:
   ALG_EXPORT SVMClassifier(void);
   ALG_EXPORT virtual ~SVMClassifier(void);
 
   ALG_EXPORT virtual void learn(cv::Mat_<float>& input,
-                                cv::Mat_<int>& labels,
-                                ClassificationParams* parameters) override;
+                                cv::Mat_<int>& labels) override;
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                   cv::Mat_<float>& resp) const override;
@@ -80,20 +68,58 @@ public:
   ALG_EXPORT virtual bool isClassifier() const override;
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+
+  ALG_EXPORT virtual Classification* clone() const override;
+
+  ALG_EXPORT int getKernelType() const;
+
+  ALG_EXPORT void setKernelType(int kernelType);
+
+  ALG_EXPORT int getModelType() const;
+
+  ALG_EXPORT void setModelType(int modelType);
+
+  ALG_EXPORT float getC() const;
+
+  ALG_EXPORT void setC(float c);
+
+  ALG_EXPORT float getGamma() const;
+
+  ALG_EXPORT void setGamma(float gamma);
+
+  ALG_EXPORT float getP() const;
+
+  ALG_EXPORT void setP(float p);
+
+  ALG_EXPORT float getNu() const;
+
+  ALG_EXPORT void setNu(float nu);
+
+  ALG_EXPORT float getCoef() const;
+
+  ALG_EXPORT void setCoef(float coef);
+
+  ALG_EXPORT float getDegree() const;
+
+  ALG_EXPORT void setDegree(float degree);
+
 private:
   //private members
-  cv::Ptr<cv::ml::SVM> svm_;
-  int kernelType_;
-  int modelType_;
-  float c_;
-  float gamma_;
-  float p_;
-  float nu_;
-  float coef_;
-  float degree_;
-  cv::Mat classWeights_;
+  cv::Ptr<cv::ml::SVM> mSvm;
 
-  std::unordered_map<int, float> weights_;
+  int mKernelType = cv::ml::SVM::LINEAR;
+  int mModelType = cv::ml::SVM::C_SVC;
+  float mC = 0.1f;
+  float mGamma = 0.1f;
+  float mP = 0.1f;
+  float mNu = 0.1f;
+  float mCoef = 0.1f;
+  float mDegree = 0.1f;
+
+  cv::Mat mClassWeights;
+
+
+  std::unordered_map<int, float> mWeights;
 
 };
 

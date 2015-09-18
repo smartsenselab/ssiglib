@@ -48,26 +48,15 @@
 #include "classification.hpp"
 
 namespace ssf{
-struct ClassifierClusteringParams : ClusteringParams{
-  int m = 5;
-  int maximumK = static_cast<int>(1.0e4);
-  int d1Len = 0;;
-  ClassificationParams* classifierParams;
-};
-
 
 class ClassifierClustering : public ClusteringMethod,
                              public IterableMethod{
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void);
 
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input,
-                                ClusteringParams* parameters) override;
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) override;
 
-  ALG_EXPORT void addExtraSamples(cv::Mat_<float>& extra);
-
-  ALG_EXPORT void learn(cv::Mat_<float>& input,
-                        ClusteringParams* parameters) override;
+  ALG_EXPORT void learn(cv::Mat_<float>& input) override;
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                   cv::Mat_<float>& resp) const override = 0;
@@ -79,15 +68,39 @@ public:
 
   ALG_EXPORT bool iterate() override;
 
-  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override = 0;
+  ALG_EXPORT virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override = 0;
 
   ALG_EXPORT virtual void load(const std::string& filename,
                                const std::string& nodename) override = 0;
   ALG_EXPORT virtual void save(const std::string& filename,
                                const std::string& nodename)const override = 0;
 
+
+  /**
+  This function works as a setter for the natural samples and its split subsets distribution.
+
+  @param[natSamples]    this argument is the matrix contaning the features of the natural world.
+  @param[distribution]  this is a vector of two vector of integers, the vectors represents how the set is split in the two n1 and n2 subset for learning.
+  */
+  ALG_EXPORT void addNaturalWorld(cv::Mat_<float>& natSamples, std::vector<std::vector<int>>& distribution);
+
+  ALG_EXPORT int getInitialK() const;
+
+  ALG_EXPORT void setInitialK(int mInitialK1);
+
+  ALG_EXPORT int getMValue() const;
+
+  ALG_EXPORT void setMValue(int m);
+
+  ALG_EXPORT std::vector<std::vector<int>> getDiscovery() const;
+
+  ALG_EXPORT void setDiscoveryConfiguration(const
+    std::vector<std::vector<int>>& discoveryConfiguration);
+
+  ALG_EXPORT virtual void addClassifier(Classification& classifier) = 0;
+
 protected:
-  virtual void precondition() = 0;
+  ALG_EXPORT virtual void precondition();
 
   virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;
   virtual void initializeClassifiers() = 0;
@@ -106,18 +119,19 @@ protected:
   ) = 0;
 
   //Attributes /////////
+
   cv::Mat_<float> mNaturalSamples;
   int mInitialK = 0;
   int mMaximumK = 100;
-  int m_ = 5;
-  int it_ = 0;
-  std::vector<std::vector<int>> discovery_;
-  std::vector<std::vector<int>> natural_;
-  ClassificationParams* classificationParams_ = nullptr;
+  int mMValue = 5;
+  int mIt = 0;
 
-  std::vector<Cluster> clustersOld_, newClusters_;
-  std::vector<std::vector<float>> clustersResponses_;
-  std::vector<int> clustersIds_;
+  std::vector<std::vector<int>> mDiscovery;
+  std::vector<std::vector<int>> mNatural;
+
+  std::vector<Cluster> mClustersOld, mNewClusters;
+  std::vector<std::vector<float>> mClustersResponses;
+  std::vector<int> mClustersIds;
 
 private:
   //private members
