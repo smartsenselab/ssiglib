@@ -68,7 +68,7 @@ public:
 
   ALG_EXPORT virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  ALG_EXPORT virtual void addClassifier(Classification& classifier) override;
+  ALG_EXPORT virtual void setClassifier(Classification& classifier) override;
 
   ALG_EXPORT void setClusterRepresentationType(ClusterRepresentationType type);
 

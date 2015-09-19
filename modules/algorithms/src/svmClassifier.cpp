@@ -137,8 +137,19 @@ void SVMClassifier::save(const std::string& filename, const std::string& nodenam
 
 
 Classification* SVMClassifier::clone() const{
-  //TODO: clone
   auto copy = new SVMClassifier();
+  copy->setMaxIterations(getMaxIterations());
+  copy->setC(getC());
+  copy->setCoef(getCoef());
+  copy->setDegree(getDegree());
+  copy->setGamma(getGamma());
+  copy->setKernelType(getKernelType());
+  copy->setModelType(getModelType());
+  copy->setNu(getNu());
+  copy->setEpsilon(getEpsilon());
+  copy->setTermType(getTermType());
+  copy->setP(getP());
+
   return copy;
 }
 

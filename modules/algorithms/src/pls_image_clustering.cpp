@@ -69,7 +69,7 @@ void PLSImageClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
   centroidsMatrix = centroids;
 }
 
-void PLSImageClustering::addClassifier(Classification& classifier){
+void PLSImageClustering::setClassifier(Classification& classifier){
   mClassifier = std::unique_ptr<OAAClassifier>
     (static_cast<OAAClassifier*>(classifier.clone()));
 }

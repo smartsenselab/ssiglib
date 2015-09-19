@@ -97,7 +97,7 @@ public:
   ALG_EXPORT void setDiscoveryConfiguration(const
     std::vector<std::vector<int>>& discoveryConfiguration);
 
-  ALG_EXPORT virtual void addClassifier(Classification& classifier) = 0;
+  ALG_EXPORT virtual void setClassifier(Classification& classifier) = 0;
 
 protected:
   ALG_EXPORT virtual void precondition();

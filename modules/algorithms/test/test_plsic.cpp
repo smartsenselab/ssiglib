@@ -79,7 +79,7 @@ TEST(PLSIC, CorrelationClusteringTest){
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setMValue(5);
   clustering.setMaxIterations(8);
-  clustering.addClassifier(oaaclassifier);
+  clustering.setClassifier(oaaclassifier);
 
   std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
   std::vector<ssf::Cluster> natVector = {{},{}};
@@ -154,7 +154,7 @@ TEST(PLSIC, CosineClusteringTest){
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setMValue(5);
   clustering.setMaxIterations(8);
-  clustering.addClassifier(oaaclassifier);
+  clustering.setClassifier(oaaclassifier);
 
   std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
 

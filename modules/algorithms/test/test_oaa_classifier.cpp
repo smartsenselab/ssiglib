@@ -136,7 +136,7 @@ TEST(OAAClassifier, SVMTernaryClassification){
   underlying.setModelType(cv::ml::SVM::C_SVC);
   underlying.setC(0.1f);
   underlying.setTermType(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER);
-  underlying.setMaxIterations(8000);
+  underlying.setMaxIterations(10000);
   underlying.setEpsilon(1e-6f);
 
   ssf::OAAClassifier classifier;
