@@ -70,7 +70,8 @@ void SVMClassifier::setup(cv::Mat_<float>& input){
   mSvm->setType(mModelType);
   mSvm->setKernel(mKernelType);
   mSvm->setDegree(mDegree);
-  mSvm->setClassWeights(mClassWeights);
+  if(!mClassWeights.empty())
+    mSvm->setClassWeights(mClassWeights);
   mSvm->setTermCriteria(termCrit);
   mSvm->setGamma(mGamma);
   mSvm->setCoef0(mCoef);

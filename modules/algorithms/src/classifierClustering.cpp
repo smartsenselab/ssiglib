@@ -60,15 +60,14 @@ setup(cv::Mat_<float>& input){
 
   initializeClusterings(mDiscovery[0]);
   initializeClassifiers();
-  trainClassifiers(mClusters, mNatural[0]);
+  trainClassifiers(mSamples, mClusters, mNatural[0]);
 
-  assignment(mMValue,
+  assignment(mSamples,
+             mMValue,
              static_cast<int>(mClusters.size()),
              mDiscovery[1],
-             mClustersResponses,
-             mClustersIds,
-             mNewClusters);
-  trainClassifiers(mClusters, mNatural[1]);
+             mClustersResponses, mClustersIds, mNewClusters);
+  trainClassifiers(mSamples, mClusters, mNatural[1]);
 
   mClustersOld = mClusters;
 
@@ -85,13 +84,12 @@ iterate(){
   mClusters = mNewClusters;
   mNewClusters.clear();
 
-  assignment(mMValue,
+  assignment(mSamples,
+             mMValue,
              static_cast<int>(mClusters.size()),
              mDiscovery[order],
-             mClustersResponses,
-             mClustersIds,
-             mNewClusters);
-  trainClassifiers(mNewClusters, mNatural[order]);
+             mClustersResponses, mClustersIds, mNewClusters);
+  trainClassifiers(mSamples, mNewClusters, mNatural[order]);
 
   mClustersOld = mClusters;
 
@@ -136,11 +134,11 @@ void ClassifierClustering::setDiscoveryConfiguration(const std::vector<std::vect
 
 void ClassifierClustering::precondition(){
   if(mSamples.rows <= 0){
-    throw std::exception("Argument not Set");
+    throw std::length_error("argument not set");
   }
 
   if(mDiscovery.size() <= 0)
-    throw std::exception("Argument not Set");
+    throw std::length_error("Argument not Set");
 }
 
 void ClassifierClustering::

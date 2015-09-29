@@ -68,8 +68,9 @@ void PLS::runpls(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
   nfeatures = X.cols;
 
   if(X.rows != Y.rows){
-    fprintf(stderr, "Inconsistent number of rows for matrices X (%d) and Y (%d)", X.rows, Y.rows);
-    throw(std::exception());
+    char msg[2048];
+    sprintf(msg, "Inconsistent number of rows for matrices X (%d) and Y (%d)", X.rows, Y.rows);
+    throw(std::invalid_argument(msg));
   }
 
   maxsteps = 100;
@@ -175,8 +176,9 @@ void PLS::runpls(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
         dt += (t0(kk, 0) - t(kk, 0)) * (t0(kk, 0) - t(kk, 0));
       }
       if(cvIsNaN(static_cast<double>(dt))){
-        fprintf(stderr, "Problem during PLS: NaN\n");
-        throw(1);
+        char msg[2048];
+        sprintf(msg, "Problem during PLS: NaN\n");
+        throw std::logic_error(msg);
       }
 
       step++;
@@ -264,8 +266,9 @@ void PLS::computeBstar(int nfactors){
   cv::Mat_<float> tmpM;
 
   if(nfactors > this->nfactors){
-    fprintf(stderr, "Tried %d, but the maximum number of factors is %d", nfactors, this->nfactors);
-    throw(1);
+    char msg[2048];
+    sprintf(msg, "Tried %d, but the maximum number of factors is %d", nfactors, this->nfactors);
+    throw(std::logic_error(msg));
   }
 
   tmpM = (T.colRange(0, nfactors).t() * T.colRange(0, nfactors)).inv();
@@ -283,8 +286,9 @@ void PLS::Projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfact
   int i, y;
 
   if(nfactors > this->nfactors){
-    fprintf(stderr, "Maximum number of factors (%d) has been exceeded", this->nfactors);
-    throw(1);
+    char msg[2048];
+    sprintf(msg, "Maximum number of factors (%d) has been exceeded", this->nfactors);
+    throw(std::logic_error(msg));
   }
 
   projX.create(X.rows, nfactors);
@@ -314,7 +318,7 @@ void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
     aux = X.row(y);
 
     if(aux.cols != Xmean.cols){
-      throw("Inconsistent data matrix");
+      throw std::logic_error("Inconsistent data matrix");
     }
 
     // zscore
@@ -335,7 +339,7 @@ void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
 void PLS::Save(cv::FileStorage& storage){
 
   if(storage.isOpened() == false){
-    throw("Invalid file storage!");
+    throw std::logic_error("Invalid file storage!");
   }
 
   storage << "PLS" << "{";
@@ -411,8 +415,9 @@ float PLS::regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses){
   int i;
 
   if(Y.rows != responses.rows){
-    fprintf(stderr, "Incorrect number of rows");
-    throw(1);
+    char msg[2048];
+    sprintf(msg, "Incorrect number of rows");
+    throw std::logic_error(msg);
   }
 
   for(i = 0; i < Y.rows; i++){
@@ -438,13 +443,15 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   int minIdx;
 
   if(Y.cols != 1){
-    fprintf(stderr, "Cross-validation only works for a single response variable!");
-    throw(1);
+    char msg[2048];
+    sprintf(msg, "Cross-validation only works for a single response variable!");
+    throw std::length_error(msg);
   }
 
   if(X.rows != Y.rows){
-    fprintf(stderr, "Inconsistent number of samples with responses!");
-    throw(1);
+    char msg[2048];
+    sprintf(msg, "Inconsistent number of samples with responses!");
+    throw std::length_error(msg);
   }
 
   nsamples = X.rows;
@@ -489,7 +496,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
     tmpPLS = new PLS();
 
     // estimate model
-    fprintf(stdout, "Building PLS model for fold %llu/%d", k + 1, folds);
+    //fprintf(stdout, "Building PLS model for fold %llu/%d", k + 1, folds);
     auto xx = Xtmp.clone();
     auto yy = Ytmp.clone();
     tmpPLS->runpls(xx, yy, maxDims);
@@ -497,7 +504,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
     // run for each number of dimensions
     for(j = minDims; j <= maxDims; j += step){
 
-      fprintf(stdout, "CV in PLS [%d factors, fold %llu/%d]", j, k + 1, folds);
+      //fprintf(stdout, "CV in PLS [%d factors, fold %llu/%d]", j, k + 1, folds);
 
       // compute bstar
       tmpPLS->computeBstar(j);
@@ -531,7 +538,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   if(tmpPLS != nullptr)
     delete tmpPLS;
 
-  fprintf(stdout, "Building PLS model with %d factors", minIdx);
+  //fprintf(stdout, "Building PLS model with %d factors", minIdx);
 
   // build the actual model
   this->runpls(X, Y, minIdx);

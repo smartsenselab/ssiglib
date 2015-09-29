@@ -101,8 +101,7 @@ protected:
 
   ALG_EXPORT virtual void initializeClassifiers() override;
 
-  ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                           const std::vector<int>& negativeLearningSet) override;
+  ALG_EXPORT virtual void trainClassifiers(const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters, const std::vector<int>& negativeLearningSet) override;
 
   ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
                                            const std::vector<int>& negativeLearningSet,
@@ -112,13 +111,13 @@ protected:
 
   ALG_EXPORT virtual void postCondition() override;
 
-  ALG_EXPORT virtual void assignment(
-    const int clusterSize,
-    const int nClusters,
-    const std::vector<int>& assignmentSet,
-    std::vector<std::vector<float>>& clusterResponses,
-    std::vector<int>& clusterIds,
-    std::vector<Cluster>& out) override;
+  ALG_EXPORT virtual void assignment(const cv::Mat_<float>& samples,
+                                     const int clusterSize,
+                                     const int nClusters,
+                                     const std::vector<int>& assignmentSet,
+                                     std::vector<std::vector<float>>& clusterResponses,
+                                     std::vector<int>& clusterIds,
+                                     std::vector<Cluster>& out) override;
 
   ALG_EXPORT virtual void merge(std::vector<Cluster>& clusters);
 

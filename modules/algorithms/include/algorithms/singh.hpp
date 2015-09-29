@@ -69,23 +69,17 @@ protected:
   ALG_EXPORT virtual void precondition() override;
   ALG_EXPORT virtual void initializeClusterings(const std::vector<int>& assignmentSet) override;
   ALG_EXPORT virtual void initializeClassifiers() override;
-  ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                           const std::vector<int>& negativeLearningSet) override;
+  ALG_EXPORT virtual void trainClassifiers(const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters, const std::vector<int>& negativeLearningSet) override;
   ALG_EXPORT virtual bool isFinished() override;
   ALG_EXPORT virtual void postCondition() override;
-  ALG_EXPORT virtual void assignment(const int clusterSize,
-                                     const int nClusters,
-                                     const std::vector<int>& assignmentSet,
-                                     std::vector<std::vector<float>>& clustersResponses,
-                                     std::vector<int>& clustersIds,
-                                     std::vector<Cluster>& out) override;
+  ALG_EXPORT virtual void assignment(const cv::Mat_<float>& samples, const int clusterSize, const int nClusters, const std::vector<int>& assignmentSet, std::vector<std::vector<float>>& clustersResponses, std::vector<int>& clustersIds, std::vector<Cluster>& out) override;
 
 private:
   //private members
   float lambda_;
 private:
   bool trained_;
-  std::vector<Classification*> mClassifier;
+  std::vector<Classification*> mClassifiers;
   std::unique_ptr<Classification> mUnderlyingClassifier;
 };
 

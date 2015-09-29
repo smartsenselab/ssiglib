@@ -104,19 +104,21 @@ protected:
 
   virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;
   virtual void initializeClassifiers() = 0;
-  virtual void trainClassifiers(const std::vector<Cluster>& clusters,
-                                const std::vector<int>& negativeLearningSet) = 0;
+  virtual void trainClassifiers(
+    const cv::Mat_<float>& samples,
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet) = 0;
   virtual bool isFinished() = 0;
 
   virtual void postCondition() = 0;
 
-  virtual void assignment(const int clusterSize,
+  virtual void assignment(const cv::Mat_<float>& samples,
+                          const int clusterSize,
                           const int nClusters,
                           const std::vector<int>& assignmentSet,
                           std::vector<std::vector<float>>& clusterResponses,
                           std::vector<int>& clusterIds,
-                          std::vector<Cluster>& out
-  ) = 0;
+                          std::vector<Cluster>& out) = 0;
 
   //Attributes /////////
 

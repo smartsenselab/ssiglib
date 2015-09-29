@@ -118,9 +118,9 @@ void PLSImageClustering::initializeClusterings(
 void PLSImageClustering::initializeClassifiers(){}
 
 
-void PLSImageClustering::trainClassifiers(
-  const std::vector<Cluster>& clusters,
-  const std::vector<int>& negativeLearningSet){
+void PLSImageClustering::trainClassifiers(const cv::Mat_<float>& samples,
+                                          const std::vector<Cluster>& clusters,
+                                          const std::vector<int>& negativeLearningSet){
   trainClassifiers(clusters, negativeLearningSet, (*mClassifier));
 }
 
@@ -166,13 +166,7 @@ bool PLSImageClustering::isFinished(){
 void PLSImageClustering::postCondition(){}
 
 
-void PLSImageClustering::assignment(
-  const int clusterSize,
-  const int nClusters,
-  const std::vector<int>& assignmentSet,
-  std::vector<std::vector<float>>& clustersResponses,
-  std::vector<int>& clustersIds,
-  std::vector<Cluster>& out){
+void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int clusterSize, const int nClusters, const std::vector<int>& assignmentSet, std::vector<std::vector<float>>& clustersResponses, std::vector<int>& clustersIds, std::vector<Cluster>& out){
 
   const int C = static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
   const int nLabels = static_cast<int>(mClassifier->getLabelsOrdering().size());
@@ -182,7 +176,7 @@ void PLSImageClustering::assignment(
   std::vector<int> ids;
   cv::Mat_<float> responsesMatrix(
     static_cast<int>(assignmentSet.size()), nLabels);
-  
+
   for(int sample = 0; sample < static_cast<int>(assignmentSet.size()); ++sample){
     cv::Mat_<float> response;
     cv::Mat_<float> feat = mSamples.row(assignmentSet[sample]);

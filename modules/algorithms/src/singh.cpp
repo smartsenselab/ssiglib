@@ -40,7 +40,7 @@
 
 namespace ssf{
 Singh::~Singh(){
-  for(auto& label : mClassifier)
+  for(auto& label : mClassifiers)
     delete label;
 }
 
@@ -48,12 +48,12 @@ Singh::~Singh(){
 void Singh::predict(
   cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const{
-  resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifier.size()));
+  resp = cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   for(int r = 0; r < inp.rows; ++r){
-    for(int i = 0; i < static_cast<int>(mClassifier.size()); ++i){
+    for(int i = 0; i < static_cast<int>(mClassifiers.size()); ++i){
       cv::Mat_<float> sampleResp;
       cv::Mat_<float> sample = inp.row(r);
-      mClassifier[i]->predict(sample, sampleResp);
+      mClassifiers[i]->predict(sample, sampleResp);
       resp[r][i] = sampleResp[0][0];
     }
   }
@@ -61,7 +61,7 @@ void Singh::predict(
 
 
 bool Singh::empty() const{
-  return mClassifier.empty();
+  return mClassifiers.empty();
 }
 
 
@@ -151,28 +151,28 @@ void Singh::initializeClusterings(
 
 
 void Singh::initializeClassifiers(){
-  mClassifier.resize(mClusters.size());
-  for(int c = 0; c < static_cast<int>(mClassifier.size()); c++)
-    mClassifier[c] = nullptr;
+  mClassifiers.resize(mClusters.size());
+  for(int c = 0; c < static_cast<int>(mClassifiers.size()); c++)
+    mClassifiers[c] = nullptr;
 }
 
 
-void Singh::trainClassifiers(
-  const std::vector<Cluster>& clusters,
-  const std::vector<int>& negativeLearningSet){
+void Singh::trainClassifiers(const cv::Mat_<float>& samples,
+                             const std::vector<Cluster>& clusters,
+                             const std::vector<int>& negativeLearningSet){
   cv::Mat_<float> natural;
   for(int id : negativeLearningSet){
     natural.push_back(mNaturalSamples.row(id));
   }
-  mClassifier.clear();
-  mClassifier.resize(clusters.size());
+  mClassifiers.clear();
+  mClassifiers.resize(clusters.size());
   for(int clusterNum = 0; clusterNum < static_cast<int>(clusters.size()); ++clusterNum){
     //Initialization
-    if(mClassifier[clusterNum] != nullptr){
-      delete mClassifier[clusterNum];
-      mClassifier[clusterNum] = mUnderlyingClassifier->clone();
+    if(mClassifiers[clusterNum] != nullptr){
+      delete mClassifiers[clusterNum];
+      mClassifiers[clusterNum] = mUnderlyingClassifier->clone();
     } else{
-      mClassifier[clusterNum] = mUnderlyingClassifier->clone();
+      mClassifiers[clusterNum] = mUnderlyingClassifier->clone();
     }
   }
   for(int clusterNum = 0; clusterNum < static_cast<int>(clusters.size()); ++clusterNum){
@@ -191,7 +191,7 @@ void Singh::trainClassifiers(
       ++i;
     }
     trainSamples.push_back(natural);
-    mClassifier[clusterNum]->learn(trainSamples, labels);
+    mClassifiers[clusterNum]->learn(trainSamples, labels);
   }
 }
 
@@ -215,12 +215,7 @@ bool Singh::isFinished(){
 void Singh::postCondition(){}
 
 
-void Singh::assignment(const int clusterSize,
-                       const int nClusters,
-                       const std::vector<int>& assignmentSet,
-                       std::vector<std::vector<float>>& clustersResponses,
-                       std::vector<int>& clustersIds,
-                       std::vector<Cluster>& out){
+void Singh::assignment(const cv::Mat_<float>& samples, const int clusterSize, const int nClusters, const std::vector<int>& assignmentSet, std::vector<std::vector<float>>& clustersResponses, std::vector<int>& clustersIds, std::vector<Cluster>& out){
   std::vector<std::pair<int, float>> responsesVec;
   std::vector<Cluster> clusters;
   std::vector<int> ids;
@@ -234,8 +229,8 @@ void Singh::assignment(const int clusterSize,
     for(int i = 0; i < static_cast<int>(assignmentSet.size()); i++){
       cv::Mat_<float> response;
       cv::Mat_<float> featMat = mSamples.row(assignmentSet[i]);
-      mClassifier[c]->predict(featMat, response);
-      auto labelOrdering = mClassifier[c]->getLabelsOrdering();
+      mClassifiers[c]->predict(featMat, response);
+      auto labelOrdering = mClassifiers[c]->getLabelsOrdering();
       int labelIdx = labelOrdering[1];
       if(response[0][labelIdx] > -1){
         firings++;
