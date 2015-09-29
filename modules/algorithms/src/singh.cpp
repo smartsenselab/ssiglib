@@ -104,10 +104,10 @@ void Singh::save(const std::string& filename,
 void Singh::precondition(){
   ClassifierClustering::precondition();
   if(lambda_ < 0){
-    throw(std::exception("Invalid Argument"));
+    throw(std::invalid_argument("Invalid Argument for lambda"));
   }
   if(mNatural.size() != 2){
-    throw std::exception("Invalid Value for Argument");
+    throw std::length_error("Size of Natural Subsets should be two ");
   }
   //TODO: precondition
 }
