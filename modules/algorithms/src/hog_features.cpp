@@ -51,7 +51,40 @@ DescriptorInterface* HOG::clone() const{
   return copy;
 }
 
-void HOG::extract(const cv::Mat& img, cv::Mat& out){ }
+void HOG::extract(const cv::Mat& img, cv::Mat& out){
+  cv::Mat gradImg, angleOfs;
+
+  if(mBlockConfiguration.width % img.cols != 0){
+    throw std::invalid_argument("Image size must be multiple of block size");
+  }
+  if(mBlockConfiguration.height % img.rows != 0){
+    throw std::invalid_argument("Image size must be multiple of block size");
+  }
+
+  auto integralImages = getIntegralGradientImage(img);
+  const int blocksPerRows = img.rows / mBlockConfiguration.height;
+  const int blocksPerCols = img.cols / mBlockConfiguration.width;
+  const int nblocks = blocksPerCols * blocksPerRows;
+  const int nCellsPerBlock = mCellConfiguration.area();
+  const int dimensionsPerBlock = mNumberOfBins * nCellsPerBlock;
+  out.create(1, dimensionsPerBlock * nblocks, CV_32F);
+  out = 0;
+  int blockNumber = 0;
+  for(int row = 0; row < img.rows; row += mBlockConfiguration.height){
+    for(int col = 0; col < img.cols; col += mBlockConfiguration.width){
+      cv::Mat_<float> cellDescriptor;
+      getCellDescriptor(row, col, integralImages, cellDescriptor);
+
+      auto blockFeat = out(
+        cv::Range(0, 1),
+        cv::Range(
+          blockNumber * dimensionsPerBlock,
+          (blockNumber + 1) * dimensionsPerBlock));
+      cellDescriptor.copyTo(blockFeat);
+      ++blockNumber;
+    }
+  }
+}
 
 bool HOG::hasVisualization(){
   return true;

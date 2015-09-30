@@ -43,27 +43,27 @@
 
 #include "algorithms/hog_features.hpp"
 
-TEST(HOG, HogTest){
-  ssf::HOG hog;
-
-  cv::Mat img, vis;
-  cv::Mat_<float> out;
-
-  
-
-  hog.setBlockConfiguration({16, 16});
-  hog.setCellConfiguration({1, 1});
-  hog.setNumberOfBins(9);
-
-  img = cv::imread("hor.png");
-  hog.extract(img, out, vis);
-
-  img = cv::imread("vert.png");
-  hog.extract(img, out, vis);
-
-  img = cv::imread("diag.png");
-  hog.extract(img, out, vis);
-
-  img = cv::imread("hog.png");
-  hog.extract(img, out, vis);
-}
+//TEST(HOG, HogTest){
+//  ssf::HOG hog;
+//
+//  cv::Mat img, vis;
+//  cv::Mat_<float> out;
+//
+//  
+//
+//  hog.setBlockConfiguration({16, 16});
+//  hog.setCellConfiguration({1, 1});
+//  hog.setNumberOfBins(9);
+//
+//  img = cv::imread("hor.png");
+//  hog.extract(img, out, vis);
+//
+//  img = cv::imread("vert.png");
+//  hog.extract(img, out, vis);
+//
+//  img = cv::imread("diag.png");
+//  hog.extract(img, out, vis);
+//
+//  img = cv::imread("2.png");
+//  hog.extract(img, out, vis);
+//}
