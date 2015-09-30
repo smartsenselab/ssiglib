@@ -41,6 +41,7 @@
 
 #include <memory>
 #include <opencv2/core/core.hpp>
+#include "alg_defs.hpp"
 
 namespace ssf{
 class DescriptorInterface;

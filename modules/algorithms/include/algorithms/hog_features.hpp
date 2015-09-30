@@ -38,22 +38,48 @@
 
 #ifndef _SSF_ALGORITHMS_HOG_FEATURES_HPP_
 #define _SSF_ALGORITHMS_HOG_FEATURES_HPP_
+#include "descriptor_interface.hpp"
 
 namespace ssf{
 
-	class HOG{
-	
-	public:
-		HOG(void);
-		virtual ~HOG(void);
-		HOG(const HOG& rhs);
-		HOG& operator=(const HOG& rhs);
+class HOG : public DescriptorInterface{
+  cv::Size mBlockConfiguration;
+  cv::Size mCellConfiguration;
+  int mNumberOfBins;
+public:
+  ALG_EXPORT HOG() = default;
+  ALG_EXPORT virtual ~HOG(void) = default;
 
-	private:
-		//private members
+  ALG_EXPORT virtual DescriptorInterface* clone() const override;
+  ALG_EXPORT virtual void extract(const cv::Mat& img, cv::Mat& out) override;
+  ALG_EXPORT virtual bool hasVisualization() override;
+  ALG_EXPORT virtual void extract(const cv::Mat& img, cv::Mat& out, cv::Mat& visualization) override;
 
-	};
+  ALG_EXPORT cv::Size getBlockConfiguration() const;
+
+  ALG_EXPORT void setBlockConfiguration(const cv::Size& blockConfiguration);
+
+  ALG_EXPORT cv::Size getCellConfiguration() const;
+
+  ALG_EXPORT void setCellConfiguration(const cv::Size& cellConfiguration);
+
+  ALG_EXPORT int getNumberOfBins() const;
+
+  ALG_EXPORT void setNumberOfBins(int numberOfBins);
+
+
+private:
+  //private members
+
+  std::vector<cv::Mat_<float>> getIntegralGradientImage(const cv::Mat& img) const;
+
+  void getCellDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
+
+  void generateBlockVisualization(const cv::Mat_<float>& blockFeatures, cv::Mat& visualization);
+
+};
 
 }
 
 #endif // !_SSF_ALGORITHMS_HOG_FEATURES_HPP_
+

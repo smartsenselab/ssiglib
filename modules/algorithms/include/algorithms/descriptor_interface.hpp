@@ -39,6 +39,7 @@
 #ifndef _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 #define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
+#include "alg_defs.hpp"
 #include "feature_extraction.hpp"
 
 namespace cv{
@@ -50,15 +51,14 @@ namespace ssf{
 class DescriptorInterface{
 
 public:
-  virtual ~DescriptorInterface(void) = 0;
+  virtual ~DescriptorInterface(void) = default;
   virtual DescriptorInterface* clone() const = 0;
-
-protected:
   virtual void extract(const cv::Mat& img, cv::Mat& out) = 0;
-
-  friend void FeatureExtraction::next(cv::Mat& out);
-private:
+  virtual bool hasVisualization() = 0;
+  virtual void extract(const cv::Mat& img, cv::Mat& out, cv::Mat& visualization) = 0;
+protected:
   DescriptorInterface() = default;
+  
 };
 
 }
