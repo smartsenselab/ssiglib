@@ -61,7 +61,7 @@ void FeatureExtraction::next(cv::Mat& out){
   if(!hasNext())
     std::runtime_error("The method has no more patch to process");
   auto patchImg = mImage(mPatches[mPos]);
-  mDescriptor->extract(patchImg, out);
+//  mDescriptor->extract(patchImg, out);
   ++mPos;
 }
 

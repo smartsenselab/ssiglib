@@ -39,31 +39,46 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
 
 #include "algorithms/hog_features.hpp"
 
-//TEST(HOG, HogTest){
-//  ssf::HOG hog;
-//
-//  cv::Mat img, vis;
-//  cv::Mat_<float> out;
-//
-//  
-//
-//  hog.setBlockConfiguration({16, 16});
-//  hog.setCellConfiguration({1, 1});
-//  hog.setNumberOfBins(9);
-//
-//  img = cv::imread("hor.png");
-//  hog.extract(img, out, vis);
-//
-//  img = cv::imread("vert.png");
-//  hog.extract(img, out, vis);
-//
-//  img = cv::imread("diag.png");
-//  hog.extract(img, out, vis);
-//
-//  img = cv::imread("2.png");
-//  hog.extract(img, out, vis);
-//}
+TEST(HOG, HogTest){
+  ssf::HOG hog;
+
+  cv::Mat img;
+  cv::Mat_<float> out;
+  cv::Mat_<float> cvOut;
+  std::vector<float> descriptors;
+
+
+  hog.setBlockConfiguration({8, 8});
+  hog.setCellConfiguration({1, 1});
+  hog.setNumberOfBins(9);
+
+  img = cv::imread("diag2.png");
+  hog.setup(img);
+  hog.extract({0, 0, img.cols, img.rows}, out);
+
+  cv::HOGDescriptor cvHogDiag({512, 512}, {8, 8}, {8, 8}, {8, 8}, 9);
+  cvHogDiag.compute(img, descriptors);
+  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
+  auto sim = cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out));
+  ASSERT_GE(sim, 0.8f);
+
+  hog.setBlockConfiguration({16, 16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+
+  img = cv::imread("Lena_bw.png");
+  hog.setup(img);
+  hog.extract({0, 0, img.cols, img.rows}, out);
+
+  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
+  cvHog.compute(img, descriptors);
+  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
+  sim = cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out));
+
+  ASSERT_GE(sim, 0.70f);
+}

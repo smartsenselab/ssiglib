@@ -46,23 +46,23 @@ void OAAClassifier::learn(cv::Mat_<float>& input,
     mClassifiers.clear();
   }
   samples_.release();
-  labels_.release();
-  labelOrderings_.clear();
+  mLabels.release();
+  mLabelOrderings.clear();
 
   samples_ = input;
   addLabels(labels);
   int c = -1;
   for(int i = 0; i < labels.rows; ++i){
     auto label = labels[0][i];
-    if(labelOrderings_.find(label)
+    if(mLabelOrderings.find(label)
       ==
-      labelOrderings_.end()){
-      labelOrderings_[label] = ++c;
+      mLabelOrderings.end()){
+      mLabelOrderings[label] = ++c;
     }
   }
 
-  mClassifiers.resize(labelOrderings_.size());
-  for(auto& labelIdx : labelOrderings_){
+  mClassifiers.resize(mLabelOrderings.size());
+  for(auto& labelIdx : mLabelOrderings){
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
     for(int i = 0; i < labels.rows; ++i){
       if(labels[i][0] == labelIdx.first){
@@ -75,7 +75,7 @@ void OAAClassifier::learn(cv::Mat_<float>& input,
       (mUnderlyingClassifier->clone());
     mClassifiers[labelIdx.second]->learn(samples_, localLabels);
   }
-  trained_ = true;
+  mTrained = true;
 }
 
 
@@ -98,12 +98,12 @@ void OAAClassifier::predict(cv::Mat_<float>& inp,
 
 
 cv::Mat_<int> OAAClassifier::getLabels() const{
-  return labels_;
+  return mLabels;
 }
 
 
 std::unordered_map<int, int> OAAClassifier::getLabelsOrdering() const{
-  return labelOrderings_;
+  return mLabelOrderings;
 }
 
 bool OAAClassifier::empty() const{
@@ -112,7 +112,7 @@ bool OAAClassifier::empty() const{
 
 
 bool OAAClassifier::isTrained() const{
-  return trained_;
+  return mTrained;
 }
 
 
@@ -149,8 +149,8 @@ void OAAClassifier::setUnderlyingClassifier(const Classification& underlyingClas
 }
 
 void OAAClassifier::addLabels(cv::Mat_<int>& labels){
-  labels_.release();
-  labels_ = labels;
+  mLabels.release();
+  mLabels = labels;
 }
 
 }

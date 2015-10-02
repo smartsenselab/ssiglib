@@ -70,15 +70,12 @@ public:
 
 private:
   //private members
-  std::unordered_map<int, int> labelOrderings_;
+  std::unordered_map<int, int> mLabelOrderings;
   std::vector<std::shared_ptr<Classification>> mClassifiers;
   std::unique_ptr<Classification> mUnderlyingClassifier;
+  cv::Mat_<int> mLabels;
 
-
-private:
-  cv::Mat_<int> labels_;
-
-  bool trained_ = false;
+  bool mTrained = false;
 };
 
 }

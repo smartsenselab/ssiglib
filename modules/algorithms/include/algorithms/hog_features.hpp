@@ -45,19 +45,39 @@ namespace ssf{
 class HOG : public DescriptorInterface{
   cv::Size mBlockConfiguration;
   cv::Size mCellConfiguration;
+  cv::Size mBlockStride;
   int mNumberOfBins;
+  float mClipping = 0.2f;
+
+  std::vector<cv::Mat_<float>> mIntegralImages;
 public:
   ALG_EXPORT HOG() = default;
   ALG_EXPORT virtual ~HOG(void) = default;
 
   ALG_EXPORT virtual DescriptorInterface* clone() const override;
-  ALG_EXPORT virtual void extract(const cv::Mat& img, cv::Mat& out) override;
+  ALG_EXPORT virtual void setup(const cv::Mat& img) override;
+  ALG_EXPORT virtual void extract(const cv::Rect& patch, cv::Mat& out) override;
   ALG_EXPORT virtual bool hasVisualization() override;
-  ALG_EXPORT virtual void extract(const cv::Mat& img, cv::Mat& out, cv::Mat& visualization) override;
+  ALG_EXPORT static void getVisualization(const cv::Mat_<float> feat,
+                                          const int nBins,
+                                          const cv::Size& blockSize,
+                                          const cv::Size& blockStride,
+                                          const cv::Size& cellSize,
+                                          const cv::Size& imgSize,
+                                          cv::Mat& vis);
+
 
   ALG_EXPORT cv::Size getBlockConfiguration() const;
 
   ALG_EXPORT void setBlockConfiguration(const cv::Size& blockConfiguration);
+
+  ALG_EXPORT cv::Size getBlockStride() const{
+    return mBlockStride;
+  }
+
+  ALG_EXPORT void setBlockStride(const cv::Size& blockStride){
+    mBlockStride = blockStride;
+  }
 
   ALG_EXPORT cv::Size getCellConfiguration() const;
 
@@ -67,15 +87,25 @@ public:
 
   ALG_EXPORT void setNumberOfBins(int numberOfBins);
 
+  ALG_EXPORT float getClipping() const{
+    return mClipping;
+  }
+
+  ALG_EXPORT void setClipping(float clipping1){
+    mClipping = clipping1;
+  }
+
 
 private:
   //private members
 
   std::vector<cv::Mat_<float>> getIntegralGradientImage(const cv::Mat& img) const;
 
-  void getCellDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
+  void getBlockDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
 
-  void generateBlockVisualization(const cv::Mat_<float>& blockFeatures, cv::Mat& visualization);
+  static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
+                                         const int nBins,
+                                         cv::Mat& visualization);
 
 };
 

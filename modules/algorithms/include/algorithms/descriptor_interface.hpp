@@ -53,12 +53,11 @@ class DescriptorInterface{
 public:
   virtual ~DescriptorInterface(void) = default;
   virtual DescriptorInterface* clone() const = 0;
-  virtual void extract(const cv::Mat& img, cv::Mat& out) = 0;
+  virtual void extract(const cv::Rect& patch, cv::Mat& out) = 0;
   virtual bool hasVisualization() = 0;
-  virtual void extract(const cv::Mat& img, cv::Mat& out, cv::Mat& visualization) = 0;
+  virtual void setup(const cv::Mat& img) = 0;
 protected:
   DescriptorInterface() = default;
-  
 };
 
 }
