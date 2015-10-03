@@ -65,7 +65,7 @@ void PLSClassifier::predict(cv::Mat_<float>& inp,
 }
 
 void PLSClassifier::addLabels(cv::Mat_<int>& labels){
-  labels_ = labels;
+  mLabels = labels;
 }
 
 void PLSClassifier::learn(cv::Mat_<float>& input,
@@ -75,7 +75,7 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
   assert(!labels.empty());
   mPls = std::unique_ptr<PLS>(new PLS());
   cv::Mat_<float> l;
-  labels_.convertTo(l, CV_32F);
+  mLabels.convertTo(l, CV_32F);
   auto X = input.clone();
   mPls->runpls(X, l, mNumberOfFactors);
 
@@ -83,7 +83,7 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
 }
 
 cv::Mat_<int> PLSClassifier::getLabels() const{
-  return labels_;
+  return mLabels;
 }
 
 std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const{

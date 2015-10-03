@@ -54,7 +54,7 @@ std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const{
 }
 
 void SVMClassifier::setup(cv::Mat_<float>& input){
-  samples_ = input;
+  mSamples = input;
   cv::TermCriteria termCrit(mTermType, mMaxIterations, mEpsilon);
 
   if(!mWeights.empty()){
@@ -80,7 +80,7 @@ void SVMClassifier::setup(cv::Mat_<float>& input){
 }
 
 void SVMClassifier::addLabels(cv::Mat_<int>& labels){
-  labels_ = labels;
+  mLabels = labels;
 }
 
 void SVMClassifier::learn(cv::Mat_<float>& input,
@@ -89,7 +89,7 @@ void SVMClassifier::learn(cv::Mat_<float>& input,
   assert(!labels.empty());
   addLabels(labels);
 
-  mSvm->train(samples_, cv::ml::ROW_SAMPLE, labels_);
+  mSvm->train(mSamples, cv::ml::ROW_SAMPLE, mLabels);
 }
 
 void SVMClassifier::predict(cv::Mat_<float>& inp,
@@ -112,7 +112,7 @@ void SVMClassifier::predict(cv::Mat_<float>& inp,
 }
 
 cv::Mat_<int> SVMClassifier::getLabels() const{
-  return labels_;
+  return mLabels;
 }
 
 void SVMClassifier::setClassWeights(const int classLabel, const float weight){

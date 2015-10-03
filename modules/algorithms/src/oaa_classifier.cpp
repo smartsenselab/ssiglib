@@ -45,11 +45,11 @@ void OAAClassifier::learn(cv::Mat_<float>& input,
   if(!mClassifiers.empty()){
     mClassifiers.clear();
   }
-  samples_.release();
+  mSamples.release();
   mLabels.release();
   mLabelOrderings.clear();
 
-  samples_ = input;
+  mSamples = input;
   addLabels(labels);
   int c = -1;
   for(int i = 0; i < labels.rows; ++i){
@@ -63,7 +63,7 @@ void OAAClassifier::learn(cv::Mat_<float>& input,
 
   mClassifiers.resize(mLabelOrderings.size());
   for(auto& labelIdx : mLabelOrderings){
-    cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(samples_.rows, 1);
+    cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
     for(int i = 0; i < labels.rows; ++i){
       if(labels[i][0] == labelIdx.first){
         localLabels[i][0] = 1;
@@ -73,7 +73,7 @@ void OAAClassifier::learn(cv::Mat_<float>& input,
     }
     mClassifiers[labelIdx.second] = std::shared_ptr<Classification>
       (mUnderlyingClassifier->clone());
-    mClassifiers[labelIdx.second]->learn(samples_, localLabels);
+    mClassifiers[labelIdx.second]->learn(mSamples, localLabels);
   }
   mTrained = true;
 }

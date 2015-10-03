@@ -84,8 +84,8 @@ public:
 
 protected:
   virtual void precondition();
-  cv::Mat_<float> samples_;
-  cv::Mat_<int> labels_;
+  cv::Mat_<float> mSamples;
+  cv::Mat_<int> mLabels;
 
   std::unordered_map<int, float> mWeights;
 
