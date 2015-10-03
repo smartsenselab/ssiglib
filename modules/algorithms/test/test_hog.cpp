@@ -66,7 +66,7 @@ TEST(HOG, HogTest){
   cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
   auto sim = static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
-  ASSERT_GE(sim, 0.7f);
+  EXPECT_GE(sim, 0.7f);
 }
 
 TEST(HOG, LenaTest){
@@ -94,5 +94,5 @@ TEST(HOG, LenaTest){
 
   float sim = static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
 
-  ASSERT_GE(sim, 0.70f);
+  EXPECT_GE(sim, 0.70f);
 }

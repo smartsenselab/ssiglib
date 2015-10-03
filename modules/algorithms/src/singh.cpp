@@ -66,7 +66,7 @@ bool Singh::empty() const{
 
 
 bool Singh::isTrained() const{
-  return trained_;
+  return mTrained;
 }
 
 
@@ -81,12 +81,12 @@ void Singh::getCentroids(cv::Mat_<float>& centroidsMat) const{
 
 
 float Singh::getLambda() const{
-  return lambda_;
+  return mLambda;
 }
 
 
 void Singh::setLambda(float lambda){
-  lambda_ = lambda;
+  mLambda = lambda;
 }
 
 
@@ -103,7 +103,7 @@ void Singh::save(const std::string& filename,
 
 void Singh::precondition(){
   ClassifierClustering::precondition();
-  if(lambda_ < 0){
+  if(mLambda < 0){
     throw(std::invalid_argument("Invalid Argument for lambda"));
   }
   if(mNatural.size() != 2){

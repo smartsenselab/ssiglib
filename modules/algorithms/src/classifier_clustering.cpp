@@ -35,7 +35,8 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-#include <algorithms/classifierClustering.hpp>
+#include <algorithms/classifier_clustering.hpp>
+#include <core/log.hpp>
 
 namespace ssf{
 

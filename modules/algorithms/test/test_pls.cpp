@@ -39,7 +39,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <algorithms/plsClassifier.hpp>
+#include <algorithms/pls_classifier.hpp>
 
 TEST(PLSClassifier, BinaryClassification){
   srand(0);

@@ -36,7 +36,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "algorithms/clusteringMethod.hpp"
+#include "algorithms/clustering_method.hpp"
 
 namespace ssf{
 

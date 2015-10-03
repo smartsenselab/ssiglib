@@ -40,7 +40,7 @@
 #include <opencv2/core.hpp>
 
 #include "algorithms/kmeans.hpp"
-#include "algorithms/plsClassifier.hpp"
+#include "algorithms/pls_classifier.hpp"
 #include "algorithms/pls_image_clustering.hpp"
 
 #include "algorithms/similarity_builder.hpp"
@@ -50,7 +50,6 @@ TEST(PLSIC, CorrelationClusteringTest){
   srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
-  int N = 60;
 
   ssf::OAAClassifier oaaclassifier;
   ssf::PLSClassifier plsclassifier;
@@ -121,7 +120,6 @@ TEST(PLSIC, CosineClusteringTest){
   srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
-  int N = 60;
 
   ssf::OAAClassifier oaaclassifier;
   ssf::PLSClassifier plsclassifier;

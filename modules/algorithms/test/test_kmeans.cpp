@@ -63,9 +63,9 @@ TEST(KmeansClustering, SanityClusteringTest){
   ASSERT_EQ(2, static_cast<int>(clusters.size()));
   for(auto& cluster : clusters){
     if(cluster != gt1){
-      ASSERT_EQ(cluster, gt2);
+      EXPECT_EQ(cluster, gt2);
     } else{
-      ASSERT_EQ(cluster, gt1);
+      EXPECT_EQ(cluster, gt1);
     }
   }
 }

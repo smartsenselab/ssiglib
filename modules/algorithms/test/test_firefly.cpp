@@ -86,7 +86,7 @@ TEST(Utils, Reorder){
   ssf::Util::reorder(a, o, ordered);
   cv::Mat ans;
   cv::compare(ordered, gt, ans, cv::CMP_EQ);
-  ASSERT_EQ(20, cv::countNonZero(ans));
+  EXPECT_EQ(20, cv::countNonZero(ans));
 }
 
 TEST(Utils, StlReorder){
@@ -101,7 +101,7 @@ TEST(Utils, StlReorder){
   auto gt = a;
   std::sort(gt.begin(), gt.end());
   auto sorted = ssf::Util::sort(a, a.size(), o);
-  ASSERT_EQ(sorted, gt);
+  EXPECT_EQ(sorted, gt);
 }
 
 TEST(Firefly, Execution){
@@ -180,5 +180,5 @@ TEST(Firefly, Execution){
   state = firefly.getState();
   results = firefly.getResults();
 
-  ASSERT_GT(results[popLen-1][0] , 1.8f);//Asserts that the highest utility is near 2
+  EXPECT_GT(results[popLen - 1][0], 1.8f);//Asserts that the highest utility is near 2
 }

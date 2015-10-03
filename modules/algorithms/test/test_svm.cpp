@@ -39,7 +39,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <algorithms/svmClassifier.hpp>
+#include <algorithms/svm_classifier.hpp>
 
 TEST(SVMClassifier, BinaryClassification){
   cv::Mat_<float> inp;
@@ -71,8 +71,8 @@ TEST(SVMClassifier, BinaryClassification){
   classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
   int idx = ordering[1];
-  ASSERT_GE(resp[0][idx], 0);
+  EXPECT_GE(resp[0][idx], 0);
   idx = ordering[-1];
   classifier.predict(query2, resp);
-  ASSERT_GE(resp[0][idx], 0);
+  EXPECT_GE(resp[0][idx], 0);
 }

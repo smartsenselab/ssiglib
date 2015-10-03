@@ -40,10 +40,7 @@
 #define _SSF_ALGORITHMS_CLASSIFICATIONCLUSTERING_HPP_
 
 #include "alg_defs.hpp"
-
-#include "core/log.hpp"
-
-#include "clusteringMethod.hpp"
+#include "clustering_method.hpp"
 #include "classification.hpp"
 
 namespace ssf{

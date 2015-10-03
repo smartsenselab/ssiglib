@@ -40,8 +40,8 @@
 #include <opencv2/core.hpp>
 
 #include <algorithms/oaa_classifier.hpp>
-#include <algorithms/plsClassifier.hpp>
-#include <algorithms/svmClassifier.hpp>
+#include <algorithms/pls_classifier.hpp>
+#include <algorithms/svm_classifier.hpp>
 
 TEST(OAAClassifier, PLSBinaryClassification){
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) <<

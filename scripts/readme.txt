@@ -1,1 +1,0 @@
-usage: script.py -c component-name -n name -f filename

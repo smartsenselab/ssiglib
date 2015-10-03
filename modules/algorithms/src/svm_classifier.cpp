@@ -36,7 +36,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 #include <cassert>
-#include <algorithms/svmClassifier.hpp>
+#include <algorithms/svm_classifier.hpp>
 #include <opencv2/ml.hpp>
 
 namespace ssf{

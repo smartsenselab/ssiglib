@@ -53,7 +53,7 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs){
 }
 
 void Kmeans::learn(cv::Mat_<float>& input){
-  centroids_.release();
+  mCentroids.release();
   mSamples.release();
   mClusters.clear();
 
@@ -64,8 +64,8 @@ void Kmeans::learn(cv::Mat_<float>& input){
   term.maxCount = mMaxIterations;
   term.type = term.MAX_ITER;
 
-  cv::Mat centroids = centroids_;
-  cv::kmeans(mSamples, mK, labels, term, nAttempts_, flags_, centroids_);
+  cv::Mat centroids = mCentroids;
+  cv::kmeans(mSamples, mK, labels, term, mNumberOfAttempts, mFlags, mCentroids);
 
   std::unordered_map<int, Cluster> clusters;
   for(int i = 0; i < labels.rows; ++i){
@@ -78,11 +78,11 @@ void Kmeans::learn(cv::Mat_<float>& input){
 }
 
 void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp)const{
-  const int n = centroids_.rows;
+  const int n = mCentroids.rows;
   resp = cv::Mat_<float>::zeros(1, n);
   for(int i = 0; i < n; ++i){
     resp[0][i] = static_cast<float>(
-      cv::norm(sample - centroids_.row(i), predicitonDistanceType_));
+      cv::norm(sample - mCentroids.row(i), mPredictionDistanceType));
   }
 }
 
@@ -91,15 +91,15 @@ std::vector<Cluster> Kmeans::getClustering() const{
 }
 
 void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
-  centroidsMatrix = centroids_.clone();
+  centroidsMatrix = mCentroids.clone();
 }
 
 bool Kmeans::empty() const{
-  return centroids_.empty();
+  return mCentroids.empty();
 }
 
 bool Kmeans::isTrained() const{
-  return !centroids_.empty();
+  return !mCentroids.empty();
 }
 
 bool Kmeans::isClassifier() const{
@@ -114,7 +114,7 @@ void Kmeans::load(const std::string& filename, const std::string& nodename){
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::READ);
 
-  stg["ssf_Kmeans_" + nodename] >> centroids_;
+  stg["ssf_Kmeans_" + nodename] >> mCentroids;
 
   stg.release();
 }
@@ -124,34 +124,34 @@ void Kmeans::save(const std::string& filename, const std::string& nodename)const
   stg.open(filename, cv::FileStorage::WRITE);
   stg << "ssf_Kmeans_" + nodename << "{";
 
-  stg << "Centroids" << centroids_;
+  stg << "Centroids" << mCentroids;
 
   stg << "}";
   stg.release();
 }
 
 int Kmeans::getFlags() const{
-  return flags_;
+  return mFlags;
 }
 
 void Kmeans::setFlags(int flags){
-  flags_ = flags;
+  mFlags = flags;
 }
 
 int Kmeans::getNAttempts() const{
-  return nAttempts_;
+  return mNumberOfAttempts;
 }
 
 void Kmeans::setNAttempts(int nAttempts){
-  nAttempts_ = nAttempts;
+  mNumberOfAttempts = nAttempts;
 }
 
 int Kmeans::getPredicitonDistanceType() const{
-  return predicitonDistanceType_;
+  return mPredictionDistanceType;
 }
 
 void Kmeans::setPredicitonDistanceType(cv::NormTypes predicitonDistanceType){
-  predicitonDistanceType_ = predicitonDistanceType;
+  mPredictionDistanceType = predicitonDistanceType;
 }
 
 void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels){

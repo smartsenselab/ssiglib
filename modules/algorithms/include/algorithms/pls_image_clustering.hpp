@@ -40,7 +40,7 @@
 #define _SSF_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #include <random>
 #include <core/util.hpp>
-#include "classifierClustering.hpp"
+#include "classifier_clustering.hpp"
 #include "oaa_classifier.hpp"
 #include "similarity_builder.hpp"
 

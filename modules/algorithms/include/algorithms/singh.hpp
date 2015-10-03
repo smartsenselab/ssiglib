@@ -39,7 +39,7 @@
 #ifndef _SSF_ALGORITHMS_SINGH_HPP_
 #define _SSF_ALGORITHMS_SINGH_HPP_
 #include <memory>
-#include "classifierClustering.hpp"
+#include "classifier_clustering.hpp"
 #include "kmeans.hpp"
 #include "alg_defs.hpp"
 
@@ -77,9 +77,8 @@ protected:
 
 private:
   //private members
-  float lambda_;
-private:
-  bool trained_;
+  float mLambda;
+  bool mTrained;
   std::vector<Classification*> mClassifiers;
   std::unique_ptr<Classification> mUnderlyingClassifier;
 };

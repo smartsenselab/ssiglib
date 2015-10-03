@@ -46,7 +46,7 @@ TEST(Cosine, PerpendicularitySimilarityTest){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
-  ASSERT_FLOAT_EQ(0, simMat[0][1]);
+  EXPECT_FLOAT_EQ(0, simMat[0][1]);
 }
 
 TEST(Cosine, OposityTest){
@@ -55,7 +55,7 @@ TEST(Cosine, OposityTest){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
-  ASSERT_FLOAT_EQ(-1, simMat[0][1]);
+  EXPECT_FLOAT_EQ(-1, simMat[0][1]);
 }
 
 TEST(Cosine, SimpleTest){
@@ -64,7 +64,7 @@ TEST(Cosine, SimpleTest){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::cosineFunction);
 
-  ASSERT_FLOAT_EQ(0.9838699101f, simMat[0][1]);
+  EXPECT_FLOAT_EQ(0.9838699101f, simMat[0][1]);
 }
 
 TEST(Cosine, OddDimensionalityTest){
@@ -88,7 +88,7 @@ TEST(Correlation, CorrelatedCheck){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
-  ASSERT_GT(simMat[0][1], 0.5);
+  EXPECT_GT(simMat[0][1], 0.5);
 }
 
 TEST(Correlation, InverseCorrelatedCheck){
@@ -98,7 +98,7 @@ TEST(Correlation, InverseCorrelatedCheck){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
-  ASSERT_LT(simMat[0][1], -0.5);
+  EXPECT_LT(simMat[0][1], -0.5);
 }
 
 TEST(Correlation, CorrelatedOddSized){
@@ -109,7 +109,7 @@ TEST(Correlation, CorrelatedOddSized){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
-  ASSERT_GT(simMat[0][1], 0.5);
+  EXPECT_GT(simMat[0][1], 0.5);
 }
 
 TEST(Correlation, InverseCorrelatedOddSized){
@@ -120,7 +120,7 @@ TEST(Correlation, InverseCorrelatedOddSized){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
-  ASSERT_LT(simMat[0][1], -0.5);
+  EXPECT_LT(simMat[0][1], -0.5);
 }
 
 TEST(Correlation, UncorrelatedOddSized){
@@ -131,5 +131,5 @@ TEST(Correlation, UncorrelatedOddSized){
 
   cv::Mat_<float> simMat = ssf::SimilarityBuilder::buildSimilarity(samples, ssf::SimilarityBuilder::correlationFunction);
 
-  ASSERT_LT(abs(simMat[0][1]), 0.5);
+  EXPECT_LT(abs(simMat[0][1]), 0.5);
 }

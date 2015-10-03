@@ -1,7 +1,7 @@
 # SSF - Smart Surveillance Framework
 
 [![BSD License](https://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)
-[![Build Status](https://travis-ci.org/rbkloss/ssf.svg?branch=develop)](https://travis-ci.org/rbkloss/ssf)
+[![Build Status](https://travis-ci.org/rbkloss/ssf.svg?branch=develop)](https://travis-ci.org/ssig/ssf)
 [![Coverity Status](https://img.shields.io/coverity/scan/5274.svg)](https://scan.coverity.com/projects/5274)
 [![codecov.io](https://img.shields.io/codecov/c/github/ssig/ssf/develop.svg)](http://codecov.io/github/ssig/ssf?branch=develop)
 

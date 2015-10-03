@@ -41,8 +41,8 @@
 
 #include "algorithms/singh.hpp"
 #include "algorithms/classification.hpp"
-#include "algorithms/svmClassifier.hpp"
-#include "algorithms/plsClassifier.hpp"
+#include "algorithms/svm_classifier.hpp"
+#include "algorithms/pls_classifier.hpp"
 
 //TEST(Singh, SVMSeparationTest){
 //  cv::Mat_<float> inp;

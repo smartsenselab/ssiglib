@@ -9,8 +9,8 @@ sudo apt-get install -qq gcc-4.8 g++-4.8
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
 sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90 
 
-mkdir /home/travis/build/rbkloss/opencv/
-cd /home/travis/build/rbkloss/opencv/
+mkdir /home/travis/build/ssig/opencv/
+cd /home/travis/build/ssig/opencv/
 git clone https://github.com/Itseez/opencv.git
 
 mkdir release
@@ -27,4 +27,4 @@ sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
 echo "OpenCV installed."
 
-cd /home/travis/build/rbkloss/ssf/
+cd /home/travis/build/ssig/ssf/

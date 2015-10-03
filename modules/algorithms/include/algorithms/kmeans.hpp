@@ -39,7 +39,7 @@
 #ifndef _SSF_ALGORITHMS_KMEANS_HPP_
 #define _SSF_ALGORITHMS_KMEANS_HPP_
 
-#include "clusteringMethod.hpp"
+#include "clustering_method.hpp"
 
 namespace ssf{
 
@@ -83,10 +83,10 @@ public:
 
 private:
   //private members
-  cv::Mat_<float> centroids_;
-  int flags_;
-  int nAttempts_;
-  int predicitonDistanceType_;
+  cv::Mat_<float> mCentroids;
+  int mFlags;
+  int mNumberOfAttempts;
+  int mPredictionDistanceType;
 
 private:
   void setupLabelMatFromInitialization(cv::Mat& labels);

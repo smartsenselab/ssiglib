@@ -16,8 +16,8 @@ matrix:
 addons:
   coverity_scan:
     project:
-       name: "rbkloss/ssf"
-    notification_email: rbk@dcc.ufmg.br
+       name: "ssig/ssf"
+    notification_email: acnazarejr@gmail.com
     build_command_prepend: "mkdir build; cd build; cmake -DBUILD_TESTS=ON .."
     build_command:   "make"
     branch_pattern: coverity_scan  
