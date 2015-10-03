@@ -44,13 +44,11 @@
 #include "core/log.hpp"
 
 #include "clusteringMethod.hpp"
-#include "iterableMethod.hpp"
 #include "classification.hpp"
 
 namespace ssf{
 
-class ClassifierClustering : public ClusteringMethod,
-                             public IterableMethod{
+class ClassifierClustering : public ClusteringMethod{
 public:
   ALG_EXPORT virtual ~ClassifierClustering(void);
 
@@ -66,7 +64,7 @@ public:
   ALG_EXPORT virtual bool isTrained() const override = 0;
   ALG_EXPORT virtual bool isClassifier() const override = 0;
 
-  ALG_EXPORT bool iterate() override;
+  ALG_EXPORT bool iterate();
 
   ALG_EXPORT virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override = 0;
 

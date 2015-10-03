@@ -38,6 +38,7 @@
 
 #ifndef _SSF_ALGORITHMS_SINGH_HPP_
 #define _SSF_ALGORITHMS_SINGH_HPP_
+#include <memory>
 #include "classifierClustering.hpp"
 #include "kmeans.hpp"
 #include "alg_defs.hpp"

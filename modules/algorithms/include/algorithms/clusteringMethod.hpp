@@ -40,10 +40,8 @@
 #define _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
 
 #include <opencv2/core.hpp>
-#include <memory>
 #include <vector>
-#include "learningMethod.hpp"
-
+#include "algorithm.hpp"
 #include "alg_defs.hpp"
 
 /**

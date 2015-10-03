@@ -39,7 +39,9 @@
 #include <opencv2/core.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
+#include <cstdint>
 #include "algorithms/hog_features.hpp"
+
 
 
 namespace ssf{

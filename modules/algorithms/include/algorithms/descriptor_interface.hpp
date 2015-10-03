@@ -40,10 +40,9 @@
 #define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
 #include <forward_list>
-#include <iterator>
 #include "alg_defs.hpp"
-#include "feature_extraction.hpp"
 #include "algorithm.hpp"
+#include <opencv2/core.hpp>
 
 namespace cv{
 class Mat;
@@ -76,7 +75,7 @@ public:
   @param out The matrix that will contain the feature vector for the current patch.
   */
   virtual void nextFeatureVector(cv::Mat& out) = 0;
-  protected:
+protected:
   std::forward_list<cv::Rect> mPatches;
   cv::Mat mImage;
 };
