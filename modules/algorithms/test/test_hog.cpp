@@ -45,40 +45,54 @@
 #include "algorithms/hog_features.hpp"
 
 TEST(HOG, HogTest){
-  ssf::HOG hog;
-
   cv::Mat img;
   cv::Mat_<float> out;
   cv::Mat_<float> cvOut;
   std::vector<float> descriptors;
 
+  img = cv::imread("diag2.png");
 
+  ssf::HOG hog(img);
   hog.setBlockConfiguration({8, 8});
   hog.setCellConfiguration({1, 1});
   hog.setNumberOfBins(9);
+  hog.setBlockStride({8, 8});
+  hog.nextFeatureVector(out);
 
-  img = cv::imread("diag2.png");
-  hog.setup(img);
-  hog.extract({0, 0, img.cols, img.rows}, out);
+  /*cv::Mat vis;
+  ssf::HOG::computeVisualization(out, 9, { 8, 8 }, { 8, 8 }, { 1, 1 }, { img.cols, img.rows }, vis);*/
 
   cv::HOGDescriptor cvHogDiag({512, 512}, {8, 8}, {8, 8}, {8, 8}, 9);
   cvHogDiag.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
-  auto sim = cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out));
+  auto sim = static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
   ASSERT_GE(sim, 0.8f);
+}
 
-  hog.setBlockConfiguration({16, 16});
-  hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
+TEST(HOG, LenaTest){
+  cv::Mat img;
+  cv::Mat_<float> out;
+  cv::Mat_<float> cvOut;
+  std::vector<float> descriptors;
 
   img = cv::imread("Lena_bw.png");
-  hog.setup(img);
-  hog.extract({0, 0, img.cols, img.rows}, out);
+  ssf::HOG hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({16,16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+  hog.nextFeatureVector(out);
+
+  /*cv::Mat vis;
+  ssf::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, { img.cols, img.rows }, vis);*/
 
   cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
   cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
-  sim = cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out));
+
+  /*ssf::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, { img.cols, img.rows }, vis);*/
+
+  float sim = static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
 
   ASSERT_GE(sim, 0.70f);
 }

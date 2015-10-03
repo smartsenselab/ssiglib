@@ -38,52 +38,49 @@
 
 #ifndef _SSF_ALGORITHMS_CLASSIFICATION_HPP_
 #define _SSF_ALGORITHMS_CLASSIFICATION_HPP_
-#include "learningMethod.hpp"
 #include <opencv2/core.hpp>
 #include <unordered_map>
-#include <memory>
+#include "algorithm.hpp"
 
 namespace ssf{
 
-class Classification : public ssf::SupervisedLearningMethod<
-    cv::Mat_<float>,
-    cv::Mat_<float>,
-    cv::Mat_<int>>{
+class Classification : public ssf::Algorithm{
 public:
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
-                                  cv::Mat_<float>& resp) const override = 0;
+                                  cv::Mat_<float>& resp) const = 0;
 
   ALG_EXPORT Classification(void) = default;
   ALG_EXPORT virtual ~Classification(void) = default;
 
-  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override = 0;
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) = 0;
 
-  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override = 0;
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const = 0;
   ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
 
   ALG_EXPORT virtual void setClassWeights(const int classLabel, const float weight);
   ALG_EXPORT virtual void setClassWeights(const std::unordered_map<int, float>& weights);
   ALG_EXPORT virtual std::unordered_map<int, float> getClassWeights() const;
 
-  ALG_EXPORT virtual bool empty() const override = 0;
-  ALG_EXPORT virtual bool isTrained() const override = 0;
-  ALG_EXPORT virtual bool isClassifier() const override = 0;
+  ALG_EXPORT virtual bool empty() const = 0;
+  ALG_EXPORT virtual bool isTrained() const = 0;
+  ALG_EXPORT virtual bool isClassifier() const = 0;
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
 
   ALG_EXPORT virtual Classification* clone() const = 0;
+  //TODO: ALG_EXPORT virtual void copyConfigurationTo(Algorithm& obj) const = 0;
 
-  int getTermType() const;
+  ALG_EXPORT int getTermType() const;
 
-  void setTermType(int termType);
+  ALG_EXPORT void setTermType(int termType);
 
-  float getEpsilon() const;
+  ALG_EXPORT float getEpsilon() const;
 
-  void setEpsilon(float epsilon);
+  ALG_EXPORT void setEpsilon(float epsilon);
 
-  int getMaxIterations() const;
+  ALG_EXPORT int getMaxIterations() const;
 
-  void setMaxIterations(int maxIterations);
+  ALG_EXPORT void setMaxIterations(int maxIterations);
 
 protected:
   virtual void precondition();

@@ -36,14 +36,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 #include <gtest/gtest.h>
-
-#include "algorithms/firefly_method.hpp"
-
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
-
-#include <cstdlib>
 #include <cmath>
+
+#include "algorithms/firefly_method.hpp"
 
 class Utility{
 public:
@@ -51,10 +48,10 @@ public:
     float x = v[0][0];
     float y = v[0][1];
     auto ans = static_cast<float>(
-      exp(-1 * ((x - 4) * (x - 4)) - ((y - 4) * (y - 4)))
-      + exp(-((x + 4) * (x + 4)) - ((y - 4) * (y - 4))) +
-      2 * exp(-(x * x) - ((y + 4) * (y + 4))) +
-      2 * exp(-(x * x) - (y * y))
+      cv::exp(-1 * ((x - 4) * (x - 4)) - ((y - 4) * (y - 4)))
+      + cv::exp(-((x + 4) * (x + 4)) - ((y - 4) * (y - 4))) +
+      2 * cv::exp(-(x * x) - ((y + 4) * (y + 4))) +
+      2 * cv::exp(-(x * x) - (y * y))
     );
     return ans;
   }
@@ -138,19 +135,15 @@ TEST(Firefly, Execution){
 
 
   cv::Mat_<float> pop;
-  const int popLen = 100;
-  const int d = 2;
-  pop = cv::Mat::zeros(popLen, d, CV_32F);
-  for(int i = 0; i < popLen; ++i){
-    cv::Mat_<float> vec(1, d);
-    cv::randu(vec, cv::Scalar::all(-5), cv::Scalar::all(5));
-    vec.copyTo(pop.row(i));
-  }
+
+  cv::FileStorage stg("firefly.yml", cv::FileStorage::READ);
+  stg["Pop"] >> pop;
+  const int popLen = pop.rows;
 
   float eps = 0.0f;
   int maxIt = 30;
-  float absorption = 1.5f;
-  float step = 0.02f;
+  float absorption = 1.0f;
+  float step = 0.2f;
   float annealling = 0.97f;
 
 
@@ -158,7 +151,13 @@ TEST(Firefly, Execution){
   cv::Mat_<float> results;
 
   cv::Mat frame;
-  firefly.setup(pop, {eps, maxIt, absorption, step, annealling});
+
+  firefly.setMaxIterations(maxIt);
+  firefly.setAbsorption(absorption);
+  firefly.setAnnealling(annealling);
+  firefly.setStep(step);
+
+  firefly.setup(pop);
   while(!firefly.iterate()){
     state = firefly.getState();
     results = firefly.getResults();

@@ -38,5 +38,19 @@
 
 #include "algorithms/descriptor_interface.hpp"
 
-namespace ssf{}
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input){
+  mImage = input.clone();
+  mPatches.push_front(cv::Rect(0, 0, mImage.cols, mImage.rows));
+}
 
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
+                                              const cv::Rect& patch){
+  mImage = input.clone();
+  mPatches.push_front(patch);
+}
+
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
+                                              const std::forward_list<cv::Rect>& patches){
+  mImage = input.clone();
+  mPatches = patches;
+}

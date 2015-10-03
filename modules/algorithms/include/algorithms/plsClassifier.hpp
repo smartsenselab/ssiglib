@@ -47,7 +47,6 @@
 namespace ssf{
 
 class PLSClassifier : public Classification{
-private:
   virtual void addLabels(cv::Mat_<int>& labels);
 public:
   ALG_EXPORT PLSClassifier(void);

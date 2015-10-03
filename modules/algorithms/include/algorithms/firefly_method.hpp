@@ -39,78 +39,74 @@
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #include <opencv2/core.hpp>
-
-#include "iterableMethod.hpp"
 #include "core/util.hpp"
+#include "algorithm.hpp"
 
 namespace ssf{
 
-struct FireflyParameters{
-  float epsilon_;
-  int maxIterations_;
-  float absorption_;
-  float step_;
-  float annealling_;
-};
-
 template<class UtilityFunction, class DistanceFunction>
-class Firefly : public IterableMethod{
+class Firefly: public ssf::Algorithm{
   cv::Mat_<float> randomVector();
 public:
   Firefly() = default;
 
-  void setup(cv::Mat_<float>& input, const FireflyParameters& parameters);
+  void setup(cv::Mat_<float>& input);
 
-  bool iterate() override;
+  bool iterate();
 
   cv::Mat_<float> learn
-  (cv::Mat_<float>& input, const FireflyParameters& parameters);
+  (cv::Mat_<float>& input);
 
   cv::Mat_<float> getResults();
 
   cv::Mat_<float> getState();
 
+  virtual void save(const std::string& filename,
+                    const std::string& nodename) const override;
+  virtual void load(const std::string& filename,
+                    const std::string& nodename) override;
+
 private:
 
-  cv::Mat_<float> population_;
-  cv::Mat_<float> utilities_;
-  float absorption_ = 0.01f;
-  int iterations_ = 0;
-  int maxIterations_ = 10;
-  float annealling_ = 0.97f;
-  float step_ = 0.01f;
-  cv::RNG rng_;
+  cv::Mat_<float> mPopulation;
+  cv::Mat_<float> mUtilities;
+  float mAbsorption = 0.01f;
+  int mIterations = 0;
+  int mMaxIterations = 10;
+  float mAnnealling = 0.97f;
+  float mStep = 0.01f;
+  cv::RNG mRng;
 public:
   float getAbsorption() const{
-    return absorption_;
+    return mAbsorption;
   }
 
   void setAbsorption(float absorption){
-    absorption_ = absorption;
+    mAbsorption = absorption;
   }
 
   int getMaxIterations() const{
-    return maxIterations_;
+    return mMaxIterations;
   }
 
   void setMaxIterations(int maxIterations){
-    maxIterations_ = maxIterations;
+    mMaxIterations = maxIterations;
   }
 
   float getAnnealling() const{
-    return annealling_;
+    return mAnnealling;
   }
 
   void setAnnealling(float annealling){
-    annealling_ = annealling;
+    mAnnealling = annealling;
   }
 
   float getStep() const{
-    return step_;
+    return mStep;
   }
 
   void setStep(float step){
-    step_ = step;
+    mStep = step;
   }
 
 };
@@ -118,99 +114,96 @@ public:
 template<class UtilityFunction, class DistanceFunction>
 cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::
 randomVector(){
-  const int d = population_.cols;
+  const int d = mPopulation.cols;
   cv::Mat_<float> vec(1, d);
   cv::randu(vec, cv::Scalar::all(-0.5), cv::Scalar::all(0.5));
   return vec;
 }
 
 template<class UtilityFunction, class DistanceFunction>
-void Firefly<UtilityFunction, DistanceFunction>::
-setup(cv::Mat_<float>& input,
-      const FireflyParameters& parameters){
+void Firefly<UtilityFunction, DistanceFunction>::setup(cv::Mat_<float>& input){
   UtilityFunction evaluateUtility;
-  step_ = parameters.step_;
-  absorption_ = parameters.absorption_;
-  // parameters.epsilon_;
-  maxIterations_ = parameters.maxIterations_;
 
-  iterations_ = 0;
-  population_ = input;
-  utilities_ = cv::Mat::zeros(population_.rows, 1, CV_32F);
+  mIterations = 0;
+  mPopulation = input;
+  mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
-  for(int i = 0; i < population_.rows; ++i){
-    utilities_[0][i] = evaluateUtility(population_.row(i));
+  for(int i = 0; i < mPopulation.rows; ++i){
+    mUtilities[0][i] = evaluateUtility(mPopulation.row(i));
   }
 
-  rng_ = cv::theRNG();
+  mRng = cv::theRNG();
 
   cv::Mat_<int> order;
-  cv::sortIdx(utilities_, order, cv::SORT_EVERY_COLUMN + cv::SORT_ASCENDING);
+  cv::sortIdx(mUtilities, order, cv::SORT_EVERY_COLUMN + cv::SORT_ASCENDING);
   cv::Mat_<float> npop;
   cv::Mat_<float> nuti;
-  ssf::Util::reorder(population_, order, npop);
-  ssf::Util::reorder(utilities_, order, nuti);
-  population_ = npop;
-  utilities_ = nuti;
+  ssf::Util::reorder(mPopulation, order, npop);
+  ssf::Util::reorder(mUtilities, order, nuti);
+  mPopulation = npop;
+  mUtilities = nuti;
 }
 
 template<class UtilityFunction, class DistanceFunction>
 bool Firefly<UtilityFunction, DistanceFunction>::iterate(){
   DistanceFunction evaluateDistance;
-  for(int i = 0; i < population_.rows; ++i){
-    for(int j = 0; j < population_.rows; ++j){
-      if(utilities_[0][j] > utilities_[0][i]){
-        auto xj = population_.row(j);
-        auto xi = population_.row(i);
+  for(int i = 0; i < mPopulation.rows; ++i){
+    for(int j = 0; j < mPopulation.rows; ++j){
+      if(mUtilities[0][j] > mUtilities[0][i]){
+        auto xj = mPopulation.row(j);
+        auto xi = mPopulation.row(i);
         auto dist = evaluateDistance(xi, xj);
-        auto attractiveness = utilities_[0][j] / cv::exp(absorption_ * dist * dist);
-        population_.row(i) = xi * (1 - attractiveness) +
-          attractiveness * (xj) + step_ * randomVector();
+        auto expX = (mAbsorption * dist * dist);
+        auto attractiveness = mUtilities[0][j] / (1 + expX + expX * expX / 2);
+        mPopulation.row(i) = xi * (1 - attractiveness) +
+          attractiveness * (xj) + mStep * randomVector();
       }
     }
   }
   UtilityFunction evaluateUtility;
 
-  for(int i = 0; i < population_.rows; ++i){
-    utilities_[0][i] = evaluateUtility(population_.row(i));
+  for(int i = 0; i < mPopulation.rows; ++i){
+    mUtilities[0][i] = evaluateUtility(mPopulation.row(i));
   }
 
-  step_ = step_ * annealling_;
+  mStep = mStep * mAnnealling;
 
   cv::Mat_<int> order;
-  cv::sortIdx(utilities_, order, cv::SORT_EVERY_COLUMN + cv::SORT_ASCENDING);
+  cv::sortIdx(mUtilities, order, cv::SORT_EVERY_COLUMN + cv::SORT_ASCENDING);
   cv::Mat_<float> npop;
   cv::Mat_<float> nuti;
-  ssf::Util::reorder(population_, order, npop);
-  ssf::Util::reorder(utilities_, order, nuti);
-  population_ = npop;
-  utilities_ = nuti;
+  ssf::Util::reorder(mPopulation, order, npop);
+  ssf::Util::reorder(mUtilities, order, nuti);
+  mPopulation = npop;
+  mUtilities = nuti;
 
-  if(++iterations_ > maxIterations_) return true;
+  if(++mIterations > mMaxIterations) return true;
   return false;
 }
 
 template<class UtilityFunction, class DistanceFunction>
-cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::learn
-(cv::Mat_<float>& input, const FireflyParameters& parameters){
-  setup(input, parameters);
+cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::learn(cv::Mat_<float>& input){
+  setup(input);
   while(!iterate()){ }
-
-
   return getResults();
 }
 
 template<class UtilityFunction, class DistanceFunction>
 cv::Mat_<float>
 Firefly<UtilityFunction, DistanceFunction>::getResults(){
-  return utilities_;
+  return mUtilities;
 }
 
 template<class UtilityFunction, class DistanceFunction>
 cv::Mat_<float> Firefly<UtilityFunction, DistanceFunction>::getState(){
-  return population_;
+  return mPopulation;
 }
 
+template<class UtilityFunction, class DistanceFunction>
+void Firefly<UtilityFunction, DistanceFunction>::save(const std::string& filename, const std::string& nodename) const{ }
+
+template<class UtilityFunction, class DistanceFunction>
+void Firefly<UtilityFunction, DistanceFunction>::load(const std::string& filename, const std::string& nodename){ }
 }
 
 #endif // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_

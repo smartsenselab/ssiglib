@@ -39,8 +39,11 @@
 #ifndef _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 #define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
+#include <forward_list>
+#include <iterator>
 #include "alg_defs.hpp"
 #include "feature_extraction.hpp"
+#include "algorithm.hpp"
 
 namespace cv{
 class Mat;
@@ -48,16 +51,34 @@ class Mat;
 
 namespace ssf{
 
-class DescriptorInterface{
+class DescriptorInterface : public ssf::Algorithm{
 
 public:
+  DescriptorInterface(const cv::Mat& input);
+
+  DescriptorInterface(
+    const cv::Mat& input,
+    const cv::Rect& patch);
+
+  DescriptorInterface(
+    const cv::Mat& input,
+    const std::forward_list<cv::Rect>& patchesBegin);
+
   virtual ~DescriptorInterface(void) = default;
-  virtual DescriptorInterface* clone() const = 0;
-  virtual void extract(const cv::Rect& patch, cv::Mat& out) = 0;
-  virtual bool hasVisualization() = 0;
-  virtual void setup(const cv::Mat& img) = 0;
-protected:
-  DescriptorInterface() = default;
+
+  /**
+  @return true if there is a patch to process and false otherwise.
+  */
+  virtual bool hasNext() =0;
+  /**
+  On the first call to this function it returns the feature vector
+  of the mat set up in the constructor call.
+  @param out The matrix that will contain the feature vector for the current patch.
+  */
+  virtual void nextFeatureVector(cv::Mat& out) = 0;
+  protected:
+  std::forward_list<cv::Rect> mPatches;
+  cv::Mat mImage;
 };
 
 }

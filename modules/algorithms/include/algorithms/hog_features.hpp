@@ -51,21 +51,32 @@ class HOG : public DescriptorInterface{
 
   std::vector<cv::Mat_<float>> mIntegralImages;
 public:
-  ALG_EXPORT HOG() = default;
+  ALG_EXPORT HOG(const cv::Mat& input);
+
+  ALG_EXPORT HOG(
+    const cv::Mat& input,
+    const cv::Rect& patch);
+
+  ALG_EXPORT HOG(
+    const cv::Mat& input,
+    const std::forward_list<cv::Rect>& patches);
+
   ALG_EXPORT virtual ~HOG(void) = default;
 
-  ALG_EXPORT virtual DescriptorInterface* clone() const override;
-  ALG_EXPORT virtual void setup(const cv::Mat& img) override;
-  ALG_EXPORT virtual void extract(const cv::Rect& patch, cv::Mat& out) override;
-  ALG_EXPORT virtual bool hasVisualization() override;
-  ALG_EXPORT static void getVisualization(const cv::Mat_<float> feat,
-                                          const int nBins,
-                                          const cv::Size& blockSize,
-                                          const cv::Size& blockStride,
-                                          const cv::Size& cellSize,
-                                          const cv::Size& imgSize,
-                                          cv::Mat& vis);
+  ALG_EXPORT static void computeVisualization(const cv::Mat_<float> feat,
+                                              const int nBins,
+                                              const cv::Size& blockSize,
+                                              const cv::Size& blockStride,
+                                              const cv::Size& cellSize,
+                                              const cv::Size& imgSize,
+                                              cv::Mat& vis);
+  ALG_EXPORT virtual bool hasNext() override;
+  ALG_EXPORT virtual void nextFeatureVector(cv::Mat& out) override;
 
+  ALG_EXPORT virtual void save(const std::string& filename,
+                               const std::string& nodename) const override;
+  ALG_EXPORT virtual void load(const std::string& filename,
+                               const std::string& nodename) override;
 
   ALG_EXPORT cv::Size getBlockConfiguration() const;
 
@@ -99,7 +110,7 @@ public:
 private:
   //private members
 
-  std::vector<cv::Mat_<float>> getIntegralGradientImage(const cv::Mat& img) const;
+  std::vector<cv::Mat_<float>> computeIntegralGradientImages(const cv::Mat& img) const;
 
   void getBlockDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
 

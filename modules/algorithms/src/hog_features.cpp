@@ -44,67 +44,20 @@
 
 namespace ssf{
 
-DescriptorInterface* HOG::clone() const{
-  auto copy = new HOG;
-
-  copy->setBlockConfiguration(getBlockConfiguration());
-  copy->setCellConfiguration(getCellConfiguration());
-  copy->setNumberOfBins(getNumberOfBins());
-
-  return copy;
+HOG::HOG(const cv::Mat& input):DescriptorInterface(input){
+  mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-void HOG::setup(const cv::Mat& img){
-  mIntegralImages = getIntegralGradientImage(img);
+HOG::HOG(const cv::Mat& input, const cv::Rect& patch) : DescriptorInterface(input, patch){
+  mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-void HOG::extract(const cv::Rect& patch, cv::Mat& out){
-  const int imgRows = patch.height;
-  const int imgCols = patch.width;
-
-  if(imgCols % mBlockConfiguration.width != 0){
-    throw std::invalid_argument("Patch size must be multiple of block size");
-  }
-  if(imgRows % mBlockConfiguration.height != 0){
-    throw std::invalid_argument("Patch size must be multiple of block size");
-  }
-
-  const int blocksPerRows = imgRows / (mBlockStride.height);
-  const int blocksPerCols = imgCols / mBlockStride.width;
-  const int nblocks = blocksPerCols * blocksPerRows;
-  const int nCellsPerBlock = mCellConfiguration.area();
-  const int dimensionsPerBlock = mNumberOfBins * nCellsPerBlock;
-  out.create(1, dimensionsPerBlock * nblocks, CV_32F);
-  out = 0;
-  int blockNumber = 0;
-  /*cv::HOGDescriptor hog({mImg.rows, mImg.cols}, mBlockConfiguration,
-  mBlockConfiguration, mBlockConfiguration, 9);
-  std::vector<float> descriptors;
-  hog.compute(mImg, descriptors);
-  out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
-  */
-  for(int row = 0; row < imgRows; row += mBlockStride.height){
-    for(int col = 0; col < imgCols; col += mBlockStride.width){
-      cv::Mat_<float> cellDescriptor;
-      getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
-
-      auto blockFeat = out(
-        cv::Range(0, 1),
-        cv::Range(
-          blockNumber * dimensionsPerBlock,
-          (blockNumber + 1) * dimensionsPerBlock));
-      ++blockNumber;
-      cellDescriptor.copyTo(blockFeat);
-    }
-  }
+HOG::HOG(const cv::Mat& input, const std::forward_list<cv::Rect>& patches) :
+  DescriptorInterface(input, patches){
+  mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-
-bool HOG::hasVisualization(){
-  return true;
-}
-
-void HOG::getVisualization(const cv::Mat_<float> feat,
+void HOG::computeVisualization(const cv::Mat_<float> feat,
                            const int nBins,
                            const cv::Size& blockSize,
                            const cv::Size& blockStride,
@@ -121,16 +74,14 @@ void HOG::getVisualization(const cv::Mat_<float> feat,
     throw std::invalid_argument("Patch size must be multiple of block size");
   }
 
-  const int blocksPerRows = imgRows / blockSize.height;
-  const int blocksPerCols = imgCols / blockSize.width;
   const int nCellsPerBlock = cellSize.area();
   const int dimensionsPerBlock = nBins * nCellsPerBlock;
 
   visualization.create(imgRows, imgCols, CV_8UC1);
   visualization = 255;
   int blockNumber = 0;
-  for(int row = 0; row < imgRows; row += blockSize.height){
-    for(int col = 0; col < imgCols; col += blockSize.width){
+  for(int row = 0; row < imgRows; row += blockStride.height){
+    for(int col = 0; col < imgCols; col += blockStride.width){
       auto blockFeat = feat(
         cv::Range(0, 1),
         cv::Range(
@@ -145,8 +96,7 @@ void HOG::getVisualization(const cv::Mat_<float> feat,
   }
 }
 
-
-std::vector<cv::Mat_<float>> HOG::getIntegralGradientImage(const cv::Mat& img) const{
+std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(const cv::Mat& img) const{
   cv::HOGDescriptor hogCalculator;
   cv::Mat grad, angleOfs;
   int rows, cols = 0;
@@ -244,7 +194,6 @@ void HOG::generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
 
   for(int d = 0; d < nBins; ++d){
     float r = vector[0][d];
-    if(r < 0.1f)continue;
     r = r * (visualization.rows / 2);
 
     float theta = static_cast<float>(d * PI) / nBins;
@@ -261,10 +210,66 @@ void HOG::generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
                cv::Scalar(0, 0, 0),
                1);
     }
-
   }
+  cv::flip(visualization, visualization, 1);
 }
 
+
+bool HOG::hasNext(){
+  return !mPatches.empty();
+}
+
+void HOG::nextFeatureVector(cv::Mat& out){
+  auto& patch = mPatches.front();
+
+  const int imgRows = patch.height;
+  const int imgCols = patch.width;
+
+  if(imgCols % mBlockConfiguration.width != 0){
+    throw std::invalid_argument("Patch size must be multiple of block size");
+  }
+  if(imgRows % mBlockConfiguration.height != 0){
+    throw std::invalid_argument("Patch size must be multiple of block size");
+  }
+
+  const int blocksPerRows = imgRows / (mBlockStride.height);
+  const int blocksPerCols = imgCols / mBlockStride.width;
+  const int nblocks = blocksPerCols * blocksPerRows;
+  const int nCellsPerBlock = mCellConfiguration.area();
+  const int dimensionsPerBlock = mNumberOfBins * nCellsPerBlock;
+  out.create(1, dimensionsPerBlock * nblocks, CV_32F);
+  out = 0;
+  int blockNumber = 0;
+  /*cv::HOGDescriptor hog({mImg.rows, mImg.cols}, mBlockConfiguration,
+  mBlockConfiguration, mBlockConfiguration, 9);
+  std::vector<float> descriptors;
+  hog.compute(mImg, descriptors);
+  out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
+  */
+  for(int row = 0; row < imgRows; row += mBlockStride.height){
+    for(int col = 0; col < imgCols; col += mBlockStride.width){
+      cv::Mat_<float> cellDescriptor;
+      getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
+
+      auto blockFeat = out(
+        cv::Range(0, 1),
+        cv::Range(
+          blockNumber * dimensionsPerBlock,
+          (blockNumber + 1) * dimensionsPerBlock));
+      ++blockNumber;
+      cellDescriptor.copyTo(blockFeat);
+    }
+  }
+  mPatches.pop_front();
+}
+
+void HOG::save(const std::string& filename, const std::string& nodename) const{
+  //TODO: save
+}
+
+void HOG::load(const std::string& filename, const std::string& nodename){
+  //TODO: load
+}
 
 //getter setters
 cv::Size HOG::getBlockConfiguration() const{
