@@ -36,8 +36,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include <exception>
-
+#include <stdexcept>
 #include "algorithms/sampling_method.hpp"
 
 namespace ssf{
@@ -91,7 +90,7 @@ std::vector<cv::Rect> SamplingMethod::sampleImage(const int width,
     }
   }
   if(rects.size() <= 0)
-    throw std::runtime_error("No Rect produced for the scales set");
+    throw std::runtime_error("No Rect produced for the set scales");
   return rects;
 }
 

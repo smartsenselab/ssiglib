@@ -38,6 +38,7 @@
 #ifndef _SSF_PLS_H
 #define _SSF_PLS_H
 #include <string>
+#include <stdexcept>
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
 
