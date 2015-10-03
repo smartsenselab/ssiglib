@@ -53,20 +53,20 @@ TEST(HOG, HogTest){
   img = cv::imread("diag2.png");
 
   ssf::HOG hog(img);
-  hog.setBlockConfiguration({8, 8});
-  hog.setCellConfiguration({1, 1});
+  hog.setBlockConfiguration({ 16, 16 });
+  hog.setBlockStride({ 16, 16 });
+  hog.setCellConfiguration({ 2, 2 });
   hog.setNumberOfBins(9);
-  hog.setBlockStride({8, 8});
   hog.nextFeatureVector(out);
 
   /*cv::Mat vis;
-  ssf::HOG::computeVisualization(out, 9, { 8, 8 }, { 8, 8 }, { 1, 1 }, { img.cols, img.rows }, vis);*/
+  ssf::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, { img.cols, img.rows }, vis);*/
 
-  cv::HOGDescriptor cvHogDiag({512, 512}, {8, 8}, {8, 8}, {8, 8}, 9);
-  cvHogDiag.compute(img, descriptors);
+  cv::HOGDescriptor cvHog({ 512, 512 }, { 16, 16 }, { 16, 16 }, { 8, 8 }, 9);
+  cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
   auto sim = static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
-  ASSERT_GE(sim, 0.8f);
+  ASSERT_GE(sim, 0.7f);
 }
 
 TEST(HOG, LenaTest){

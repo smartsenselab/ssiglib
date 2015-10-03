@@ -36,6 +36,8 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
+#include <exception>
+
 #include "algorithms/sampling_method.hpp"
 
 namespace ssf{
