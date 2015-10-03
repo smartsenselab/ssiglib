@@ -36,26 +36,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
+#ifndef _SSF_ALGORITHMS_PLSCLASSIFIER_HPP_
+#define _SSF_ALGORITHMS_PLSCLASSIFIER_HPP_
 
-#include <stdexcept>
-#include <string>
+#include "pls.hpp"
+
+#include "classification.hpp"
+#include <memory>
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class PLSClassifier : public Classification{
+  virtual void addLabels(cv::Mat_<int>& labels);
+public:
+  ALG_EXPORT PLSClassifier(void);
+  ALG_EXPORT virtual ~PLSClassifier(void);
+  ALG_EXPORT PLSClassifier(const PLSClassifier& rhs);
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual Classification* clone()const override;
+
+  ALG_EXPORT int getNumberOfFactors() const;
+
+  ALG_EXPORT void setNumberOfFactors(int numberOfFactors);
+private:
+  //private members
+  std::unique_ptr<PLS> mPls;
+  int mNumberOfFactors;
+
+  bool mTrained;
+
+  virtual void setClassWeights(const int classLabel, const float weight) override;
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_PLSCLASSIFIER_HPP_
+

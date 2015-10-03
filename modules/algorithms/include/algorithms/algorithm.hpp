@@ -39,15 +39,24 @@
 #ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
 #define _SSF_ALGORITHMS_ALGORITHM_HPP_
 
+#include "alg_defs.hpp"
+#include <string>
+
 namespace ssf{
 
+  
 	class Algorithm{
 	
 	public:
-		Algorithm(void);
-		virtual ~Algorithm(void);
-		Algorithm(const Algorithm& rhs);
-		Algorithm& operator=(const Algorithm& rhs);
+		ALG_EXPORT Algorithm(void);
+    ALG_EXPORT virtual ~Algorithm(void);
+    ALG_EXPORT Algorithm(const Algorithm& rhs);
+    ALG_EXPORT Algorithm& operator=(const Algorithm& rhs);
+
+    //ALG_EXPORT virtual void copyConfigurationTo(Algorithm& obj)const = 0;
+
+    ALG_EXPORT virtual void save(const std::string &filename, const std::string& nodename) const = 0;
+    ALG_EXPORT virtual void load(const std::string &filename, const std::string& nodename) = 0;
 
 	private:
 		//private members

@@ -36,26 +36,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#include "algorithms/lbp_features.hpp"
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+	LBP::LBP(){
+		//Constructor
+	}
+
+	LBP::~LBP(){
+		//Destructor
+	}
+
+	LBP::LBP(const LBP& rhs){
+		//Constructor Copy
+	}
+
+	LBP& LBP::operator=(const LBP& rhs){
+		if (this != &rhs){
+			//code here
+		}
+	    return *this;
+	}
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_

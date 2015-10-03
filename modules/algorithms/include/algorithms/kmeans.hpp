@@ -36,26 +36,64 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
+#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
+#define _SSF_ALGORITHMS_KMEANS_HPP_
 
-#include <stdexcept>
-#include <string>
+#include "clustering_method.hpp"
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class Kmeans : public ClusteringMethod{
+public:
+  ALG_EXPORT Kmeans(void) = default;
+  ALG_EXPORT virtual ~Kmeans(void) = default;
+  Kmeans(const Kmeans& rhs);
+  Kmeans& operator=(const Kmeans& rhs);
+
+  ALG_EXPORT void learn(
+    cv::Mat_<float>& input) override;
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT std::vector<Cluster> getClustering()const override;
+
+  ALG_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) override;
+
+  ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
+  ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
+
+  ALG_EXPORT int getFlags() const;
+
+  ALG_EXPORT void setFlags(int flags);
+
+  ALG_EXPORT int getNAttempts() const;
+
+  ALG_EXPORT void setNAttempts(int nAttempts);
+
+  ALG_EXPORT int getPredicitonDistanceType() const;
+
+  ALG_EXPORT void setPredicitonDistanceType(cv::NormTypes predicitonDistanceType);
+
+private:
+  //private members
+  cv::Mat_<float> mCentroids;
+  int mFlags;
+  int mNumberOfAttempts;
+  int mPredictionDistanceType;
+
+private:
+  void setupLabelMatFromInitialization(cv::Mat& labels);
+
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
+

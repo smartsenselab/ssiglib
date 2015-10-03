@@ -45,21 +45,26 @@
 
 namespace ssf{
 
-	std::string Util::ltrim(std::string str){
-		str.erase(str.begin(), std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
-		return str;
-	}
-
-	std::string Util::rtrim(std::string str){
-		str.erase(std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), str.end());
-		return str;
-	}
-
-	std::string Util::trim(std::string str){
-		return ltrim(rtrim(str));
-	}
-
+std::string Util::ltrim(std::string str){
+  str.erase(str.begin(), std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+  return str;
 }
 
+std::string Util::rtrim(std::string str){
+  str.erase(std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), str.end());
+  return str;
+}
 
+std::string Util::trim(std::string str){
+  return ltrim(rtrim(str));
+}
+
+void Util::reorder(const cv::Mat& collection, cv::Mat_<int>& ordering, cv::Mat& out){
+  out = cv::Mat::zeros(collection.rows, collection.cols, collection.type());
+  for(int i = 0; i < ordering.rows; ++i){
+    collection.row(ordering[i][0]).copyTo(out.row(i));
+  }
+}
+
+}
 

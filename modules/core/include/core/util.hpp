@@ -39,50 +39,91 @@
 #ifndef _SSF_CORE_UTIL_HPP_
 #define _SSF_CORE_UTIL_HPP_
 
+#include "core_defs.hpp"
+
 #include <algorithm> 
 #include <functional> 
 #include <cctype>
 #include <locale>
 #include <string>
+#include <opencv2/core/mat.hpp>
 
 namespace ssf{
 
-	/**
+/**
 	 * @brief	A collection of util static functions.
 	 */
-	class Util{
+class Util{
 
-	public:
+public:
 
-		/**
+  /**
 		 * @brief	trim from start.
 		 *
 		 * @param	str	The string to trim.
 		 *
 		 * @return	A string after trim;
 		 */
-		static std::string ltrim(std::string str);
+  static std::string ltrim(std::string str);
 
-		/**
+  /**
 		 * @brief	trim from end.
 		 *
 		 * @param	str	The string to trim.
 		 *
 		 * @return	A string after trim;
 		 */
-		static std::string rtrim(std::string str);
+  static std::string rtrim(std::string str);
 
-		/**
+  /**
 		 * @brief	Trims the given string.
 		 *
 		 * @param	str	The string to trim.
 		 *
 		 * @return	A string after trim;
 		 */
-		static std::string trim(std::string str);
+  static std::string trim(std::string str);
 
-	};
+  CORE_EXPORT static void reorder(const cv::Mat& collection,
+                                  cv::Mat_<int>& ordering, cv::Mat& out);
+
+  template<class T>
+  CORE_EXPORT static void reorder(const cv::Mat_<T>& collection,
+                                  cv::Mat_<int>& ordering, cv::Mat_<T>& out){
+    out = cv::Mat_<T>::zeros(collection.rows, collection.cols);
+    for(int i = 0; i < ordering.rows; ++i){
+      collection.row(ordering[i][0]).copyTo(out.row(i));
+    }
+  }
+
+  template<class C>
+  CORE_EXPORT static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
+    out = collection;
+    auto o = ordering;
+    for(int i = 0; i < static_cast<int>(ordering.size()); ++i){
+      out[i] = collection[o[i]];
+    }
+  }
+
+  template<class C>
+  CORE_EXPORT static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
+    for(int i = 0; i < static_cast<int>(len); ++i){
+      ordering.push_back(i);
+    }
+    std::sort(ordering.begin(), ordering.end(),
+              [&collection](const int& i, const int& j)->bool{
+                bool ans = collection[i] < collection[j];
+                if(ans){ }
+                return ans;
+              });
+    C out;
+    reorder<C>(collection, ordering, out);
+    return out;
+  }
+
+};
 
 }
 
 #endif // !_SSF_CORE_UTIL_HPP_PP_
+

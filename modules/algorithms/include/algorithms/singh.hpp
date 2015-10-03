@@ -36,26 +36,54 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#ifndef _SSF_ALGORITHMS_SINGH_HPP_
+#define _SSF_ALGORITHMS_SINGH_HPP_
+#include <memory>
+#include "classifier_clustering.hpp"
+#include "kmeans.hpp"
+#include "alg_defs.hpp"
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class Singh :
+  public ClassifierClustering{
+public:
+  ALG_EXPORT Singh(void) = default;
+  ALG_EXPORT virtual ~Singh(void);
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+  ALG_EXPORT virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+
+  ALG_EXPORT virtual void setClassifier(Classification& classifier) override;
+
+  ALG_EXPORT float getLambda() const;
+
+  ALG_EXPORT void setLambda(float lambda);
+
+
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+protected:
+  ALG_EXPORT virtual void precondition() override;
+  ALG_EXPORT virtual void initializeClusterings(const std::vector<int>& assignmentSet) override;
+  ALG_EXPORT virtual void initializeClassifiers() override;
+  ALG_EXPORT virtual void trainClassifiers(const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters, const std::vector<int>& negativeLearningSet) override;
+  ALG_EXPORT virtual bool isFinished() override;
+  ALG_EXPORT virtual void postCondition() override;
+  ALG_EXPORT virtual void assignment(const cv::Mat_<float>& samples, const int clusterSize, const int nClusters, const std::vector<int>& assignmentSet, std::vector<std::vector<float>>& clustersResponses, std::vector<int>& clustersIds, std::vector<Cluster>& out) override;
+
+private:
+  //private members
+  float mLambda;
+  bool mTrained;
+  std::vector<Classification*> mClassifiers;
+  std::unique_ptr<Classification> mUnderlyingClassifier;
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_SINGH_HPP_
+

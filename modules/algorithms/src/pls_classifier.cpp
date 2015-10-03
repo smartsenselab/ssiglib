@@ -35,27 +35,93 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#include <cassert>
+#include <algorithms/pls_classifier.hpp>
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
-
+PLSClassifier::PLSClassifier(){
+  //Constructor
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+PLSClassifier::~PLSClassifier(){
+  //Destructor
+}
+
+PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
+  //Constructor Copy
+}
+
+void PLSClassifier::predict(cv::Mat_<float>& inp,
+                            cv::Mat_<float>& resp) const{
+  mPls->ProjectionBstar(inp, resp);
+  cv::Mat_<float> r;
+  r.create(inp.rows, 2);
+  for(int row = 0; row < inp.rows; ++row){
+    r[row][0] = resp[row][0];
+    r[row][1] = -1 * resp[row][0];
+  }
+  resp = r;
+}
+
+void PLSClassifier::addLabels(cv::Mat_<int>& labels){
+  mLabels = labels;
+}
+
+void PLSClassifier::learn(cv::Mat_<float>& input,
+                          cv::Mat_<int>& labels){
+  //TODO: assert labels between -1 and 1
+  addLabels(labels);
+  assert(!labels.empty());
+  mPls = std::unique_ptr<PLS>(new PLS());
+  cv::Mat_<float> l;
+  mLabels.convertTo(l, CV_32F);
+  auto X = input.clone();
+  mPls->runpls(X, l, mNumberOfFactors);
+
+  mTrained = true;
+}
+
+cv::Mat_<int> PLSClassifier::getLabels() const{
+  return mLabels;
+}
+
+std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const{
+  return{{1, 0},{-1, 1}};
+}
+
+bool PLSClassifier::empty() const{
+  return bool(mPls);
+}
+
+bool PLSClassifier::isTrained() const{
+  return mTrained;
+}
+
+bool PLSClassifier::isClassifier() const{
+  return true;
+}
+
+void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
+
+
+void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
+
+void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
+
+Classification* PLSClassifier::clone() const{
+  auto copy = new PLSClassifier;
+
+  copy->setNumberOfFactors(getNumberOfFactors());
+
+  return copy;
+}
+
+int PLSClassifier::getNumberOfFactors() const{
+  return mNumberOfFactors;
+}
+
+void PLSClassifier::setNumberOfFactors(int numberOfFactors){
+  mNumberOfFactors = numberOfFactors;
+}
+}

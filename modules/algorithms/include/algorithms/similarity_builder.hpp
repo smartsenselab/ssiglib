@@ -36,26 +36,29 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#ifndef _SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+#define _SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+#include <opencv2/core/mat.hpp>
+#include <algorithms/alg_defs.hpp>
+#include <functional>
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class SimilarityBuilder{
+public:
+
+enum SimilarityType{
+  Cosine,
+  Correlation
+};
+
+  ALG_EXPORT static cv::Mat_<float> buildSimilarity(const cv::Mat_<float>& input,
+                                                    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> similarityFunction);
+  ALG_EXPORT static float cosineFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y);
+  ALG_EXPORT static float correlationFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y);
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+

@@ -36,26 +36,24 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#ifndef _SSF_ALGORITHMS_LBP_FEATURES_HPP_
+#define _SSF_ALGORITHMS_LBP_FEATURES_HPP_
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+	class LBP{
+	
+	public:
+		LBP(void);
+		virtual ~LBP(void);
+		LBP(const LBP& rhs);
+		LBP& operator=(const LBP& rhs);
+
+	private:
+		//private members
+
+	};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_LBP_FEATURES_HPP_

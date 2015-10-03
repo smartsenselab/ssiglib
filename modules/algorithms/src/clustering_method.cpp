@@ -36,26 +36,17 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#include "algorithms/clustering_method.hpp"
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
-
+void ClusteringMethod::setup
+(cv::Mat_<float>& input){
+  mReady = true;
+  mSamples = input;
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+void ClusteringMethod::addInitialClustering(const std::vector<Cluster>& init){
+  mClusters = init;
+}
+}

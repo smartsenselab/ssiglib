@@ -35,27 +35,49 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#include <opencv2/core.hpp>
+#include "algorithms/similarity_builder.hpp"
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
 
+cv::Mat_<float> SimilarityBuilder::buildSimilarity(const cv::Mat_<float>& input, const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> similarityFunction){
+  int len = input.rows;
+  cv::Mat_<float> similarity(len, len);
+  similarity = 0;
+  for(int i = 0; i < len; ++i){
+    for(int j = i + 1; j < len; ++j){
+      cv::Mat_<float> x = input.row(i);
+      cv::Mat_<float> y = input.row(j);
+
+      similarity[i][j] = similarityFunction(x, y);
+    }
+  }
+  return similarity;
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+float SimilarityBuilder::cosineFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y){
+  return static_cast<float>(x.dot(y) /
+    (cv::norm(x, cv::NORM_L2) * cv::norm(y, cv::NORM_L2)));
+}
+
+float SimilarityBuilder::correlationFunction(const cv::Mat_<float>& x, const cv::Mat_<float>& y){
+  float correlation = 0;
+  float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
+  const int n = x.cols;
+
+  for(int s = 0; s < n; ++s){
+    i += x[0][s];
+    ii += x[0][s] * x[0][s];
+
+    j += y[0][s];
+    jj += y[0][s] * y[0][s];
+
+    ij += x[0][s] * y[0][s];
+  }
+  correlation = (n * ij - i * j) /
+    (sqrt(n * ii - i * i) * sqrt(n * jj - j * j));
+  return correlation;
+}
+
+}

@@ -36,26 +36,51 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
+#ifndef _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
+#define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
-#include <stdexcept>
-#include <string>
+#include <forward_list>
+#include "alg_defs.hpp"
+#include "algorithm.hpp"
+#include <opencv2/core.hpp>
+
+namespace cv{
+class Mat;
+}
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class DescriptorInterface : public ssf::Algorithm{
+
+public:
+  DescriptorInterface(const cv::Mat& input);
+
+  DescriptorInterface(
+    const cv::Mat& input,
+    const cv::Rect& patch);
+
+  DescriptorInterface(
+    const cv::Mat& input,
+    const std::forward_list<cv::Rect>& patchesBegin);
+
+  virtual ~DescriptorInterface(void) = default;
+
+  /**
+  @return true if there is a patch to process and false otherwise.
+  */
+  virtual bool hasNext() =0;
+  /**
+  On the first call to this function it returns the feature vector
+  of the mat set up in the constructor call.
+  @param out The matrix that will contain the feature vector for the current patch.
+  */
+  virtual void nextFeatureVector(cv::Mat& out) = 0;
+protected:
+  std::forward_list<cv::Rect> mPatches;
+  cv::Mat mImage;
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
+

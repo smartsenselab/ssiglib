@@ -7,23 +7,23 @@ function build()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=OFF $SSF_DIR
-  make -j2
+  make
 }
 
 function test()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON $SSF_DIR
-  make -j2
-  make test -j3
+  make
+  make test  ARGS="--output-on-failure"
 }
 
 function coverage()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSF_DIR
-  make -j2
-  make test -j3
+  make
+  make test ARGS="--output-on-failure"
 }
 
 case $TASK in

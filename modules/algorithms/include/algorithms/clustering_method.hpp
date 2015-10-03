@@ -36,26 +36,71 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
+#ifndef _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+#define _SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
 
-#include <stdexcept>
-#include <string>
+#include <opencv2/core.hpp>
+#include <vector>
+#include "algorithm.hpp"
+#include "alg_defs.hpp"
 
+/**
+
+*/
 namespace ssf{
+typedef std::vector<int> Cluster;
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+class ClusteringMethod : public
+  ssf::Algorithm{
+public:
+  ALG_EXPORT ClusteringMethod(void) = default;
+  ALG_EXPORT virtual ~ClusteringMethod(void) = default;
+
+  ALG_EXPORT virtual void addInitialClustering(
+    const std::vector<Cluster>& init);
+
+  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
+
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp)const = 0;
+
+  ALG_EXPORT virtual std::vector<Cluster> getClustering()const = 0;
+
+  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
+
+  ALG_EXPORT virtual bool empty() const = 0;
+  ALG_EXPORT virtual bool isTrained() const = 0;
+  ALG_EXPORT virtual bool isClassifier() const = 0;
+
+  virtual void load(const std::string& filename, const std::string& nodename) override = 0;
+  virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+
+  ALG_EXPORT int getK() const{
+    return mK;
+  }
+
+  ALG_EXPORT void setK(int k){
+    mK = k;
+  }
+
+  ALG_EXPORT int getMaxIterations() const{
+    return mMaxIterations;
+  }
+
+  ALG_EXPORT void setMaxIterations(int maxIterations){
+    mMaxIterations = maxIterations;
+  }
+
+protected:
+  cv::Mat_<float> mSamples;
+  std::vector<Cluster> mClusters;
+  int mK;
+  int mMaxIterations;
+  bool mReady;
+};
 
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+#endif // !_SSF_ALGORITHMS_CLUSTERINGMETHOD_HPP_
+

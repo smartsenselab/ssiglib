@@ -36,26 +36,21 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
+#include "algorithms/descriptor_interface.hpp"
 
-#include <stdexcept>
-#include <string>
-
-namespace ssf{
-
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
-
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input){
+  mImage = input.clone();
+  mPatches.push_front(cv::Rect(0, 0, mImage.cols, mImage.rows));
 }
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
+                                              const cv::Rect& patch){
+  mImage = input.clone();
+  mPatches.push_front(patch);
+}
+
+ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
+                                              const std::forward_list<cv::Rect>& patches){
+  mImage = input.clone();
+  mPatches = patches;
+}

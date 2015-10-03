@@ -36,26 +36,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALG_DEFS_HPP_
-#define _SSF_ALG_DEFS_HPP_
-
-#include <stdexcept>
-#include <string>
+#ifndef _SSF_ALGORITHMS_OAACLASSIFIER_HPP_
+#define _SSF_ALGORITHMS_OAACLASSIFIER_HPP_
+#include "classification.hpp"
+#include <unordered_map>
+#include <memory>
 
 namespace ssf{
 
-#ifndef ALG_EXPORT
-	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
-		#if defined  ALGORITHMS_API_EXPORTS
-			#define  ALG_EXPORT __declspec(dllexport)
-		#else
-			#define  ALG_EXPORT __declspec(dllimport)
-		#endif
-	#else
-		#define ALG_EXPORT
-	#endif
-#endif
+
+class OAAClassifier : public Classification{
+private:
+  ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
+public:
+  OAAClassifier(void) = default;
+  virtual ~OAAClassifier(void) = default;
+
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+
+  ALG_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ALG_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ALG_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
+  ALG_EXPORT virtual bool empty() const override;
+  ALG_EXPORT virtual bool isTrained() const override;
+  ALG_EXPORT virtual bool isClassifier() const override;
+  ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+  ALG_EXPORT virtual Classification* clone() const override;
+
+  ALG_EXPORT std::shared_ptr<Classification> getUnderlyingClassifier() const;
+  ALG_EXPORT void setUnderlyingClassifier(const Classification& underlyingClassifier);
+
+
+private:
+  //private members
+  std::unordered_map<int, int> mLabelOrderings;
+  std::vector<std::shared_ptr<Classification>> mClassifiers;
+  std::unique_ptr<Classification> mUnderlyingClassifier;
+  cv::Mat_<int> mLabels;
+
+  bool mTrained = false;
+};
 
 }
+#endif // !_SSF_ALGORITHMS_OAACLASSIFIER_HPP_
 
-#endif // !_SSF_ALG_DEFS_HPP_PP_
