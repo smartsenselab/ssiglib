@@ -39,6 +39,9 @@
 #ifndef _SSF_ALG_DEFS_HPP_
 #define _SSF_ALG_DEFS_HPP_
 
+#include <stdexcept>
+#include <string>
+
 namespace ssf{
 
 #ifndef ALG_EXPORT

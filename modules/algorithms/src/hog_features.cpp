@@ -35,13 +35,11 @@
 *  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
-
 #include <opencv2/core.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
 #include <cstdint>
 #include "algorithms/hog_features.hpp"
-
 
 
 namespace ssf{
@@ -60,12 +58,12 @@ HOG::HOG(const cv::Mat& input, const std::forward_list<cv::Rect>& patches) :
 }
 
 void HOG::computeVisualization(const cv::Mat_<float> feat,
-                           const int nBins,
-                           const cv::Size& blockSize,
-                           const cv::Size& blockStride,
-                           const cv::Size& cellSize,
-                           const cv::Size& imgSize,
-                           cv::Mat& visualization){
+                               const int nBins,
+                               const cv::Size& blockSize,
+                               const cv::Size& blockStride,
+                               const cv::Size& cellSize,
+                               const cv::Size& imgSize,
+                               cv::Mat& visualization){
   const int imgRows = imgSize.height;
   const int imgCols = imgSize.width;
 
