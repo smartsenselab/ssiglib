@@ -46,7 +46,12 @@
 #include <cctype>
 #include <locale>
 #include <string>
-#include <opencv2/core/mat.hpp>
+#include <opencv2/core.hpp>
+#include <unordered_map>
+
+namespace cv{
+class FileStorage;
+}
 
 namespace ssf{
 
@@ -119,6 +124,35 @@ public:
     C out;
     reorder<C>(collection, ordering, out);
     return out;
+  }
+
+  template<class K, class V>
+  static void write(const std::unordered_map<K, V>& map, cv::FileStorage& fs){
+    fs << "keys" << "[";
+    for(auto& p : map){
+      fs << p.first;
+    }
+    fs << "]";
+
+    fs << "values" << "[";
+    for(auto& p : map){
+      fs << p.second;
+    }
+    fs << "]";
+  }
+
+  template<class K, class V>
+  static void read(std::unordered_map<K, V>& map, cv::FileNode& fn){
+    std::vector<K> keys;
+    std::vector<V> values;
+
+    fn["keys"] >> keys;
+
+    fn["values"] >> values;
+
+    for(int i = 0; i < keys.size(); ++i){
+      map[keys[i]] = values[i];
+    }
   }
 
 };

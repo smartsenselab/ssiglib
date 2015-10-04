@@ -102,12 +102,29 @@ bool PLSClassifier::isClassifier() const{
   return true;
 }
 
-void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
+void PLSClassifier::setClassWeights(const int classLabel,
+                                    const float weight){ }
 
 
-void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
+void PLSClassifier::load(const std::string& filename,
+                         const std::string& nodename){
+  mPls = std::unique_ptr<PLS>(new PLS());
+  mPls->Load(filename);
+}
 
-void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
+void PLSClassifier::save(const std::string& filename,
+                         const std::string& nodename) const{
+  mPls->Save(filename);
+}
+
+void PLSClassifier::read(const cv::FileNode& fn){
+  mPls = std::unique_ptr<PLS>(new PLS());
+  mPls->Load(fn);
+}
+
+void PLSClassifier::write(cv::FileStorage& fs) const{
+  mPls->Save(fs);
+}
 
 Classification* PLSClassifier::clone() const{
   auto copy = new PLSClassifier;

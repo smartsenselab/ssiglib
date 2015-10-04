@@ -132,10 +132,30 @@ bool SVMClassifier::isClassifier() const{
 }
 
 
-void SVMClassifier::load(const std::string& filename, const std::string& nodename){ }
+void SVMClassifier::load(const std::string& filename,
+                         const std::string& nodename){
+  cv::FileStorage fs(filename, cv::FileStorage::READ);
+  auto node = fs[nodename];
+  read(node);
+}
 
-void SVMClassifier::save(const std::string& filename, const std::string& nodename) const{ }
+void SVMClassifier::save(const std::string& filename,
+                         const std::string& nodename) const{
+  cv::FileStorage fs(filename, cv::FileStorage::WRITE);
 
+  fs << nodename << "{";
+  write(fs);
+  fs << "}";
+}
+
+void SVMClassifier::read(const cv::FileNode& fn){
+  mSvm = cv::ml::SVM::create();
+  mSvm->read(fn);
+}
+
+void SVMClassifier::write(cv::FileStorage& fs) const{
+  mSvm->write(fs);
+}
 
 Classification* SVMClassifier::clone() const{
   auto copy = new SVMClassifier();

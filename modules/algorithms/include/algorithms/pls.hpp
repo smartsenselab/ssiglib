@@ -73,11 +73,11 @@ public:
 
   // save PLS model
   ALG_EXPORT void Save(std::string filename);
-  void Save(cv::FileStorage& storage);
+  ALG_EXPORT void Save(cv::FileStorage& storage);
 
   // load PLS model
   ALG_EXPORT void Load(std::string filename);
-  void Load(const cv::FileNode& node);
+  ALG_EXPORT void Load(const cv::FileNode& node);
 
   // compute PLS using cross-validation to define the number of factors
   ALG_EXPORT void cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step);

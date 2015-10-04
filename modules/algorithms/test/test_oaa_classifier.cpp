@@ -57,8 +57,7 @@ TEST(OAAClassifier, PLSBinaryClassification){
 
   ssf::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-  ssf::OAAClassifier classifier;
-  classifier.setUnderlyingClassifier(underlying);
+  ssf::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
@@ -86,8 +85,7 @@ TEST(OAAClassifier, PLSTernaryClassification){
 
   ssf::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-  ssf::OAAClassifier classifier;
-  classifier.setUnderlyingClassifier(underlying);
+  ssf::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
@@ -139,8 +137,7 @@ TEST(OAAClassifier, SVMTernaryClassification){
   underlying.setMaxIterations(10000);
   underlying.setEpsilon(1e-6f);
 
-  ssf::OAAClassifier classifier;
-  classifier.setUnderlyingClassifier(underlying);
+  ssf::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
@@ -176,6 +173,163 @@ TEST(OAAClassifier, SVMTernaryClassification){
 }
 
 
-TEST(OAAClassifier, Persistence){
-  //TODO:
+TEST(OAAClassifier, SVMPersistence){
+  cv::Mat_<float> inp;
+  cv::Mat_<int> labels;
+
+  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["inp"] >> inp;
+  stg["labels"] >> labels;
+
+
+  ssf::SVMClassifier underlying;
+  underlying.setKernelType(cv::ml::SVM::LINEAR);
+  underlying.setModelType(cv::ml::SVM::C_SVC);
+  underlying.setC(0.1f);
+  underlying.setTermType(cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER);
+  underlying.setMaxIterations(10000);
+  underlying.setEpsilon(1e-6f);
+
+  ssf::OAAClassifier classifier(underlying);
+  classifier.learn(inp, labels);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
+
+  cv::Mat_<float> resp;
+  auto ordering = classifier.getLabelsOrdering();
+
+  int label1 = ordering[1];
+  int label2 = ordering[2];
+  int label3 = ordering[3];
+
+  double maxResp = 0.0;
+
+  classifier.predict(query1, resp);
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+  classifier.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
+  classifier.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], maxResp);
+
+  classifier.save("oaa.yml", "root");
+
+  ssf::OAAClassifier loaded(underlying);
+  loaded.load("oaa.yml", "root");
+
+  loaded.predict(query1, resp);
+  ordering = loaded.getLabelsOrdering();
+  label1 = ordering[1];
+  label2 = ordering[2];
+  label3 = ordering[3];
+
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+
+  loaded.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
+  loaded.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], maxResp);
+
+}
+
+TEST(OAAClassifier, PLSPersistence) {
+  cv::Mat_<float> inp;
+  cv::Mat_<int> labels;
+
+  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["inp"] >> inp;
+  stg["labels"] >> labels;
+
+
+  ssf::PLSClassifier underlying;
+  underlying.setNumberOfFactors(2);
+
+  ssf::OAAClassifier classifier(underlying);
+  classifier.learn(inp, labels);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1030);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000, 10000);
+
+  cv::Mat_<float> resp;
+  auto ordering = classifier.getLabelsOrdering();
+
+  int label1 = ordering[1];
+  int label2 = ordering[2];
+  int label3 = ordering[3];
+
+  double maxResp = 0.0;
+
+  classifier.predict(query1, resp);
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+  classifier.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
+  classifier.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], maxResp);
+
+  classifier.save("oaa.yml", "root");
+
+  ssf::OAAClassifier loaded(underlying);
+  loaded.load("oaa.yml", "root");
+
+  loaded.predict(query1, resp);
+  ordering = loaded.getLabelsOrdering();
+  label1 = ordering[1];
+  label2 = ordering[2];
+  label3 = ordering[3];
+
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(1) != ordering.end());
+  EXPECT_GE(resp[0][label1], maxResp);
+
+
+  loaded.predict(query2, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(2) != ordering.end());
+  EXPECT_GE(resp[0][label2], maxResp);
+
+
+  loaded.predict(query3, resp);
+  maxResp = 0.0;
+  cv::minMaxIdx(resp, nullptr, &maxResp);
+  EXPECT_TRUE(ordering.find(3) != ordering.end());
+  EXPECT_GE(resp[0][label3], maxResp);
+
 }

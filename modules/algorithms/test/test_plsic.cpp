@@ -51,11 +51,10 @@ TEST(PLSIC, CorrelationClusteringTest){
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
 
-  ssf::OAAClassifier oaaclassifier;
   ssf::PLSClassifier plsclassifier;
   plsclassifier.setNumberOfFactors(2);
 
-  oaaclassifier.setUnderlyingClassifier(plsclassifier);
+  ssf::OAAClassifier oaaclassifier(plsclassifier);
 
   std::vector<ssf::Cluster> discoverySubsets;
   discoverySubsets.resize(2);
@@ -117,15 +116,13 @@ TEST(PLSIC, CorrelationClusteringTest){
 }
 
 TEST(PLSIC, CosineClusteringTest){
-  srand(0);
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
 
-  ssf::OAAClassifier oaaclassifier;
   ssf::PLSClassifier plsclassifier;
   plsclassifier.setNumberOfFactors(2);
 
-  oaaclassifier.setUnderlyingClassifier(plsclassifier);
+  ssf::OAAClassifier oaaclassifier(plsclassifier);
 
   std::vector<ssf::Cluster> discoverySubsets;
   discoverySubsets.resize(2);

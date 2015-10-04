@@ -114,7 +114,7 @@ void Kmeans::load(const std::string& filename, const std::string& nodename){
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::READ);
 
-  stg["ssf_Kmeans_" + nodename] >> mCentroids;
+  stg[nodename] >> mCentroids;
 
   stg.release();
 }
@@ -122,7 +122,7 @@ void Kmeans::load(const std::string& filename, const std::string& nodename){
 void Kmeans::save(const std::string& filename, const std::string& nodename)const{
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::WRITE);
-  stg << "ssf_Kmeans_" + nodename << "{";
+  stg << nodename << "{";
 
   stg << "Centroids" << mCentroids;
 
