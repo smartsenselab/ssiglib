@@ -113,9 +113,8 @@ void Kmeans::setup(cv::Mat_<float>& input){
 void Kmeans::load(const std::string& filename, const std::string& nodename){
   cv::FileStorage stg;
   stg.open(filename, cv::FileStorage::READ);
-
-  stg[nodename] >> mCentroids;
-
+  auto node = stg[nodename];
+  read(node);
   stg.release();
 }
 
@@ -124,10 +123,18 @@ void Kmeans::save(const std::string& filename, const std::string& nodename)const
   stg.open(filename, cv::FileStorage::WRITE);
   stg << nodename << "{";
 
-  stg << "Centroids" << mCentroids;
+  write(stg);
 
   stg << "}";
   stg.release();
+}
+
+void Kmeans::read(const cv::FileNode& fn){
+  fn["Centroids"] >> mCentroids;
+}
+
+void Kmeans::write(cv::FileStorage& fs) const{
+  fs << "Centroids" << mCentroids;
 }
 
 int Kmeans::getFlags() const{

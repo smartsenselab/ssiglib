@@ -76,6 +76,10 @@ public:
 
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
 
+
+  ALG_EXPORT virtual void read(const cv::FileNode& fn) override;
+  ALG_EXPORT virtual void write(cv::FileStorage& fs) const override;
+
   ALG_EXPORT std::shared_ptr<OAAClassifier> getClassifier() const;
 
   ALG_EXPORT std::function<float(cv::Mat_<float>&,

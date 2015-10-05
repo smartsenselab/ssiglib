@@ -91,15 +91,39 @@ void Singh::setLambda(float lambda){
 
 
 void Singh::load(const std::string& filename, const std::string& nodename){
-  //TODO: load
+  cv::FileStorage stg(filename, cv::FileStorage::READ);
+  auto node = stg[nodename];
+  read(node);
 }
 
 
 void Singh::save(const std::string& filename,
                  const std::string& nodename) const{
-  //TODO:save
+  cv::FileStorage stg(filename, cv::FileStorage::WRITE);
+  stg << nodename << "{";
+  write(stg);
+  stg << "}";
 }
 
+void Singh::read(const cv::FileNode& fn){
+  auto classifierNode = fn["Classifiers"];
+  auto it = classifierNode.begin();
+  for(; it != classifierNode.end(); ++it){
+    mClassifiers.push_back(mUnderlyingClassifier->clone());
+    mClassifiers.back()->read(*it);
+  }
+}
+
+void Singh::write(cv::FileStorage& fs) const{
+  int i = 0;
+  fs << "Classifiers" << "{";
+  for(auto& classifier: mClassifiers){
+    fs << "classifier" + std::to_string(i++) << "{";
+    classifier->write(fs);
+    fs << "}";
+  }
+  fs << "}";
+}
 
 void Singh::precondition(){
   ClassifierClustering::precondition();

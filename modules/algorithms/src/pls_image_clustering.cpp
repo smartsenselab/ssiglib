@@ -80,14 +80,29 @@ void PLSImageClustering::setClusterRepresentationType(ClusterRepresentationType 
 
 
 void PLSImageClustering::load(const std::string& filename, const std::string& nodename){
-  //TODO
+  cv::FileStorage fs(filename, cv::FileStorage::READ);
+  auto node = fs[nodename];
+  read(node);
 }
 
 
 void PLSImageClustering::save(const std::string& filename, const std::string& nodename) const{
-  //TODO:
+  cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+  fs << nodename << "{";
+  write(fs);
+  fs << "}";
 }
 
+void PLSImageClustering::read(const cv::FileNode& fn){
+  auto node = fn["Classifier"];
+  mClassifier->read(node);
+}
+
+void PLSImageClustering::write(cv::FileStorage& fs) const{
+  fs << "Classifier" << "{";
+  mClassifier->write(fs);
+  fs << "}";
+}
 
 void PLSImageClustering::precondition(){}
 

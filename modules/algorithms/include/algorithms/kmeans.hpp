@@ -68,6 +68,8 @@ public:
 
   ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
   ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
+  ALG_EXPORT virtual void read(const cv::FileNode& fn) override;
+  ALG_EXPORT virtual void write(cv::FileStorage& fs) const override;
 
   ALG_EXPORT int getFlags() const;
 
