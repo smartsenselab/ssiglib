@@ -40,17 +40,17 @@
 
 ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input){
   mImage = input.clone();
-  mPatches.push_front(cv::Rect(0, 0, mImage.cols, mImage.rows));
+  mPatches.push_back(cv::Rect(0, 0, mImage.cols, mImage.rows));
 }
 
 ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
                                               const cv::Rect& patch){
   mImage = input.clone();
-  mPatches.push_front(patch);
+  mPatches.push_back(patch);
 }
 
 ssf::DescriptorInterface::DescriptorInterface(const cv::Mat& input,
-                                              const std::forward_list<cv::Rect>& patches){
+                                              const std::vector<cv::Rect>& patches){
   mImage = input.clone();
   mPatches = patches;
 }

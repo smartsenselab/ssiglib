@@ -52,7 +52,7 @@ HOG::HOG(const cv::Mat& input, const cv::Rect& patch) : DescriptorInterface(inpu
   mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-HOG::HOG(const cv::Mat& input, const std::forward_list<cv::Rect>& patches) :
+HOG::HOG(const cv::Mat& input, const std::vector<cv::Rect>& patches) :
   DescriptorInterface(input, patches){
   mIntegralImages = computeIntegralGradientImages(mImage);
 }
@@ -220,7 +220,7 @@ bool HOG::hasNext(){
 }
 
 void HOG::nextFeatureVector(cv::Mat& out){
-  auto& patch = mPatches.front();
+  auto& patch = mPatches.back();
 
   const int imgRows = patch.height;
   const int imgCols = patch.width;
@@ -260,7 +260,7 @@ void HOG::nextFeatureVector(cv::Mat& out){
       cellDescriptor.copyTo(blockFeat);
     }
   }
-  mPatches.pop_front();
+  mPatches.pop_back();
 }
 
 void HOG::save(const std::string& filename, const std::string& nodename) const{

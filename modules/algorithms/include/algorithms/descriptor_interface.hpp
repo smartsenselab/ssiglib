@@ -39,7 +39,7 @@
 #ifndef _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 #define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
-#include <forward_list>
+#include <vector>
 #include "alg_defs.hpp"
 #include "algorithm.hpp"
 #include <opencv2/core.hpp>
@@ -61,7 +61,7 @@ public:
 
   DescriptorInterface(
     const cv::Mat& input,
-    const std::forward_list<cv::Rect>& patchesBegin);
+    const std::vector<cv::Rect>& patchesBegin);
 
   virtual ~DescriptorInterface(void) = default;
 
@@ -76,7 +76,7 @@ public:
   */
   virtual void nextFeatureVector(cv::Mat& out) = 0;
 protected:
-  std::forward_list<cv::Rect> mPatches;
+  std::vector<cv::Rect> mPatches;
   cv::Mat mImage;
 };
 

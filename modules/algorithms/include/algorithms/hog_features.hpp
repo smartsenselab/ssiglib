@@ -59,7 +59,7 @@ public:
 
   ALG_EXPORT HOG(
     const cv::Mat& input,
-    const std::forward_list<cv::Rect>& patches);
+    const std::vector<cv::Rect>& patches);
 
   ALG_EXPORT virtual ~HOG(void) = default;
 
