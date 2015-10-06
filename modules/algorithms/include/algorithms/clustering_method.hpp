@@ -63,7 +63,8 @@ public:
 
   ALG_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
 
-  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp)const = 0;
+  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp)const = 0;
 
   ALG_EXPORT virtual std::vector<Cluster> getClustering()const = 0;
 
@@ -74,9 +75,9 @@ public:
   ALG_EXPORT virtual bool isClassifier() const = 0;
 
   ALG_EXPORT virtual void load(const std::string& filename,
-                    const std::string& nodename) override = 0;
+                               const std::string& nodename) override = 0;
   ALG_EXPORT virtual void save(const std::string& filename,
-                    const std::string& nodename) const override = 0;
+                               const std::string& nodename) const override = 0;
   ALG_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   ALG_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
 

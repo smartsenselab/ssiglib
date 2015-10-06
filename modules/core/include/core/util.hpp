@@ -93,8 +93,8 @@ public:
                                   cv::Mat_<int>& ordering, cv::Mat& out);
 
   template<class T>
-  CORE_EXPORT static void reorder(const cv::Mat_<T>& collection,
-                                  cv::Mat_<int>& ordering, cv::Mat_<T>& out){
+  static void reorder(const cv::Mat_<T>& collection,
+                      cv::Mat_<int>& ordering, cv::Mat_<T>& out){
     out = cv::Mat_<T>::zeros(collection.rows, collection.cols);
     for(int i = 0; i < ordering.rows; ++i){
       collection.row(ordering[i][0]).copyTo(out.row(i));
@@ -102,7 +102,7 @@ public:
   }
 
   template<class C>
-  CORE_EXPORT static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
+  static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
     out = collection;
     auto o = ordering;
     for(int i = 0; i < static_cast<int>(ordering.size()); ++i){
@@ -111,7 +111,7 @@ public:
   }
 
   template<class C>
-  CORE_EXPORT static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
+  static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
     for(int i = 0; i < static_cast<int>(len); ++i){
       ordering.push_back(i);
     }

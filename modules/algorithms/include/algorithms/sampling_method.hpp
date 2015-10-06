@@ -39,6 +39,7 @@
 #ifndef _SSF_ALGORITHMS_SAMPLING_METHOD_HPP_
 #define _SSF_ALGORITHMS_SAMPLING_METHOD_HPP_
 #include <opencv2/core.hpp>
+#include "alg_defs.hpp"
 
 namespace ssf{
 
@@ -65,7 +66,7 @@ public:
 
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
-  static std::vector<cv::Rect> sampleImage(const int width,
+  ALG_EXPORT static std::vector<cv::Rect> sampleImage(const int width,
                                            const int height,
                                            const int winWidth,
                                            const int winHeight,
@@ -88,7 +89,7 @@ public:
 
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
-  static std::vector<cv::Rect> sampleImage(const int width,
+  ALG_EXPORT static std::vector<cv::Rect> sampleImage(const int width,
                                            const int height,
                                            const int winWidth,
                                            const int winHeight,

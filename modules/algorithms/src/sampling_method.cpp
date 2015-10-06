@@ -75,6 +75,8 @@ std::vector<cv::Rect> SamplingMethod::sampleImage(const int width,
     throw std::invalid_argument("height must be greater than 0");
   if(minScale > maxScale)
     throw std::invalid_argument("minScale must be greater than maxScale");
+  if(strideX <= 0 || strideY <= 0)
+    throw std::invalid_argument("stride can't be lesser or equal to 0");
 
   float deltaScale = pow((maxScale / minScale), 1 / static_cast<float>(nScales));
   //int samples = ((height / winHeight)*(width / winWidth)) / (80 * 80)*nScales;
