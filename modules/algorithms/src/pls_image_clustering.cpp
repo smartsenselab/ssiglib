@@ -226,7 +226,7 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
         auto it = pointAvailability.find(sampleId);
         bool availability = (it == pointAvailability.end()) || it->second;
         if(availability){
-          sum += responsesMatrix[clusterId][sampleId];
+          sum += responsesMatrix[clusterId][ordering[clusterId][i]];
           clusterSet.push_back(sampleId);
           ++m;
         }

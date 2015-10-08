@@ -280,6 +280,14 @@ void HOG::setBlockConfiguration(const cv::Size& blockConfiguration){
   mBlockConfiguration = blockConfiguration;
 }
 
+cv::Size HOG::getBlockStride() const{
+  return mBlockStride;
+}
+
+void HOG::setBlockStride(const cv::Size& blockStride){
+  mBlockStride = blockStride;
+}
+
 cv::Size HOG::getCellConfiguration() const{
   return mCellConfiguration;
 }
@@ -296,4 +304,11 @@ void HOG::setNumberOfBins(int numberOfBins){
   mNumberOfBins = numberOfBins;
 }
 
+float HOG::getClipping() const{
+  return mClipping;
+}
+
+void HOG::setClipping(float clipping1){
+  mClipping = clipping1;
+}
 }

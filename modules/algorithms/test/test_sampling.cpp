@@ -47,4 +47,6 @@ TEST(ImageSampling, execution){
   EXPECT_EQ(25, samples.size());
   EXPECT_EQ(cv::Rect(0, 0, 2, 2), samples[0]);
   EXPECT_EQ(cv::Rect(8, 8, 2, 2), samples.back());
+
+  samples = ssf::SamplingMethod::sampleImage(500, 375, 80, 80, 1.0f, 2.0f, 7, 0.4f, 0.4f);
 }
