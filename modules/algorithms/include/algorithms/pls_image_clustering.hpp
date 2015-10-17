@@ -90,8 +90,6 @@ namespace ssf {
 
     ALG_EXPORT int getRepresentationType() const;
 
-    ALG_EXPORT void setRepresentationType(int mRepresentationType1);
-
     ALG_EXPORT float getMergeThreshold() const;
 
     ALG_EXPORT void setMergeThreshold(float mMergeThreshold1);

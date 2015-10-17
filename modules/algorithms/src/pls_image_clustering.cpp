@@ -315,10 +315,6 @@ int PLSImageClustering::getRepresentationType() const{
   return mRepresentationType;
 }
 
-void PLSImageClustering::setRepresentationType(int mRepresentationType1){
-  mRepresentationType = mRepresentationType1;
-}
-
 float PLSImageClustering::getMergeThreshold() const{
   return mMergeThreshold;
 }
