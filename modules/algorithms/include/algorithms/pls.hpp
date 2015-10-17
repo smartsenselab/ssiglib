@@ -60,27 +60,27 @@ public:
   PLS() = default;
   virtual ~PLS() = default;
   // compute PLS model
-  ALG_EXPORT void runpls(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  ALG_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
   // return projection considering n factors
-  ALG_EXPORT void Projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors);
+  ALG_EXPORT void projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors);
 
   // retrieve the number of factors
-  ALG_EXPORT int GetNFactors();
+  ALG_EXPORT int getNFactors();
 
   // projection Bstar considering a number of factors (must be smaller than the maximum)
-  ALG_EXPORT void ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ALG_EXPORT void projectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
   // save PLS model
-  ALG_EXPORT void Save(std::string filename);
-  ALG_EXPORT void Save(cv::FileStorage& storage);
+  ALG_EXPORT void save(std::string filename);
+  ALG_EXPORT void save(cv::FileStorage& storage);
 
   // load PLS model
-  ALG_EXPORT void Load(std::string filename);
-  ALG_EXPORT void Load(const cv::FileNode& node);
+  ALG_EXPORT void load(std::string filename);
+  ALG_EXPORT void load(const cv::FileNode& node);
 
   // compute PLS using cross-validation to define the number of factors
-  ALG_EXPORT void cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step);
+  ALG_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step);
 
 protected:
   cv::Mat_<float> Xmean;
