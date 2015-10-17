@@ -58,6 +58,26 @@ public:
   @param height The height of the image to sample.
   @param winWidth The Width of the sampling window.
   @param winHeight The Height of the Sampling Window.
+  @param strideX The horizontal stride the sampling window will slide. Range should be in [0,1].
+  @param strideY The vertical stride the sampling window will slide. Range should be in [0,1].
+
+  @return A vector of cv::Rects. Each Rect is a sample of the image.
+  */
+  ALG_EXPORT static std::vector<cv::Rect> sampleImage(
+    const int width,
+    const int height,
+    const int winWidth,
+    const int winHeight,
+    const float strideX,
+    const float strideY);
+
+  /**
+  This method extracts sample windows from a specified Width and Height.
+
+  @param width The width of the image to sample.
+  @param height The height of the image to sample.
+  @param winWidth The Width of the sampling window.
+  @param winHeight The Height of the Sampling Window.
   @param minScale The minimum scale of the sampling window.
   @param maxScale The maximum scale of the sampling window.
   @param nScales The number of different scales desired.
@@ -67,14 +87,14 @@ public:
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
   ALG_EXPORT static std::vector<cv::Rect> sampleImage(const int width,
-                                           const int height,
-                                           const int winWidth,
-                                           const int winHeight,
-                                           const float minScale,
-                                           const float maxScale,
-                                           const int nScales,
-                                           const float strideX,
-                                           const float strideY);
+                                                      const int height,
+                                                      const int winWidth,
+                                                      const int winHeight,
+                                                      const float minScale,
+                                                      const float maxScale,
+                                                      const int nScales,
+                                                      const float strideX,
+                                                      const float strideY);
 
   /**
   @param width The width of the image to sample.
@@ -90,14 +110,14 @@ public:
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
   ALG_EXPORT static std::vector<cv::Rect> sampleImage(const int width,
-                                           const int height,
-                                           const int winWidth,
-                                           const int winHeight,
-                                           const float minScale,
-                                           const float maxScale,
-                                           const float deltaScale,
-                                           const float strideX,
-                                           const float strideY);
+                                                      const int height,
+                                                      const int winWidth,
+                                                      const int winHeight,
+                                                      const float minScale,
+                                                      const float maxScale,
+                                                      const float deltaScale,
+                                                      const float strideX,
+                                                      const float strideY);
 
   //TODO: unimplemented
   /*std::vector<cv::Rect> sampleImage(const int width,

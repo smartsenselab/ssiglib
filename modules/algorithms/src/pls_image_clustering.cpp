@@ -222,13 +222,13 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
       Cluster clusterSet;
       clusterSet.reserve(clusterSize);
       do{
-        int samplePosition = ordering[clusterId][i];
-        int sampleId = assignmentSet[samplePosition];
+        int assignmentId = ordering[clusterId][i];
+        int sampleId = assignmentSet[assignmentId];
         
         auto it = pointAvailability.find(sampleId);
         bool availability = (it == pointAvailability.end()) || it->second;
         if(availability){
-          sum += responsesMatrix[clusterId][samplePosition];
+          sum += responsesMatrix[clusterId][assignmentId];
           clusterSet.push_back(sampleId);
           ++m;
         }

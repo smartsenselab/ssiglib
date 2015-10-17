@@ -158,4 +158,8 @@ learn(
   postCondition();
 }
 
+std::vector<std::vector<float>> ClassifierClustering::getClustersResponses() const{
+  return mClustersResponses;
+}
+
 }

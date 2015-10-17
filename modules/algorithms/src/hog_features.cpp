@@ -140,6 +140,8 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset, const std::vector<cv:
   const int cellWidth = static_cast<int>(blockWidth / static_cast<float>(ncells_cols));
   const int cellHeight = static_cast<int>(blockHeight / static_cast<float>(ncells_rows));
 
+ 
+
   cv::Mat_<float> ans;
   ans.create(1, mNumberOfBins * ncells_cols * ncells_rows);
   ans = FLT_MAX ;
@@ -152,7 +154,7 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset, const std::vector<cv:
       const int h = cellHeight - 1;
 
       for(int bin = 0; bin < mNumberOfBins; ++bin){
-        auto integralImage = integralImages[bin];
+        auto integralImage = integralImages[bin];       
         float v1 = integralImage[a][b];
         float v2 = integralImage[a][b + w];
         float v3 = integralImage[a + h][b];
@@ -225,12 +227,10 @@ void HOG::nextFeatureVector(cv::Mat& out){
   const int imgRows = patch.height;
   const int imgCols = patch.width;
 
-  if(imgCols % mBlockConfiguration.width != 0){
-    throw std::invalid_argument("Patch size must be multiple of block size");
-  }
-  if(imgRows % mBlockConfiguration.height != 0){
-    throw std::invalid_argument("Patch size must be multiple of block size");
-  }
+  const int blockWidth = mBlockConfiguration.width;
+  const int blockHeight = mBlockConfiguration.height;
+  const int rowOffset = imgRows % blockHeight;
+  const int colOffset = imgCols % blockWidth;
 
   const int blocksPerRows = imgRows / (mBlockStride.height);
   const int blocksPerCols = imgCols / mBlockStride.width;
@@ -246,8 +246,10 @@ void HOG::nextFeatureVector(cv::Mat& out){
   hog.compute(mImg, descriptors);
   out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()), descriptors.data());
   */
-  for(int row = 0; row < imgRows; row += mBlockStride.height){
-    for(int col = 0; col < imgCols; col += mBlockStride.width){
+  for(int row = 0; row < imgRows - rowOffset; row += mBlockStride.height){
+    if (blockNumber == nblocks)break;
+    for(int col = 0; col < imgCols - colOffset; col += mBlockStride.width){
+      if (blockNumber == nblocks)break;
       cv::Mat_<float> cellDescriptor;
       getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
 

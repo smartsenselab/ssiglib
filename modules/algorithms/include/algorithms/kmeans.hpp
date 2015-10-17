@@ -79,7 +79,7 @@ public:
 
   ALG_EXPORT void setNAttempts(int nAttempts);
 
-  ALG_EXPORT int getPredicitonDistanceType() const;
+  ALG_EXPORT int getPredictionDistanceType() const;
 
   ALG_EXPORT void setPredicitonDistanceType(cv::NormTypes predicitonDistanceType);
 

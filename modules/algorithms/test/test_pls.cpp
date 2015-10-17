@@ -103,6 +103,7 @@ TEST(PLSClassifier, Persistence){
 
   ordering = loaded.getLabelsOrdering();
   idx = ordering[1];
+  resp.release();
   classifier.predict(query1, resp);
   EXPECT_GE(resp[0][idx], 0);
   classifier.predict(query2, resp);

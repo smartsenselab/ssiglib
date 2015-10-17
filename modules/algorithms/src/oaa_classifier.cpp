@@ -91,7 +91,8 @@ void OAAClassifier::predict(cv::Mat_<float>& inp,
     int c = 0;
     for(auto& classifier : mClassifiers){
       cv::Mat_<float> auxResp;
-      classifier->predict(inp, auxResp);
+      cv::Mat_<float> rowFeat = inp.row(r);
+      classifier->predict(rowFeat, auxResp);
       auto ordering = classifier->getLabelsOrdering();
       const int idx = ordering[1];
       resp[r][c] = auxResp[0][idx];

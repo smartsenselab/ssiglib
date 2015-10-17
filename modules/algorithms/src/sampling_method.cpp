@@ -64,6 +64,36 @@ std::vector<cv::Rect> SamplingMethod::sampleImage(const int width,
                                                   const int height,
                                                   const int winWidth,
                                                   const int winHeight,
+                                                  const float strideX,
+                                                  const float strideY){
+  if(width <= 0)
+    throw std::invalid_argument("Width must be greater than 0");
+  if(height <= 0)
+    throw std::invalid_argument("height must be greater than 0");
+  if((strideX <= 0 && strideX > 1.0f) || (strideY <= 0 && strideY > 1.0f))
+    throw std::invalid_argument("stride must be in range (0,1]");
+
+  std::vector<cv::Rect> rects;
+
+  int h = static_cast<int>(winHeight),
+    w = static_cast<int>(winWidth);
+  for(int y = 0; y < height - h; y += static_cast<int>(strideY * h)){
+    for(int x = 0; x < width - w; x += static_cast<int>(strideX * w)){
+      cv::Rect rect(x, y, w, h);
+      rects.push_back(rect);
+    }
+  }
+  if(width > w && height > h)
+    rects.push_back({width - (w + 1), height - (h + 1), w, h});
+  if(rects.size() <= 0)
+    throw std::runtime_error("No Rect produced for the set scales");
+  return rects;
+}
+
+std::vector<cv::Rect> SamplingMethod::sampleImage(const int width,
+                                                  const int height,
+                                                  const int winWidth,
+                                                  const int winHeight,
                                                   const float minScale,
                                                   const float maxScale,
                                                   const int nScales,
