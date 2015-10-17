@@ -59,7 +59,7 @@ public:
 
   ALG_EXPORT HOG(
     const cv::Mat& input,
-    const std::forward_list<cv::Rect>& patches);
+    const std::vector<cv::Rect>& patches);
 
   ALG_EXPORT virtual ~HOG(void) = default;
 
@@ -82,13 +82,9 @@ public:
 
   ALG_EXPORT void setBlockConfiguration(const cv::Size& blockConfiguration);
 
-  ALG_EXPORT cv::Size getBlockStride() const{
-    return mBlockStride;
-  }
+  ALG_EXPORT cv::Size getBlockStride() const;
 
-  ALG_EXPORT void setBlockStride(const cv::Size& blockStride){
-    mBlockStride = blockStride;
-  }
+  ALG_EXPORT void setBlockStride(const cv::Size& blockStride);
 
   ALG_EXPORT cv::Size getCellConfiguration() const;
 
@@ -98,13 +94,9 @@ public:
 
   ALG_EXPORT void setNumberOfBins(int numberOfBins);
 
-  ALG_EXPORT float getClipping() const{
-    return mClipping;
-  }
+  ALG_EXPORT float getClipping() const;
 
-  ALG_EXPORT void setClipping(float clipping1){
-    mClipping = clipping1;
-  }
+  ALG_EXPORT void setClipping(float clipping1);
 
 
 private:

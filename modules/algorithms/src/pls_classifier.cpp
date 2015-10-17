@@ -54,7 +54,7 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
 
 void PLSClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
-  mPls->ProjectionBstar(inp, resp);
+  mPls->projectionBstar(inp, resp);
   cv::Mat_<float> r;
   r.create(inp.rows, 2);
   for(int row = 0; row < inp.rows; ++row){
@@ -77,7 +77,7 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
   cv::Mat_<float> l;
   mLabels.convertTo(l, CV_32F);
   auto X = input.clone();
-  mPls->runpls(X, l, mNumberOfFactors);
+  mPls->learn(X, l, mNumberOfFactors);
 
   mTrained = true;
 }
@@ -102,12 +102,29 @@ bool PLSClassifier::isClassifier() const{
   return true;
 }
 
-void PLSClassifier::setClassWeights(const int classLabel, const float weight){ }
+void PLSClassifier::setClassWeights(const int classLabel,
+                                    const float weight){ }
 
 
-void PLSClassifier::load(const std::string& filename, const std::string& nodename){}
+void PLSClassifier::load(const std::string& filename,
+                         const std::string& nodename){
+  mPls = std::unique_ptr<PLS>(new PLS());
+  mPls->load(filename);
+}
 
-void PLSClassifier::save(const std::string& filename, const std::string& nodename) const{}
+void PLSClassifier::save(const std::string& filename,
+                         const std::string& nodename) const{
+  mPls->save(filename);
+}
+
+void PLSClassifier::read(const cv::FileNode& fn){
+  mPls = std::unique_ptr<PLS>(new PLS());
+  mPls->load(fn);
+}
+
+void PLSClassifier::write(cv::FileStorage& fs) const{
+  mPls->save(fs);
+}
 
 Classification* PLSClassifier::clone() const{
   auto copy = new PLSClassifier;

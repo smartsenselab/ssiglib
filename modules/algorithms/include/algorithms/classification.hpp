@@ -64,8 +64,11 @@ public:
   ALG_EXPORT virtual bool empty() const = 0;
   ALG_EXPORT virtual bool isTrained() const = 0;
   ALG_EXPORT virtual bool isClassifier() const = 0;
+
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override = 0;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override = 0;
+  ALG_EXPORT virtual void read(const cv::FileNode& fn) = 0;
+  ALG_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
 
   ALG_EXPORT virtual Classification* clone() const = 0;
   //TODO: ALG_EXPORT virtual void copyConfigurationTo(Algorithm& obj) const = 0;

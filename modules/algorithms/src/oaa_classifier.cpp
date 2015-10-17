@@ -36,9 +36,13 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 #include "algorithms/oaa_classifier.hpp"
+#include <core/util.hpp>
 
 namespace ssf{
 
+OAAClassifier::OAAClassifier(const Classification& prototypeClassifier){
+  mUnderlyingClassifier = std::unique_ptr<Classification>(prototypeClassifier.clone());
+}
 
 void OAAClassifier::learn(cv::Mat_<float>& input,
                           cv::Mat_<int>& labels){
@@ -87,7 +91,8 @@ void OAAClassifier::predict(cv::Mat_<float>& inp,
     int c = 0;
     for(auto& classifier : mClassifiers){
       cv::Mat_<float> auxResp;
-      classifier->predict(inp, auxResp);
+      cv::Mat_<float> rowFeat = inp.row(r);
+      classifier->predict(rowFeat, auxResp);
       auto ordering = classifier->getLabelsOrdering();
       const int idx = ordering[1];
       resp[r][c] = auxResp[0][idx];
@@ -122,20 +127,52 @@ bool OAAClassifier::isClassifier() const{
 
 
 void OAAClassifier::load(const std::string& filename, const std::string& nodename){
-  //TODO:
+  cv::FileStorage fs(filename, cv::FileStorage::READ);
+  auto node = fs[nodename];
+  read(node);
 }
 
 
 void OAAClassifier::save(const std::string& filename, const std::string& nodename) const{
-  //TODO:
+  cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+  fs << nodename << "{";
+  write(fs);
+  fs << "}";
+}
+
+void OAAClassifier::read(const cv::FileNode& fn){
+  auto labelOrderingNode = fn["labelOrdering"];
+  ssf::Util::read<int, int>(mLabelOrderings, labelOrderingNode);
+  auto classifiersNode = fn["classifiers"];
+  auto it = classifiersNode.begin();
+  for(; it != classifiersNode.end(); ++it){
+    mClassifiers.push_back(
+      std::shared_ptr<Classification>(mUnderlyingClassifier->clone()));
+    mClassifiers.back()->read(*it);
+  }
+}
+
+void OAAClassifier::write(cv::FileStorage& fs) const{
+  fs << "labelOrdering" << "{";
+  ssf::Util::write<int, int>(mLabelOrderings, fs);
+  fs << "}";
+
+  fs << "classifiers" << "{";
+  int i = 0;
+  for(auto& c : mClassifiers){
+    fs << "c" + std::to_string(i++) << "{";
+    c->write(fs);
+    fs << "}";
+  }
+  fs << "}";
+
 }
 
 Classification* OAAClassifier::clone() const{
-  auto copy = new OAAClassifier;
+  auto copy = new OAAClassifier(*getUnderlyingClassifier());
   copy->setMaxIterations(getMaxIterations());
   copy->setEpsilon(getEpsilon());
   copy->setTermType(getTermType());
-  copy->setUnderlyingClassifier(*getUnderlyingClassifier());
   copy->setClassWeights(getClassWeights());
   return copy;
 }
@@ -152,5 +189,4 @@ void OAAClassifier::addLabels(cv::Mat_<int>& labels){
   mLabels.release();
   mLabels = labels;
 }
-
 }

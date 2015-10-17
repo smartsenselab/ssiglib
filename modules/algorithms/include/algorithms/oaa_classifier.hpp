@@ -46,10 +46,9 @@ namespace ssf{
 
 
 class OAAClassifier : public Classification{
-private:
   ALG_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
 public:
-  OAAClassifier(void) = default;
+  ALG_EXPORT OAAClassifier(const Classification& prototypeClassifier);
   virtual ~OAAClassifier(void) = default;
 
   ALG_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
@@ -62,11 +61,16 @@ public:
   ALG_EXPORT virtual bool isClassifier() const override;
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+
+  ALG_EXPORT virtual void read(const cv::FileNode& fn) override;
+  ALG_EXPORT virtual void write(cv::FileStorage& fs) const override;
+
   ALG_EXPORT virtual Classification* clone() const override;
 
   ALG_EXPORT std::shared_ptr<Classification> getUnderlyingClassifier() const;
   ALG_EXPORT void setUnderlyingClassifier(const Classification& underlyingClassifier);
-
+protected:
+  OAAClassifier() = default;
 
 private:
   //private members

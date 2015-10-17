@@ -66,6 +66,9 @@ public:
 
   ALG_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
   ALG_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
+
+  ALG_EXPORT virtual void read(const cv::FileNode& fn) override;
+  ALG_EXPORT virtual void write(cv::FileStorage& fs) const override;
 protected:
   ALG_EXPORT virtual void precondition() override;
   ALG_EXPORT virtual void initializeClusterings(const std::vector<int>& assignmentSet) override;

@@ -80,14 +80,29 @@ void PLSImageClustering::setClusterRepresentationType(ClusterRepresentationType 
 
 
 void PLSImageClustering::load(const std::string& filename, const std::string& nodename){
-  //TODO
+  cv::FileStorage fs(filename, cv::FileStorage::READ);
+  auto node = fs[nodename];
+  read(node);
 }
 
 
 void PLSImageClustering::save(const std::string& filename, const std::string& nodename) const{
-  //TODO:
+  cv::FileStorage fs(filename, cv::FileStorage::WRITE);
+  fs << nodename << "{";
+  write(fs);
+  fs << "}";
 }
 
+void PLSImageClustering::read(const cv::FileNode& fn){
+  auto node = fn["Classifier"];
+  mClassifier->read(node);
+}
+
+void PLSImageClustering::write(cv::FileStorage& fs) const{
+  fs << "Classifier" << "{";
+  mClassifier->write(fs);
+  fs << "}";
+}
 
 void PLSImageClustering::precondition(){}
 
@@ -207,11 +222,13 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
       Cluster clusterSet;
       clusterSet.reserve(clusterSize);
       do{
-        int sampleId = assignmentSet[ordering[clusterId][i]];
+        int assignmentId = ordering[clusterId][i];
+        int sampleId = assignmentSet[assignmentId];
+        
         auto it = pointAvailability.find(sampleId);
         bool availability = (it == pointAvailability.end()) || it->second;
         if(availability){
-          sum += responsesMatrix[clusterId][sampleId];
+          sum += responsesMatrix[clusterId][assignmentId];
           clusterSet.push_back(sampleId);
           ++m;
         }
@@ -296,10 +313,6 @@ void PLSImageClustering::setSimBuilder(const std::function<float(cv::Mat_<float>
 
 int PLSImageClustering::getRepresentationType() const{
   return mRepresentationType;
-}
-
-void PLSImageClustering::setRepresentationType(int mRepresentationType1){
-  mRepresentationType = mRepresentationType1;
 }
 
 float PLSImageClustering::getMergeThreshold() const{

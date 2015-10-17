@@ -87,6 +87,9 @@ public:
 
   ALG_EXPORT void setMValue(int m);
 
+
+  ALG_EXPORT std::vector<std::vector<float>> getClustersResponses() const;
+
   ALG_EXPORT std::vector<std::vector<int>> getDiscovery() const;
 
   ALG_EXPORT void setDiscoveryConfiguration(const

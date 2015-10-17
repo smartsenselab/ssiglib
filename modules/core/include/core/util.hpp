@@ -46,7 +46,12 @@
 #include <cctype>
 #include <locale>
 #include <string>
-#include <opencv2/core/mat.hpp>
+#include <opencv2/core.hpp>
+#include <unordered_map>
+
+namespace cv{
+class FileStorage;
+}
 
 namespace ssf{
 
@@ -88,8 +93,8 @@ public:
                                   cv::Mat_<int>& ordering, cv::Mat& out);
 
   template<class T>
-  CORE_EXPORT static void reorder(const cv::Mat_<T>& collection,
-                                  cv::Mat_<int>& ordering, cv::Mat_<T>& out){
+  static void reorder(const cv::Mat_<T>& collection,
+                      cv::Mat_<int>& ordering, cv::Mat_<T>& out){
     out = cv::Mat_<T>::zeros(collection.rows, collection.cols);
     for(int i = 0; i < ordering.rows; ++i){
       collection.row(ordering[i][0]).copyTo(out.row(i));
@@ -97,7 +102,7 @@ public:
   }
 
   template<class C>
-  CORE_EXPORT static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
+  static void reorder(const C& collection, const std::vector<int>& ordering, C& out){
     out = collection;
     auto o = ordering;
     for(int i = 0; i < static_cast<int>(ordering.size()); ++i){
@@ -106,7 +111,7 @@ public:
   }
 
   template<class C>
-  CORE_EXPORT static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
+  static C sort(const C& collection, const size_t len, std::vector<int>& ordering){
     for(int i = 0; i < static_cast<int>(len); ++i){
       ordering.push_back(i);
     }
@@ -119,6 +124,35 @@ public:
     C out;
     reorder<C>(collection, ordering, out);
     return out;
+  }
+
+  template<class K, class V>
+  static void write(const std::unordered_map<K, V>& map, cv::FileStorage& fs){
+    fs << "keys" << "[";
+    for(auto& p : map){
+      fs << p.first;
+    }
+    fs << "]";
+
+    fs << "values" << "[";
+    for(auto& p : map){
+      fs << p.second;
+    }
+    fs << "]";
+  }
+
+  template<class K, class V>
+  static void read(std::unordered_map<K, V>& map, cv::FileNode& fn){
+    std::vector<K> keys;
+    std::vector<V> values;
+
+    fn["keys"] >> keys;
+
+    fn["values"] >> values;
+
+    for(int i = 0; i < keys.size(); ++i){
+      map[keys[i]] = values[i];
+    }
   }
 
 };

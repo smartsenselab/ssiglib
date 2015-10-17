@@ -52,7 +52,7 @@
 // Bstar - reshape(X2.Bstar.data, 2, 50)'
 
 namespace ssf{
-void PLS::runpls(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
+void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
   int i;
   int kk;
   float dt;
@@ -276,12 +276,12 @@ void PLS::computeBstar(int nfactors){
 }
 
 
-int PLS::GetNFactors(){
+int PLS::getNFactors(){
 
   return this->nfactors;
 }
 
-void PLS::Projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
+void PLS::projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
   cv::Mat_<float> aux, aux2;
   int i, y;
 
@@ -308,7 +308,7 @@ void PLS::Projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfact
 }
 
 
-void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
+void PLS::projectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
   cv::Mat_<float> aux, tmp;
   int y, i;
 
@@ -336,7 +336,7 @@ void PLS::ProjectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
 }
 
 
-void PLS::Save(cv::FileStorage& storage){
+void PLS::save(cv::FileStorage& storage){
 
   if(storage.isOpened() == false){
     throw std::logic_error("Invalid file storage!");
@@ -359,7 +359,7 @@ void PLS::Save(cv::FileStorage& storage){
 }
 
 
-void PLS::Load(const cv::FileNode& node){
+void PLS::load(const cv::FileNode& node){
   cv::FileNode n;
 
   n = node["PLS"];
@@ -381,20 +381,20 @@ void PLS::Load(const cv::FileNode& node){
 }
 
 
-void PLS::Save(std::string filename){
+void PLS::save(std::string filename){
   cv::FileStorage storage;
 
   storage.open(filename, cv::FileStorage::WRITE);
-  this->Save(storage);
+  this->save(storage);
   storage.release();
 }
 
 
-void PLS::Load(std::string filename){
+void PLS::load(std::string filename){
   cv::FileStorage storage;
 
   storage.open(filename, cv::FileStorage::READ);
-  this->Load(storage.root());
+  this->load(storage.root());
   storage.release();
 }
 
@@ -427,7 +427,7 @@ float PLS::regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses){
   return error;
 }
 
-void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step){
+void PLS::learnWithCrossValidation(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step){
   std::map<int, float>::iterator it;
   std::vector<size_t> featurePerm;
   std::vector<std::vector<size_t>> permTrain, permTest;
@@ -499,7 +499,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
     //fprintf(stdout, "Building PLS model for fold %llu/%d", k + 1, folds);
     auto xx = Xtmp.clone();
     auto yy = Ytmp.clone();
-    tmpPLS->runpls(xx, yy, maxDims);
+    tmpPLS->learn(xx, yy, maxDims);
 
     // run for each number of dimensions
     for(j = minDims; j <= maxDims; j += step){
@@ -510,7 +510,7 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
       tmpPLS->computeBstar(j);
 
       // project test data
-      tmpPLS->ProjectionBstar(Xvalidate, responses);
+      tmpPLS->projectionBstar(Xvalidate, responses);
 
       // compute the regression error
       error = regError(Yvalidate, responses);
@@ -541,6 +541,6 @@ void PLS::cv(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int
   //fprintf(stdout, "Building PLS model with %d factors", minIdx);
 
   // build the actual model
-  this->runpls(X, Y, minIdx);
+  this->learn(X, Y, minIdx);
 }
 }

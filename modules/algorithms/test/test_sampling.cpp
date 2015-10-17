@@ -38,77 +38,15 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
+#include <algorithms/sampling_method.hpp>
 
-#include <algorithms/kmeans.hpp>
+TEST(ImageSampling, execution){
 
-TEST(KmeansClustering, SanityClusteringTest){
-  cv::Mat_<float> inp;
-  inp = cv::Mat_<float>::zeros(6, 2);
-  for(int i = 0; i < 3; ++i){
-    inp[i][0] = static_cast<float>(rand() % 5);
-    inp[i][1] = static_cast<float>(rand() % 5);
-    inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
-  }
+  auto samples = ssf::SamplingMethod::sampleImage(10, 10, 2, 2, 1.0f, 1.0f, 1, 1.0f, 1.0f);
 
-  ssf::Kmeans kmeans;
-  kmeans.setK(2);
-  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-  kmeans.setMaxIterations(500);
-  kmeans.setNAttempts(1);
-  kmeans.learn(inp);
-  auto clusters = kmeans.getClustering();
-  std::vector<int> gt1 = {0, 1, 2};
-  std::vector<int> gt2 = {3, 4, 5};
-  ASSERT_EQ(2, static_cast<int>(clusters.size()));
-  for(auto& cluster : clusters){
-    if(cluster != gt1){
-      EXPECT_EQ(cluster, gt2);
-    } else{
-      EXPECT_EQ(cluster, gt1);
-    }
-  }
-}
+  EXPECT_EQ(25, samples.size());
+  EXPECT_EQ(cv::Rect(0, 0, 2, 2), samples[0]);
+  EXPECT_EQ(cv::Rect(8, 8, 2, 2), samples.back());
 
-TEST(KmeansClustering, Persistence){
-  /*cv::Mat_<float> inp;
-  inp = cv::Mat_<float>::zeros(6, 2);
-  for(int i = 0; i < 3; ++i){
-    inp[i][0] = static_cast<float>(rand() % 5);
-    inp[i][1] = static_cast<float>(rand() % 5);
-    inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
-  }
-
-  ssf::Kmeans kmeans;
-  kmeans.setK(2);
-  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-  kmeans.setMaxIterations(500);
-  kmeans.setNAttempts(1);
-  kmeans.learn(inp);
-  auto clusters = kmeans.getClustering();
-  std::vector<int> gt1 = {0, 1, 2};
-  std::vector<int> gt2 = {3, 4, 5};
-  ASSERT_EQ(2, static_cast<int>(clusters.size()));
-  for(auto& cluster : clusters){
-    if(cluster != gt1){
-      EXPECT_EQ(cluster, gt2);
-    } else{
-      EXPECT_EQ(cluster, gt1);
-    }
-  }
-  kmeans.save("kmeans_.yml", "root");
-
-  ssf::Kmeans loaded;
-  loaded.load("Kmeans_.yml", "root");
-
-  cv::Mat diff;
-  cv::Mat_<float> c1, c2;
-
-  loaded.getCentroids(c1);
-  kmeans.getCentroids(c2);
-  cv::compare(c1, c2, diff, cv::CMP_EQ);
-
-  auto nonzeros = cv::countNonZero(diff);
-  EXPECT_EQ(c1.rows * c1.cols, nonzeros);*/
+  samples = ssf::SamplingMethod::sampleImage(500, 375, 80, 80, 1.0f, 2.0f, 7, 0.4f, 0.4f);
 }
