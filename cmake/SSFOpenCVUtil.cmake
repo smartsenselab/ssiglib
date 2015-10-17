@@ -1,6 +1,6 @@
 include(CMakeParseArguments)
 
-set(ssf_opencv_minimal_version 2.4)
+set(ssf_opencv_minimal_version 3.0)
 
 macro(ssf_find_opencv)
 	set(ssf_options REQUIRED QUIET)

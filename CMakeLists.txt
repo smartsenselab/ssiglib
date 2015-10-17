@@ -123,7 +123,6 @@ endif()
 ###############################################################################
 # CMake Auxiliary Files
 ###############################################################################
-include(cmake/SSFBoostUtil.cmake)
 include(cmake/SSFOpenCVUtil.cmake)
 include(cmake/SSFModules.cmake)
 include(cmake/SSFUtil.cmake)
