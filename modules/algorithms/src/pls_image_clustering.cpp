@@ -41,6 +41,26 @@
 
 namespace ssf{
 
+void PLSImageClustering::buildResponses(const cv::Mat_<float>& inp,
+                                        const std::vector<Cluster>& clusters,
+                                        std::vector<std::vector<float>>& responses,
+                                        const OAAClassifier& classifier) const{
+  responses.clear();
+
+  for(int c = 0; c < clusters.size(); ++c){
+    auto cluster = clusters[c];
+    responses.push_back({});
+    responses.back().resize(cluster.size());
+    for(int j = 0; j < cluster.size(); ++j){
+      cv::Mat_<float> respMat, feat;
+      feat = inp.row(cluster[j]);
+      classifier.predict(feat, respMat);
+      auto ordering = classifier.getLabelsOrdering();
+      responses[c][j] = respMat[0][ordering[c]];
+    }
+  }
+}
+
 void PLSImageClustering::predict(cv::Mat_<float>& inp,
                                  cv::Mat_<float>& resp) const{
   resp.release();
@@ -181,7 +201,13 @@ bool PLSImageClustering::isFinished(){
 void PLSImageClustering::postCondition(){}
 
 
-void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int clusterSize, const int nClusters, const std::vector<int>& assignmentSet, std::vector<std::vector<float>>& clustersResponses, std::vector<int>& clustersIds, std::vector<Cluster>& out){
+void PLSImageClustering::assignment(const cv::Mat_<float>& samples,
+                                    const int clusterSize,
+                                    const int nClusters,
+                                    const std::vector<int>& assignmentSet,
+                                    std::vector<std::vector<float>>& clustersResponses,
+                                    std::vector<int>& clustersIds,
+                                    std::vector<Cluster>& out){
 
   const int C = static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
   const int nLabels = static_cast<int>(mClassifier->getLabelsOrdering().size());
@@ -224,12 +250,12 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
       do{
         int assignmentId = ordering[clusterId][i];
         int sampleId = assignmentSet[assignmentId];
-        
+
         auto it = pointAvailability.find(sampleId);
         bool availability = (it == pointAvailability.end()) || it->second;
         if(availability){
           sum += responsesMatrix[clusterId][assignmentId];
-          clusterSet.push_back(sampleId);
+          clusterSet.push_back(assignmentId);
           ++m;
         }
         ++i;
@@ -243,10 +269,10 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
 
     //step two
     clusterAssigned[chosenClusterId] = true;
-    clustersResponses.push_back({});
     ids.push_back(clustersIds[chosenClusterId]);
     for(int p = 0; p < static_cast<int>(newCluster.size()); p++){
-      clustersResponses[clusters.size()].push_back(0);
+      auto id = newCluster[p];
+      newCluster[p] = assignmentSet[id];
     }
     clusters.push_back(newCluster);
     for(auto& sampleId : newCluster){
@@ -258,6 +284,7 @@ void PLSImageClustering::assignment(const cv::Mat_<float>& samples, const int cl
 
   //MERGING
   merge(clusters);
+  buildResponses(samples, clusters, mClustersResponses, *mClassifier);
   out = clusters;
 }
 

@@ -83,22 +83,22 @@ public:
   ALG_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X, cv::Mat_<float>& Y, int minDims, int maxDims, int step);
 
 protected:
-  cv::Mat_<float> Xmean;
-  cv::Mat_<float> Xstd;
-  cv::Mat_<float> Ymean;
-  cv::Mat_<float> Ystd;
+  cv::Mat_<float> mXmean;
+  cv::Mat_<float> mXstd;
+  cv::Mat_<float> mYmean;
+  cv::Mat_<float> mYstd;
 
-  cv::Mat_<float> b;
-  cv::Mat_<float> T;
-  cv::Mat_<float> P;
-  cv::Mat_<float> W;
+  cv::Mat_<float> mB;
+  cv::Mat_<float> mT;
+  cv::Mat_<float> mP;
+  cv::Mat_<float> mW;
 
-  cv::Mat_<float> Wstar;
-  cv::Mat_<float> Bstar;
+  cv::Mat_<float> mWstar;
+  cv::Mat_<float> mBstar;
 
-  cv::Mat_<float> zdataV;
-  cv::Mat_<float> Yscaled;
-  int nfactors;
+  cv::Mat_<float> mZDataV;
+  cv::Mat_<float> mYscaled;
+  int mNFactors;
 };
 
 template<class T>

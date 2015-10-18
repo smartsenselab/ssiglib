@@ -78,7 +78,8 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
   mLabels.convertTo(l, CV_32F);
   auto X = input.clone();
   mPls->learn(X, l, mNumberOfFactors);
-
+  X.release();
+  l.release();
   mTrained = true;
 }
 

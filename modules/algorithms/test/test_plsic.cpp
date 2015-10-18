@@ -88,6 +88,8 @@ TEST(PLSIC, CorrelationClusteringTest){
   bool finished = false;
   do{
     auto c = clustering.getClustering();
+    auto r = clustering.getClustersResponses();
+    ASSERT_EQ(c.size(), r.size());
     finished = clustering.iterate();
   } while(!finished);
 
@@ -158,6 +160,8 @@ TEST(PLSIC, CosineClusteringTest){
   bool finished = false;
   do{
     auto c = clustering.getClustering();
+    auto r = clustering.getClustersResponses();
+    ASSERT_EQ(c.size(), r.size());
     finished = clustering.iterate();
   } while(!finished);
 
