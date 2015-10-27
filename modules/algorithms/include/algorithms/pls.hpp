@@ -63,13 +63,13 @@ public:
   ALG_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
   // return projection considering n factors
-  ALG_EXPORT void projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors);
+  ALG_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors);
 
   // retrieve the number of factors
   ALG_EXPORT int getNFactors();
 
   // projection Bstar considering a number of factors (must be smaller than the maximum)
-  ALG_EXPORT void projectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ALG_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
   // save PLS model
   ALG_EXPORT void save(std::string filename);

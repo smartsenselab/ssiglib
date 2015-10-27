@@ -56,7 +56,7 @@ public:
   ALG_EXPORT ClusteringMethod(void) = default;
   ALG_EXPORT virtual ~ClusteringMethod(void) = default;
 
-  ALG_EXPORT virtual void addInitialClustering(
+  ALG_EXPORT virtual void setInitialClustering(
     const std::vector<Cluster>& init);
 
   ALG_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;

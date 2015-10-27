@@ -69,7 +69,10 @@ TEST(PLSIC, CorrelationClusteringTest){
   stg["discovery"] >> inp;
   stg.release();
 
-  ssf::PLSImageClustering clustering;
+  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+  std::vector<ssf::Cluster> natVector = {{},{}};
+
+  ssf::PLSImageClustering clustering(oaaclassifier, discoverySubsets, initialClustering);
   clustering.setK(2);
   clustering.setClusterRepresentationType(ssf::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
@@ -79,11 +82,10 @@ TEST(PLSIC, CorrelationClusteringTest){
   clustering.setMaxIterations(8);
   clustering.setClassifier(oaaclassifier);
 
-  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
-  std::vector<ssf::Cluster> natVector = {{},{}};
+
   clustering.addNaturalWorld(neg, natVector);
 
-  clustering.addInitialClustering(initialClustering);
+  clustering.setInitialClustering(initialClustering);
   clustering.setup(inp);
   bool finished = false;
   do{
@@ -139,13 +141,16 @@ TEST(PLSIC, CosineClusteringTest){
   stg["discovery"] >> inp;
   stg.release();
 
-  ssf::PLSImageClustering clustering;
+  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+  std::vector<ssf::Cluster> natVector = {{},{}};
+
+  ssf::PLSImageClustering clustering(oaaclassifier, discoverySubsets, initialClustering);
   clustering.setK(2);
   clustering.setClusterRepresentationType(ssf::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
 
   clustering.setSimBuilder(ssf::SimilarityBuilder::cosineFunction);
-  std::vector<ssf::Cluster> natVector = {{},{}};
+
   clustering.addNaturalWorld(neg, natVector);
 
   clustering.setDiscoveryConfiguration(discoverySubsets);
@@ -153,9 +158,8 @@ TEST(PLSIC, CosineClusteringTest){
   clustering.setMaxIterations(8);
   clustering.setClassifier(oaaclassifier);
 
-  std::vector<ssf::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
 
-  clustering.addInitialClustering(initialClustering);
+  clustering.setInitialClustering(initialClustering);
   clustering.setup(inp);
   bool finished = false;
   do{

@@ -54,7 +54,10 @@ enum ClusterRepresentationType{
 class PLSImageClustering :
   public ClassifierClustering{
 public:
-  ALG_EXPORT PLSImageClustering() = default;
+  ALG_EXPORT PLSImageClustering(ssf::OAAClassifier &classifier,
+    const std::vector<std::vector<int>> &discoverySubset,
+    const std::vector<ssf::Cluster> &initialClustering
+    );
 
   ALG_EXPORT virtual ~PLSImageClustering() = default;
 
@@ -92,7 +95,27 @@ public:
 
   ALG_EXPORT float getMergeThreshold() const;
 
-  ALG_EXPORT void setMergeThreshold(float mMergeThreshold1);
+  ALG_EXPORT void setMergeThreshold(float mergeThreshold);
+
+
+  ALG_EXPORT float getDeviationThreshold() const;
+
+  ALG_EXPORT void setDeviationThreshold(float deviationThreshold);
+
+
+  ALG_EXPORT bool getNormalizeResponses() const;
+
+  ALG_EXPORT void setNormalizeResponses(bool normalizeResponses);
+
+
+  ALG_EXPORT bool getMergeConvergence() const;
+
+  ALG_EXPORT void setMergeConvergence(bool mergeConvergenve);
+
+
+  ALG_EXPORT int getMaximumMergedPairs() const;
+
+  ALG_EXPORT void setMaximumMergedPairs(int nMergesPerIteration1);
 
 protected:
 
@@ -103,7 +126,9 @@ protected:
 
   ALG_EXPORT virtual void initializeClassifiers() override;
 
-  ALG_EXPORT virtual void trainClassifiers(const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters, const std::vector<int>& negativeLearningSet) override;
+  ALG_EXPORT virtual void trainClassifiers(const cv::Mat_<float>& samples,
+                                           const std::vector<Cluster>& clusters,
+                                           const std::vector<int>& negativeLearningSet) override;
 
   ALG_EXPORT virtual void trainClassifiers(const std::vector<Cluster>& clusters,
                                            const std::vector<int>& negativeLearningSet,
@@ -136,6 +161,8 @@ protected:
                                  const OAAClassifier& classifier
   ) const;
 
+  ALG_EXPORT void removeMeaninglessClusters(std::vector<Cluster>& clusters);
+
 private:
 
   //private members
@@ -145,8 +172,13 @@ private:
 
   int mRepresentationType = ClustersResponses;
 
+  bool mNormalizeResponses = false;;
+
   float mMergeThreshold = 0.7f;
+  float mDeviationThreshold = 0.25f;
   bool mMergeOcurred = false;
+  bool mMergeConvergence = true;
+  int nMergesPerIteration = 8;
 };
 
 }

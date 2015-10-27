@@ -260,12 +260,6 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
 
   // set max number of factors
   this->mNFactors = nfactors;
-  
-  mYscaled.release();
-  mB.release();
-  mT.release();
-  mP.release();
-  mW.release();
 }
 
 void PLS::computeBstar(int nfactors){
@@ -287,7 +281,7 @@ int PLS::getNFactors(){
   return this->mNFactors;
 }
 
-void PLS::projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
   cv::Mat_<float> aux, aux2;
   int i, y;
 
@@ -314,7 +308,7 @@ void PLS::projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfact
 }
 
 
-void PLS::projectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
   cv::Mat_<float> aux, tmp;
   int y, i;
 
@@ -516,7 +510,7 @@ void PLS::learnWithCrossValidation(int folds, cv::Mat_<float>& X, cv::Mat_<float
       tmpPLS->computeBstar(j);
 
       // project test data
-      tmpPLS->projectionBstar(Xvalidate, responses);
+      tmpPLS->predict(Xvalidate, responses);
 
       // compute the regression error
       error = regError(Yvalidate, responses);
