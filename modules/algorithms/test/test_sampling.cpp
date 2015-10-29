@@ -38,6 +38,8 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+
 #include <algorithms/sampling_method.hpp>
 
 TEST(ImageSampling, execution){
@@ -49,4 +51,15 @@ TEST(ImageSampling, execution){
   EXPECT_EQ(cv::Rect(8, 8, 2, 2), samples.back());
 
   samples = ssf::SamplingMethod::sampleImage(500, 375, 80, 80, 1.0f, 2.0f, 7, 0.4f, 0.4f);
+}
+
+TEST(ImageSampling, FeatureDetection){
+  auto img = cv::imread("000036.jpg", cv::IMREAD_GRAYSCALE);
+  int maxPatches = 20;
+  cv::Size winSize{ 80, 80 };
+
+  auto samples = ssf::SamplingMethod::sampleImage(img,
+    maxPatches,
+    winSize);
+
 }
