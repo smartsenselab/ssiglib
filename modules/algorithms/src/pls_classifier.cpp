@@ -54,7 +54,7 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs){
 
 void PLSClassifier::predict(cv::Mat_<float>& inp,
                             cv::Mat_<float>& resp) const{
-  mPls->projectionBstar(inp, resp);
+  mPls->predict(inp, resp);
   cv::Mat_<float> r;
   r.create(inp.rows, 2);
   for(int row = 0; row < inp.rows; ++row){
@@ -78,7 +78,8 @@ void PLSClassifier::learn(cv::Mat_<float>& input,
   mLabels.convertTo(l, CV_32F);
   auto X = input.clone();
   mPls->learn(X, l, mNumberOfFactors);
-
+  X.release();
+  l.release();
   mTrained = true;
 }
 

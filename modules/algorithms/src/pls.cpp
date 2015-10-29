@@ -74,8 +74,8 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
   }
 
   maxsteps = 100;
-  computeMeanStd(X, cv::ml::COL_SAMPLE, Xmean, Xstd);
-  computeZScore(X, Xmean, Xstd);
+  computeMeanStd(X, cv::ml::COL_SAMPLE, mXmean, mXstd);
+  computeZScore(X, mXmean, mXstd);
 
   // Y
   //ymean = new Vector<float> (1);
@@ -83,18 +83,18 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
   //mean(Y, ymean);
   //std(Y, ymean, ystd);
   //zscore(Y, ymean, ystd);
-  computeMeanStd(Y, cv::ml::COL_SAMPLE, Ymean, Ystd);
-  computeZScore(Y, Ymean, Ystd);
+  computeMeanStd(Y, cv::ml::COL_SAMPLE, mYmean, mYstd);
+  computeZScore(Y, mYmean, mYstd);
 
   //Yscaled = Y->Copy();
-  Yscaled = Y.clone();
+  mYscaled = Y.clone();
 
   U.create(nsamples, nfactors); //U = new Matrix<float> (nsamples, nfactor);
   C.create(1, nfactors); // C = new Vector<float> (nfactor);
-  T.create(nsamples, nfactors); //T = new Matrix<float> (nsamples, nfactor);
-  P.create(nfeatures, nfactors); // P = new Matrix<float> (nfeatures, nfactor);
-  W.create(nfeatures, nfactors); // W = new Matrix<float> (nfeatures, nfactor);
-  b.create(1, nfactors);
+  mT.create(nsamples, nfactors); //T = new Matrix<float> (nsamples, nfactor);
+  mP.create(nfeatures, nfactors); // P = new Matrix<float> (nfeatures, nfactor);
+  mW.create(nfeatures, nfactors); // W = new Matrix<float> (nfeatures, nfactor);
+  mB.create(1, nfactors);
 
 
   // compute square of the sum of X and Y
@@ -202,15 +202,15 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
     // store matrices
     //b[i] = b_l;
     //b->SetElement(i, b_l);
-    b[0][i] = b_l[0][0];
+    mB[0][i] = b_l[0][0];
 
 
     //for (j = 0; j < nfeatures; j++) {
     //	P->SetValue(i, j, p->GetElement(j));
     //	W->SetValue(i, j, w->GetElement(j));
     //}
-    p.copyTo(P.col(i));
-    w.copyTo(W.col(i));
+    p.copyTo(mP.col(i));
+    w.copyTo(mW.col(i));
 
 
     //for (j = 0; j < cX; j++) {
@@ -222,7 +222,7 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
     //	T->SetValue(i, j, t->GetElement(j));
     //	U->SetValue(i, j, u->GetElement(j));
     //}
-    t.copyTo(T.col(i));
+    t.copyTo(mT.col(i));
     u.copyTo(U.col(i));
 
     //for (j = 0; j < rX; j++) {
@@ -244,50 +244,50 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors){
     // Yres=Yres-(b(l)*(t*c'));
     //SubtractFromVector(Y, rY, t, rX, c, 1, b[i]);
     //SubtractFromVector(Y, t, c, b->GetElement(i));
-    Y = Y - (b[0][i] * (t * c.t()));
+    Y = Y - (mB[0][i] * (t * c.t()));
   }
 
 
   //ComputeWstar();
   //Wstar=W*inv(P'*W);
-  tmpM = P.t() * W;
-  Wstar = W * tmpM.inv();
+  tmpM = mP.t() * mW;
+  mWstar = mW * tmpM.inv();
 
   //Bstar = Wstar*inv(T'*T)*T'*Y; 
-  tmpM = (T.t() * T).inv();
-  Bstar = Wstar * tmpM * T.t() * Yscaled;
+  tmpM = (mT.t() * mT).inv();
+  mBstar = mWstar * tmpM * mT.t() * mYscaled;
   //computeBstar(nfactors);
 
   // set max number of factors
-  this->nfactors = nfactors;
+  this->mNFactors = nfactors;
 }
 
 void PLS::computeBstar(int nfactors){
   cv::Mat_<float> tmpM;
 
-  if(nfactors > this->nfactors){
+  if(nfactors > this->mNFactors){
     char msg[2048];
-    sprintf(msg, "Tried %d, but the maximum number of factors is %d", nfactors, this->nfactors);
+    sprintf(msg, "Tried %d, but the maximum number of factors is %d", nfactors, this->mNFactors);
     throw(std::logic_error(msg));
   }
 
-  tmpM = (T.colRange(0, nfactors).t() * T.colRange(0, nfactors)).inv();
-  this->Bstar = Wstar.colRange(0, nfactors) * tmpM * T.colRange(0, nfactors).t() * Yscaled;
+  tmpM = (mT.colRange(0, nfactors).t() * mT.colRange(0, nfactors)).inv();
+  this->mBstar = mWstar.colRange(0, nfactors) * tmpM * mT.colRange(0, nfactors).t() * mYscaled;
 }
 
 
 int PLS::getNFactors(){
 
-  return this->nfactors;
+  return this->mNFactors;
 }
 
-void PLS::projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfactors){
   cv::Mat_<float> aux, aux2;
   int i, y;
 
-  if(nfactors > this->nfactors){
+  if(nfactors > this->mNFactors){
     char msg[2048];
-    sprintf(msg, "Maximum number of factors (%d) has been exceeded", this->nfactors);
+    sprintf(msg, "Maximum number of factors (%d) has been exceeded", this->mNFactors);
     throw(std::logic_error(msg));
   }
 
@@ -297,37 +297,37 @@ void PLS::projection(const cv::Mat_<float>& X, cv::Mat_<float>& projX, int nfact
     aux = X.row(y);
 
     // zscore
-    zdataV = aux - Xmean;
-    zdataV /= Xstd;
+    mZDataV = aux - mXmean;
+    mZDataV /= mXstd;
 
     for(i = 0; i < nfactors; i++){
-      aux2 = Wstar.col(i);
-      projX[y][i] = static_cast<float>(zdataV.dot(aux2.t()));
+      aux2 = mWstar.col(i);
+      projX[y][i] = static_cast<float>(mZDataV.dot(aux2.t()));
     }
   }
 }
 
 
-void PLS::projectionBstar(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret){
   cv::Mat_<float> aux, tmp;
   int y, i;
 
-  ret.create(X.rows, Bstar.cols);
+  ret.create(X.rows, mBstar.cols);
 
   for(y = 0; y < X.rows; y++){
     aux = X.row(y);
 
-    if(aux.cols != Xmean.cols){
+    if(aux.cols != mXmean.cols){
       throw std::logic_error("Inconsistent data matrix");
     }
 
     // zscore
-    zdataV = aux - Xmean;
-    zdataV /= Xstd;
+    mZDataV = aux - mXmean;
+    mZDataV /= mXstd;
 
     // X * Bstar .* Ydata.std) +  Ydata.mean;
-    tmp = zdataV * Bstar;
-    tmp = tmp.mul(Ystd) + Ymean;
+    tmp = mZDataV * mBstar;
+    tmp = tmp.mul(mYstd) + mYmean;
 
     for(i = 0; i < tmp.cols; i++){
       ret[y][i] = tmp[0][i];
@@ -343,17 +343,17 @@ void PLS::save(cv::FileStorage& storage){
   }
 
   storage << "PLS" << "{";
-  storage << "nfactors" << nfactors;
-  storage << "Xmean" << Xmean;
-  storage << "Xstd" << Xstd;
+  storage << "nfactors" << mNFactors;
+  storage << "Xmean" << mXmean;
+  storage << "Xstd" << mXstd;
   //storage << "b" << b;
   //storage << "T" << T;
   //storage << "P" << P;
   //storage << "W" << W;
-  storage << "Wstar" << Wstar;
-  storage << "Bstar" << Bstar;
-  storage << "Ymean" << Ymean;
-  storage << "Ystd" << Ystd;
+  storage << "Wstar" << mWstar;
+  storage << "Bstar" << mBstar;
+  storage << "Ymean" << mYmean;
+  storage << "Ystd" << mYstd;
 
   storage << "}";
 }
@@ -364,17 +364,17 @@ void PLS::load(const cv::FileNode& node){
 
   n = node["PLS"];
 
-  n["nfactors"] >> nfactors;
-  n["Xmean"] >> Xmean;
-  n["Xstd"] >> Xstd;
+  n["nfactors"] >> mNFactors;
+  n["Xmean"] >> mXmean;
+  n["Xstd"] >> mXstd;
   //n["b"] >> b;
   //n["T"] >> T;
   //n["P"] >> P;
   //n["W"] >> W;
-  n["Wstar"] >> Wstar;
-  n["Bstar"] >> Bstar;
-  n["Ymean"] >> Ymean;
-  n["Ystd"] >> Ystd;
+  n["Wstar"] >> mWstar;
+  n["Bstar"] >> mBstar;
+  n["Ymean"] >> mYmean;
+  n["Ystd"] >> mYstd;
 
   //if (b.data == NULL)
   //	ReportError("Couldn't read 'b' from PLS model");
@@ -510,7 +510,7 @@ void PLS::learnWithCrossValidation(int folds, cv::Mat_<float>& X, cv::Mat_<float
       tmpPLS->computeBstar(j);
 
       // project test data
-      tmpPLS->projectionBstar(Xvalidate, responses);
+      tmpPLS->predict(Xvalidate, responses);
 
       // compute the regression error
       error = regError(Yvalidate, responses);
