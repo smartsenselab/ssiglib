@@ -46,7 +46,7 @@ void ClusteringMethod::setup
   mSamples = input;
 }
 
-void ClusteringMethod::addInitialClustering(const std::vector<Cluster>& init){
+void ClusteringMethod::setInitialClustering(const std::vector<Cluster>& init){
   mClusters = init;
 }
 }

@@ -51,6 +51,10 @@ public:
   SamplingMethod(const SamplingMethod& rhs);
   SamplingMethod& operator=(const SamplingMethod& rhs);
 
+  ALG_EXPORT static std::vector<cv::Rect> sampleImage(const cv::Mat& img, 
+    const int maxPatches, 
+    const cv::Size& winSize);
+
   /**
   This method extracts sample windows from a specified Width and Height.
 

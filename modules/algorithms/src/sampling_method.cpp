@@ -37,6 +37,10 @@
 *************************************************************************************************L*/
 
 #include <stdexcept>
+
+#include <opencv2/features2d.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include "algorithms/sampling_method.hpp"
 
 namespace ssf{
@@ -58,6 +62,43 @@ SamplingMethod& SamplingMethod::operator=(const SamplingMethod& rhs){
     //code here
   }
   return *this;
+}
+
+std::vector<cv::Rect> SamplingMethod::sampleImage(const cv::Mat& img,
+                                                  const int maxPatches,
+                                                  const cv::Size& winSize){
+  //cv::RNG rng(12345);
+  std::vector<cv::Rect> ans;
+  std::vector<cv::Point2f> corners;
+  auto h = winSize.height;
+  auto w = winSize.width;
+  auto H = img.rows;
+  auto W = img.cols;
+  double minDistance = cv::sqrt(h * h / 4 + w * w / 4);
+
+  cv::goodFeaturesToTrack(img, corners, maxPatches, 0.01, minDistance);
+
+  for(int r = 0; r < static_cast<int>(corners.size()); ++r){
+    auto corner = corners[r];
+    int x = static_cast<int>(corner.x) - h / 2;
+    int y = static_cast<int>(corner.y) - w / 2;
+    if(x + w < W && x >= 0)
+      if(y + h < H && y >= 0){
+        cv::Rect rect{x, y, w, h};
+        ans.push_back(rect);
+      }
+  }
+
+  //Visualization Intended for Debugging:
+  //cv::Mat copy;
+  //cv::cvtColor(img, copy, cv::COLOR_GRAY2BGR);
+  //int r = 4;
+  //for (int i = 0; i < corners.size(); i++) {
+  //  circle(copy, corners[i], r, cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255),
+  //    rng.uniform(0, 255)), -1, 8, 0);
+  //}
+
+  return ans;
 }
 
 std::vector<cv::Rect> SamplingMethod::sampleImage(const int width,
