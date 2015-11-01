@@ -36,33 +36,53 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_ALGORITHM_HPP_
-#define _SSF_ALGORITHMS_ALGORITHM_HPP_
+#ifndef _SSF_ML_OAACLASSIFIER_HPP_
+#define _SSF_ML_OAACLASSIFIER_HPP_
 
-#include "alg_defs.hpp"
-#include <string>
+#include "classification.hpp"
+#include <unordered_map>
+#include <memory>
 
 namespace ssf{
 
-  
-	class Algorithm{
-	
-	public:
-		ALG_EXPORT Algorithm(void);
-    ALG_EXPORT virtual ~Algorithm(void);
-    ALG_EXPORT Algorithm(const Algorithm& rhs);
-    ALG_EXPORT Algorithm& operator=(const Algorithm& rhs);
 
-    //ALG_EXPORT virtual void copyConfigurationTo(Algorithm& obj)const = 0;
+class OAAClassifier : public Classification{
+  ML_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
+public:
+  ML_EXPORT OAAClassifier(const Classification& prototypeClassifier);
+  virtual ~OAAClassifier(void) = default;
 
-    ALG_EXPORT virtual void save(const std::string &filename, const std::string& nodename) const = 0;
-    ALG_EXPORT virtual void load(const std::string &filename, const std::string& nodename) = 0;
+  ML_EXPORT virtual void predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
 
-	private:
-		//private members
+  ML_EXPORT virtual void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ML_EXPORT virtual cv::Mat_<int> getLabels() const override;
+  ML_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const override;
+  ML_EXPORT virtual bool empty() const override;
+  ML_EXPORT virtual bool isTrained() const override;
+  ML_EXPORT virtual bool isClassifier() const override;
+  ML_EXPORT virtual void load(const std::string& filename, const std::string& nodename) override;
+  ML_EXPORT virtual void save(const std::string& filename, const std::string& nodename) const override;
 
-	};
+  ML_EXPORT virtual void read(const cv::FileNode& fn) override;
+  ML_EXPORT virtual void write(cv::FileStorage& fs) const override;
+
+  ML_EXPORT virtual Classification* clone() const override;
+
+  ML_EXPORT std::shared_ptr<Classification> getUnderlyingClassifier() const;
+  ML_EXPORT void setUnderlyingClassifier(const Classification& underlyingClassifier);
+protected:
+  OAAClassifier() = default;
+
+private:
+  //private members
+  std::unordered_map<int, int> mLabelOrderings;
+  std::vector<std::shared_ptr<Classification>> mClassifiers;
+  std::unique_ptr<Classification> mUnderlyingClassifier;
+  cv::Mat_<int> mLabels;
+
+  bool mTrained = false;
+};
 
 }
+#endif // !_SSF_ML_OAACLASSIFIER_HPP_
 
-#endif // !_SSF_ALGORITHMS_ALGORITHM_HPP_

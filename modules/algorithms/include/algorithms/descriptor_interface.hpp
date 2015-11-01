@@ -39,10 +39,11 @@
 #ifndef _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 #define _SSF_ALGORITHMS_DESCRIPTOR_INTERFACE_HPP_
 
-#include <vector>
+
 #include "alg_defs.hpp"
-#include "algorithm.hpp"
+#include "core/algorithm.hpp"
 #include <opencv2/core.hpp>
+#include <vector>
 
 namespace cv{
 class Mat;
@@ -50,7 +51,7 @@ class Mat;
 
 namespace ssf{
 
-class DescriptorInterface : public ssf::Algorithm{
+class DescriptorInterface : public Algorithm{
 
 public:
   DescriptorInterface(const cv::Mat& input);

@@ -36,7 +36,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#include "algorithms/algorithm.hpp"
+#include "core/algorithm.hpp"
 
 namespace ssf{
 

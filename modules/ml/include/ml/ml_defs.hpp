@@ -36,66 +36,26 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_KMEANS_HPP_
-#define _SSF_ALGORITHMS_KMEANS_HPP_
+#ifndef _SSF_ML_DEFS_HPP_
+#define _SSF_ML_DEFS_HPP_
 
-#include "clustering_method.hpp"
+#include <stdexcept>
+#include <string>
 
 namespace ssf{
 
-class Kmeans : public ClusteringMethod{
-public:
-  ALG_EXPORT Kmeans(void) = default;
-  ALG_EXPORT virtual ~Kmeans(void) = default;
-  Kmeans(const Kmeans& rhs);
-  Kmeans& operator=(const Kmeans& rhs);
-
-  ALG_EXPORT void learn(
-    cv::Mat_<float>& input) override;
-
-  ALG_EXPORT virtual void predict(cv::Mat_<float>& inp,
-                                  cv::Mat_<float>& resp) const override;
-
-  ALG_EXPORT std::vector<Cluster> getClustering()const override;
-
-  ALG_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
-
-  ALG_EXPORT virtual bool empty() const override;
-  ALG_EXPORT virtual bool isTrained() const override;
-  ALG_EXPORT virtual bool isClassifier() const override;
-
-  ALG_EXPORT virtual void setup(cv::Mat_<float>& input) override;
-
-  ALG_EXPORT void load(const std::string& filename, const std::string& nodename = "") override;
-  ALG_EXPORT void save(const std::string& filename, const std::string& nodename = "")const override;
-  ALG_EXPORT virtual void read(const cv::FileNode& fn) override;
-  ALG_EXPORT virtual void write(cv::FileStorage& fs) const override;
-
-  ALG_EXPORT int getFlags() const;
-
-  ALG_EXPORT void setFlags(int flags);
-
-  ALG_EXPORT int getNAttempts() const;
-
-  ALG_EXPORT void setNAttempts(int nAttempts);
-
-  ALG_EXPORT int getPredictionDistanceType() const;
-
-  ALG_EXPORT void setPredicitonDistanceType(cv::NormTypes predicitonDistanceType);
-
-private:
-  //private members
-  cv::Mat_<float> mCentroids;
-  int mFlags;
-  int mNumberOfAttempts;
-  int mPredictionDistanceType;
-
-private:
-  void setupLabelMatFromInitialization(cv::Mat& labels);
-
-};
+#ifndef ML_EXPORT
+	#if (defined WIN32 || defined _WIN32 || defined __CYGWIN__)
+		#if defined  ML_API_EXPORTS
+			#define  ML_EXPORT __declspec(dllexport)
+		#else
+			#define  ML_EXPORT __declspec(dllimport)
+		#endif
+	#else
+		#define ML_EXPORT
+	#endif
+#endif
 
 }
 
-#endif // !_SSF_ALGORITHMS_KMEANS_HPP_
-
+#endif // !_SSF_ML_DEFS_HPP_PP_
