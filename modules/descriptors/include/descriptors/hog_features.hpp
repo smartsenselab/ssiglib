@@ -36,83 +36,83 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *************************************************************************************************L*/
 
-#ifndef _SSF_DESCRIPTORS_HOG_FEATURES_HPP_
-#define _SSF_DESCRIPTORS_HOG_FEATURES_HPP_
-#include "descriptors/descriptor.hpp"
-
-namespace ssf{
-
-	class HOG : public Descriptor{
-		cv::Size mBlockConfiguration;
-		cv::Size mCellConfiguration;
-		cv::Size mBlockStride;
-		int mNumberOfBins;
-		float mClipping = 0.2f;
-
-		std::vector<cv::Mat_<float>> mIntegralImages;
-	public:
-		DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
-
-		DESCRIPTORS_EXPORT HOG(
-			const cv::Mat& input,
-			const cv::Rect& patch);
-
-		DESCRIPTORS_EXPORT HOG(
-			const cv::Mat& input,
-			const std::vector<cv::Rect>& patches);
-
-		DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
-
-		DESCRIPTORS_EXPORT static void computeVisualization(const cv::Mat_<float> feat,
-			const int nBins,
-			const cv::Size& blockSize,
-			const cv::Size& blockStride,
-			const cv::Size& cellSize,
-			const cv::Size& imgSize,
-			cv::Mat& vis);
-		DESCRIPTORS_EXPORT virtual bool hasNext() override;
-		DESCRIPTORS_EXPORT virtual void nextFeatureVector(cv::Mat& out) override;
-
-		DESCRIPTORS_EXPORT virtual void save(const std::string& filename,
-			const std::string& nodename) const override;
-		DESCRIPTORS_EXPORT virtual void load(const std::string& filename,
-			const std::string& nodename) override;
-
-		DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
-
-		DESCRIPTORS_EXPORT void setBlockConfiguration(const cv::Size& blockConfiguration);
-
-		DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
-
-		DESCRIPTORS_EXPORT void setBlockStride(const cv::Size& blockStride);
-
-		DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
-
-		DESCRIPTORS_EXPORT void setCellConfiguration(const cv::Size& cellConfiguration);
-
-		DESCRIPTORS_EXPORT int getNumberOfBins() const;
-
-		DESCRIPTORS_EXPORT void setNumberOfBins(int numberOfBins);
-
-		DESCRIPTORS_EXPORT float getClipping() const;
-
-		DESCRIPTORS_EXPORT void setClipping(float clipping1);
-
-
-	private:
-		//private members
-
-		std::vector<cv::Mat_<float>> computeIntegralGradientImages(const cv::Mat& img) const;
-
-		void getBlockDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
-
-		static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
-			const int nBins,
-			cv::Mat& visualization);
-
-	};
-
-}
-
-#endif // !_SSF_DESCRIPTORS_HOG_FEATURES_HPP_
+//#ifndef _SSF_DESCRIPTORS_HOG_FEATURES_HPP_
+//#define _SSF_DESCRIPTORS_HOG_FEATURES_HPP_
+//#include "descriptors/descriptor.hpp"
+//
+//namespace ssf{
+//
+//	class HOG : public Descriptor{
+//		cv::Size mBlockConfiguration;
+//		cv::Size mCellConfiguration;
+//		cv::Size mBlockStride;
+//		int mNumberOfBins;
+//		float mClipping = 0.2f;
+//
+//		std::vector<cv::Mat_<float>> mIntegralImages;
+//	public:
+//		DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
+//
+//		DESCRIPTORS_EXPORT HOG(
+//			const cv::Mat& input,
+//			const cv::Rect& patch);
+//
+//		DESCRIPTORS_EXPORT HOG(
+//			const cv::Mat& input,
+//			const std::vector<cv::Rect>& patches);
+//
+//		DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
+//
+//		DESCRIPTORS_EXPORT static void computeVisualization(const cv::Mat_<float> feat,
+//			const int nBins,
+//			const cv::Size& blockSize,
+//			const cv::Size& blockStride,
+//			const cv::Size& cellSize,
+//			const cv::Size& imgSize,
+//			cv::Mat& vis);
+//		DESCRIPTORS_EXPORT virtual bool hasNext() override;
+//		DESCRIPTORS_EXPORT virtual void nextFeatureVector(cv::Mat& out) override;
+//
+//		DESCRIPTORS_EXPORT virtual void save(const std::string& filename,
+//			const std::string& nodename) const override;
+//		DESCRIPTORS_EXPORT virtual void load(const std::string& filename,
+//			const std::string& nodename) override;
+//
+//		DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
+//
+//		DESCRIPTORS_EXPORT void setBlockConfiguration(const cv::Size& blockConfiguration);
+//
+//		DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
+//
+//		DESCRIPTORS_EXPORT void setBlockStride(const cv::Size& blockStride);
+//
+//		DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
+//
+//		DESCRIPTORS_EXPORT void setCellConfiguration(const cv::Size& cellConfiguration);
+//
+//		DESCRIPTORS_EXPORT int getNumberOfBins() const;
+//
+//		DESCRIPTORS_EXPORT void setNumberOfBins(int numberOfBins);
+//
+//		DESCRIPTORS_EXPORT float getClipping() const;
+//
+//		DESCRIPTORS_EXPORT void setClipping(float clipping1);
+//
+//
+//	private:
+//		//private members
+//
+//		std::vector<cv::Mat_<float>> computeIntegralGradientImages(const cv::Mat& img) const;
+//
+//		void getBlockDescriptor(int x, int y, const std::vector<cv::Mat_<float>>& integralImages, cv::Mat_<float>& out);
+//
+//		static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
+//			const int nBins,
+//			cv::Mat& visualization);
+//
+//	};
+//
+//}
+//
+//#endif // !_SSF_DESCRIPTORS_HOG_FEATURES_HPP_
 
