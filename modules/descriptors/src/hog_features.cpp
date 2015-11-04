@@ -69,10 +69,10 @@ namespace ssf{
 		const int imgCols = imgSize.width;
 
 		if (imgCols % blockSize.width != 0){
-			throw std::invalid_argument("Patch size must be multiple of block size");
+			throw std::exception("Patch size must be multiple of block size");
 		}
 		if (imgRows % blockSize.height != 0){
-			throw std::invalid_argument("Patch size must be multiple of block size");
+			throw std::exception("Patch size must be multiple of block size");
 		}
 
 		const int nCellsPerBlock = cellSize.area();
