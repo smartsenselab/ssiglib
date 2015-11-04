@@ -46,10 +46,10 @@ namespace ssf{
 		#if defined  DESCRIPTORS_API_EXPORTS
 			#define  DESCRIPTORS_EXPORT __declspec(dllexport)
 		#else
-			#define  DESCRIPTORS_EXPORTS __declspec(dllimport)
+			#define  DESCRIPTORS_EXPORT __declspec(dllimport)
 		#endif
 	#else
-		#define DESCRIPTORS_EXPORTS
+		#define DESCRIPTORS_EXPORT
 	#endif
 #endif
 
