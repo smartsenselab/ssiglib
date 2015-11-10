@@ -18,7 +18,7 @@ node default{
     virtualenv => 'present',
   }
 
-  python::pip { 'cpp-lint':
+  python::pip { 'cpplint':
     ensure     => 'latest',
   }
 

@@ -11,6 +11,8 @@ matrix:
   include:
     - compiler: gcc
       env: TASK="lint"
+    - compiler: gcc
+      env: TASK="build-gcc"
 
 before_install:
   - sudo apt-get update -qq
@@ -18,6 +20,17 @@ before_install:
 install:
   - sudo apt-get install python
   - sudo pip install cpplint
+  - sudo apt-get -y install libopencv-dev build-essential cmake git libgtk2.0-dev pkg-config python-dev python-numpy
+  - sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev
+  - sudo apt-get -y install libavcodec-dev libavformat-dev libswscale-dev libxine-dev libgstreamer0.10-dev
+  - sudo apt-get -y install libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev
+  - sudo apt-get -y install libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev
+  - sudo apt-get -y install libvorbis-dev libxvidcore-dev x264 v4l-utils unzip
+  - wget https://www.dropbox.com/s/w9fwatv533gdk0p/opencv.zip?dl=0
+  - unzip opencv.zip
+  - sudo cp opencv/* /usr/local/lib/
+  - sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+  - sudo ldconfig
 
 script:
   - bash .travis.sh

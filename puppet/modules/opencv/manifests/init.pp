@@ -18,32 +18,51 @@ class opencv{
     'libjasper-dev',
     'libdc1394-22-dev',
     'python-numpy',
+    'unzip',
   ]
 
   package { $packages: ensure => latest }
 
-  vcsrepo { '/tmp/opencv-git-clone':
-    ensure   => present,
-    provider => git,
-    source   => 'git://github.com/Itseez/opencv.git',
+  # vcsrepo { '/tmp/opencv-git-clone':
+  #   ensure   => present,
+  #   provider => git,
+  #   source   => 'git://github.com/Itseez/opencv.git',
+  # }
+
+  file { '/tmp/opencv-git-clone':
+    ensure  => directory,
   }
 
-  file { '/tmp/opencv-git-clone/build':
+  exec { 'opencv wget':
+    require => File['/tmp/opencv-git-clone'],
+    command => 'wget https://github.com/Itseez/opencv/archive/3.0.0.zip',
+    cwd     => '/tmp/opencv-git-clone',
+    path    => '/usr/bin:/usr/sbin/:/bin:/sbin'
+  }
+
+  exec { 'opencv unzip':
+    require => Exec['opencv wget'],
+    command => 'unzip -qq 3.0.0.zip',
+    cwd     => '/tmp/opencv-git-clone',
+    path    => '/usr/bin:/usr/sbin/:/bin:/sbin'
+  }
+
+  file { '/tmp/opencv-git-clone/opencv-3.0.0/build':
     ensure  => directory,
-    require => Vcsrepo['/tmp/opencv-git-clone'],
+    require => Exec['opencv unzip'],
   }
 
   exec {'opencv cmake pre':
-    require => File['/tmp/opencv-git-clone/build'],
-    command => 'cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_FFMPEG=OFF -D WITH_OPENMP=ON -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..',
-    cwd     => '/tmp/opencv-git-clone/build',
+    require => File['/tmp/opencv-git-clone/opencv-3.0.0/build'],
+    command => 'cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..',
+    cwd     => '/tmp/opencv-git-clone/opencv-3.0.0/build',
     path    => '/usr/bin:/usr/sbin/:/bin:/sbin'
   }
 
   exec {'opencv cmake build':
     require => Exec['opencv cmake pre'],
     command => 'cmake --build .',
-    cwd     => '/tmp/opencv-git-clone/build',
+    cwd     => '/tmp/opencv-git-clone/opencv-3.0.0/build',
     path    => '/usr/bin:/usr/sbin/:/bin:/sbin',
     timeout => 1800,
   }
@@ -51,7 +70,7 @@ class opencv{
   exec {'opencv cmake install':
     require => Exec['opencv cmake build'],
     command => 'cmake --build . --target install',
-    cwd     => '/tmp/opencv-git-clone/build',
+    cwd     => '/tmp/opencv-git-clone/opencv-3.0.0/build',
     path    => '/usr/bin:/usr/sbin/:/bin:/sbin'
   }
 
