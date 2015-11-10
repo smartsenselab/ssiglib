@@ -39,30 +39,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
 #include <ml/pls_classifier.hpp>
 
-TEST(PLSClassifier, BinaryClassification){
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) <<
-    1 , 1 , 1 , -1 , -1 , -1);
-  cv::Mat_<float> inp = (cv::Mat_<float>(6, 2) <<
-    1 , 2 ,
-    2 , 2 ,
-    4 , 6 ,
-    102 , 100 ,
-    104 , 105 ,
-    99 , 101);
+TEST(PLSClassifier, BinaryClassification) {
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<float> inp =
+      (cv::Mat_<float>(6, 2) << 1, 2, 2, 2, 4, 6, 102, 100, 104, 105, 99, 101);
 
   ssig::PLSClassifier classifier;
   classifier.setNumberOfFactors(2);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
@@ -74,23 +66,17 @@ TEST(PLSClassifier, BinaryClassification){
   EXPECT_GE(resp[0][idx], 0);
 }
 
-TEST(PLSClassifier, Persistence){
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) <<
-    1 , 1 , 1 , -1 , -1 , -1);
-  cv::Mat_<float> inp = (cv::Mat_<float>(6, 2) <<
-    1 , 2 ,
-    2 , 2 ,
-    4 , 6 ,
-    102 , 100 ,
-    104 , 105 ,
-    99 , 101);
+TEST(PLSClassifier, Persistence) {
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<float> inp =
+      (cv::Mat_<float>(6, 2) << 1, 2, 2, 2, 4, 6, 102, 100, 104, 105, 99, 101);
 
   ssig::PLSClassifier classifier;
   classifier.setNumberOfFactors(2);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
@@ -114,5 +100,4 @@ TEST(PLSClassifier, Persistence){
   classifier.predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
-
 }

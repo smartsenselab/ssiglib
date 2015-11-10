@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #ifndef _SSIG_CORE_ALGORITHM_HPP_
 #define _SSIG_CORE_ALGORITHM_HPP_
 
@@ -59,7 +58,7 @@ class Algorithm : public Resource {
   CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
 
   CORE_EXPORT virtual void load(const std::string& filename,
-	  const std::string& nodename);
+                                const std::string& nodename);
 
   CORE_EXPORT virtual void save(const std::string& filename,
                                 const std::string& nodename) const;

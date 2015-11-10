@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <ml/pls_classifier.hpp>
 
 #include <cassert>
@@ -100,13 +99,12 @@ bool PLSClassifier::isClassifier() const { return true; }
 
 void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
 
-
 void PLSClassifier::read(const cv::FileNode& fn) {
-  //TODO(Ricardo)
+  // TODO(Ricardo)
 }
 
-void PLSClassifier::write(cv::FileStorage& fs) const { 
-	//TODO(Ricardo) 
+void PLSClassifier::write(cv::FileStorage& fs) const {
+  // TODO(Ricardo)
 }
 
 Classification* PLSClassifier::clone() const {

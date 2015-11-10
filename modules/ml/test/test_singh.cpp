@@ -39,8 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
@@ -49,7 +47,7 @@
 #include "ml/svm_classifier.hpp"
 #include "ml/pls_classifier.hpp"
 
-//TEST(Singh, SVMSeparationTest){
+// TEST(Singh, SVMSeparationTest){
 //  cv::Mat_<float> inp;
 //  cv::Mat_<float> neg;
 //  int N = 60;

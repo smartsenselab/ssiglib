@@ -39,16 +39,14 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-
-//#include <gtest/gtest.h>
-//#include <opencv2/core.hpp>
+// #include <gtest/gtest.h>
+// #include <opencv2/core.hpp>
 //
-//#include <ml/oaa_classifier.hpp>
-//#include <ml/pls_classifier.hpp>
-//#include <ml/svm_classifier.hpp>
+// #include <ml/oaa_classifier.hpp>
+// #include <ml/pls_classifier.hpp>
+// #include <ml/svm_classifier.hpp>
 //
-//TEST(OAAClassifier, PLSBinaryClassification){
+// TEST(OAAClassifier, PLSBinaryClassification){
 //  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) <<
 //    1 , 1 , 1 , -1 , -1 , -1);
 //  cv::Mat_<float> inp = (cv::Mat_<float>(6, 2) <<
@@ -80,7 +78,7 @@
 //  EXPECT_GE(resp[0][idx], 0);
 //}
 //
-//TEST(OAAClassifier, PLSTernaryClassification){
+// TEST(OAAClassifier, PLSTernaryClassification){
 //  cv::Mat_<float> inp;
 //  cv::Mat_<int> labels;
 //  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
@@ -124,7 +122,7 @@
 //  EXPECT_GE(resp[0][label3], maxResp);
 //}
 //
-//TEST(OAAClassifier, SVMTernaryClassification){
+// TEST(OAAClassifier, SVMTernaryClassification){
 //  cv::Mat_<float> inp;
 //  cv::Mat_<int> labels;
 //
@@ -178,7 +176,7 @@
 //}
 //
 //
-//TEST(OAAClassifier, SVMPersistence){
+// TEST(OAAClassifier, SVMPersistence){
 //  cv::Mat_<float> inp;
 //  cv::Mat_<int> labels;
 //
@@ -261,7 +259,7 @@
 //
 //}
 //
-//TEST(OAAClassifier, PLSPersistence) {
+// TEST(OAAClassifier, PLSPersistence) {
 //  cv::Mat_<float> inp;
 //  cv::Mat_<int> labels;
 //

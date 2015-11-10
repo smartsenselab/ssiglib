@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include "ml/pls.hpp"
 
 #include <random>
@@ -383,11 +382,12 @@ void PLS::learnWithCrossValidation(int folds, cv::Mat_<float>& X,
   int minIdx;
 
   if (Y.cols != 1) {
-	throw std::length_error("Cross-validation only works for a single response variable!");
+    throw std::length_error(
+        "Cross-validation only works for a single response variable!");
   }
 
   if (X.rows != Y.rows) {
-	throw std::length_error("Inconsistent number of samples with responses!");
+    throw std::length_error("Inconsistent number of samples with responses!");
   }
 
   nsamples = X.rows;

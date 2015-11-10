@@ -38,83 +38,80 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-
+#include <ml/kmeans.hpp>
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
+#include <vector>
 
-#include <ml/kmeans.hpp>
+TEST(KmeansClustering, SanityClusteringTest) {
+  cv::Mat_<float> inp;
+  inp = cv::Mat_<float>::zeros(6, 2);
+  for (int i = 0; i < 3; ++i) {
+    inp[i][0] = static_cast<float>(rand_r() % 5);
+    inp[i][1] = static_cast<float>(rand_r() % 5);
+    inp[3 + i][0] = static_cast<float>(100 + rand_r() % 5);
+    inp[3 + i][1] = static_cast<float>(100 + rand_r() % 5);
+  }
 
-TEST(KmeansClustering, SanityClusteringTest){
-	cv::Mat_<float> inp;
-	inp = cv::Mat_<float>::zeros(6, 2);
-	for (int i = 0; i < 3; ++i){
-		inp[i][0] = static_cast<float>(rand() % 5);
-		inp[i][1] = static_cast<float>(rand() % 5);
-		inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
-		inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
-	}
-
-	ssig::Kmeans kmeans;
-	kmeans.setK(2);
-	kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-	kmeans.setMaxIterations(500);
-	kmeans.setNAttempts(1);
-	kmeans.learn(inp);
-	auto clusters = kmeans.getClustering();
-	std::vector<int> gt1 = { 0, 1, 2 };
-	std::vector<int> gt2 = { 3, 4, 5 };
-	ASSERT_EQ(2, static_cast<int>(clusters.size()));
-	for (auto& cluster : clusters){
-		if (cluster != gt1){
-			EXPECT_EQ(cluster, gt2);
-		}
-		else{
-			EXPECT_EQ(cluster, gt1);
-		}
-	}
+  ssig::Kmeans kmeans;
+  kmeans.setK(2);
+  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
+  kmeans.setMaxIterations(500);
+  kmeans.setNAttempts(1);
+  kmeans.learn(inp);
+  auto clusters = kmeans.getClustering();
+  std::vector<int> gt1 = {0, 1, 2};
+  std::vector<int> gt2 = {3, 4, 5};
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
+  for (auto& cluster : clusters) {
+    if (cluster != gt1) {
+      EXPECT_EQ(cluster, gt2);
+    } else {
+      EXPECT_EQ(cluster, gt1);
+    }
+  }
 }
 
-TEST(KmeansClustering, Persistence){
-	/*cv::Mat_<float> inp;
-	inp = cv::Mat_<float>::zeros(6, 2);
-	for(int i = 0; i < 3; ++i){
-	inp[i][0] = static_cast<float>(rand() % 5);
-	inp[i][1] = static_cast<float>(rand() % 5);
-	inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
-	inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
-	}
+TEST(KmeansClustering, Persistence) {
+  /*cv::Mat_<float> inp;
+  inp = cv::Mat_<float>::zeros(6, 2);
+  for(int i = 0; i < 3; ++i){
+  inp[i][0] = static_cast<float>(rand() % 5);
+  inp[i][1] = static_cast<float>(rand() % 5);
+  inp[3 + i][0] = static_cast<float>(100 + rand() % 5);
+  inp[3 + i][1] = static_cast<float>(100 + rand() % 5);
+  }
 
-	ssig::Kmeans kmeans;
-	kmeans.setK(2);
-	kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-	kmeans.setMaxIterations(500);
-	kmeans.setNAttempts(1);
-	kmeans.learn(inp);
-	auto clusters = kmeans.getClustering();
-	std::vector<int> gt1 = {0, 1, 2};
-	std::vector<int> gt2 = {3, 4, 5};
-	ASSERT_EQ(2, static_cast<int>(clusters.size()));
-	for(auto& cluster : clusters){
-	if(cluster != gt1){
-	EXPECT_EQ(cluster, gt2);
-	} else{
-	EXPECT_EQ(cluster, gt1);
-	}
-	}
-	kmeans.save("kmeans_.yml", "root");
+  ssig::Kmeans kmeans;
+  kmeans.setK(2);
+  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
+  kmeans.setMaxIterations(500);
+  kmeans.setNAttempts(1);
+  kmeans.learn(inp);
+  auto clusters = kmeans.getClustering();
+  std::vector<int> gt1 = {0, 1, 2};
+  std::vector<int> gt2 = {3, 4, 5};
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
+  for(auto& cluster : clusters){
+  if(cluster != gt1){
+  EXPECT_EQ(cluster, gt2);
+  } else{
+  EXPECT_EQ(cluster, gt1);
+  }
+  }
+  kmeans.save("kmeans_.yml", "root");
 
-	ssig::Kmeans loaded;
-	loaded.load("Kmeans_.yml", "root");
+  ssig::Kmeans loaded;
+  loaded.load("Kmeans_.yml", "root");
 
-	cv::Mat diff;
-	cv::Mat_<float> c1, c2;
+  cv::Mat diff;
+  cv::Mat_<float> c1, c2;
 
-	loaded.getCentroids(c1);
-	kmeans.getCentroids(c2);
-	cv::compare(c1, c2, diff, cv::CMP_EQ);
+  loaded.getCentroids(c1);
+  kmeans.getCentroids(c2);
+  cv::compare(c1, c2, diff, cv::CMP_EQ);
 
-	auto nonzeros = cv::countNonZero(diff);
-	EXPECT_EQ(c1.rows * c1.cols, nonzeros);*/
+  auto nonzeros = cv::countNonZero(diff);
+  EXPECT_EQ(c1.rows * c1.cols, nonzeros);*/
 }

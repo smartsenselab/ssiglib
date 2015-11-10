@@ -39,8 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
@@ -50,8 +48,7 @@
 
 #include "core/similarity_builder.hpp"
 
-
-//TEST(PLSIC, CorrelationClusteringTest){
+// TEST(PLSIC, CorrelationClusteringTest){
 //  srand(0);
 //  cv::Mat_<float> inp;
 //  cv::Mat_<float> neg;
@@ -74,12 +71,15 @@
 //  stg["discovery"] >> inp;
 //  stg.release();
 //
-//  std::vector<ssig::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+//  std::vector<ssig::Cluster> initialClustering =
+//  {{1},{8},{14},{15},{23},{28}};
 //  std::vector<ssig::Cluster> natVector = {{},{}};
 //
-//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets, initialClustering);
+//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+//  initialClustering);
 //  clustering.setK(2);
-//  clustering.setClusterRepresentationType(ssig::ClusterRepresentationType::ClustersResponses);
+//  clustering.setClusterRepresentationType(
+//          ssig::ClusterRepresentationType::ClustersResponses);
 //  clustering.setMergeThreshold(0.7f);
 //  clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
 //  clustering.setDiscoveryConfiguration(discoverySubsets);
@@ -124,7 +124,7 @@
 //  EXPECT_TRUE(label1 && label2);
 //}
 //
-//TEST(PLSIC, CosineClusteringTest){
+// TEST(PLSIC, CosineClusteringTest){
 //  cv::Mat_<float> inp;
 //  cv::Mat_<float> neg;
 //
@@ -146,12 +146,15 @@
 //  stg["discovery"] >> inp;
 //  stg.release();
 //
-//  std::vector<ssig::Cluster> initialClustering = {{1},{8},{14},{15},{23},{28}};
+//  std::vector<ssig::Cluster> initialClustering =
+//  {{1},{8},{14},{15},{23},{28}};
 //  std::vector<ssig::Cluster> natVector = {{},{}};
 //
-//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets, initialClustering);
+//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+//  initialClustering);
 //  clustering.setK(2);
-//  clustering.setClusterRepresentationType(ssig::ClusterRepresentationType::ClustersResponses);
+// clustering.setClusterRepresentationType(
+//    ssig::ClusterRepresentationType::ClustersResponses);
 //  clustering.setMergeThreshold(0.7f);
 //
 //  clustering.setSimBuilder(ssig::SimilarityBuilder::cosineFunction);

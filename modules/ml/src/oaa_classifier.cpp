@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include "ml/oaa_classifier.hpp"
 
 #include <core/util.hpp>

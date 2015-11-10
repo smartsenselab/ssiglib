@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #ifndef _SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
 
@@ -98,12 +97,10 @@ class HOG : public Descriptor {
 
   DESCRIPTORS_EXPORT void setClipping(float clipping1);
 
-protected:
-  CORE_EXPORT virtual void read(const cv::FileNode& fn) override
-	{
-	}
+ protected:
+  CORE_EXPORT void read(const cv::FileNode& fn) override {}
 
-  CORE_EXPORT virtual void write(cv::FileStorage& fs) const override{}
+  CORE_EXPORT void write(cv::FileStorage& fs) const override {}
 
  private:
   // private members
