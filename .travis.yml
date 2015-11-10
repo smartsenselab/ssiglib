@@ -13,8 +13,6 @@ matrix:
       env: TASK="lint"
     - compiler: gcc
       env: TASK="test-gcc"
-    - compiler: clang
-      env: TASK="test-clang"
 
 before_install:
   - sudo apt-get update -qq

@@ -17,14 +17,6 @@ function test-gcc()
   make test  ARGS="--output-on-failure"
 }
 
-function test-clang()
-{
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DBUILD_TESTS=ON $SSIG_DIR
-  make
-  make test  ARGS="--output-on-failure"
-}
-
 case $TASK in
   lint ) lint;;
   test-gcc ) test-gcc;;
