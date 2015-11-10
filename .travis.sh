@@ -20,5 +20,4 @@ function test-gcc()
 case $TASK in
   lint ) lint;;
   test-gcc ) test-gcc;;
-  test-clang ) test-clang;;;;
 esac
