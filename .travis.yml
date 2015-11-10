@@ -1,3 +1,6 @@
+sudo: required
+dist: trusty
+
 language: cpp
 
 env:
@@ -7,13 +10,13 @@ env:
 matrix:
   include:
     - compiler: gcc
-      env: TASK="cpp-ling"
+      env: TASK="cpp-lint"
 
 before_install:
   - sudo apt-get update -qq
 
 install:
-  - g++ --version
+  - sudo apt-get install python
 
 script:
   - bash .travis.sh
