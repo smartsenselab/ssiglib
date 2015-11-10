@@ -25,6 +25,7 @@ install:
   - sudo apt-get -y install libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
   - sudo apt-get -y install unzip
   - wget https://www.dropbox.com/s/w9fwatv533gdk0p/opencv.zip?dl=0 -o opencv.zip
+  - mv opencv.zip?dl=0 opencv.zip
   - unzip opencv.zip
   - sudo cp opencv/* /usr/local/lib/
   - sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
