@@ -7,7 +7,7 @@ sudo apt-get install git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev
 sudo apt-get install python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
 sudo apt-get install -qq gcc-4.8 g++-4.8
 sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
-sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90 
+sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 90
 
 mkdir /home/travis/build/ssig/opencv/
 cd /home/travis/build/ssig/opencv/
@@ -15,7 +15,6 @@ git clone https://github.com/Itseez/opencv.git
 
 mkdir release
 cd release
-cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local
 cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_OPENGL=ON ..
 
 make # -j8 runs 8 jobs in parallel.

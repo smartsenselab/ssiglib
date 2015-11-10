@@ -7,16 +7,16 @@ cmake_minimum_required (VERSION 2.8.11)
 # DEFINITION
 ###############################################################################
 
-set(PROJECT_ACRONYM_STR "SSF")
-set(PROJECT_NAME_STR "Smart Surveillance Framework")
+set(PROJECT_ACRONYM_STR "SSIGLib")
+set(PROJECT_NAME_STR "Smart Surveillance Interest Group Library")
 project(${PROJECT_ACRONYM_STR} CXX)
 
 ###############################################################################
 # USER OPTIONS
 ###############################################################################
 
-set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
+set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
+set(VERSION_MINOR   1   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 
 #Option to check if 'test' will be available
@@ -61,7 +61,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	if (TEMP_COMPILER_VERSION VERSION_LESS 3.4)
 		message(FATAL_ERROR "${PROJECT_NAME_STR} requires Clang 3.4 or greater. Installed version: ${CMAKE_CXX_COMPILER_VERSION}")
 	endif()
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")	
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 17)
 		message(FATAL_ERROR "${PROJECT_NAME_STR} requires MSVC 1700 (MSVC 2012) or greater. Installed version: ${CMAKE_CXX_COMPILER_VERSION}")
 	endif()
@@ -123,9 +123,9 @@ endif()
 ###############################################################################
 # CMake Auxiliary Files
 ###############################################################################
-include(cmake/SSFOpenCVUtil.cmake)
-include(cmake/SSFModules.cmake)
-include(cmake/SSFUtil.cmake)
+include(cmake/SSIGOpenCVUtil.cmake)
+include(cmake/SSIGModules.cmake)
+include(cmake/SSIGUtil.cmake)
 
 ###############################################################################
 # SUBDIRECTORIES
@@ -139,4 +139,3 @@ add_subdirectory(modules)
 
 #Add documentation
 add_subdirectory(doc)
-

@@ -27,4 +27,7 @@
 *.out
 *.app
 
-build/*
+### Vagrant ###
+.vagrant/
+
+build*/*

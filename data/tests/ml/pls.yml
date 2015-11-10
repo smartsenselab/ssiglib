@@ -1,34 +1,3 @@
 %YAML:1.0
-PLS:
-   nfactors: 2
-   Xmean: !!opencv-matrix
-      rows: 1
-      cols: 2
-      dt: f
-      data: [ 52., 5.26666679e+001 ]
-   Xstd: !!opencv-matrix
-      rows: 1
-      cols: 2
-      dt: f
-      data: [ 4.96957397e+001, 4.93749809e+001 ]
-   Wstar: !!opencv-matrix
-      rows: 2
-      cols: 2
-      dt: f
-      data: [ -2.04169199e-001, -1.51319981e+001, -2.04116225e-001,
-          1.51319981e+001 ]
-   Bstar: !!opencv-matrix
-      rows: 2
-      cols: 1
-      dt: f
-      data: [ -8.54852200e-001, -1.44615486e-001 ]
-   Ymean: !!opencv-matrix
-      rows: 1
-      cols: 1
-      dt: f
-      data: [ 0. ]
-   Ystd: !!opencv-matrix
-      rows: 1
-      cols: 1
-      dt: f
-      data: [ 1. ]
+root:
+   {}
