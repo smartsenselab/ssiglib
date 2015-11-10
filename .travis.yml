@@ -10,14 +10,14 @@ env:
 matrix:
   include:
     - compiler: gcc
-      env: TASK="cpp-lint"
+      env: TASK="lint"
 
 before_install:
   - sudo apt-get update -qq
 
 install:
   - sudo apt-get install python
-  - pip install cpp-lint
+  - pip install cpplint
 
 script:
   - bash .travis.sh
