@@ -9,21 +9,14 @@ function lint()
   cpplint --counting=detailed --filter=-runtime/references $FILES_LINT
 }
 
-# function build()
-# {
-#   mkdir $BUILD_DIR && cd $BUILD_DIR
-#   cmake -DBUILD_TESTS=OFF $SSF_DIR
-#   make
-# }
-#
-# function test()
-# {
-#   mkdir $BUILD_DIR && cd $BUILD_DIR
-#   cmake -DBUILD_TESTS=ON $SSF_DIR
-#   make
-#   make test  ARGS="--output-on-failure"
-# }
-#
+function test-gcc()
+{
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DBUILD_TESTS=ON $SSIG_DIR
+  make
+  make test  ARGS="--output-on-failure"
+}
+
 # function coverage()
 # {
 #   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -34,6 +27,6 @@ function lint()
 
 case $TASK in
   lint ) lint;;
-  # test ) test;;
+  test-gcc ) test-gcc;;
   # coverage ) coverage;;
 esac

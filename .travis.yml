@@ -12,7 +12,7 @@ matrix:
     - compiler: gcc
       env: TASK="lint"
     - compiler: gcc
-      env: TASK="build-gcc"
+      env: TASK="test-gcc"
 
 before_install:
   - sudo apt-get update -qq
