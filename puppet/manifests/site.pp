@@ -10,6 +10,7 @@ node default{
   include git
   include gcc
   include cmake
+  include clang
 
   class { 'python' :
     version    => 'system',

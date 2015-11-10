@@ -12,21 +12,21 @@ function lint()
 function test-gcc()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSIG_DIR
+  make
+  make test  ARGS="--output-on-failure"
+}
+
+function test-clang()
+{
+  mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DBUILD_TESTS=ON $SSIG_DIR
   make
   make test  ARGS="--output-on-failure"
 }
 
-# function coverage()
-# {
-#   mkdir $BUILD_DIR && cd $BUILD_DIR
-#   cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSF_DIR
-#   make
-#   make test ARGS="--output-on-failure"
-# }
-
 case $TASK in
   lint ) lint;;
   test-gcc ) test-gcc;;
-  # coverage ) coverage;;
+  test-clang ) test-clang;;;;
 esac
