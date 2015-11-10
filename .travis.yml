@@ -1,0 +1,22 @@
+language: cpp
+
+env:
+  global:
+   - secure: "H1ZVbraqi9LAmdGM9O9VhFHJP6Uk1Ux2iZSQqmSUi+Ph4muk8vsr7Grqu6yPJOI71aSs73ugTxW3S6nYVzgB+nCqEHZk5RnjyDHDfvDAg0h+OsBP4u0dQ6IZMfFRhw6R8B+VpUKD4j687MLs3eUFMsRJ8/t+24+/T097dKYWij4="
+
+matrix:
+  include:
+    - compiler: gcc
+      env: TASK="cpp-ling"
+
+before_install:
+  - sudo apt-get update -qq
+
+install:
+  - g++ --version
+
+script:
+  - bash .travis.sh
+
+after_success:
+  - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;

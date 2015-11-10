@@ -18,6 +18,10 @@ node default{
     virtualenv => 'present',
   }
 
+  python::pip { 'cpp-lint':
+    ensure     => 'latest',
+  }
+
   include opencv
 
 }
