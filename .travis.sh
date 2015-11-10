@@ -5,7 +5,8 @@ BUILD_DIR=$SSIG_DIR/build
 
 function lint()
 {
-  cpplint --counting=detailed --filter=-runtime/references $( find . -name *.hpp -or -name *.cpp | grep "^./modules/" )
+  FILES_LINT=`( find . -name *.hpp -or -name *.cpp | grep "^./modules/" )`
+  cpplint --counting=detailed --filter=-runtime/references $FILES_LINT
 }
 
 # function build()
