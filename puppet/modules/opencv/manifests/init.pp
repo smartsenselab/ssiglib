@@ -37,7 +37,8 @@ class opencv{
     require => File['/tmp/opencv-git-clone'],
     command => 'wget https://github.com/Itseez/opencv/archive/3.0.0.zip',
     cwd     => '/tmp/opencv-git-clone',
-    path    => '/usr/bin:/usr/sbin/:/bin:/sbin'
+    path    => '/usr/bin:/usr/sbin/:/bin:/sbin',
+    timeout => 1800,
   }
 
   exec { 'opencv unzip':
