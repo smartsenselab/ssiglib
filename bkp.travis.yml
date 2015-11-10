@@ -1,0 +1,70 @@
+language: cpp
+
+env:
+  global:
+   - secure: "H1ZVbraqi9LAmdGM9O9VhFHJP6Uk1Ux2iZSQqmSUi+Ph4muk8vsr7Grqu6yPJOI71aSs73ugTxW3S6nYVzgB+nCqEHZk5RnjyDHDfvDAg0h+OsBP4u0dQ6IZMfFRhw6R8B+VpUKD4j687MLs3eUFMsRJ8/t+24+/T097dKYWij4="
+
+matrix:
+  include:
+    - compiler: gcc
+      env: TASK="build"
+    - compiler: gcc
+      env: TASK="test"
+    - compiler: gcc
+      env: TASK="coverage"
+
+addons:
+  coverity_scan:
+    project:
+       name: "ssig/ssf"
+    notification_email: acnazarejr@gmail.com
+    build_command_prepend: "mkdir build; cd build; cmake -DBUILD_TESTS=ON .."
+    build_command:   "make"
+    branch_pattern: coverity_scan  
+
+before_install:
+  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+  - sudo add-apt-repository --yes ppa:boost-latest/ppa
+  - sudo add-apt-repository --yes ppa:kalakris/cmake
+  - sudo add-apt-repository --yes ppa:kubuntu-ppa/backports
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libboost-filesystem1.54-dev libboost-log1.54-dev libboost-date-time1.54-dev libboost-thread1.54-dev
+
+  # update to gcc with c++11 support
+  - sudo apt-get -qq install gcc-4.9 g++-4.9
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 90
+  - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.9 90
+
+  # build opencv
+  - sudo apt-get -y install libopencv-dev build-essential cmake git libgtk2.0-dev pkg-config python-dev python-numpy
+  - sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev 
+  - sudo apt-get -y install libavcodec-dev libavformat-dev libswscale-dev libxine-dev libgstreamer0.10-dev 
+  - sudo apt-get -y install libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev 
+  - sudo apt-get -y install libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev
+  - sudo apt-get -y install libvorbis-dev libxvidcore-dev x264 v4l-utils unzip
+  - mkdir opencv
+  - cd opencv
+  - wget https://github.com/Itseez/opencv/archive/3.0.0.zip
+  - unzip -qq 3.0.0.zip
+  - cd opencv-3.0.0
+  - mkdir build
+  - cd build
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_FFMPEG=OFF -D WITH_V4L=ON -D WITH_OPENMP=ON -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..
+  - make -j2
+  - sudo make install
+  - sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+  - sudo ldconfig
+  - cd ../../..
+install:
+  - g++ --version
+
+script:
+  - bash .travis.sh
+
+  
+after_success:
+  - if [ "$TASK" == "coverage" ]; then bash <(curl -s https://codecov.io/bash); fi;
+
+#http://answers.opencv.org/question/21977/best-way-to-depend-on-opencv-master-in-a-travis-ci-build-bot-instance/
+# https://gist.github.com/cgddrd/9d397fda0d72fe617c0e
+# https://github.com/tatsy/lime

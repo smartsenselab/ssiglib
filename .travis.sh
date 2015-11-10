@@ -1,33 +1,23 @@
 #!/bin/bash
 
-SSF_DIR=`pwd`
-BUILD_DIR=$SSF_DIR/build
+SSIG_DIR=`pwd`
+BUILD_DIR=$SSIG_DIR/build
 
-function build()
+function lint()
 {
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DBUILD_TESTS=OFF $SSF_DIR
-  make
+  FILES_LINT=`( find . -name *.hpp -or -name *.cpp | grep "^./modules/" )`
+  cpplint --counting=detailed --filter=-runtime/references $FILES_LINT
 }
 
-function test()
+function test-gcc()
 {
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DBUILD_TESTS=ON $SSF_DIR
+  cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSIG_DIR
   make
   make test  ARGS="--output-on-failure"
 }
 
-function coverage()
-{
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON $SSF_DIR
-  make
-  make test ARGS="--output-on-failure"
-}
-
 case $TASK in
-  build ) build;;
-  test ) test;;
-  coverage ) coverage;;
+  lint ) lint;;
+  test-gcc ) test-gcc;;
 esac
