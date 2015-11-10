@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# SSF_DIR=`pwd`
-# BUILD_DIR=$SSF_DIR/build
-#
+SSIG_DIR=`pwd`
+BUILD_DIR=$SSIG_DIR/build
+
+function lint()
+{
+  cpplint --counting=detailed --filter=-runtime/references $( find . -name *.hpp -or -name *.cpp | grep "^./modules/" )
+}
+
 # function build()
 # {
 #   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -25,9 +30,9 @@
 #   make
 #   make test ARGS="--output-on-failure"
 # }
-#
-# case $TASK in
-#   build ) build;;
-#   test ) test;;
-#   coverage ) coverage;;
-# esac
+
+case $TASK in
+  lint ) lint;;
+  # test ) test;;
+  # coverage ) coverage;;
+esac
