@@ -24,7 +24,7 @@ install:
   - sudo apt-get -y install libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev libtbb2
   - sudo apt-get -y install libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
   - sudo apt-get -y install unzip
-  - wget https://www.dropbox.com/s/w9fwatv533gdk0p/opencv.zip?dl=0 -o opencv.zip
+  - wget https://www.dropbox.com/sh/xgos5pnaxxb516x/AABc8kHOuUHQaO8LYd-kyRFya?dl=0 -o opencv.zip
   - mv opencv.zip?dl=0 opencv.zip
   - unzip opencv.zip
   - sudo cp opencv/* /usr/local/lib/
