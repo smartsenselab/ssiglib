@@ -42,12 +42,14 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#include <string>
+#include <random>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
-#include <string>
-#include <random>
+
+
 #include <core/similarity_builder.hpp>
 
 namespace ssig {
@@ -100,7 +102,7 @@ PLSImageClustering::PLSImageClustering(
   mClassifier = std::unique_ptr<ssig::OAAClassifier>(
     static_cast<OAAClassifier*>(classifier.clone()));
   mDiscovery = discovery;
-  setInitialClustering(initialClustering);
+  Clustering::setInitialClustering(initialClustering);
 }
 
 void PLSImageClustering::predict(cv::Mat_<float>& inp,

@@ -318,6 +318,6 @@ void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
     }
   }
 }
-} // namespace ssig
+}  // namespace ssig
 
 

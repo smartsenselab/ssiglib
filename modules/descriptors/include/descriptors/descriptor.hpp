@@ -58,7 +58,7 @@ namespace ssig {
 class Descriptor : public Algorithm {
  public:
   DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input, 
+  DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input,
     const Descriptor& descriptor);
   DESCRIPTORS_EXPORT explicit Descriptor(const Descriptor& descriptor);
 
@@ -80,7 +80,8 @@ class Descriptor : public Algorithm {
 
  protected:
   DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch, cv::Mat& output) = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch,
+    cv::Mat& output) = 0;
   std::vector<cv::Rect> mPatches;
   cv::Mat mImage;
   bool mIsPrepared = false;

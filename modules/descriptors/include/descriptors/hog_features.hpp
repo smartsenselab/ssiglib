@@ -95,9 +95,9 @@ class HOG : public Descriptor {
   DESCRIPTORS_EXPORT void setClipping(float clipping1);
 
  protected:
-
-  DESCRIPTORS_EXPORT virtual void beforeProcess() override;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void beforeProcess() override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+    cv::Mat& output) override;
   CORE_EXPORT void read(const cv::FileNode& fn) override {}
 
   CORE_EXPORT void write(cv::FileStorage& fs) const override {}
