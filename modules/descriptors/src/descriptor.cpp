@@ -50,36 +50,39 @@ Descriptor::Descriptor(const cv::Mat& input) {
   mImage = input.clone();
 }
 
-Descriptor::Descriptor(const cv::Mat& input, const Descriptor& descriptor){
+Descriptor::Descriptor(const cv::Mat& input, const Descriptor& descriptor) {
   mImage = input.clone();
 }
 
-Descriptor::Descriptor(const Descriptor& descriptor){
+Descriptor::Descriptor(const Descriptor& descriptor) {
   mImage = descriptor.mImage;
 }
 
-void Descriptor::extract(cv::Mat& output){
-  if(!mIsPrepared){
+void Descriptor::extract(cv::Mat& output) {
+  if (!mIsPrepared) {
     beforeProcess();
-      mIsPrepared = true;
+    mIsPrepared = true;
   }
   extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
 }
 
-void Descriptor::extract(const std::vector<cv::Rect>& windows, cv::Mat& output){
-  for(auto& window : windows){
+void Descriptor::extract(const std::vector<cv::Rect>& windows,
+                         cv::Mat& output) {
+  for (auto& window : windows) {
     cv::Mat feat;
     extractFeatures(window, feat);
     output.push_back(feat);
   }
 }
 
-void Descriptor::extract(const std::vector<cv::KeyPoint>& keypoints, cv::Mat& output){
+void Descriptor::extract(const std::vector<cv::KeyPoint>& keypoints,
+                         cv::Mat& output) {
   const float SQROOT_TWO = 1.4142136237f;
-  for(auto& keypoint: keypoints){
+  for (auto& keypoint : keypoints) {
     cv::Mat feat;
-    int length = static_cast<int>(keypoint.size * SQROOT_TWO); //diameter = l\|2
-    const int x =static_cast<int>(keypoint.pt.x),
+    // diameter = l\|2
+    int length = static_cast<int>(keypoint.size * SQROOT_TWO);
+    const int x = static_cast<int>(keypoint.pt.x),
       y = static_cast<int>(keypoint.pt.y),
       width = length, height = length;
     auto window = cv::Rect(x, y, width, height);
@@ -88,9 +91,11 @@ void Descriptor::extract(const std::vector<cv::KeyPoint>& keypoints, cv::Mat& ou
   }
 }
 
-void Descriptor::setData(const cv::Mat& img){
+void Descriptor::setData(const cv::Mat& img) {
   mImage = img.clone();
   beforeProcess();
   mIsPrepared = true;
 }
 }  // namespace ssig
+
+

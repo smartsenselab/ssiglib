@@ -50,13 +50,13 @@
 #include "descriptors/hog_features.hpp"
 #include "core/exception.hpp"
 
-namespace ssig{
+namespace ssig {
 
 
-HOG::HOG(const cv::Mat& input): Descriptor(input){}
+HOG::HOG(const cv::Mat& input): Descriptor(input) {}
 
 HOG::HOG(const cv::Mat& input, const ssig::HOG& descriptor)
-  : Descriptor(input, descriptor){
+  : Descriptor(input, descriptor) {
   mBlockConfiguration = descriptor.getBlockConfiguration();
   mBlockStride = descriptor.getBlockStride();
   mCellConfiguration = descriptor.getCellConfiguration();
@@ -64,7 +64,7 @@ HOG::HOG(const cv::Mat& input, const ssig::HOG& descriptor)
   mNumberOfBins = descriptor.getNumberOfBins();
 }
 
-HOG::HOG(const ssig::HOG& descriptor): Descriptor(descriptor){
+HOG::HOG(const ssig::HOG& descriptor): Descriptor(descriptor) {
   mBlockConfiguration = descriptor.getBlockConfiguration();
   mBlockStride = descriptor.getBlockStride();
   mCellConfiguration = descriptor.getCellConfiguration();
@@ -78,14 +78,14 @@ void HOG::computeVisualization(const cv::Mat_<float> feat,
                                const cv::Size& blockStride,
                                const cv::Size& cellSize,
                                const cv::Size& imgSize,
-                               cv::Mat& visualization){
+                               cv::Mat& visualization) {
   const int imgRows = imgSize.height;
   const int imgCols = imgSize.width;
 
-  if(imgCols % blockSize.width != 0){
+  if (imgCols % blockSize.width != 0) {
     throw Exception("Patch size must be multiple of block size");
   }
-  if(imgRows % blockSize.height != 0){
+  if (imgRows % blockSize.height != 0) {
     throw Exception("Patch size must be multiple of block size");
   }
 
@@ -95,8 +95,8 @@ void HOG::computeVisualization(const cv::Mat_<float> feat,
   visualization.create(imgRows, imgCols, CV_8UC1);
   visualization = 255;
   int blockNumber = 0;
-  for(int row = 0; row < imgRows; row += blockStride.height){
-    for(int col = 0; col < imgCols; col += blockStride.width){
+  for (int row = 0; row < imgRows; row += blockStride.height) {
+    for (int col = 0; col < imgCols; col += blockStride.width) {
       auto blockFeat = feat(cv::Range(0, 1),
                             cv::Range(blockNumber * dimensionsPerBlock,
                                       (blockNumber + 1) * dimensionsPerBlock));
@@ -110,7 +110,7 @@ void HOG::computeVisualization(const cv::Mat_<float> feat,
 }
 
 std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
-  const cv::Mat& img) const{
+  const cv::Mat& img) const {
   cv::HOGDescriptor hogCalculator;
   cv::Mat grad, angleOfs;
   int rows, cols = 0;
@@ -118,16 +118,16 @@ std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
   hogCalculator.computeGradient(img, grad, angleOfs);
   rows = img.rows , cols = img.cols;
   integralImages.resize(9);
-  for(int bin = 0; bin < 9; ++bin){
+  for (int bin = 0; bin < 9; ++bin) {
     integralImages[bin] = cv::Mat::zeros(rows, cols, CV_32F);
   }
   std::vector<cv::Mat_<uint8_t>> angles;
   std::vector<cv::Mat_<float>> gradients;
   cv::split(grad, gradients);
   cv::split(angleOfs, angles);
-  for(int i = 0; i < grad.rows; ++i){
-    for(int j = 0; j < grad.cols; ++j){
-      for(int k = 0; k < 2; ++k){
+  for (int i = 0; i < grad.rows; ++i) {
+    for (int j = 0; j < grad.cols; ++j) {
+      for (int k = 0; k < 2; ++k) {
         auto angle = angles[k];
         auto bin = (angle.at<uint8_t>(i, j));
         auto bingrad = gradients[k];
@@ -136,7 +136,7 @@ std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
       }
     }
   }
-  for(int bin = 0; bin < 9; ++bin){
+  for (int bin = 0; bin < 9; ++bin) {
     cv::Mat intImage;
     auto bingrad = integralImages[bin];
     cv::integral(integralImages[bin], intImage);
@@ -148,8 +148,9 @@ std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
 }
 
 void HOG::getBlockDescriptor(int rowOffset, int colOffset,
-                             const std::vector<cv::Mat_<float>>& integralImages,
-                             cv::Mat_<float>& out) const{
+                             const
+                             std::vector<cv::Mat_<float>>& integralImages,
+                             cv::Mat_<float>& out) const {
   const int blockWidth = mBlockConfiguration.width;
   const int blockHeight = mBlockConfiguration.height;
   int ncells_cols = mCellConfiguration.width,
@@ -162,16 +163,16 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset,
 
   cv::Mat_<float> ans;
   ans.create(1, mNumberOfBins * ncells_cols * ncells_rows);
-  ans = FLT_MAX ;
-  for(int cellRow = 0; cellRow < ncells_rows; ++cellRow){
-    for(int cellCol = 0; cellCol < ncells_cols; ++cellCol){
+  ans = FLT_MAX;
+  for (int cellRow = 0; cellRow < ncells_rows; ++cellRow) {
+    for (int cellCol = 0; cellCol < ncells_cols; ++cellCol) {
       const int binOffset = ncells_rows * cellRow + cellCol;
       const int a = rowOffset + cellRow * cellWidth;
       const int b = colOffset + cellHeight * cellCol;
       const int w = cellWidth - 1;
       const int h = cellHeight - 1;
 
-      for(int bin = 0; bin < mNumberOfBins; ++bin){
+      for (int bin = 0; bin < mNumberOfBins; ++bin) {
         auto integralImage = integralImages[bin];
         float v1 = integralImage[a][b];
         float v2 = integralImage[a][b + w];
@@ -188,8 +189,8 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset,
   float l2norm = static_cast<float>(cv::norm(ans, cv::NORM_L2));
   ans = ans / (cv::sqrt(l2norm * l2norm + 0.1f));
   cv::checkRange(ans, false, nullptr, 0.0, FLT_MAX);
-  if(mClipping > 0){
-    for(int i = 0; i < ans.cols; i++){
+  if (mClipping > 0) {
+    for (int i = 0; i < ans.cols; i++) {
       ans[0][i] = std::min(ans[0][i], mClipping);
     }
   }
@@ -201,17 +202,17 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset,
 }
 
 void HOG::generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
-                                     const int nBins, cv::Mat& visualization){
+                                     const int nBins, cv::Mat& visualization) {
   visualization = 255;
   const float PI = 3.14159265f;
   cv::Mat_<float> vector(1, nBins);
   vector = 0;
-  for(int d = 0; d < blockFeatures.cols; ++d){
+  for (int d = 0; d < blockFeatures.cols; ++d) {
     int col = d % nBins;
     vector[0][col] += blockFeatures[0][d];
   }
 
-  for(int d = 0; d < nBins; ++d){
+  for (int d = 0; d < nBins; ++d) {
     float r = vector[0][d];
     r = r * (visualization.rows / 2);
 
@@ -224,7 +225,7 @@ void HOG::generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
     const int y2 =
       static_cast<int>(visualization.rows / 2 + r * sin(theta + PI));
 
-    if(r > 0.1f){
+    if (r > 0.1f) {
       cv::line(visualization, cv::Point(x1, y1), cv::Point(x2, y2),
                cv::Scalar(0, 0, 0), 1);
     }
@@ -233,51 +234,51 @@ void HOG::generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
 }
 
 // getter setters
-cv::Size HOG::getBlockConfiguration() const{
+cv::Size HOG::getBlockConfiguration() const {
   return mBlockConfiguration;
 }
 
-void HOG::setBlockConfiguration(const cv::Size& blockConfiguration){
+void HOG::setBlockConfiguration(const cv::Size& blockConfiguration) {
   mBlockConfiguration = blockConfiguration;
 }
 
-cv::Size HOG::getBlockStride() const{
+cv::Size HOG::getBlockStride() const {
   return mBlockStride;
 }
 
-void HOG::setBlockStride(const cv::Size& blockStride){
+void HOG::setBlockStride(const cv::Size& blockStride) {
   mBlockStride = blockStride;
 }
 
-cv::Size HOG::getCellConfiguration() const{
+cv::Size HOG::getCellConfiguration() const {
   return mCellConfiguration;
 }
 
-void HOG::setCellConfiguration(const cv::Size& cellConfiguration){
+void HOG::setCellConfiguration(const cv::Size& cellConfiguration) {
   mCellConfiguration = cellConfiguration;
 }
 
-int HOG::getNumberOfBins() const{
+int HOG::getNumberOfBins() const {
   return mNumberOfBins;
 }
 
-void HOG::setNumberOfBins(int numberOfBins){
+void HOG::setNumberOfBins(int numberOfBins) {
   mNumberOfBins = numberOfBins;
 }
 
-float HOG::getClipping() const{
+float HOG::getClipping() const {
   return mClipping;
 }
 
-void HOG::setClipping(float clipping1){
+void HOG::setClipping(float clipping1) {
   mClipping = clipping1;
 }
 
-void HOG::beforeProcess(){
+void HOG::beforeProcess() {
   mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output){
+void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   const int imgRows = patch.height;
   const int imgCols = patch.width;
 
@@ -301,16 +302,17 @@ void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output){
   out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
   descriptors.data());
   */
-  for(int row = 0; row < imgRows - rowOffset; row += mBlockStride.height){
-    if(blockNumber == nblocks) break;
-    for(int col = 0; col < imgCols - colOffset; col += mBlockStride.width){
-      if(blockNumber == nblocks) break;
+  for (int row = 0; row < imgRows - rowOffset; row += mBlockStride.height) {
+    if (blockNumber == nblocks) break;
+    for (int col = 0; col < imgCols - colOffset; col += mBlockStride.width) {
+      if (blockNumber == nblocks) break;
       cv::Mat_<float> cellDescriptor;
       getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
 
       auto blockFeat = output(cv::Range(0, 1),
                               cv::Range(blockNumber * dimensionsPerBlock,
-                                        (blockNumber + 1) * dimensionsPerBlock));
+                                        (blockNumber + 1)
+                                        * dimensionsPerBlock));
       ++blockNumber;
       cellDescriptor.copyTo(blockFeat);
     }
