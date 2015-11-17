@@ -65,13 +65,13 @@ void PLSImageClustering::buildResponses(
       feat = inp.row(cluster[j]);
       classifier.predict(feat, respMat);
       auto ordering = classifier.getLabelsOrdering();
-      responses[c][j] = respMat[0][ordering[c]];
+      responses[c][j] = respMat[0][ordering[static_cast<int>(c)]];
     }
   }
 }
 
 void PLSImageClustering::removeMeaninglessClusters(
-    std::vector<Cluster>& clusters) {
+    std::vector<Cluster>& clusters) const{
   cv::Mat_<float> clusterRepresentation;
   cv::Scalar stddev;
   buildClusterRepresentation(mSamples, clusters, clusterRepresentation);

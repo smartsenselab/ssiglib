@@ -50,63 +50,63 @@
 
 #include "descriptors/hog_features.hpp"
 
-// TEST(HOG, HogTest) {
-//  cv::Mat img;
-//  cv::Mat_<float> out;
-//  cv::Mat_<float> cvOut;
-//  std::vector<float> descriptors;
-//
-//  img = cv::imread("diag2.png");
-//
-//  ssig::HOG hog(img);
-//  hog.setBlockConfiguration({16, 16});
-//  hog.setBlockStride({16, 16});
-//  hog.setCellConfiguration({2, 2});
-//  hog.setNumberOfBins(9);
-//  hog.nextFeatureVector(out);
-//
-//  /*cv::Mat vis;
-//  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
-//  img.cols, img.rows }, vis);*/
-//
-//  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
-//  cvHog.compute(img, descriptors);
-//  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
-//                          descriptors.data());
-//  auto sim =
-//      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
-//  EXPECT_GE(sim, 0.7f);
-//}
-//
-// TEST(HOG, LenaTest) {
-//  cv::Mat img;
-//  cv::Mat_<float> out;
-//  cv::Mat_<float> cvOut;
-//  std::vector<float> descriptors;
-//
-//  img = cv::imread("Lena_bw.png");
-//  ssig::HOG hog(img);
-//  hog.setBlockConfiguration({16, 16});
-//  hog.setBlockStride({16, 16});
-//  hog.setCellConfiguration({2, 2});
-//  hog.setNumberOfBins(9);
-//  hog.nextFeatureVector(out);
-//
-//  /*cv::Mat vis;
-//  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
-//  img.cols, img.rows }, vis);*/
-//
-//  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
-//  cvHog.compute(img, descriptors);
-//  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
-//                          descriptors.data());
-//
-//  /*ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 },
-//  {
-//   * img.cols, img.rows }, vis);*/
-//
-//  float sim =
-//      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
-//
-//  EXPECT_GE(sim, 0.70f);
-//}
+ TEST(HOG, HogTest) {
+  cv::Mat img;
+  cv::Mat_<float> out;
+  cv::Mat_<float> cvOut;
+  std::vector<float> descriptors;
+
+  img = cv::imread("diag2.png");
+
+  ssig::HOG hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({16, 16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+  hog.extract(out);
+
+  /*cv::Mat vis;
+  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
+  img.cols, img.rows }, vis);*/
+
+  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
+  cvHog.compute(img, descriptors);
+  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
+                          descriptors.data());
+  auto sim =
+      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
+  EXPECT_GE(sim, 0.7f);
+}
+
+ TEST(HOG, LenaTest) {
+  cv::Mat img;
+  cv::Mat_<float> out;
+  cv::Mat_<float> cvOut;
+  std::vector<float> descriptors;
+
+  img = cv::imread("Lena_bw.png");
+  ssig::HOG hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({16, 16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+  hog.extract(out);
+
+  /*cv::Mat vis;
+  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
+  img.cols, img.rows }, vis);*/
+
+  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
+  cvHog.compute(img, descriptors);
+  cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
+                          descriptors.data());
+
+  /*ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 },
+  {
+   * img.cols, img.rows }, vis);*/
+
+  float sim =
+      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
+
+  EXPECT_GE(sim, 0.70f);
+}

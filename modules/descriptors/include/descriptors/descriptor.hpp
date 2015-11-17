@@ -58,29 +58,32 @@ namespace ssig {
 class Descriptor : public Algorithm {
  public:
   DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input);
-
-  DESCRIPTORS_EXPORT Descriptor(const cv::Mat& input, const cv::Rect& patch);
-
-  DESCRIPTORS_EXPORT Descriptor(const cv::Mat& input,
-                                const std::vector<cv::Rect>& patchesBegin);
+  DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input, 
+    const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT explicit Descriptor(const Descriptor& descriptor);
 
   DESCRIPTORS_EXPORT virtual ~Descriptor(void) = default;
 
-  /**
-  @return true if there is a patch to process and false otherwise.
-  */
-  DESCRIPTORS_EXPORT virtual bool hasNext() = 0;
   /**
   On the first call to this function it returns the feature vector
   of the mat set up in the constructor call.
   @param out The matrix that will contain the feature vector for the current
   patch.
   */
-  DESCRIPTORS_EXPORT virtual void nextFeatureVector(cv::Mat& out) = 0;
+  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
+    cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,
+    cv::Mat& output);
+
+  DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
 
  protected:
+  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch, cv::Mat& output) = 0;
   std::vector<cv::Rect> mPatches;
   cv::Mat mImage;
+  bool mIsPrepared = false;
 };
 
 }  // namespace ssig

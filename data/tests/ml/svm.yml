@@ -3,7 +3,7 @@ root:
    svmType: C_SVC
    kernel:
       type: LINEAR
-   C: 1.0000000149011612e-01
+   C: 1.0000000149011612e-001
    term_criteria: { iterations:10000 }
    var_count: 2
    class_count: 2
@@ -14,9 +14,9 @@ root:
       data: [ -1, 1 ]
    sv_total: 1
    support_vectors:
-      - [ 1.05263162e-02, 1.05263162e-02 ]
+      - [ 1.05263162e-002, 1.05263162e-002 ]
    decision_functions:
       -
          sv_count: 1
-         rho: 1.1052631578947369e+00
+         rho: 1.1052631578947369e+000
          alpha: [ 1. ]

@@ -157,7 +157,7 @@ class PLSImageClustering : public ClassifierClustering {
                                 std::vector<std::vector<float>>& responses,
                                 const OAAClassifier& classifier) const;
 
-  ML_EXPORT void removeMeaninglessClusters(std::vector<Cluster>& clusters);
+  ML_EXPORT void removeMeaninglessClusters(std::vector<Cluster>& clusters) const;
 
  private:
   // private members

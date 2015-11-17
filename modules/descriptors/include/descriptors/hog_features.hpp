@@ -53,7 +53,7 @@ class HOG : public Descriptor {
   cv::Size mBlockConfiguration;
   cv::Size mCellConfiguration;
   cv::Size mBlockStride;
-  int mNumberOfBins;
+  int mNumberOfBins = 9;
   float mClipping = 0.2f;
 
   std::vector<cv::Mat_<float>> mIntegralImages;
@@ -61,10 +61,9 @@ class HOG : public Descriptor {
  public:
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
 
-  DESCRIPTORS_EXPORT HOG(const cv::Mat& input, const cv::Rect& patch);
+  DESCRIPTORS_EXPORT HOG(const cv::Mat& input, const ssig::HOG& descriptor);
 
-  DESCRIPTORS_EXPORT HOG(const cv::Mat& input,
-                         const std::vector<cv::Rect>& patches);
+  DESCRIPTORS_EXPORT HOG(const ssig::HOG& descriptor);
 
   DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
 
@@ -72,8 +71,6 @@ class HOG : public Descriptor {
       const cv::Mat_<float> feat, const int nBins, const cv::Size& blockSize,
       const cv::Size& blockStride, const cv::Size& cellSize,
       const cv::Size& imgSize, cv::Mat& vis);
-  DESCRIPTORS_EXPORT bool hasNext() override;
-  DESCRIPTORS_EXPORT void nextFeatureVector(cv::Mat& out) override;
 
   DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
 
@@ -98,6 +95,9 @@ class HOG : public Descriptor {
   DESCRIPTORS_EXPORT void setClipping(float clipping1);
 
  protected:
+
+  DESCRIPTORS_EXPORT virtual void beforeProcess() override;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
   CORE_EXPORT void read(const cv::FileNode& fn) override {}
 
   CORE_EXPORT void write(cv::FileStorage& fs) const override {}
@@ -110,7 +110,7 @@ class HOG : public Descriptor {
 
   void getBlockDescriptor(int x, int y,
                           const std::vector<cv::Mat_<float>>& integralImages,
-                          cv::Mat_<float>& out);
+                          cv::Mat_<float>& out) const;
 
   static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
                                          const int nBins,
