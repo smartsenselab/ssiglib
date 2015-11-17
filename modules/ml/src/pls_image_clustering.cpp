@@ -42,6 +42,8 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#include <core/similarity_builder.hpp>
+
 #include <string>
 #include <random>
 #include <memory>
@@ -50,7 +52,6 @@
 #include <vector>
 
 
-#include <core/similarity_builder.hpp>
 
 namespace ssig {
 

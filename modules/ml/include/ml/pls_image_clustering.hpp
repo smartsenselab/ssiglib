@@ -176,7 +176,7 @@ class PLSImageClustering : public ClassifierClustering {
   int nMergesPerIteration = 8;
 };
 
-} // namespace ssig
-#endif // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 
 
