@@ -50,7 +50,7 @@
 
 #include "descriptors/hog_features.hpp"
 
- TEST(HOG, HogTest) {
+TEST(HOG, HogTest) {
   cv::Mat img;
   cv::Mat_<float> out;
   cv::Mat_<float> cvOut;
@@ -74,11 +74,11 @@
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
                           descriptors.data());
   auto sim =
-      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
+    static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
   EXPECT_GE(sim, 0.7f);
 }
 
- TEST(HOG, LenaTest) {
+TEST(HOG, LenaTest) {
   cv::Mat img;
   cv::Mat_<float> out;
   cv::Mat_<float> cvOut;
@@ -106,7 +106,8 @@
    * img.cols, img.rows }, vis);*/
 
   float sim =
-      static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
+    static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
 
   EXPECT_GE(sim, 0.70f);
 }
+

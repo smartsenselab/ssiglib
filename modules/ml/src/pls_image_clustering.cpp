@@ -47,6 +47,8 @@
 #include <utility>
 #include <vector>
 #include <string>
+#include <random>
+#include <core/similarity_builder.hpp>
 
 namespace ssig {
 
