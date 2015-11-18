@@ -91,6 +91,7 @@ TEST(PLSClassifier, Persistence) {
 
   ssig::PLSClassifier loaded;
   loaded.load("pls.yml", "root");
+  remove("pls.yml");
 
   ordering = loaded.getLabelsOrdering();
   idx = ordering[1];

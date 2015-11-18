@@ -42,6 +42,8 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
+#include <vector>
+
 #include "ml/kmeans.hpp"
 #include "ml/pls_classifier.hpp"
 #include "ml/pls_image_clustering.hpp"
@@ -73,7 +75,7 @@ TEST(PLSIC, CorrelationClusteringTest) {
 
   std::vector<ssig::Cluster> initialClustering =
     {{1}, {8}, {14}, {15}, {23}, {28}};
-  std::vector<ssig::Cluster> natVector = {{},{}};
+  std::vector<ssig::Cluster> natVector = {{}, {}};
 
   ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
                                       initialClustering);
@@ -147,8 +149,8 @@ TEST(PLSIC, CosineClusteringTest) {
   stg.release();
 
   std::vector<ssig::Cluster> initialClustering =
-    {{1},{8},{14},{15},{23},{28}};
-  std::vector<ssig::Cluster> natVector = {{},{}};
+    {{1}, {8}, {14}, {15}, {23}, {28}};
+  std::vector<ssig::Cluster> natVector = {{}, {}};
 
   ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
                                       initialClustering);
@@ -200,3 +202,4 @@ TEST(PLSIC, CosineClusteringTest) {
   }
   EXPECT_TRUE(label1 && label2);
 }
+
