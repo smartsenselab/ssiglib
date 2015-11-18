@@ -107,7 +107,6 @@ TEST(HOG, LenaTest) {
 
   float sim =
     static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
-
   EXPECT_GE(sim, 0.70f);
 }
 
