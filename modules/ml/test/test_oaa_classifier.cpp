@@ -277,7 +277,6 @@ TEST(OAAClassifier, PLSPersistence) {
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
-
   cv::Mat_<float> resp;
   auto ordering = classifier.getLabelsOrdering();
 
