@@ -44,17 +44,66 @@
 
 namespace ssig {
 
-LBP::LBP() {}
+LBP::LBP(const cv::Mat& img): Descriptor(img) {}
 
-LBP::~LBP() {}
+LBP::LBP(const cv::Mat& img, const LBP& descriptor) :
+  Descriptor(img, descriptor) {}
 
-LBP::LBP(const LBP& rhs) {}
+LBP::LBP(const LBP& rhs): Descriptor(rhs) {}
 
-LBP& LBP::operator=(const LBP& rhs) {
-  if (this != &rhs) {
-    // code here
+void LBP::read(const cv::FileNode& fn) {}
+
+void LBP::write(cv::FileStorage& fs) const {}
+
+void LBP::beforeProcess() {
+  const int width = mImage.cols, height = mImage.rows;
+  mBinaryPattern.create(height, width);
+  for (int i = 0; i < height; ++i) {
+    for (int j = 0; j < width; ++j) {
+
+      uchar value = 0;
+      const int kernelLen = mKernel.rows;
+      for (int ki = 0; ki < kernelLen; ++ki) {
+        for (int kj = 0; kj < kernelLen; ++kj) {
+          const int offset = kernelLen / 2;
+          if (!inValidRange(ki - offset, kj - offset)) continue;
+          if (mImage.at<uchar>(ki - offset, kj - offset) >= mImage.at<uchar>(i, j)) {
+            value = (1 << mKernel[ki][kj]) | value;
+          }
+        }
+      }
+      mBinaryPattern[i][j] = value;
+
+    }
   }
-  return *this;
 }
 
-}  // namespace ssig
+void LBP::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
+  output.create(1, 256, CV_32F);
+  output = 0;
+  cv::Mat_<float> feat = output;
+
+  //TODO: can be parallel
+  for (int i = patch.y; i < patch.width; ++i) {
+    for (int j = patch.x; j < patch.height; ++j) {
+      feat[0][mBinaryPattern[i][j]] += 1;
+    }
+  }
+}
+
+bool LBP::inValidRange(const int i, const int j) const {
+  bool ans = true;
+  if(i < 0 || j < 0)
+    ans = false;
+  if (i > mImage.rows || j > mImage.cols)
+    ans = false;
+
+  return ans;
+}
+
+void LBP::setDefaultKernel() {
+  mKernel = (cv::Mat_<int>(3, 3) << 0, 1, 2, 3, -1, 4, 5, 6, 7);
+}
+} // namespace ssig
+
+
