@@ -48,7 +48,10 @@
 
 namespace ssig {
 
-Kmeans::Kmeans(const Kmeans& rhs) {
+Kmeans::Kmeans(const Kmeans& rhs): mFlags(rhs.mFlags),
+                                   mNumberOfAttempts(rhs.mNumberOfAttempts),
+                                   mPredictionDistanceType(
+                                     rhs.mPredictionDistanceType) {
   // Constructor Copy
 }
 
@@ -93,53 +96,53 @@ void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp) const {
   }
 }
 
-std::vector<Cluster> Kmeans::getClustering() const { return mClusters; }
+std::vector<Cluster> Kmeans::getClustering() const {
+  return mClusters;
+}
 
 void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
   centroidsMatrix = mCentroids.clone();
 }
 
-bool Kmeans::empty() const { return mCentroids.empty(); }
-
-bool Kmeans::isTrained() const { return !mCentroids.empty(); }
-
-bool Kmeans::isClassifier() const { return false; }
-
-void Kmeans::setup(cv::Mat_<float>& input) { mSamples = input; }
-
-void Kmeans::load(const std::string& filename, const std::string& nodename) {
-  cv::FileStorage stg;
-  stg.open(filename, cv::FileStorage::READ);
-  auto node = stg[nodename];
-  read(node);
-  stg.release();
+bool Kmeans::empty() const {
+  return mCentroids.empty();
 }
 
-void Kmeans::save(const std::string& filename,
-                  const std::string& nodename) const {
-  cv::FileStorage stg;
-  stg.open(filename, cv::FileStorage::WRITE);
-  stg << nodename << "{";
-
-  write(stg);
-
-  stg << "}";
-  stg.release();
+bool Kmeans::isTrained() const {
+  return !mCentroids.empty();
 }
 
-void Kmeans::read(const cv::FileNode& fn) { fn["Centroids"] >> mCentroids; }
+bool Kmeans::isClassifier() const {
+  return false;
+}
+
+void Kmeans::setup(cv::Mat_<float>& input) {
+  mSamples = input;
+}
+
+void Kmeans::read(const cv::FileNode& fn) {
+  fn["Centroids"] >> mCentroids;
+}
 
 void Kmeans::write(cv::FileStorage& fs) const {
   fs << "Centroids" << mCentroids;
 }
 
-int Kmeans::getFlags() const { return mFlags; }
+int Kmeans::getFlags() const {
+  return mFlags;
+}
 
-void Kmeans::setFlags(int flags) { mFlags = flags; }
+void Kmeans::setFlags(int flags) {
+  mFlags = flags;
+}
 
-int Kmeans::getNAttempts() const { return mNumberOfAttempts; }
+int Kmeans::getNAttempts() const {
+  return mNumberOfAttempts;
+}
 
-void Kmeans::setNAttempts(int nAttempts) { mNumberOfAttempts = nAttempts; }
+void Kmeans::setNAttempts(int nAttempts) {
+  mNumberOfAttempts = nAttempts;
+}
 
 int Kmeans::getPredictionDistanceType() const {
   return mPredictionDistanceType;
@@ -160,3 +163,5 @@ void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels) {
 }
 
 }  // namespace ssig
+
+

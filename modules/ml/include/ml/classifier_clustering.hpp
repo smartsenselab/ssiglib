@@ -73,11 +73,6 @@ class ClassifierClustering : public Clustering {
   ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override =
       0;
 
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override = 0;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override = 0;
-
   /**
   This function works as a setter for the natural samples and its split subsets
   distribution.

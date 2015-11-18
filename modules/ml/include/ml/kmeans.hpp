@@ -72,10 +72,6 @@ class Kmeans : public Clustering {
 
   ML_EXPORT void setup(cv::Mat_<float>& input) override;
 
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename = "") override;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename = "") const override;
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
