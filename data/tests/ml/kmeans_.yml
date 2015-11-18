@@ -1,8 +1,0 @@
-%YAML:1.0
-root:
-   Centroids: !!opencv-matrix
-      rows: 2
-      cols: 2
-      dt: f
-      data: [ 1.01666672e+002, 1.01666672e+002, 6.66666687e-001,
-          2.66666675e+000 ]

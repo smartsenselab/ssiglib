@@ -114,7 +114,6 @@ TEST(SVMClassifier, Persistence) {
   EXPECT_GE(resp[0][idx], 0);
 
   classifier.save("svm.yml", "root");
-
   ssig::SVMClassifier loaded;
   loaded.load("svm.yml", "root");
   remove("svm.yml");

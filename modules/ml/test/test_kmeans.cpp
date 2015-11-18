@@ -117,8 +117,8 @@ TEST(KmeansClustering, Persistence) {
   const int lenLoaded = static_cast<int>(c1.rows * c1.cols);
   const int len = static_cast<int>(c2.rows * c2.cols);
 
-  ASSERT_GT(0, lenLoaded);
-  ASSERT_GT(0, len);
+  ASSERT_GT(lenLoaded, 0);
+  ASSERT_EQ(len, lenLoaded);
   cv::compare(c1, c2, diff, cv::CMP_EQ);
 
   auto nonzeros = cv::countNonZero(diff);
