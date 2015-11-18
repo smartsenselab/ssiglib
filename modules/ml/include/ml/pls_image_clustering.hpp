@@ -159,6 +159,7 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT void removeMeaninglessClusters(
     std::vector<Cluster>& clusters) const;
+ 
  private:
   // private members
   std::unique_ptr<OAAClassifier> mClassifier;
