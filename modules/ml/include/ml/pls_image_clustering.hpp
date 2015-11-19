@@ -44,9 +44,7 @@
 #define _SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 
 #include <core/util.hpp>
-#include <core/similarity_builder.hpp>
 
-#include <random>
 #include <utility>
 #include <vector>
 
@@ -60,9 +58,9 @@ enum ClusterRepresentationType { Centroids, ClustersResponses };
 class PLSImageClustering : public ClassifierClustering {
  public:
   ML_EXPORT PLSImageClustering(
-      ssig::OAAClassifier& classifier,
-      const std::vector<std::vector<int>>& discoverySubset,
-      const std::vector<ssig::Cluster>& initialClustering);
+    ssig::OAAClassifier& classifier,
+    const std::vector<std::vector<int>>& discoverySubset,
+    const std::vector<ssig::Cluster>& initialClustering);
 
   ML_EXPORT virtual ~PLSImageClustering() = default;
 
@@ -90,7 +88,7 @@ class PLSImageClustering : public ClassifierClustering {
   getSimBuilder() const;
 
   ML_EXPORT void setSimBuilder(
-      const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function);
+    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function);
 
   ML_EXPORT int getRepresentationType() const;
 
@@ -118,18 +116,18 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void precondition() override;
 
   ML_EXPORT void initializeClusterings(
-      const std::vector<int>& assignmentSet) override;
+    const std::vector<int>& assignmentSet) override;
 
   ML_EXPORT void initializeClassifiers() override;
 
   ML_EXPORT void trainClassifiers(
-      const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-      const std::vector<int>& negativeLearningSet) override;
+    const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet) override;
 
   ML_EXPORT virtual void trainClassifiers(
-      const std::vector<Cluster>& clusters,
-      const std::vector<int>& negativeLearningSet,
-      OAAClassifier& classifier) const;
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet,
+    OAAClassifier& classifier) const;
 
   ML_EXPORT bool isFinished() override;
 
@@ -144,20 +142,23 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT virtual void merge(std::vector<Cluster>& clusters);
 
+  static
   ML_EXPORT bool findClosestClusters(const cv::Mat& similarityMatrix,
                                      const float threshold,
                                      std::pair<int, int>& closestPair);
 
   ML_EXPORT void buildClusterRepresentation(
-      const cv::Mat_<float>& samples,
-      const std::vector<std::vector<int>>& clusters,
-      cv::Mat_<float>& clusterRepresentation) const;
+    const cv::Mat_<float>& samples,
+    const std::vector<std::vector<int>>& clusters,
+    cv::Mat_<float>& clusterRepresentation) const;
+  static
   ML_EXPORT void buildResponses(const cv::Mat_<float>& inp,
                                 const std::vector<Cluster>& clusters,
                                 std::vector<std::vector<float>>& responses,
-                                const OAAClassifier& classifier) const;
+                                const OAAClassifier& classifier);
 
-  ML_EXPORT void removeMeaninglessClusters(std::vector<Cluster>& clusters);
+  ML_EXPORT void removeMeaninglessClusters(
+    std::vector<Cluster>& clusters) const;
 
  private:
   // private members
@@ -177,3 +178,5 @@ class PLSImageClustering : public ClassifierClustering {
 
 }  // namespace ssig
 #endif  // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+
+

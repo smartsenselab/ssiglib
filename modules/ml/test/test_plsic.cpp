@@ -42,161 +42,164 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
+#include <vector>
+
 #include "ml/kmeans.hpp"
 #include "ml/pls_classifier.hpp"
 #include "ml/pls_image_clustering.hpp"
 
 #include "core/similarity_builder.hpp"
 
-// TEST(PLSIC, CorrelationClusteringTest){
-//  srand(0);
-//  cv::Mat_<float> inp;
-//  cv::Mat_<float> neg;
-//
-//  ssig::PLSClassifier plsclassifier;
-//  plsclassifier.setNumberOfFactors(2);
-//
-//  ssig::OAAClassifier oaaclassifier(plsclassifier);
-//
-//  std::vector<ssig::Cluster> discoverySubsets;
-//  discoverySubsets.resize(2);
-//  for(int i = 0; i < 2; ++i){
-//    for(int j = 0; j < 30; ++j){
-//      discoverySubsets[i].push_back(j + (30 * i));
-//    }
-//  }
-//
-//  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
-//  ASSERT_TRUE(stg.isOpened());
-//  stg["discovery"] >> inp;
-//  stg.release();
-//
-//  std::vector<ssig::Cluster> initialClustering =
-//  {{1},{8},{14},{15},{23},{28}};
-//  std::vector<ssig::Cluster> natVector = {{},{}};
-//
-//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
-//  initialClustering);
-//  clustering.setK(2);
-//  clustering.setClusterRepresentationType(
-//          ssig::ClusterRepresentationType::ClustersResponses);
-//  clustering.setMergeThreshold(0.7f);
-//  clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
-//  clustering.setDiscoveryConfiguration(discoverySubsets);
-//  clustering.setMValue(5);
-//  clustering.setMaxIterations(8);
-//  clustering.setClassifier(oaaclassifier);
-//
-//
-//  clustering.addNaturalWorld(neg, natVector);
-//
-//  clustering.setInitialClustering(initialClustering);
-//  clustering.setup(inp);
-//  bool finished = false;
-//  do{
-//    auto c = clustering.getClustering();
-//    auto r = clustering.getClustersResponses();
-//    ASSERT_EQ(c.size(), r.size());
-//    finished = clustering.iterate();
-//  } while(!finished);
-//
-//  auto clusters = clustering.getClustering();
-//
-//  bool label1 = false;
-//  bool label2 = false;
-//  for(auto& cluster : clusters){
-//    std::vector<int> label1Vector;
-//    std::vector<int> label2Vector;
-//    for(auto& el : cluster){
-//      if((el < 15 && el >= 0) || (el >= 30 && el < 45)){
-//        label1Vector.push_back(el);
-//      } else{
-//        label2Vector.push_back(el);
-//      }
-//    }
-//    if(label1Vector.empty() ^ label2Vector.empty()){
-//      if(label1Vector.empty())
-//        label2 = true;
-//      else
-//        label1 = true;
-//    }
-//  }
-//  EXPECT_TRUE(label1 && label2);
-//}
-//
-// TEST(PLSIC, CosineClusteringTest){
-//  cv::Mat_<float> inp;
-//  cv::Mat_<float> neg;
-//
-//  ssig::PLSClassifier plsclassifier;
-//  plsclassifier.setNumberOfFactors(2);
-//
-//  ssig::OAAClassifier oaaclassifier(plsclassifier);
-//
-//  std::vector<ssig::Cluster> discoverySubsets;
-//  discoverySubsets.resize(2);
-//  for(int i = 0; i < 2; ++i){
-//    for(int j = 0; j < 30; ++j){
-//      discoverySubsets[i].push_back(j + (30 * i));
-//    }
-//  }
-//
-//  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
-//  ASSERT_TRUE(stg.isOpened());
-//  stg["discovery"] >> inp;
-//  stg.release();
-//
-//  std::vector<ssig::Cluster> initialClustering =
-//  {{1},{8},{14},{15},{23},{28}};
-//  std::vector<ssig::Cluster> natVector = {{},{}};
-//
-//  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
-//  initialClustering);
-//  clustering.setK(2);
-// clustering.setClusterRepresentationType(
-//    ssig::ClusterRepresentationType::ClustersResponses);
-//  clustering.setMergeThreshold(0.7f);
-//
-//  clustering.setSimBuilder(ssig::SimilarityBuilder::cosineFunction);
-//
-//  clustering.addNaturalWorld(neg, natVector);
-//
-//  clustering.setDiscoveryConfiguration(discoverySubsets);
-//  clustering.setMValue(5);
-//  clustering.setMaxIterations(8);
-//  clustering.setClassifier(oaaclassifier);
-//
-//
-//  clustering.setInitialClustering(initialClustering);
-//  clustering.setup(inp);
-//  bool finished = false;
-//  do{
-//    auto c = clustering.getClustering();
-//    auto r = clustering.getClustersResponses();
-//    ASSERT_EQ(c.size(), r.size());
-//    finished = clustering.iterate();
-//  } while(!finished);
-//
-//  auto clusters = clustering.getClustering();
-//
-//  bool label1 = false;
-//  bool label2 = false;
-//  for(auto& cluster : clusters){
-//    std::vector<int> label1Vector;
-//    std::vector<int> label2Vector;
-//    for(auto& el : cluster){
-//      if((el < 15 && el >= 0) || (el >= 30 && el < 45)){
-//        label1Vector.push_back(el);
-//      } else{
-//        label2Vector.push_back(el);
-//      }
-//    }
-//    if(label1Vector.empty() ^ label2Vector.empty()){
-//      if(label1Vector.empty())
-//        label2 = true;
-//      else
-//        label1 = true;
-//    }
-//  }
-//  EXPECT_TRUE(label1 && label2);
-//}
+TEST(PLSIC, CorrelationClusteringTest) {
+  srand(0);
+  cv::Mat_<float> inp;
+  cv::Mat_<float> neg;
+
+  ssig::PLSClassifier plsclassifier;
+  plsclassifier.setNumberOfFactors(2);
+
+  ssig::OAAClassifier oaaclassifier(plsclassifier);
+
+  std::vector<ssig::Cluster> discoverySubsets;
+  discoverySubsets.resize(2);
+  for (int i = 0; i < 2; ++i) {
+    for (int j = 0; j < 30; ++j) {
+      discoverySubsets[i].push_back(j + (30 * i));
+    }
+  }
+
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["discovery"] >> inp;
+  stg.release();
+
+  std::vector<ssig::Cluster> initialClustering =
+    {{1}, {8}, {14}, {15}, {23}, {28}};
+  std::vector<ssig::Cluster> natVector = {{}, {}};
+
+  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+                                      initialClustering);
+  clustering.setK(2);
+  clustering.setClusterRepresentationType(
+    ssig::ClusterRepresentationType::ClustersResponses);
+  clustering.setMergeThreshold(0.7f);
+  clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
+  clustering.setDiscoveryConfiguration(discoverySubsets);
+  clustering.setMValue(5);
+  clustering.setMaxIterations(8);
+  clustering.setClassifier(oaaclassifier);
+
+
+  clustering.addNaturalWorld(neg, natVector);
+
+  clustering.setInitialClustering(initialClustering);
+  clustering.setup(inp);
+  bool finished = false;
+  do {
+    auto c = clustering.getClustering();
+    auto r = clustering.getClustersResponses();
+    ASSERT_EQ(c.size(), r.size());
+    finished = clustering.iterate();
+  } while (!finished);
+
+  auto clusters = clustering.getClustering();
+
+  bool label1 = false;
+  bool label2 = false;
+  for (auto& cluster : clusters) {
+    std::vector<int> label1Vector;
+    std::vector<int> label2Vector;
+    for (auto& el : cluster) {
+      if ((el < 15 && el >= 0) || (el >= 30 && el < 45)) {
+        label1Vector.push_back(el);
+      } else {
+        label2Vector.push_back(el);
+      }
+    }
+    if (label1Vector.empty() ^ label2Vector.empty()) {
+      if (label1Vector.empty())
+        label2 = true;
+      else
+        label1 = true;
+    }
+  }
+  EXPECT_TRUE(label1 && label2);
+}
+
+TEST(PLSIC, CosineClusteringTest) {
+  cv::Mat_<float> inp;
+  cv::Mat_<float> neg;
+
+  ssig::PLSClassifier plsclassifier;
+  plsclassifier.setNumberOfFactors(2);
+
+  ssig::OAAClassifier oaaclassifier(plsclassifier);
+
+  std::vector<ssig::Cluster> discoverySubsets;
+  discoverySubsets.resize(2);
+  for (int i = 0; i < 2; ++i) {
+    for (int j = 0; j < 30; ++j) {
+      discoverySubsets[i].push_back(j + (30 * i));
+    }
+  }
+
+  cv::FileStorage stg("singhData.yml", cv::FileStorage::READ);
+  ASSERT_TRUE(stg.isOpened());
+  stg["discovery"] >> inp;
+  stg.release();
+
+  std::vector<ssig::Cluster> initialClustering =
+    {{1}, {8}, {14}, {15}, {23}, {28}};
+  std::vector<ssig::Cluster> natVector = {{}, {}};
+
+  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+                                      initialClustering);
+  clustering.setK(2);
+  clustering.setClusterRepresentationType(
+    ssig::ClusterRepresentationType::ClustersResponses);
+  clustering.setMergeThreshold(0.7f);
+
+  clustering.setSimBuilder(ssig::SimilarityBuilder::cosineFunction);
+
+  clustering.addNaturalWorld(neg, natVector);
+
+  clustering.setDiscoveryConfiguration(discoverySubsets);
+  clustering.setMValue(5);
+  clustering.setMaxIterations(8);
+  clustering.setClassifier(oaaclassifier);
+
+
+  clustering.setInitialClustering(initialClustering);
+  clustering.setup(inp);
+  bool finished = false;
+  do {
+    auto c = clustering.getClustering();
+    auto r = clustering.getClustersResponses();
+    ASSERT_EQ(c.size(), r.size());
+    finished = clustering.iterate();
+  } while (!finished);
+
+  auto clusters = clustering.getClustering();
+
+  bool label1 = false;
+  bool label2 = false;
+  for (auto& cluster : clusters) {
+    std::vector<int> label1Vector;
+    std::vector<int> label2Vector;
+    for (auto& el : cluster) {
+      if ((el < 15 && el >= 0) || (el >= 30 && el < 45)) {
+        label1Vector.push_back(el);
+      } else {
+        label2Vector.push_back(el);
+      }
+    }
+    if (label1Vector.empty() ^ label2Vector.empty()) {
+      if (label1Vector.empty())
+        label2 = true;
+      else
+        label1 = true;
+    }
+  }
+  EXPECT_TRUE(label1 && label2);
+}
+

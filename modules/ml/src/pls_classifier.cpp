@@ -100,11 +100,12 @@ bool PLSClassifier::isClassifier() const { return true; }
 void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
 
 void PLSClassifier::read(const cv::FileNode& fn) {
-  // TODO(Ricardo)
+  mPls = std::unique_ptr<PLS>(new PLS());
+  mPls->load(fn);
 }
 
 void PLSClassifier::write(cv::FileStorage& fs) const {
-  // TODO(Ricardo)
+  mPls->save(fs);
 }
 
 Classification* PLSClassifier::clone() const {

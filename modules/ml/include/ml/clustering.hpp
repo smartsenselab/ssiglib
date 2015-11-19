@@ -76,11 +76,6 @@ class Clustering : public Algorithm {
   ML_EXPORT virtual bool isTrained() const = 0;
   ML_EXPORT virtual bool isClassifier() const = 0;
 
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override = 0;
-
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override = 0;
   ML_EXPORT void read(const cv::FileNode& fn) override = 0;
   ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
 

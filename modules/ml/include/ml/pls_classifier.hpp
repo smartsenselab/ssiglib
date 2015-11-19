@@ -79,9 +79,9 @@ class PLSClassifier : public Classification {
  private:
   // private members
   std::unique_ptr<PLS> mPls;
-  int mNumberOfFactors;
+  int mNumberOfFactors = 3;
 
-  bool mTrained;
+  bool mTrained = false;
 
   void setClassWeights(const int classLabel, const float weight) override;
 };

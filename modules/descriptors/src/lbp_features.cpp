@@ -44,17 +44,105 @@
 
 namespace ssig {
 
-LBP::LBP() {}
+LBP::LBP(const cv::Mat& img): Descriptor(img) {}
 
-LBP::~LBP() {}
+LBP::LBP(const cv::Mat& img, const LBP& descriptor) :
+  Descriptor(img, descriptor) {}
 
-LBP::LBP(const LBP& rhs) {}
+LBP::LBP(const LBP& rhs): Descriptor(rhs) {
+  setKernel(rhs.getKernel());
+}
 
-LBP& LBP::operator=(const LBP& rhs) {
-  if (this != &rhs) {
-    // code here
+cv::Mat_<int> LBP::getKernel() const {
+  return mKernel;
+}
+
+/**
+
+Important to note that the values in the kernel matrix are the order
+the elements will be used to compose the binary pattern. 
+  A -1 value can be used to represent that
+the value in that position will be ignored.
+@param [out] kernel: the matrix which will be used as kernel for this instance.
+*/
+void LBP::setKernel(const cv::Mat_<int>& kernel) {
+  mKernel = kernel;
+  beforeProcess();
+  mIsPrepared = true;
+}
+
+void LBP::getLbpImage(cv::Mat& output) const {
+  output = mBinaryPattern.clone();
+}
+
+void LBP::read(const cv::FileNode& fn) {
+  // TODO(Ricardo):
+}
+
+void LBP::write(cv::FileStorage& fs) const {
+  // TODO(Ricardo):
+}
+
+void LBP::beforeProcess() {
+  if (mKernel.empty())
+    setDefaultKernel();
+  cv::Mat_<int> kernel = mKernel;
+  const int width = mImage.cols, height = mImage.rows;
+  mBinaryPattern.create(height, width);
+  cv::Mat_<int> lbpImg = mBinaryPattern;
+  lbpImg = 0;
+  cv::Mat img = mImage;
+  const int kernelLen = kernel.rows;
+  const int offset = kernelLen / 2;
+  for (int i = 0; i < height; ++i) {
+    for (int j = 0; j < width; ++j) {
+      uchar value = 0;
+      for (int ki = 0; ki < kernelLen; ++ki) {
+        for (int kj = 0; kj < kernelLen; ++kj) {
+          int indexI = i + (ki - offset), indexJ = j + (kj - offset);
+          if (!inValidRange(indexI, indexJ)) continue;
+          if (img.at<uchar>(indexI, indexJ) >=
+            img.at<uchar>(i, j)) {
+            value = (1 << kernel[ki][kj]) | value;
+          }
+        }
+      }
+      lbpImg[i][j] = value;
+    }
   }
-  return *this;
+  mBinaryPattern = lbpImg;
+}
+
+void LBP::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
+  output.create(1, 256, CV_32F);
+  output = 0;
+  cv::Mat_<float> feat = output;
+
+  // TODO(Ricardo): can be parallel
+  for (int i = patch.y; i < patch.width; ++i) {
+    for (int j = patch.x; j < patch.height; ++j) {
+      feat[0][mBinaryPattern[i][j]] += 1;
+    }
+  }
+}
+
+bool LBP::inValidRange(const int i, const int j) const {
+  bool ans = true;
+  if (i < 0 || j < 0)
+    ans = false;
+  if (i >= mImage.rows || j >= mImage.cols)
+    ans = false;
+
+  return ans;
+}
+
+void LBP::setDefaultKernel() {
+  mKernel = (cv::Mat_<int>(3, 3) <<
+    0 , 1 , 2 ,
+    3 , -1 , 4 ,
+    5 , 6 , 7);
 }
 
 }  // namespace ssig
+
+

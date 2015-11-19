@@ -91,13 +91,14 @@ TEST(PLSClassifier, Persistence) {
 
   ssig::PLSClassifier loaded;
   loaded.load("pls.yml", "root");
+  remove("pls.yml");
 
   ordering = loaded.getLabelsOrdering();
   idx = ordering[1];
   resp.release();
-  classifier.predict(query1, resp);
+  loaded.predict(query1, resp);
   EXPECT_GE(resp[0][idx], 0);
-  classifier.predict(query2, resp);
+  loaded.predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
 }

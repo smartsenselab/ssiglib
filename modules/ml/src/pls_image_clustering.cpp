@@ -42,18 +42,23 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#include <core/similarity_builder.hpp>
+
+#include <string>
+#include <random>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
-#include <string>
+
+
 
 namespace ssig {
 
 void PLSImageClustering::buildResponses(
-    const cv::Mat_<float>& inp, const std::vector<Cluster>& clusters,
-    std::vector<std::vector<float>>& responses,
-    const OAAClassifier& classifier) const {
+  const cv::Mat_<float>& inp, const std::vector<Cluster>& clusters,
+  std::vector<std::vector<float>>& responses,
+  const OAAClassifier& classifier) {
   responses.clear();
 
   for (size_t c = 0; c < clusters.size(); ++c) {
@@ -65,13 +70,13 @@ void PLSImageClustering::buildResponses(
       feat = inp.row(cluster[j]);
       classifier.predict(feat, respMat);
       auto ordering = classifier.getLabelsOrdering();
-      responses[c][j] = respMat[0][ordering[c]];
+      responses[c][j] = respMat[0][ordering[static_cast<int>(c)]];
     }
   }
 }
 
 void PLSImageClustering::removeMeaninglessClusters(
-    std::vector<Cluster>& clusters) {
+  std::vector<Cluster>& clusters) const {
   cv::Mat_<float> clusterRepresentation;
   cv::Scalar stddev;
   buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
@@ -92,13 +97,13 @@ void PLSImageClustering::removeMeaninglessClusters(
 }
 
 PLSImageClustering::PLSImageClustering(
-    ssig::OAAClassifier& classifier,
-    const std::vector<std::vector<int>>& discovery,
-    const std::vector<ssig::Cluster>& initialClustering) {
+  ssig::OAAClassifier& classifier,
+  const std::vector<std::vector<int>>& discovery,
+  const std::vector<ssig::Cluster>& initialClustering) {
   mClassifier = std::unique_ptr<ssig::OAAClassifier>(
-      static_cast<OAAClassifier*>(classifier.clone()));
+    static_cast<OAAClassifier*>(classifier.clone()));
   mDiscovery = discovery;
-  setInitialClustering(initialClustering);
+  Clustering::setInitialClustering(initialClustering);
 }
 
 void PLSImageClustering::predict(cv::Mat_<float>& inp,
@@ -107,11 +112,17 @@ void PLSImageClustering::predict(cv::Mat_<float>& inp,
   mClassifier->predict(inp, resp);
 }
 
-bool PLSImageClustering::empty() const { return mClassifier->empty(); }
+bool PLSImageClustering::empty() const {
+  return mClassifier->empty();
+}
 
-bool PLSImageClustering::isTrained() const { return mClassifier->isTrained(); }
+bool PLSImageClustering::isTrained() const {
+  return mClassifier->isTrained();
+}
 
-bool PLSImageClustering::isClassifier() const { return false; }
+bool PLSImageClustering::isClassifier() const {
+  return false;
+}
 
 void PLSImageClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
   cv::Mat_<float> centroids;
@@ -121,11 +132,11 @@ void PLSImageClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
 
 void PLSImageClustering::setClassifier(Classification& classifier) {
   mClassifier = std::unique_ptr<OAAClassifier>(
-      static_cast<OAAClassifier*>(classifier.clone()));
+    static_cast<OAAClassifier*>(classifier.clone()));
 }
 
 void PLSImageClustering::setClusterRepresentationType(
-    ClusterRepresentationType type) {
+  ClusterRepresentationType type) {
   this->mRepresentationType = type;
 }
 
@@ -136,7 +147,7 @@ void PLSImageClustering::read(const cv::FileNode& fn) {
 
 void PLSImageClustering::write(cv::FileStorage& fs) const {
   fs << "Classifier"
-     << "{";
+    << "{";
   mClassifier->write(fs);
   fs << "}";
 }
@@ -156,7 +167,7 @@ void PLSImageClustering::setMaximumMergedPairs(int nMergesPerIteration1) {
 void PLSImageClustering::precondition() {}
 
 void PLSImageClustering::initializeClusterings(
-    const std::vector<int>& assignmentSet) {
+  const std::vector<int>& assignmentSet) {
   if (mClusters.empty()) {
     // Make the standard initial Clustering
     std::vector<int> chosen;
@@ -180,15 +191,15 @@ void PLSImageClustering::initializeClusterings(
 void PLSImageClustering::initializeClassifiers() {}
 
 void PLSImageClustering::trainClassifiers(
-    const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-    const std::vector<int>& negativeLearningSet) {
+  const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet) {
   trainClassifiers(clusters, negativeLearningSet, (*mClassifier));
 }
 
 void PLSImageClustering::trainClassifiers(
-    const std::vector<Cluster>& clusters,
-    const std::vector<int>& negativeLearningSet,
-    OAAClassifier& classifier) const {
+  const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet,
+  OAAClassifier& classifier) const {
   cv::Mat_<float> inp;
   cv::Mat_<int> labels;
   int label = 0;
@@ -224,12 +235,12 @@ bool PLSImageClustering::isFinished() {
 void PLSImageClustering::postCondition() {}
 
 void PLSImageClustering::assignment(
-    const cv::Mat_<float>& samples, const int clusterSize, const int nClusters,
-    const std::vector<int>& assignmentSet,
-    std::vector<std::vector<float>>& clustersResponses,
-    std::vector<int>& clustersIds, std::vector<Cluster>& out) {
+  const cv::Mat_<float>& samples, const int clusterSize, const int nClusters,
+  const std::vector<int>& assignmentSet,
+  std::vector<std::vector<float>>& clustersResponses,
+  std::vector<int>& clustersIds, std::vector<Cluster>& out) {
   const int C =
-      static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
+    static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
   const int nLabels = static_cast<int>(mClassifier->getLabelsOrdering().size());
   std::unordered_map<int, bool> pointAvailability;
   std::vector<Cluster> clusters;
@@ -314,9 +325,9 @@ void PLSImageClustering::assignment(
 }
 
 void PLSImageClustering::buildClusterRepresentation(
-    const cv::Mat_<float>& samples,
-    const std::vector<std::vector<int>>& clusters,
-    cv::Mat_<float>& clusterRepresentation) const {
+  const cv::Mat_<float>& samples,
+  const std::vector<std::vector<int>>& clusters,
+  cv::Mat_<float>& clusterRepresentation) const {
   if (mRepresentationType == Centroids) {
     const int dimensions = samples.cols;
     clusterRepresentation.create(static_cast<int>(clusters.size()), dimensions);
@@ -333,7 +344,7 @@ void PLSImageClustering::buildClusterRepresentation(
     }
   } else if (mRepresentationType == ClustersResponses) {
     auto classifier = std::unique_ptr<OAAClassifier>(
-        static_cast<OAAClassifier*>(mClassifier->clone()));
+      static_cast<OAAClassifier*>(mClassifier->clone()));
     trainClassifiers(clusters, mNatural[0], *classifier);
     const int dimensions = static_cast<int>(clusters.size());
 
@@ -351,7 +362,7 @@ void PLSImageClustering::buildClusterRepresentation(
 
 std::shared_ptr<OAAClassifier> PLSImageClustering::getClassifier() const {
   return std::shared_ptr<OAAClassifier>(
-      dynamic_cast<OAAClassifier*>(mClassifier->clone()));
+    dynamic_cast<OAAClassifier*>(mClassifier->clone()));
 }
 
 std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
@@ -360,7 +371,7 @@ PLSImageClustering::getSimBuilder() const {
 }
 
 void PLSImageClustering::setSimBuilder(
-    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function) {
+  const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function) {
   mSimilarityFunction = function;
 }
 
@@ -368,7 +379,9 @@ int PLSImageClustering::getRepresentationType() const {
   return mRepresentationType;
 }
 
-float PLSImageClustering::getMergeThreshold() const { return mMergeThreshold; }
+float PLSImageClustering::getMergeThreshold() const {
+  return mMergeThreshold;
+}
 
 void PLSImageClustering::setMergeThreshold(float mMergeThreshold1) {
   mMergeThreshold = mMergeThreshold1;
@@ -409,7 +422,7 @@ void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
     buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
 
     cv::Mat_<float> similarity = SimilarityBuilder::buildSimilarity(
-        clusterRepresentation, mSimilarityFunction);
+      clusterRepresentation, mSimilarityFunction);
 
     // similarity = cv::abs(similarity);
     std::pair<int, int> mergedPair;
@@ -453,3 +466,5 @@ bool PLSImageClustering::findClosestClusters(const cv::Mat& similarityMatrix,
 }
 
 }  // namespace ssig
+
+
