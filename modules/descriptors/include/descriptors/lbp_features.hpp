@@ -61,15 +61,17 @@ class LBP : public Descriptor{
 
   DESCRIPTORS_EXPORT void getLbpImage(cv::Mat& output) const;
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
   DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractFeatures(
+    const cv::Rect& patch,
+    cv::Mat& output) override;
 
   DESCRIPTORS_EXPORT bool inValidRange(const int i, const int j) const;
 
-  private:
+ private:
   DESCRIPTORS_EXPORT void setDefaultKernel();
   // private members
 cv::Mat_<uchar> mBinaryPattern;

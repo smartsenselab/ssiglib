@@ -46,7 +46,7 @@
 
 namespace ssig {
 
-PLSClassifier::PLSClassifier(){
+PLSClassifier::PLSClassifier() {
   // Constructor
 }
 
