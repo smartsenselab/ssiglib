@@ -40,42 +40,29 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
-#include "descriptor.hpp"
-#include "descriptors_defs.hpp"
+#include <gtest/gtest.h>
+#include <opencv2/core.hpp>
+#include <descriptors/lbp_features.hpp>
 
-namespace ssig {
+TEST(LBP, SimpleResult) {
+  cv::Mat_<uchar> img = (cv::Mat_<uchar>(3, 3) << 
+    1, 1, 0,
+    1, 1, 0,
+    0, 0, 1
+    );
+  cv::Mat_<uchar> gt = (cv::Mat_<uchar>(3, 3) <<
+    208, 104, 104,
+    22, 139, 107,
+    22, 31, 1
+    );
+  cv::Mat diff, lbpImg;
+  cv::Mat_<float> out;
 
-class LBP : public Descriptor{
- public:
-  DESCRIPTORS_EXPORT LBP(const cv::Mat& input);
-  DESCRIPTORS_EXPORT LBP(const cv::Mat& input, const LBP& descriptor);
-  DESCRIPTORS_EXPORT LBP(const LBP& descriptor);
-  DESCRIPTORS_EXPORT virtual ~LBP(void) = default;
-
-
-  DESCRIPTORS_EXPORT cv::Mat_<int> getKernel() const;
-
-  DESCRIPTORS_EXPORT void setKernel(const cv::Mat_<int>& kernel);
-
-  DESCRIPTORS_EXPORT void getLbpImage(cv::Mat& output) const;
-
-protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
-
-  DESCRIPTORS_EXPORT bool inValidRange(const int i, const int j) const;
-
-  private:
-  DESCRIPTORS_EXPORT void setDefaultKernel();
-  // private members
-cv::Mat_<uchar> mBinaryPattern;
-cv::Mat_<int> mKernel;
-};
-
-}  // namespace ssig
-
-#endif  // !_SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
+  ssig::LBP lbp(img);
+  lbp.extract(out);
+  lbp.getLbpImage(lbpImg);
+  
+  cv::compare(gt, lbpImg, diff, cv::CMP_EQ);
+  auto nonzeros = cv::countNonZero(diff);
+  GTEST_ASSERT_EQ(9, nonzeros);
+}
