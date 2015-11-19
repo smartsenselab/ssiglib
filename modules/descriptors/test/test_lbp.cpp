@@ -45,23 +45,22 @@
 #include <descriptors/lbp_features.hpp>
 
 TEST(LBP, SimpleResult) {
-  cv::Mat_<uchar> img = (cv::Mat_<uchar>(3, 3) << 
+  cv::Mat_<uchar> img = (cv::Mat_<uchar>(3, 3) <<
     1, 1, 0,
     1, 1, 0,
-    0, 0, 1
-    );
+    0, 0, 1);
   cv::Mat_<uchar> gt = (cv::Mat_<uchar>(3, 3) <<
     208, 104, 104,
     22, 139, 107,
-    22, 31, 1
-    );
+    22, 31, 1);
+
   cv::Mat diff, lbpImg;
   cv::Mat_<float> out;
 
   ssig::LBP lbp(img);
   lbp.extract(out);
   lbp.getLbpImage(lbpImg);
-  
+
   cv::compare(gt, lbpImg, diff, cv::CMP_EQ);
   auto nonzeros = cv::countNonZero(diff);
   GTEST_ASSERT_EQ(9, nonzeros);

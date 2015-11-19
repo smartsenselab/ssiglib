@@ -143,6 +143,6 @@ void LBP::setDefaultKernel() {
     5 , 6 , 7);
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
