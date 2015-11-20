@@ -42,38 +42,39 @@
 #ifndef _SSF_ML_HARD_MINING_HPP_
 #define _SSF_ML_HARD_MINING_HPP_
 #include "classification.hpp"
-#include "ml_defs.hpp"
+
 #include <memory>
 
-namespace ssig{
+#include "ml_defs.hpp"
 
-	class HardMiningClassifier : public ssig::Classifier{
-	
+namespace ssig {
+class HardMiningClassifier : public ssig::Classifier {
+
  public:
-	  ML_EXPORT HardMiningClassifier(Classifier& c);
-    ML_EXPORT virtual ~HardMiningClassifier(void) = default;
-    ML_EXPORT HardMiningClassifier(const HardMiningClassifier& rhs);
-    ML_EXPORT HardMiningClassifier& operator=(const HardMiningClassifier& rhs);
+  ML_EXPORT HardMiningClassifier(Classifier& c);
+  ML_EXPORT virtual ~HardMiningClassifier(void) = default;
+  ML_EXPORT HardMiningClassifier(const HardMiningClassifier& rhs);
+  ML_EXPORT HardMiningClassifier& operator=(const HardMiningClassifier& rhs);
 
 
-    ML_EXPORT void predict(cv::Mat_<float>& inp,
-      cv::Mat_<float>& resp) const override;
-    ML_EXPORT void learn(cv::Mat_<float>& input,
-      cv::Mat_<int>& labels) override;
-    ML_EXPORT cv::Mat_<int> getLabels() const override;
-    ML_EXPORT void setNegatives(const cv::Mat_<float>& negatives);
-    ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
-    ML_EXPORT bool empty() const override;
-    ML_EXPORT bool isTrained() const override;
-    ML_EXPORT bool isClassifier() const override;
-    ML_EXPORT void read(const cv::FileNode& fn) override;
-    ML_EXPORT void write(cv::FileStorage& fs) const override;
-    ML_EXPORT Classifier* clone() const override;
+  ML_EXPORT void predict(cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void learn(cv::Mat_<float>& input,
+                       cv::Mat_<int>& labels) override;
+  ML_EXPORT cv::Mat_<int> getLabels() const override;
+  ML_EXPORT void setNegatives(const cv::Mat_<float>& negatives);
+  ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+  ML_EXPORT Classifier* clone() const override;
  private:
-		//private members
-    std::unique_ptr<Classifier> mClassifier;
-  };
+  //private members
+  std::unique_ptr<Classifier> mClassifier;
+};
 
-}
+}  // namespace ssig
 
-#endif // !_SSF_ML_HARD_MINING_HPP_
+#endif  // !_SSF_ML_HARD_MINING_HPP_
