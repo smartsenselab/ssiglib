@@ -41,15 +41,14 @@
 
 #ifndef _SSF_ML_HARD_MINING_HPP_
 #define _SSF_ML_HARD_MINING_HPP_
-#include "classification.hpp"
 
 #include <memory>
 
 #include "ml_defs.hpp"
+#include "classification.hpp"
 
 namespace ssig {
 class HardMiningClassifier : public ssig::Classifier {
-
  public:
   ML_EXPORT HardMiningClassifier(Classifier& c);
   ML_EXPORT virtual ~HardMiningClassifier(void) = default;
@@ -70,8 +69,9 @@ class HardMiningClassifier : public ssig::Classifier {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
   ML_EXPORT Classifier* clone() const override;
+
  private:
-  //private members
+  // private members
   std::unique_ptr<Classifier> mClassifier;
 };
 
