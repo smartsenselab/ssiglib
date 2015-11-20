@@ -52,7 +52,7 @@
 
 namespace ssig {
 
-class SVMClassifier : public Classification {
+class SVMClassifier : public Classifier {
   ML_EXPORT virtual void setup(cv::Mat_<float>& input);
   ML_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
 
@@ -82,7 +82,7 @@ class SVMClassifier : public Classification {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT Classification* clone() const override;
+  ML_EXPORT Classifier* clone() const override;
 
   ML_EXPORT int getKernelType() const;
 

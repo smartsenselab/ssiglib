@@ -260,8 +260,8 @@ void Singh::assignment(const cv::Mat_<float>& samples, const int clusterSize,
   out = clusters;
 }
 
-void Singh::setClassifier(Classification& classifier) {
-  mUnderlyingClassifier = std::unique_ptr<Classification>(classifier.clone());
+void Singh::setClassifier(Classifier& classifier) {
+  mUnderlyingClassifier = std::unique_ptr<Classifier>(classifier.clone());
 }
 
 }  // namespace ssig
