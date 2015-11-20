@@ -39,87 +39,93 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <ml/pls_classifier.hpp>
-
-#include <cassert>
-#include <string>
+#include "ml/hard_mining_classifier.hpp"
 
 namespace ssig {
 
-PLSClassifier::PLSClassifier() {
-  // Constructor
+HardMiningClassifier::HardMiningClassifier(Classifier& c) {
+  mClassifier = std::unique_ptr<Classifier>(c.clone());
 }
 
-PLSClassifier::~PLSClassifier() {
-  // Destructor
-}
-
-PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
+HardMiningClassifier::HardMiningClassifier(const HardMiningClassifier& rhs) {
   // Constructor Copy
 }
 
-void PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
-  mPls->predict(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for (int row = 0; row < inp.rows; ++row) {
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
+HardMiningClassifier& HardMiningClassifier::operator=(
+  const HardMiningClassifier& rhs) {
+  if (this != &rhs) {
+    // code here
   }
-  resp = r;
+  return *this;
 }
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
-
-void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
-  // TODO(Ricardo): assert labels between -1 and 1
-  addLabels(labels);
-  assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
-  cv::Mat_<float> l;
-  mLabels.convertTo(l, CV_32F);
-  auto X = input.clone();
-  mPls->learn(X, l, mNumberOfFactors);
-  X.release();
-  l.release();
-  mTrained = true;
+void HardMiningClassifier::predict(cv::Mat_<float>& inp,
+                                   cv::Mat_<float>& resp) const {
+  mClassifier->predict(inp, resp);
 }
 
-cv::Mat_<int> PLSClassifier::getLabels() const { return mLabels; }
+void HardMiningClassifier::learn(cv::Mat_<float>& input,
+                                 cv::Mat_<int>& labels) {
+  cv::Mat_<float> inp = input.clone();
+  mLabels = labels.clone();
 
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  return {{1, 0}, {-1, 1}};
+  mClassifier->learn(inp, mLabels);
+  cv::Mat_<float> resp;
+
+  for (int it = 0; it < mMaxIterations; ++it) {
+    auto labelOrdering = mClassifier->getLabelsOrdering();
+    mClassifier->predict(mSamples, resp);
+    for (int r = 0; r < resp.rows; ++r) {
+      auto col = labelOrdering[1];
+      if (resp[r][col] > 0) {
+        inp.push_back(mSamples.row(r));
+        mLabels.push_back(-1);
+      }
+    }
+    mClassifier->learn(inp, mLabels);
+  }
 }
 
-bool PLSClassifier::empty() const { return static_cast<bool>(mPls); }
-
-bool PLSClassifier::isTrained() const { return mTrained; }
-
-bool PLSClassifier::isClassifier() const { return true; }
-
-void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
-
-void PLSClassifier::read(const cv::FileNode& fn) {
-  mPls = std::unique_ptr<PLS>(new PLS());
-  mPls->load(fn);
+cv::Mat_<int> HardMiningClassifier::getLabels() const {
+  return mLabels;
 }
 
-void PLSClassifier::write(cv::FileStorage& fs) const {
-  mPls->save(fs);
+void HardMiningClassifier::setNegatives(const cv::Mat_<float>& negatives) {
+  mSamples = negatives.clone();
 }
 
-Classifier* PLSClassifier::clone() const {
-  auto copy = new PLSClassifier;
-
-  copy->setNumberOfFactors(getNumberOfFactors());
-
-  return copy;
+std::unordered_map<int, int> HardMiningClassifier::getLabelsOrdering() const {
+  return mClassifier->getLabelsOrdering();
 }
 
-int PLSClassifier::getNumberOfFactors() const { return mNumberOfFactors; }
+bool HardMiningClassifier::empty() const {
+  return mClassifier->empty();
+}
 
-void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
-  mNumberOfFactors = numberOfFactors;
+bool HardMiningClassifier::isTrained() const {
+  return !mClassifier->empty();
+}
+
+bool HardMiningClassifier::isClassifier() const {
+  return true;
+}
+
+void HardMiningClassifier::read(const cv::FileNode& fn) {
+  if (!mClassifier)
+    std::runtime_error("The classifier must be set before calling this method");
+
+  mClassifier->read(fn);
+}
+
+void HardMiningClassifier::write(cv::FileStorage& fs) const {
+  mClassifier->write(fs);
+}
+
+Classifier* HardMiningClassifier::clone() const {
+  // TODO(Ricardo):
+  return nullptr;
 }
 
 }  // namespace ssig
+
+

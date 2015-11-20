@@ -47,9 +47,9 @@
 
 namespace ssig {
 
-OAAClassifier::OAAClassifier(const Classification& prototypeClassifier) {
+OAAClassifier::OAAClassifier(const Classifier& prototypeClassifier) {
   mUnderlyingClassifier =
-      std::unique_ptr<Classification>(prototypeClassifier.clone());
+      std::unique_ptr<Classifier>(prototypeClassifier.clone());
 }
 
 void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
@@ -81,7 +81,7 @@ void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
       }
     }
     mClassifiers[labelIdx.second] =
-        std::shared_ptr<Classification>(mUnderlyingClassifier->clone());
+        std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
     mClassifiers[labelIdx.second]->learn(mSamples, localLabels);
   }
   mTrained = true;
@@ -139,7 +139,7 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
     mClassifiers.push_back(
-        std::shared_ptr<Classification>(mUnderlyingClassifier->clone()));
+        std::shared_ptr<Classifier>(mUnderlyingClassifier->clone()));
     mClassifiers.back()->read(*it);
   }
 }
@@ -161,7 +161,7 @@ void OAAClassifier::write(cv::FileStorage& fs) const {
   fs << "}";
 }
 
-Classification* OAAClassifier::clone() const {
+Classifier* OAAClassifier::clone() const {
   auto copy = new OAAClassifier(*getUnderlyingClassifier());
   copy->setMaxIterations(getMaxIterations());
   copy->setEpsilon(getEpsilon());
@@ -170,14 +170,14 @@ Classification* OAAClassifier::clone() const {
   return copy;
 }
 
-std::shared_ptr<Classification> OAAClassifier::getUnderlyingClassifier() const {
-  return std::shared_ptr<Classification>(mUnderlyingClassifier->clone());
+std::shared_ptr<Classifier> OAAClassifier::getUnderlyingClassifier() const {
+  return std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
 }
 
 void OAAClassifier::setUnderlyingClassifier(
-    const Classification& underlyingClassifier) {
+    const Classifier& underlyingClassifier) {
   mUnderlyingClassifier =
-      std::unique_ptr<Classification>(underlyingClassifier.clone());
+      std::unique_ptr<Classifier>(underlyingClassifier.clone());
 }
 
 void OAAClassifier::addLabels(cv::Mat_<int>& labels) {

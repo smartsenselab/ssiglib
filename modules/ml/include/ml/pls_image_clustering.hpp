@@ -75,7 +75,7 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  ML_EXPORT void setClassifier(Classification& classifier) override;
+  ML_EXPORT void setClassifier(Classifier& classifier) override;
 
   ML_EXPORT void setClusterRepresentationType(ClusterRepresentationType type);
 

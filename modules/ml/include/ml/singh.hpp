@@ -64,7 +64,7 @@ class Singh : public ClassifierClustering {
   ML_EXPORT bool isClassifier() const override;
   ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  ML_EXPORT void setClassifier(Classification& classifier) override;
+  ML_EXPORT void setClassifier(Classifier& classifier) override;
 
   ML_EXPORT float getLambda() const;
 
@@ -94,8 +94,8 @@ class Singh : public ClassifierClustering {
   // private members
   float mLambda;
   bool mTrained;
-  std::vector<Classification*> mClassifiers;
-  std::unique_ptr<Classification> mUnderlyingClassifier;
+  std::vector<Classifier*> mClassifiers;
+  std::unique_ptr<Classifier> mUnderlyingClassifier;
 };
 
 }  // namespace ssig
