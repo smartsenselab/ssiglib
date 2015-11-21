@@ -53,13 +53,13 @@
 
 namespace ssig {
 
-class Classification : public Algorithm {
+class Classifier : public Algorithm {
  public:
   ML_EXPORT virtual void predict(cv::Mat_<float>& inp,
                                  cv::Mat_<float>& resp) const = 0;
 
-  ML_EXPORT Classification(void) = default;
-  ML_EXPORT virtual ~Classification(void) = default;
+  ML_EXPORT Classifier(void) = default;
+  ML_EXPORT virtual ~Classifier(void) = default;
 
   ML_EXPORT virtual void learn(cv::Mat_<float>& input,
                                cv::Mat_<int>& labels) = 0;
@@ -80,7 +80,7 @@ class Classification : public Algorithm {
   ML_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   ML_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
 
-  ML_EXPORT virtual Classification* clone() const = 0;
+  ML_EXPORT virtual Classifier* clone() const = 0;
   // TODO(Ricardo): ML_EXPORT virtual void copyConfigurationTo(Algorithm& obj)
   // const = 0;
 
@@ -109,35 +109,35 @@ class Classification : public Algorithm {
   int mMaxIterations = static_cast<int>(1e4);
 };
 
-inline void Classification::setClassWeights(const int classLabel,
+inline void Classifier::setClassWeights(const int classLabel,
                                             const float weight) {
   mWeights[classLabel] = weight;
 }
 
-inline void Classification::setClassWeights(
+inline void Classifier::setClassWeights(
     const std::unordered_map<int, float>& weights) {
   mWeights = weights;
 }
 
-inline std::unordered_map<int, float> Classification::getClassWeights() const {
+inline std::unordered_map<int, float> Classifier::getClassWeights() const {
   return mWeights;
 }
 
-inline int Classification::getTermType() const { return mTermType; }
+inline int Classifier::getTermType() const { return mTermType; }
 
-inline void Classification::setTermType(int termType) { mTermType = termType; }
+inline void Classifier::setTermType(int termType) { mTermType = termType; }
 
-inline float Classification::getEpsilon() const { return mEpsilon; }
+inline float Classifier::getEpsilon() const { return mEpsilon; }
 
-inline void Classification::setEpsilon(float epsilon) { mEpsilon = epsilon; }
+inline void Classifier::setEpsilon(float epsilon) { mEpsilon = epsilon; }
 
-inline int Classification::getMaxIterations() const { return mMaxIterations; }
+inline int Classifier::getMaxIterations() const { return mMaxIterations; }
 
-inline void Classification::setMaxIterations(int maxIterations) {
+inline void Classifier::setMaxIterations(int maxIterations) {
   mMaxIterations = maxIterations;
 }
 
-inline void Classification::precondition() {
+inline void Classifier::precondition() {
   // TODO(Ricardo): precondition
 }
 

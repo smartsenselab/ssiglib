@@ -39,87 +39,42 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <ml/pls_classifier.hpp>
+#ifndef _SSF_ML_HARD_MINING_HPP_
+#define _SSF_ML_HARD_MINING_HPP_
 
-#include <cassert>
-#include <string>
+#include <memory>
+
+#include "ml_defs.hpp"
+#include "classification.hpp"
 
 namespace ssig {
+class HardMiningClassifier : public ssig::Classifier {
+ public:
+  ML_EXPORT HardMiningClassifier(Classifier& c);
+  ML_EXPORT virtual ~HardMiningClassifier(void) = default;
+  ML_EXPORT HardMiningClassifier(const HardMiningClassifier& rhs);
+  ML_EXPORT HardMiningClassifier& operator=(const HardMiningClassifier& rhs);
 
-PLSClassifier::PLSClassifier() {
-  // Constructor
-}
 
-PLSClassifier::~PLSClassifier() {
-  // Destructor
-}
+  ML_EXPORT void predict(cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void learn(cv::Mat_<float>& input,
+                       cv::Mat_<int>& labels) override;
+  ML_EXPORT cv::Mat_<int> getLabels() const override;
+  ML_EXPORT void setNegatives(const cv::Mat_<float>& negatives);
+  ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+  ML_EXPORT Classifier* clone() const override;
 
-PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
-  // Constructor Copy
-}
-
-void PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
-  mPls->predict(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for (int row = 0; row < inp.rows; ++row) {
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
-  }
-  resp = r;
-}
-
-void PLSClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
-
-void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
-  // TODO(Ricardo): assert labels between -1 and 1
-  addLabels(labels);
-  assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
-  cv::Mat_<float> l;
-  mLabels.convertTo(l, CV_32F);
-  auto X = input.clone();
-  mPls->learn(X, l, mNumberOfFactors);
-  X.release();
-  l.release();
-  mTrained = true;
-}
-
-cv::Mat_<int> PLSClassifier::getLabels() const { return mLabels; }
-
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  return {{1, 0}, {-1, 1}};
-}
-
-bool PLSClassifier::empty() const { return static_cast<bool>(mPls); }
-
-bool PLSClassifier::isTrained() const { return mTrained; }
-
-bool PLSClassifier::isClassifier() const { return true; }
-
-void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
-
-void PLSClassifier::read(const cv::FileNode& fn) {
-  mPls = std::unique_ptr<PLS>(new PLS());
-  mPls->load(fn);
-}
-
-void PLSClassifier::write(cv::FileStorage& fs) const {
-  mPls->save(fs);
-}
-
-Classifier* PLSClassifier::clone() const {
-  auto copy = new PLSClassifier;
-
-  copy->setNumberOfFactors(getNumberOfFactors());
-
-  return copy;
-}
-
-int PLSClassifier::getNumberOfFactors() const { return mNumberOfFactors; }
-
-void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
-  mNumberOfFactors = numberOfFactors;
-}
+ private:
+  // private members
+  std::unique_ptr<Classifier> mClassifier;
+};
 
 }  // namespace ssig
+
+#endif  // !_SSF_ML_HARD_MINING_HPP_

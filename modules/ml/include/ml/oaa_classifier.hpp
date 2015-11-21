@@ -52,11 +52,11 @@
 
 namespace ssig {
 
-class OAAClassifier : public Classification {
+class OAAClassifier : public Classifier {
   ML_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
 
  public:
-  ML_EXPORT OAAClassifier(const Classification& prototypeClassifier);
+  ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
   virtual ~OAAClassifier(void) = default;
 
   ML_EXPORT void predict(cv::Mat_<float>& inp,
@@ -76,11 +76,11 @@ class OAAClassifier : public Classification {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT Classification* clone() const override;
+  ML_EXPORT Classifier* clone() const override;
 
-  ML_EXPORT std::shared_ptr<Classification> getUnderlyingClassifier() const;
+  ML_EXPORT std::shared_ptr<Classifier> getUnderlyingClassifier() const;
   ML_EXPORT void setUnderlyingClassifier(
-      const Classification& underlyingClassifier);
+      const Classifier& underlyingClassifier);
 
  protected:
   OAAClassifier() = default;
@@ -88,8 +88,8 @@ class OAAClassifier : public Classification {
  private:
   // private members
   std::unordered_map<int, int> mLabelOrderings;
-  std::vector<std::shared_ptr<Classification>> mClassifiers;
-  std::unique_ptr<Classification> mUnderlyingClassifier;
+  std::vector<std::shared_ptr<Classifier>> mClassifiers;
+  std::unique_ptr<Classifier> mUnderlyingClassifier;
   cv::Mat_<int> mLabels;
 
   bool mTrained = false;

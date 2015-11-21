@@ -100,7 +100,7 @@ class ClassifierClustering : public Clustering {
   ML_EXPORT void setDiscoveryConfiguration(
       const std::vector<std::vector<int>>& discoveryConfiguration);
 
-  ML_EXPORT virtual void setClassifier(Classification& classifier) = 0;
+  ML_EXPORT virtual void setClassifier(Classifier& classifier) = 0;
 
  protected:
   ML_EXPORT virtual void precondition();
