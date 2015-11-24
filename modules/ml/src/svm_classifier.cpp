@@ -149,7 +149,7 @@ void SVMClassifier::read(const cv::FileNode& fn) {
 
 void SVMClassifier::write(cv::FileStorage& fs) const { mSvm->write(fs); }
 
-Classification* SVMClassifier::clone() const {
+Classifier* SVMClassifier::clone() const {
   auto copy = new SVMClassifier();
   copy->setMaxIterations(getMaxIterations());
   copy->setC(getC());

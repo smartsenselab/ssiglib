@@ -50,7 +50,7 @@
 
 namespace ssig {
 
-class PLSClassifier : public Classification {
+class PLSClassifier : public Classifier {
   virtual void addLabels(cv::Mat_<int>& labels);
 
  public:
@@ -70,7 +70,7 @@ class PLSClassifier : public Classification {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT Classification* clone() const override;
+  ML_EXPORT Classifier* clone() const override;
 
   ML_EXPORT int getNumberOfFactors() const;
 

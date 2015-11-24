@@ -39,87 +39,87 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <gtest/gtest.h>
+#include <opencv2/core.hpp>
+
 #include <ml/pls_classifier.hpp>
+#include <ml/hard_mining_classifier.hpp>
 
-#include <cassert>
-#include <string>
+class HardMiningClassifierTest : public ::testing::Test {
+ protected:
+  cv::Mat_<int> labels;
+  cv::Mat_<float> inp;
+  cv::Mat_<float> negatives;
+  ssig::PLSClassifier classifier;
+  std::unique_ptr<ssig::HardMiningClassifier> hmc;
 
-namespace ssig {
 
-PLSClassifier::PLSClassifier() {
-  // Constructor
-}
+  void SetUp() override {
+    labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
+    inp =
+      (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 , 6 ,
+        102 , 100 , 104 , 105 , 99 , 101);
 
-PLSClassifier::~PLSClassifier() {
-  // Destructor
-}
+    negatives =
+      (cv::Mat_<float>(3, 2) << 100 , 100 , 101 , 101 , 102 , 102);
 
-PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
-  // Constructor Copy
-}
 
-void PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
-  mPls->predict(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for (int row = 0; row < inp.rows; ++row) {
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
+    classifier.setNumberOfFactors(2);
+    hmc = std::unique_ptr<ssig::HardMiningClassifier>
+      (new ssig::HardMiningClassifier(classifier));
+
+    hmc->setMaxIterations(6);
+    hmc->setNegatives(negatives);
   }
-  resp = r;
+};
+
+TEST_F(HardMiningClassifierTest, SimpleExecution) {
+  hmc->learn(inp, labels);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  cv::Mat_<float> resp;
+  hmc->predict(query1, resp);
+  auto ordering = hmc->getLabelsOrdering();
+  int idx = ordering[1];
+  EXPECT_GE(resp[0][idx], 0);
+  hmc->predict(query2, resp);
+  idx = ordering[-1];
+  EXPECT_GE(resp[0][idx], 0);
 }
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
+TEST_F(HardMiningClassifierTest, Improvement) {}
 
-void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
-  // TODO(Ricardo): assert labels between -1 and 1
-  addLabels(labels);
-  assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
-  cv::Mat_<float> l;
-  mLabels.convertTo(l, CV_32F);
-  auto X = input.clone();
-  mPls->learn(X, l, mNumberOfFactors);
-  X.release();
-  l.release();
-  mTrained = true;
+TEST_F(HardMiningClassifierTest, Persistence) {
+  hmc->learn(inp, labels);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+
+  cv::Mat_<float> resp;
+  hmc->predict(query1, resp);
+  auto ordering = hmc->getLabelsOrdering();
+  int idx = ordering[1];
+  EXPECT_GE(resp[0][idx], 0);
+  hmc->predict(query2, resp);
+  idx = ordering[-1];
+  EXPECT_GE(resp[0][idx], 0);
+
+  hmc->save("hmc.yml", "root");
+
+  ssig::PLSClassifier pls;
+  ssig::HardMiningClassifier loaded(pls);
+
+  loaded.load("hmc.yml", "root");
+  remove("hmc.yml");
+
+  ordering = loaded.getLabelsOrdering();
+  idx = ordering[1];
+  resp.release();
+  loaded.predict(query1, resp);
+  EXPECT_GE(resp[0][idx], 0);
+  loaded.predict(query2, resp);
+  idx = ordering[-1];
+  EXPECT_GE(resp[0][idx], 0);
 }
 
-cv::Mat_<int> PLSClassifier::getLabels() const { return mLabels; }
-
-std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  return {{1, 0}, {-1, 1}};
-}
-
-bool PLSClassifier::empty() const { return static_cast<bool>(mPls); }
-
-bool PLSClassifier::isTrained() const { return mTrained; }
-
-bool PLSClassifier::isClassifier() const { return true; }
-
-void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
-
-void PLSClassifier::read(const cv::FileNode& fn) {
-  mPls = std::unique_ptr<PLS>(new PLS());
-  mPls->load(fn);
-}
-
-void PLSClassifier::write(cv::FileStorage& fs) const {
-  mPls->save(fs);
-}
-
-Classifier* PLSClassifier::clone() const {
-  auto copy = new PLSClassifier;
-
-  copy->setNumberOfFactors(getNumberOfFactors());
-
-  return copy;
-}
-
-int PLSClassifier::getNumberOfFactors() const { return mNumberOfFactors; }
-
-void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
-  mNumberOfFactors = numberOfFactors;
-}
-
-}  // namespace ssig
