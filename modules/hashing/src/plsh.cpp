@@ -50,7 +50,7 @@ namespace ssig {
 
 PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
            const int models, const int factors)
-    : hash_m(models), factors(factors) {
+    : mHashModels(models), mFactors(factors) {
 
   std::default_random_engine gen;
 
@@ -58,44 +58,44 @@ PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   for (const int label : labels)
     ulab.insert(label);
   for (const int label : ulab)
-    subjects.push_back(label);
+    mSubjects.push_back(label);
 
   std::uniform_int_distribution<int> dist(0, 1);
 
-  for (size_t m = 0; m < hash_m.size(); ++m) {
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
     cv::Mat_<float> responses(samples.rows, 1);
     responses = -1.0f;
 
-    for (int l = 0; l < static_cast<int> (subjects.size()); ++l) {
+    for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
       if (dist(gen) == 0) {
         for (int row = 0; row < samples.rows; ++row)
-          if (labels.at<int>(row, 0) == subjects[l]) {
-            hash_m[m].subjects.push_back(l);
+          if (labels.at<int>(row, 0) == mSubjects[l]) {
+            mHashModels[m].mSubjects.push_back(l);
             responses(row) = 1.0f;
           }
       }
     }
     cv::Mat_<float> s = samples.clone();
-    hash_m[m].hash_f.learn(s, responses, factors);
+    mHashModels[m].mHashFunc.learn(s, responses, factors);
   }
 }
 
-PLSH::cand_list_type& PLSH::query(const cv::Mat_<float> sample,
-                                  PLSH::cand_list_type &candidates) {
-  if (candidates.size() != subjects.size())
-    candidates.resize(subjects.size());
+PLSH::CandListType& PLSH::query(const cv::Mat_<float> sample,
+                                PLSH::CandListType &candidates) {
+  if (candidates.size() != mSubjects.size())
+    candidates.resize(mSubjects.size());
 
   for (size_t i = 0; i < candidates.size(); ++i) {
-    candidates[i].first = subjects[i];
+    candidates[i].first = mSubjects[i];
     candidates[i].second = 0;
   }
 
   cv::Mat_<float> r;
-  for (size_t m = 0; m < hash_m.size(); ++m) {
-    hash_m[m].hash_f.predict(sample, r);
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
+    mHashModels[m].mHashFunc.predict(sample, r);
 
     float x = r.at<float>(0, 0);
-    for (const int s : hash_m[m].subjects)
+    for (const int s : mHashModels[m].mSubjects)
       candidates[s].second += x;
   }
 

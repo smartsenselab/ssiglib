@@ -57,7 +57,7 @@ class PLSB : public PLS {
 
 EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
              const int models, const int factors, const int ndim)
-    : hash_m(models), factors(factors) {
+    : mHashModels(models), mFactors(factors) {
 
   std::default_random_engine gen;
 
@@ -65,19 +65,19 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   for (const int label : labels)
     ulab.insert(label);
   for (const int label : ulab)
-    subjects.push_back(label);
+    mSubjects.push_back(label);
 
   std::uniform_int_distribution<int> dist(0, 1);
 
-  for (size_t m = 0; m < hash_m.size(); ++m) {
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
     cv::Mat_<float> responses(samples.rows, 1);
     responses = -1.0f;
 
-    for (int l = 0; l < static_cast<int> (subjects.size()); ++l) {
+    for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
       if (dist(gen) == 0) {
         for (int row = 0; row < samples.rows; ++row)
-          if (labels.at<int>(row, 0) == subjects[l]) {
-            hash_m[m].subjects.push_back(l);
+          if (labels.at<int>(row, 0) == mSubjects[l]) {
+            mHashModels[m].mSubjects.push_back(l);
             responses(row) = 1.0f;
           }
       }
@@ -105,46 +105,46 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
            return a.second > b.second;
          });
 
-    hash_m[m].indexes.clear();
+    mHashModels[m].mIndexes.clear();
     for (int col = 0; col < ndim; ++col)
-      hash_m[m].indexes.push_back(weights[col].first);
+      mHashModels[m].mIndexes.push_back(weights[col].first);
     weights.clear();
 
-    for (const int col : hash_m[m].indexes) {
+    for (const int col : mHashModels[m].mIndexes) {
       if (s.empty())
         s = samples.col(col).clone();
       else
         cv::hconcat(s, samples.col(col), s);
     }
 
-    hash_m[m].hash_f.learn(s, responses, std::min(factors, ndim));
+    mHashModels[m].mHashFunc.learn(s, responses, std::min(factors, ndim));
     s.release();
   }
 }
 
-EPLSH::cand_list_type& EPLSH::query(const cv::Mat_<float> sample,
-                                    EPLSH::cand_list_type &candidates) {
-  if (candidates.size() != subjects.size())
-    candidates.resize(subjects.size());
+EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
+                                  EPLSH::CandListType &candidates) {
+  if (candidates.size() != mSubjects.size())
+    candidates.resize(mSubjects.size());
 
   for (size_t i = 0; i < candidates.size(); ++i) {
-    candidates[i].first = subjects[i];
+    candidates[i].first = mSubjects[i];
     candidates[i].second = 0;
   }
 
   cv::Mat_<float> r, s;
-  for (size_t m = 0; m < hash_m.size(); ++m) {
-    for (const int col : hash_m[m].indexes)
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
+    for (const int col : mHashModels[m].mIndexes)
       if (s.empty())
         s = sample.col(col).clone();
       else
         cv::hconcat(s, sample.col(col), s);
 
-    hash_m[m].hash_f.predict(s, r);
+    mHashModels[m].mHashFunc.predict(s, r);
     s.release();
 
     float x = r.at<float>(0, 0);
-    for (const int s : hash_m[m].subjects)
+    for (const int s : mHashModels[m].mSubjects)
       candidates[s].second += x;
   }
 

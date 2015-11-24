@@ -52,23 +52,23 @@ namespace ssig {
 
 class PLSH {
  public:
-  typedef std::vector<std::pair<int, float>> cand_list_type;
+  typedef std::vector<std::pair<int, float>> CandListType;
 
   PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
        const int models, const int factors = 10);
 
-  cand_list_type& query(const cv::Mat_<float> sample,
-                        cand_list_type &candidates);
+  CandListType& query(const cv::Mat_<float> sample,
+                      CandListType &candidates);
 
  private:
   struct HashModel {
-    PLS hash_f;
-    std::vector<int> subjects;
+    PLS mHashFunc;
+    std::vector<int> mSubjects;
   };
-  std::vector<HashModel> hash_m;
-  std::vector<int> subjects;
+  std::vector<HashModel> mHashModels;
+  std::vector<int> mSubjects;
 
-  int factors;
+  int mFactors;
 };
 
 }  // namespace ssig

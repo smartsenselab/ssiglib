@@ -56,7 +56,7 @@ TEST(EPLSH, Retrieval) {
   cv::Mat_<float> q3 = (cv::Mat_<float>(1, 2) << 0, 0);
 
   ssig::EPLSH plsh(gallery, labels, 10, 2, 1);
-  ssig::EPLSH::cand_list_type cand;
+  ssig::EPLSH::CandListType cand;
 
   plsh.query(q1, cand);
 
@@ -101,7 +101,7 @@ TEST(EPLSH, FactorsDims) {
   cv::Mat_<float> q3 = (cv::Mat_<float>(1, 2) << 0, 0);
 
   ssig::EPLSH plsh(gallery, labels, 10, 2, 2);
-  ssig::EPLSH::cand_list_type cand;
+  ssig::EPLSH::CandListType cand;
 
   plsh.query(q1, cand);
 
