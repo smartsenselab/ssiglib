@@ -68,6 +68,10 @@ void Descriptor::extract(cv::Mat& output) {
 
 void Descriptor::extract(const std::vector<cv::Rect>& windows,
                          cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
   for (auto& window : windows) {
     cv::Mat feat;
     extractFeatures(window, feat);
@@ -77,6 +81,10 @@ void Descriptor::extract(const std::vector<cv::Rect>& windows,
 
 void Descriptor::extract(const std::vector<cv::KeyPoint>& keypoints,
                          cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
   const float SQROOT_TWO = 1.4142136237f;
   for (auto& keypoint : keypoints) {
     cv::Mat feat;

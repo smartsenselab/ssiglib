@@ -38,85 +38,71 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
+#ifndef _SSIG_CORE_MATH_HPP_
+#define _SSIG_CORE_MATH_HPP_
 
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
 
-#include <string>
-#include <stdexcept>
-#include <vector>
+namespace ssig{
 
-#include <core/math.hpp>
+	class Math{
+	
+	public:
+		Math(void);
+		virtual ~Math(void);
+		Math(const Math& rhs);
+		Math& operator=(const Math& rhs);
 
-#include "ml_defs.hpp"
+	private:
+		//private members
 
-namespace ssig {
+	};
 
-class PLS {
-  // set output matrix according to indices
-  void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
+  template <class T>
+  void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
+    cv::Mat_<T>& std) {
+    cv::Mat aux, auxMean, auxStd;
+    int x;
+    int len;
+    if (layout == cv::ml::ROW_SAMPLE) {
+      len = m.rows;
+      mean = cv::Mat_<T>::zeros(len, 1);
+      std = cv::Mat_<T>::zeros(len, 1);
+    } else {
+      len = m.cols;
+      mean = cv::Mat_<T>::zeros(1, len);
+      std = cv::Mat_<T>::zeros(1, len);
+    }
 
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses);
+    for (x = 0; x < len; x++) {
+      if (layout == cv::ml::ROW_SAMPLE) {
+        aux = m.row(x);
+      } else {
+        aux = m.col(x);
+      }
 
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
+      cv::meanStdDev(aux, auxMean, auxStd);
+      if (layout == cv::ml::ROW_SAMPLE) {
+        mean[x][0] = static_cast<T>(auxMean.at<double>(0, 0));
+        std[x][0] = static_cast<T>(auxStd.at<double>(0, 0));
+      } else {
+        mean[0][x] = static_cast<T>(auxMean.at<double>(0, 0));
+        std[0][x] = static_cast<T>(auxStd.at<double>(0, 0));
+      }
+    }
+  }
 
- public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  template <typename Type>
+  void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
+    cv::Mat_<Type>& std) {
+    int y;
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors);
+    for (y = 0; y < M.rows; y++) {
+      M.row(y) -= mean;
+      M.row(y) /= std;
+    }
+  }
+}
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors();
-
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
-
-  // save PLS model
-  ML_EXPORT void save(std::string filename);
-  ML_EXPORT void save(cv::FileStorage& storage);
-
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
-
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
-
- protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
-
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
-
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
-
-  cv::Mat_<float> mZDataV;
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
-};
-
-}  // namespace ssig
-
-#endif  // !_SSIG_ML_PLS_HPP_
+#endif  // !_SSF_CORE_MATH_HPP_

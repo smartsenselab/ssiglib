@@ -79,21 +79,43 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
   auto H = img.rows;
   auto W = img.cols;
   double minDistance = cv::sqrt(h * h / 4 + w * w / 4);
+  cv::Mat bwImg;
+  if (img.channels() > 1) {
+    cv::cvtColor(img, bwImg, CV_BGR2GRAY);
+  }else {
+    bwImg = img;
+  }
 
-  cv::goodFeaturesToTrack(img, corners, maxPatches, 0.01, minDistance);
+  cv::goodFeaturesToTrack(bwImg, corners, maxPatches, 0.01, minDistance);
 
   for (int r = 0; r < static_cast<int>(corners.size()); ++r) {
     auto corner = corners[r];
     int x = static_cast<int>(corner.x) - h / 2;
     int y = static_cast<int>(corner.y) - w / 2;
+    
+    //Try ti adjust the keypoint position so there is a valid window
+    if (x + w > W) {
+      int offset = cv::abs(W - (x + w));
+      x = x - offset;
+    } else if (x < 0) {
+      int offset = cv::abs(x);
+      x = x + offset;
+    }
+    if (y + h > H) {
+      int offset = cv::abs(H - (y + h));
+      x = x - offset;
+    } else if (y < 0) {
+      int offset = cv::abs(y);
+      y = y + offset;
+    }
+
     if (x + w < W && x >= 0) {
       if (y + h < H && y >= 0) {
-        cv::Rect rect{x, y, w, h};
+        cv::Rect rect{ x, y, w, h };
         ans.push_back(rect);
       }
     }
   }
-
   // Visualization Intended for Debugging:
   // cv::Mat copy;
   // cv::cvtColor(img, copy, cv::COLOR_GRAY2BGR);

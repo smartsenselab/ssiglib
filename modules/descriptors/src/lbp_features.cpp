@@ -119,9 +119,10 @@ void LBP::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::Mat_<float> feat = output;
 
   // TODO(Ricardo): can be parallel
-  for (int i = patch.y; i < patch.width; ++i) {
-    for (int j = patch.x; j < patch.height; ++j) {
-      feat[0][mBinaryPattern[i][j]] += 1;
+  for (int i = 0; i < patch.width; ++i) {
+    for (int j = 0; j < patch.height; ++j) {
+      int bin = mBinaryPattern[j + patch.y][i + patch.x];
+      feat[0][bin] += 1;
     }
   }
 }
