@@ -62,10 +62,12 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   std::default_random_engine gen;
 
   std::unordered_set<int> ulab;
-  for (const int label : labels)
-    ulab.insert(label);
-  for (const int label : ulab)
-    mSubjects.push_back(label);
+  for (const int label : labels) {
+    if (ulab.find(label) != ulab.end()) {
+      ulab.insert(label);
+      mSubjects.push_back(label);
+    }
+  }
 
   std::uniform_int_distribution<int> dist(0, 1);
 
