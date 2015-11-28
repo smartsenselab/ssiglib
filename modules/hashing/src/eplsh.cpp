@@ -49,7 +49,7 @@
 namespace ssig {
 
 class PLSB : public PLS {
- public:
+public:
   cv::Mat_<float>& getBStar() {
     return mBstar;
   }
@@ -57,7 +57,7 @@ class PLSB : public PLS {
 
 EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
              const int models, const int factors, const int ndim)
-    : mHashModels(models), mFactors(factors) {
+  : mHashModels(models), mFactors(factors) {
 
   std::default_random_engine gen;
 
@@ -75,7 +75,7 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     cv::Mat_<float> responses(samples.rows, 1);
     responses = -1.0f;
 
-    for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
+    for (int l = 0; l < static_cast<int>(mSubjects.size()); ++l) {
       if (dist(gen) == 0) {
         for (int row = 0; row < samples.rows; ++row)
           if (labels.at<int>(row, 0) == mSubjects[l]) {
@@ -103,9 +103,9 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     }
 
     std::sort(weights.begin(), weights.end(),
-         [](const std::pair<int, float> &a, const std::pair<int, float> &b) {
-           return a.second > b.second;
-         });
+              [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+                return a.second > b.second;
+              });
 
     mHashModels[m].mIndexes.clear();
     for (int col = 0; col < ndim; ++col)
@@ -125,7 +125,7 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
 }
 
 EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
-                                  EPLSH::CandListType &candidates) {
+                                  EPLSH::CandListType& candidates) {
   if (candidates.size() != mSubjects.size())
     candidates.resize(mSubjects.size());
 
@@ -151,11 +151,13 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
   }
 
   std::sort(candidates.begin(), candidates.end(),
-       [](const std::pair<int, float> &a, const std::pair<int, float> & b) {
-         return a.second > b.second;
-       });
+            [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+              return a.second > b.second;
+            });
 
   return candidates;
 }
 
 };  // namespace ssig
+
+

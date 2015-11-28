@@ -53,7 +53,7 @@ namespace ssig {
 class PLSClassifier : public Classifier {
   virtual void addLabels(cv::Mat_<int>& labels);
 
- public:
+public:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT virtual ~PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
@@ -76,7 +76,7 @@ class PLSClassifier : public Classifier {
 
   ML_EXPORT void setNumberOfFactors(int numberOfFactors);
 
- private:
+private:
   // private members
   std::unique_ptr<PLS> mPls;
   int mNumberOfFactors = 3;
@@ -88,4 +88,6 @@ class PLSClassifier : public Classifier {
 
 }  // namespace ssig
 
-#endif  // !_SSIG_ML_PLSCLASSIFIER_HPP_
+#endif // !_SSIG_ML_PLSCLASSIFIER_HPP_
+
+

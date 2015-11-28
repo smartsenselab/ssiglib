@@ -48,7 +48,7 @@
 
 namespace ssig {
 
-PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+PLSH::PLSH(const cv::Mat_<float>& samples, const cv::Mat_<int>& labels,
            const int models, const int factors)
     : mHashModels(models), mFactors(factors) {
 
@@ -83,7 +83,7 @@ PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   }
 }
 
-PLSH::CandListType& PLSH::query(const cv::Mat_<float> sample,
+PLSH::CandListType& PLSH::query(const cv::Mat_<float>& sample,
                                 PLSH::CandListType &candidates) {
   if (candidates.size() != mSubjects.size())
     candidates.resize(mSubjects.size());
