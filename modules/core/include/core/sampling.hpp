@@ -52,7 +52,7 @@
 namespace ssig {
 
 class Sampling {
-public:
+ public:
   Sampling(void);
 
   virtual ~Sampling(void);
@@ -150,6 +150,6 @@ public:
 
 }  // namespace ssig
 
-#endif // !_SSIG_CORE_SAMPLING_METHOD_HPP_
+#endif  // !_SSIG_CORE_SAMPLING_METHOD_HPP_
 
 

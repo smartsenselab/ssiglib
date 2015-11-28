@@ -47,6 +47,7 @@
 #include <utility>
 
 #include "ml/pls.hpp"
+#include "hashing_defs.hpp"
 
 namespace ssig {
 
@@ -54,10 +55,10 @@ class EPLSH {
  public:
   typedef std::vector<std::pair<int, float>> CandListType;
 
-  EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
        const int models, const int factors = 10, const int ndim = 5000);
 
-  CandListType& query(const cv::Mat_<float> sample,
+  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
                         CandListType &candidates);
 
  private:
