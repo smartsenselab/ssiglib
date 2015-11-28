@@ -46,6 +46,10 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <string>
+
+#include <core/math.hpp>
+#include <opencv2/ml.hpp>
 
 namespace ssig {
 
