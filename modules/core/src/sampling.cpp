@@ -82,7 +82,7 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
   cv::Mat bwImg;
   if (img.channels() > 1) {
     cv::cvtColor(img, bwImg, CV_BGR2GRAY);
-  }else {
+  } else {
     bwImg = img;
   }
 
@@ -92,8 +92,8 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
     auto corner = corners[r];
     int x = static_cast<int>(corner.x) - h / 2;
     int y = static_cast<int>(corner.y) - w / 2;
-    
-    //Try ti adjust the keypoint position so there is a valid window
+
+    // Try to adjust the keypoint position so there is a valid window
     if (x + w > W) {
       int offset = cv::abs(W - (x + w));
       x = x - offset;
@@ -111,7 +111,7 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
 
     if (x + w < W && x >= 0) {
       if (y + h < H && y >= 0) {
-        cv::Rect rect{ x, y, w, h };
+        cv::Rect rect{x, y, w, h};
         ans.push_back(rect);
       }
     }
@@ -156,9 +156,9 @@ std::vector<cv::Rect> Sampling::sampleImage(const int width, const int height,
 }
 
 std::vector<cv::Rect> Sampling::sampleImage(
-    const int width, const int height, const int winWidth, const int winHeight,
-    const float minScale, const float maxScale, const int nScales,
-    const float strideX, const float strideY) {
+  const int width, const int height, const int winWidth, const int winHeight,
+  const float minScale, const float maxScale, const int nScales,
+  const float strideX, const float strideY) {
   if (width <= 0) throw std::invalid_argument("Width must be greater than 0");
   if (height <= 0) throw std::invalid_argument("height must be greater than 0");
   if (minScale > maxScale)
@@ -167,14 +167,14 @@ std::vector<cv::Rect> Sampling::sampleImage(
     throw std::invalid_argument("stride must be in range (0,1]");
 
   float deltaScale =
-      pow((maxScale / minScale), 1 / static_cast<float>(nScales));
+    pow((maxScale / minScale), 1 / static_cast<float>(nScales));
   // int samples = ((height / winHeight)*(width / winWidth)) / (80 *
   // 80)*nScales;
   std::vector<cv::Rect> rects;
   float scale = minScale;
   do {
     int h = static_cast<int>(winHeight * scale),
-        w = static_cast<int>(winWidth * scale);
+      w = static_cast<int>(winWidth * scale);
     for (int y = 0; y <= height - h; y += static_cast<int>(strideY * h)) {
       for (int x = 0; x <= width - w; x += static_cast<int>(strideX * w)) {
         cv::Rect rect(x, y, w, h);
@@ -189,14 +189,14 @@ std::vector<cv::Rect> Sampling::sampleImage(
 }
 
 std::vector<cv::Rect> Sampling::sampleImage(
-    const int width, const int height, const int winWidth, const int winHeight,
-    const float minScale, const float maxScale, const float deltaScale,
-    const float strideX, const float strideY) {
+  const int width, const int height, const int winWidth, const int winHeight,
+  const float minScale, const float maxScale, const float deltaScale,
+  const float strideX, const float strideY) {
   if (width <= 0) throw std::invalid_argument("Width must be greater than 0");
   if (height <= 0) throw std::invalid_argument("height must be greater than 0");
   if (deltaScale <= 1) {
     throw std::invalid_argument(
-        "delta Scale must be greater than 1 or it will enter infinite loop");
+      "delta Scale must be greater than 1 or it will enter infinite loop");
   }
   if (minScale > maxScale)
     throw std::invalid_argument("minScale must be greater than maxScale");
@@ -204,7 +204,7 @@ std::vector<cv::Rect> Sampling::sampleImage(
   std::vector<cv::Rect> rects;
   for (float scale = minScale; scale < maxScale; scale *= deltaScale) {
     int h = static_cast<int>(winHeight * scale),
-        w = static_cast<int>(winWidth * scale);
+      w = static_cast<int>(winWidth * scale);
     for (int y = 0; y < height - h; y += static_cast<int>(strideY * h)) {
       for (int x = 0; x < width - w; x += static_cast<int>(strideX * w)) {
         cv::Rect rect(x, y, w, h);
@@ -218,3 +218,5 @@ std::vector<cv::Rect> Sampling::sampleImage(
 }
 
 }  // namespace ssig
+
+

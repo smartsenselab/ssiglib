@@ -42,25 +42,25 @@
 #include "core/math.hpp"
 #include <opencv2/core.hpp>
 
-namespace ssig{
+namespace ssig {
 
-	Math::Math(){
-		//Constructor
-	}
-
-	Math::~Math(){
-		//Destructor
-	}
-
-	Math::Math(const Math& rhs){
-		//Constructor Copy
-	}
-
-	Math& Math::operator=(const Math& rhs){
-		if (this != &rhs){
-			//code here
-		}
-	    return *this;
-	}
+Math::Math() {
+  // Constructor
 }
+
+Math::~Math() {
+  // Destructor
+}
+
+Math::Math(const Math& rhs) {
+  // Constructor Copy
+}
+
+Math& Math::operator=(const Math& rhs) {
+  if (this != &rhs) {
+    // code here
+  }
+  return *this;
+}
+}  // namespace ssig
 

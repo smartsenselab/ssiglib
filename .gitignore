@@ -31,3 +31,6 @@
 .vagrant/
 
 build*/*
+
+lint.sh
+cpplint.py

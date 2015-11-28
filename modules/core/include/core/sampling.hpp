@@ -52,7 +52,7 @@
 namespace ssig {
 
 class Sampling {
- public:
+public:
   Sampling(void);
 
   virtual ~Sampling(void);
@@ -80,8 +80,8 @@ class Sampling {
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
   CORE_EXPORT static std::vector<cv::Rect> sampleImage(
-      const int width, const int height, const int winWidth,
-      const int winHeight, const float strideX, const float strideY);
+    const int width, const int height, const int winWidth,
+    const int winHeight, const float strideX, const float strideY);
 
   /**
   This method extracts sample windows from a specified Width and Height.
@@ -101,9 +101,9 @@ class Sampling {
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
   CORE_EXPORT static std::vector<cv::Rect> sampleImage(
-      const int width, const int height, const int winWidth,
-      const int winHeight, const float minScale, const float maxScale,
-      const int nScales, const float strideX, const float strideY);
+    const int width, const int height, const int winWidth,
+    const int winHeight, const float minScale, const float maxScale,
+    const int nScales, const float strideX, const float strideY);
 
   /**
   @param width The width of the image to sample.
@@ -122,12 +122,12 @@ class Sampling {
   @return A vector of cv::Rects. Each Rect is a sample of the image.
   */
   CORE_EXPORT static std::vector<cv::Rect> sampleImage(
-      const int width, const int height, const int winWidth,
-      const int winHeight, const float minScale, const float maxScale,
-      const float deltaScale, const float strideX, const float strideY);
+    const int width, const int height, const int winWidth,
+    const int winHeight, const float minScale, const float maxScale,
+    const float deltaScale, const float strideX, const float strideY);
 
   // TODO(Ricardo): unimplemented
-  /*std::vector<cv::Rect> sampleImage(const int width,
+  /* std::vector<cv::Rect> sampleImage(const int width,
                                                                     const int
      height,
                                                                     const int
@@ -150,4 +150,6 @@ class Sampling {
 
 }  // namespace ssig
 
-#endif  // !_SSIG_CORE_SAMPLING_METHOD_HPP_
+#endif // !_SSIG_CORE_SAMPLING_METHOD_HPP_
+
+
