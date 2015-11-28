@@ -80,6 +80,6 @@ class EPLSH {
 
 }  // namespace ssig
 
-#endif // !_SSF_HASHING_PLSH_HPP_
+#endif  // !_SSF_HASHING_PLSH_HPP_
 
 

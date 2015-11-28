@@ -55,17 +55,20 @@ class PLSH {
  public:
   typedef std::vector<std::pair<int, float>> CandListType;
 
-  HASHING_EXPORT PLSH(const cv::Mat_<float>& samples, const cv::Mat_<int>& labels,
-       const int models, const int factors = 10);
+  HASHING_EXPORT PLSH(const cv::Mat_<float>& samples,
+                      const cv::Mat_<int>& labels,
+                      const int models,
+                      const int factors = 10);
 
   HASHING_EXPORT CandListType& query(const cv::Mat_<float>& sample,
-                      CandListType &candidates);
+                                     CandListType& candidates);
 
  private:
   struct HashModel {
     PLS mHashFunc;
     std::vector<int> mSubjects;
   };
+
   std::vector<HashModel> mHashModels;
   std::vector<int> mSubjects;
 
@@ -75,3 +78,5 @@ class PLSH {
 }  // namespace ssig
 
 #endif  // !_SSF_HASHING_PLSH_HPP_
+
+
