@@ -55,19 +55,22 @@ PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   std::default_random_engine gen;
 
   std::unordered_set<int> ulab;
-  for (const int label : labels)
-    ulab.insert(label);
-  for (const int label : ulab)
-    mSubjects.push_back(label);
+  for (const auto& label : labels) {
+    if (ulab.find(label) == ulab.end()) {
+      ulab.insert(label);
+      mSubjects.push_back(label);
+    }
+  }
 
-  std::uniform_int_distribution<int> dist(0, 1);
+  std::uniform_int_distribution<int> rng(0, 1);
 
   for (size_t m = 0; m < mHashModels.size(); ++m) {
     cv::Mat_<float> responses(samples.rows, 1);
     responses = -1.0f;
 
     for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
-      if (dist(gen) == 0) {
+      auto randomValue = rng(gen);
+      if (randomValue == 0) {
         for (int row = 0; row < samples.rows; ++row)
           if (labels.at<int>(row, 0) == mSubjects[l]) {
             mHashModels[m].mSubjects.push_back(l);

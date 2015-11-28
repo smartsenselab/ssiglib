@@ -43,6 +43,7 @@
 
 #include <cassert>
 #include <string>
+#include <unordered_set>
 
 namespace ssig {
 
@@ -69,7 +70,16 @@ void PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   resp = r;
 }
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
+void PLSClassifier::addLabels(cv::Mat_<int>& labels) {
+  std::unordered_set<int> labelsSet;
+  for (int r = 0; r < labels.rows; ++r)
+    labelsSet.insert(labels[r][0]);
+  if(labelsSet.size()>2) {
+    std::runtime_error("Number of Labels is greater than 2.\n\
+                       This is a binary classifier!\n");
+  }
+  mLabels = labels;
+}
 
 void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   // TODO(Ricardo): assert labels between -1 and 1

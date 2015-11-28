@@ -62,8 +62,8 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
   std::default_random_engine gen;
 
   std::unordered_set<int> ulab;
-  for (const int label : labels) {
-    if (ulab.find(label) != ulab.end()) {
+  for (const auto& label : labels) {
+    if (ulab.find(label) == ulab.end()) {
       ulab.insert(label);
       mSubjects.push_back(label);
     }
@@ -97,9 +97,9 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     beta = cv::abs(beta);
 
     std::vector<std::pair<int, float>> weights(beta.rows);
-    for (int col = 0; col < beta.rows; ++col) {
-      weights[col].first = col;
-      weights[col].second = beta.at<float>(0, col);
+    for (int row = 0; row < beta.rows; ++row) {
+      weights[row].first = row;
+      weights[row].second = beta.at<float>(row, 0);
     }
 
     std::sort(weights.begin(), weights.end(),

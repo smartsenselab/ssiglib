@@ -46,6 +46,7 @@
 
 #include <cassert>
 #include <string>
+#include <unordered_set>
 
 namespace ssig {
 
@@ -86,7 +87,16 @@ void SVMClassifier::setup(cv::Mat_<float>& input) {
   mSvm->setP(mP);
 }
 
-void SVMClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
+void SVMClassifier::addLabels(cv::Mat_<int>& labels) {
+  std::unordered_set<int> labelsSet;
+  for (int r = 0; r < labels.rows; ++r)
+    labelsSet.insert(labels[r][0]);
+  if (labelsSet.size()>2) {
+    std::runtime_error("Number of Labels is greater than 2.\n\
+                                              This is a binary classifier!\n");
+  }
+  mLabels = labels;
+}
 
 void SVMClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   setup(input);
