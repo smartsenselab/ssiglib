@@ -74,7 +74,7 @@ void PLSClassifier::addLabels(cv::Mat_<int>& labels) {
   std::unordered_set<int> labelsSet;
   for (int r = 0; r < labels.rows; ++r)
     labelsSet.insert(labels[r][0]);
-  if (labelsSet.size()>2) {
+  if (labelsSet.size() > 2) {
     std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
                        "This is a binary classifier!\n");
   }

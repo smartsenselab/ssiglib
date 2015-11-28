@@ -98,12 +98,12 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     std::vector<std::pair<int, float>> weights(beta.rows);
     for (int row = 0; row < beta.rows; ++row) {
       weights[row].first = row;
-      weights[row].second = beta.at<float>(row, 0);
+      weights[row].second = beta[0][row];
     }
 
     std::sort(weights.begin(), weights.end(),
               [](
-              const std::pair<int, float>& a, 
+              const std::pair<int, float>& a,
               const std::pair<int, float>& b) {
                 return a.second > b.second;});
 

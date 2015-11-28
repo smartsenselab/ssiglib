@@ -52,7 +52,7 @@ namespace ssig {
 
 class PLSClassifier : public Classifier {
   virtual void addLabels(cv::Mat_<int>& labels);
- 
+
  public:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT virtual ~PLSClassifier(void);

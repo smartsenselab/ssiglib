@@ -59,7 +59,7 @@ SVMClassifier::~SVMClassifier() {
 }
 
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
-  return {{1, 0},{-1, 1}};
+  return {{1, 0}, {-1, 1}};
 }
 
 void SVMClassifier::setup(cv::Mat_<float>& input) {
