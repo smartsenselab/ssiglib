@@ -113,9 +113,9 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
 
     for (const size_t col : mHashModels[m].mIndexes) {
       if (s.empty())
-        s = samples.col((int) col).clone();
+        s = samples.col(static_cast<int>(col)).clone();
       else
-        cv::hconcat(s, samples.col((int) col), s);
+        cv::hconcat(s, samples.col(static_cast<int>(col)), s);
     }
 
     mHashModels[m].mHashFunc.learn(s, responses, std::min(factors, ndim));
@@ -137,9 +137,9 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
   for (size_t m = 0; m < mHashModels.size(); ++m) {
     for (const size_t col : mHashModels[m].mIndexes)
       if (s.empty())
-        s = sample.col((int) col).clone();
+        s = sample.col(static_cast<int>(col)).clone();
       else
-        cv::hconcat(s, sample.col((int) col), s);
+        cv::hconcat(s, sample.col(static_cast<int>(col)), s);
 
     mHashModels[m].mHashFunc.predict(s, r);
     s.release();
