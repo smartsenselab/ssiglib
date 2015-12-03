@@ -41,6 +41,7 @@
 
 #include "hashing/plsh.hpp"
 
+#include <time.h>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -52,7 +53,7 @@ PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
            const int models, const int factors)
     : mHashModels(models), mFactors(factors) {
 
-  std::default_random_engine gen;
+  std::mt19937 gen((uint) time(NULL));
 
   std::unordered_set<int> ulab;
   for (const int label : labels)

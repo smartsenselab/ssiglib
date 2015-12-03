@@ -41,6 +41,7 @@
 
 #include "hashing/eplsh.hpp"
 
+#include <time.h>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -59,7 +60,7 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
              const int models, const int factors, const int ndim)
     : mHashModels(models), mFactors(factors) {
 
-  std::default_random_engine gen;
+  std::mt19937 gen((uint) time(NULL));
 
   std::unordered_set<int> ulab;
   for (const int label : labels)
@@ -95,9 +96,9 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     beta = cv::abs(beta);
 
     std::vector<std::pair<int, float>> weights(beta.rows);
-    for (int col = 0; col < beta.rows; ++col) {
-      weights[col].first = col;
-      weights[col].second = beta.at<float>(0, col);
+    for (int row = 0; row < beta.rows; ++row) {
+      weights[row].first = row;
+      weights[row].second = beta.at<float>(row, 0);
     }
 
     std::sort(weights.begin(), weights.end(),
@@ -110,11 +111,11 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
       mHashModels[m].mIndexes.push_back(weights[col].first);
     weights.clear();
 
-    for (const int col : mHashModels[m].mIndexes) {
+    for (const size_t col : mHashModels[m].mIndexes) {
       if (s.empty())
-        s = samples.col(col).clone();
+        s = samples.col((int) col).clone();
       else
-        cv::hconcat(s, samples.col(col), s);
+        cv::hconcat(s, samples.col((int) col), s);
     }
 
     mHashModels[m].mHashFunc.learn(s, responses, std::min(factors, ndim));
@@ -134,11 +135,11 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
 
   cv::Mat_<float> r, s;
   for (size_t m = 0; m < mHashModels.size(); ++m) {
-    for (const int col : mHashModels[m].mIndexes)
+    for (const size_t col : mHashModels[m].mIndexes)
       if (s.empty())
-        s = sample.col(col).clone();
+        s = sample.col((int) col).clone();
       else
-        cv::hconcat(s, sample.col(col), s);
+        cv::hconcat(s, sample.col((int) col), s);
 
     mHashModels[m].mHashFunc.predict(s, r);
     s.release();
