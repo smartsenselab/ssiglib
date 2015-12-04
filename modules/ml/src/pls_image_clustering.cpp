@@ -52,7 +52,6 @@
 #include <vector>
 
 
-
 namespace ssig {
 
 void PLSImageClustering::buildResponses(
@@ -80,17 +79,13 @@ void PLSImageClustering::removeMeaninglessClusters(
   cv::Mat_<float> clusterRepresentation;
   cv::Scalar stddev;
   buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
-  std::set<int> toClean;
+  std::vector<ssig::Cluster> aux;
   for (int i = 0; i < clusterRepresentation.rows; ++i) {
     auto rep = clusterRepresentation.row(i);
     cv::meanStdDev(rep, cv::Scalar(), stddev);
-    if (stddev[0] <= mDeviationThreshold) {
-      toClean.insert(i);
+    if (stddev[0] > mDeviationThreshold) {
+      aux.push_back(clusters[i]);
     }
-  }
-  std::vector<ssig::Cluster> aux;
-  for (int i = 0; i < static_cast<int>(clusters.size()); ++i) {
-    if (toClean.find(i) == toClean.end()) aux.push_back(clusters[i]);
   }
   clusters = aux;
   aux.clear();
@@ -465,6 +460,6 @@ bool PLSImageClustering::findClosestClusters(const cv::Mat& similarityMatrix,
   return max >= threshold;
 }
 
-}  // namespace ssig
+} // namespace ssig
 
 

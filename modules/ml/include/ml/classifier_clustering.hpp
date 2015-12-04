@@ -87,11 +87,9 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT int getInitialK() const;
 
-  ML_EXPORT void setInitialK(int mInitialK1);
+  ML_EXPORT int getClusterSize() const;
 
-  ML_EXPORT int getMValue() const;
-
-  ML_EXPORT void setMValue(int m);
+  ML_EXPORT void setClusterSize(int m);
 
   ML_EXPORT std::vector<std::vector<float>> getClustersResponses() const;
 
@@ -102,7 +100,12 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT virtual void setClassifier(Classifier& classifier) = 0;
 
- protected:
+
+  ML_EXPORT int getMaximumK() const;
+
+  ML_EXPORT void setMaximumK(const int maximumK);
+
+protected:
   ML_EXPORT virtual void precondition();
 
   virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;
@@ -126,7 +129,8 @@ class ClassifierClustering : public Clustering {
   cv::Mat_<float> mNaturalSamples;
   int mInitialK = 0;
   int mMaximumK = 100;
-  int mMValue = 5;
+  // A.K.A the M value in Singh et al.(2012)
+  int mClusterSize = 5;
   int mIt = 0;
 
   std::vector<std::vector<int>> mDiscovery;

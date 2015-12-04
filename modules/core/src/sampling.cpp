@@ -129,6 +129,10 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
   return ans;
 }
 
+/**
+  @param strideX a value in range (0,1]
+  @param strideY a value in range (0,1]
+*/
 std::vector<cv::Rect> Sampling::sampleImage(const int width, const int height,
                                             const int winWidth,
                                             const int winHeight,
@@ -142,14 +146,12 @@ std::vector<cv::Rect> Sampling::sampleImage(const int width, const int height,
   std::vector<cv::Rect> rects;
 
   int h = static_cast<int>(winHeight), w = static_cast<int>(winWidth);
-  for (int y = 0; y < height - h; y += static_cast<int>(strideY * h)) {
-    for (int x = 0; x < width - w; x += static_cast<int>(strideX * w)) {
+  for (int y = 0; y + h < height; y += static_cast<int>(strideY * h)) {
+    for (int x = 0; x + w < width; x += static_cast<int>(strideX * w)) {
       cv::Rect rect(x, y, w, h);
       rects.push_back(rect);
     }
   }
-  if (width > w && height > h)
-    rects.push_back({width - (w + 1), height - (h + 1), w, h});
   if (rects.size() <= 0)
     throw std::runtime_error("No Rect produced for the set scales");
   return rects;
