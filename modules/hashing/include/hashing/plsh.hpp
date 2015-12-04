@@ -72,6 +72,6 @@ class PLSH {
   int mFactors;
 };
 
-} // namespace ssig
+}  // namespace ssig
 
 #endif  // !_SSF_HASHING_PLSH_HPP_
