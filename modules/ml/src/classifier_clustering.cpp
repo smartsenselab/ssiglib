@@ -162,6 +162,6 @@ const {
   return mClustersResponses;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 

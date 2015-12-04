@@ -105,7 +105,7 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT void setMaximumK(const int maximumK);
 
-protected:
+ protected:
   ML_EXPORT virtual void precondition();
 
   virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;

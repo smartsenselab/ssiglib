@@ -85,6 +85,6 @@ void Algorithm::save(const std::string& filename,
   fileStorage.release();
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 

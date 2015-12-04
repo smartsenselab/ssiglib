@@ -460,6 +460,6 @@ bool PLSImageClustering::findClosestClusters(const cv::Mat& similarityMatrix,
   return max >= threshold;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
