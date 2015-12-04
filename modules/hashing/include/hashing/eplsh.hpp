@@ -54,8 +54,11 @@ class EPLSH {
  public:
   typedef std::vector<std::pair<int, float>> CandListType;
 
-  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
-                       const int models, const int factors = 10, const int ndim = 5000);
+  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples,
+                       const cv::Mat_<int> labels,
+                       const int models,
+                       const int factors = 10,
+                       const int ndim = 5000);
 
   HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
                                      CandListType& candidates);
@@ -76,3 +79,5 @@ class EPLSH {
 }  // namespace ssig
 
 #endif  // !_SSF_HASHING_PLSH_HPP_
+
+

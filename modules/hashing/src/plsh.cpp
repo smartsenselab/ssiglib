@@ -51,7 +51,6 @@ namespace ssig {
 PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
            const int models, const int factors)
   : mHashModels(models), mFactors(factors) {
-
   std::mt19937 gen(static_cast<uint>(time(nullptr)));
 
   std::unordered_set<int> ulab;

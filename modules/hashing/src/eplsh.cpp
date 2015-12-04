@@ -49,7 +49,7 @@
 
 namespace ssig {
 class PLSB : public PLS {
-public:
+ public:
   cv::Mat_<float>& getBStar() {
     return mBstar;
   }
@@ -58,7 +58,6 @@ public:
 EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
              const int models, const int factors, const int ndim)
   : mHashModels(models), mFactors(factors) {
-
   std::mt19937 gen(static_cast<uint>(time(nullptr)));
 
   std::unordered_set<int> ulab;
@@ -101,7 +100,8 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     }
 
     std::sort(weights.begin(), weights.end(),
-              [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+              [](const std::pair<int, float>& a,
+                const std::pair<int, float>& b) {
                 return a.second > b.second;
               });
 
