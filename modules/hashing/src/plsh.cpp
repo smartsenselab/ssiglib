@@ -1,4 +1,4 @@
-/*L*****************************************************************************
+/*L****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,7 +37,7 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+****************************************************************************L*/
 
 #include "hashing/plsh.hpp"
 
@@ -48,64 +48,65 @@
 #include <unordered_set>
 
 namespace ssig {
+PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+           const int models, const int factors)
+  : mHashModels(models), mFactors(factors) {
 
-  PLSH::PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
-    const int models, const int factors)
-    : mHashModels(models), mFactors(factors) {
+  std::mt19937 gen(static_cast<uint>(time(nullptr)));
 
-    std::mt19937 gen(static_cast<uint>(time(nullptr)));
+  std::unordered_set<int> ulab;
+  for (const int label : labels)
+    ulab.insert(label);
+  for (const int label : ulab)
+    mSubjects.push_back(label);
 
-    std::unordered_set<int> ulab;
-    for (const int label : labels)
-      ulab.insert(label);
-    for (const int label : ulab)
-      mSubjects.push_back(label);
+  std::uniform_int_distribution<int> dist(0, 1);
 
-    std::uniform_int_distribution<int> dist(0, 1);
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
+    cv::Mat_<float> responses(samples.rows, 1);
+    responses = -1.0f;
 
-    for (size_t m = 0; m < mHashModels.size(); ++m) {
-      cv::Mat_<float> responses(samples.rows, 1);
-      responses = -1.0f;
-
-      for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
-        if (dist(gen) == 0) {
-          for (int row = 0; row < samples.rows; ++row)
-            if (labels.at<int>(row, 0) == mSubjects[l]) {
-              mHashModels[m].mSubjects.push_back(l);
-              responses(row) = 1.0f;
-            }
-        }
+    for (int l = 0; l < static_cast<int>(mSubjects.size()); ++l) {
+      if (dist(gen) == 0) {
+        for (int row = 0; row < samples.rows; ++row)
+          if (labels.at<int>(row, 0) == mSubjects[l]) {
+            mHashModels[m].mSubjects.push_back(l);
+            responses(row) = 1.0f;
+          }
       }
-      cv::Mat_<float> s = samples.clone();
-      mHashModels[m].mHashFunc.learn(s, responses, factors);
     }
+    cv::Mat_<float> s = samples.clone();
+    mHashModels[m].mHashFunc.learn(s, responses, factors);
+  }
+}
+
+PLSH::CandListType& PLSH::query(const cv::Mat_<float> sample,
+                                PLSH::CandListType& candidates) {
+  if (candidates.size() != mSubjects.size())
+    candidates.resize(mSubjects.size());
+
+  for (size_t i = 0; i < candidates.size(); ++i) {
+    candidates[i].first = mSubjects[i];
+    candidates[i].second = 0;
   }
 
-  PLSH::CandListType& PLSH::query(const cv::Mat_<float> sample,
-    PLSH::CandListType &candidates) {
-    if (candidates.size() != mSubjects.size())
-      candidates.resize(mSubjects.size());
+  cv::Mat_<float> r;
+  for (size_t m = 0; m < mHashModels.size(); ++m) {
+    mHashModels[m].mHashFunc.predict(sample, r);
 
-    for (size_t i = 0; i < candidates.size(); ++i) {
-      candidates[i].first = mSubjects[i];
-      candidates[i].second = 0;
-    }
-
-    cv::Mat_<float> r;
-    for (size_t m = 0; m < mHashModels.size(); ++m) {
-      mHashModels[m].mHashFunc.predict(sample, r);
-
-      float x = r.at<float>(0, 0);
-      for (const int s : mHashModels[m].mSubjects)
-        candidates[s].second += x;
-    }
-
-    sort(candidates.begin(), candidates.end(),
-      [](const std::pair<int, float> &a, const std::pair<int, float> & b) {
-      return a.second > b.second;
-    });
-
-    return candidates;
+    float x = r.at<float>(0, 0);
+    for (const int s : mHashModels[m].mSubjects)
+      candidates[s].second += x;
   }
+
+  sort(candidates.begin(), candidates.end(),
+       [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+         return a.second > b.second;
+       });
+
+  return candidates;
+}
 
 };  // namespace ssig
+
+

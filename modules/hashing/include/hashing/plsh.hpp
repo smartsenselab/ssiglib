@@ -1,4 +1,4 @@
-/*L*****************************************************************************
+/*L****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,7 +37,7 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+****************************************************************************L*/
 
 #ifndef _SSF_HASHING_PLSH_HPP_
 #define _SSF_HASHING_PLSH_HPP_
@@ -50,28 +50,28 @@
 #include "hashing_defs.hpp"
 
 namespace ssig {
+class PLSH {
+ public:
+  typedef std::vector<std::pair<int, float>> CandListType;
 
-  class PLSH {
-    public:
-    typedef std::vector<std::pair<int, float>> CandListType;
+  HASHING_EXPORT PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+                      const int models, const int factors = 10);
 
-    HASHING_EXPORT PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
-      const int models, const int factors = 10);
+  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
+                                     CandListType& candidates);
 
-    HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
-      CandListType &candidates);
-
-    private:
-    struct HashModel {
-      PLS mHashFunc;
-      std::vector<int> mSubjects;
-    };
-    std::vector<HashModel> mHashModels;
+ private:
+  struct HashModel {
+    PLS mHashFunc;
     std::vector<int> mSubjects;
-
-    int mFactors;
   };
 
-}  // namespace ssig
+  std::vector<HashModel> mHashModels;
+  std::vector<int> mSubjects;
+
+  int mFactors;
+};
+
+} // namespace ssig
 
 #endif  // !_SSF_HASHING_PLSH_HPP_
