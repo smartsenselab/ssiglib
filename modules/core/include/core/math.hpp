@@ -1,4 +1,4 @@
-/*L****************************************************************************
+/*L*****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,47 +37,72 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-****************************************************************************L*/
+*****************************************************************************L*/
+#ifndef _SSIG_CORE_MATH_HPP_
+#define _SSIG_CORE_MATH_HPP_
 
-#ifndef _SSF_HASHING_PLSH_HPP_
-#define _SSF_HASHING_PLSH_HPP_
-
-#include <vector>
-#include <random>
-#include <utility>
-
-#include "ml/pls.hpp"
-#include "hashing_defs.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/ml.hpp>
 
 namespace ssig {
-class EPLSH {
+
+class Math {
  public:
-  typedef std::vector<std::pair<int, float>> CandListType;
-
-  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples,
-                       const cv::Mat_<int> labels,
-                       const int models,
-                       const int factors = 10,
-                       const int ndim = 5000);
-
-  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
-                                     CandListType& candidates);
+  Math(void);
+  virtual ~Math(void);
+  Math(const Math& rhs);
+  Math& operator=(const Math& rhs);
 
  private:
-  struct HashModel {
-    PLS mHashFunc;
-    std::vector<int> mSubjects;
-    std::vector<size_t> mIndexes;
-  };
-
-  std::vector<HashModel> mHashModels;
-  std::vector<int> mSubjects;
-
-  int mFactors;
+  // private members
 };
 
+template<class T>
+void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
+                    cv::Mat_<T>& std) {
+  cv::Mat aux, auxMean, auxStd;
+  int x;
+  int len;
+  if (layout == cv::ml::ROW_SAMPLE) {
+    len = m.rows;
+    mean = cv::Mat_<T>::zeros(len, 1);
+    std = cv::Mat_<T>::zeros(len, 1);
+  } else {
+    len = m.cols;
+    mean = cv::Mat_<T>::zeros(1, len);
+    std = cv::Mat_<T>::zeros(1, len);
+  }
+
+  for (x = 0; x < len; x++) {
+    if (layout == cv::ml::ROW_SAMPLE) {
+      aux = m.row(x);
+    } else {
+      aux = m.col(x);
+    }
+
+    cv::meanStdDev(aux, auxMean, auxStd);
+    if (layout == cv::ml::ROW_SAMPLE) {
+      mean[x][0] = static_cast<T>(auxMean.at<double>(0, 0));
+      std[x][0] = static_cast<T>(auxStd.at<double>(0, 0));
+    } else {
+      mean[0][x] = static_cast<T>(auxMean.at<double>(0, 0));
+      std[0][x] = static_cast<T>(auxStd.at<double>(0, 0));
+    }
+  }
+}
+
+template<typename Type>
+void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
+                   cv::Mat_<Type>& std) {
+  int y;
+
+  for (y = 0; y < M.rows; y++) {
+    M.row(y) -= mean;
+    M.row(y) /= std;
+  }
+}
 }  // namespace ssig
 
-#endif  // !_SSF_HASHING_PLSH_HPP_
+#endif  // !_SSF_CORE_MATH_HPP_
 
 

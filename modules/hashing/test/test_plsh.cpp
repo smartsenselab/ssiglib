@@ -61,10 +61,10 @@ TEST(PLSH, Retrieval) {
   plsh.query(q1, cand);
 
   // check ranks
-  EXPECT_EQ(cand.size(), size_t(3));
-  EXPECT_EQ(cand[0].first, 1);
-  EXPECT_EQ(cand[1].first, 3);
-  EXPECT_EQ(cand[2].first, 2);
+  EXPECT_EQ(cand.size(), static_cast<size_t>(3));
+  EXPECT_EQ(1, cand[0].first);
+  EXPECT_EQ(3, cand[1].first);
+  EXPECT_EQ(2, cand[2].first);
 
   // check response consistency
   EXPECT_GE(cand[0].second, 0);
@@ -73,10 +73,10 @@ TEST(PLSH, Retrieval) {
   plsh.query(q2, cand);
 
   // check ranks
-  EXPECT_EQ(cand.size(), size_t(3));
-  EXPECT_EQ(cand[0].first, 2);
-  EXPECT_EQ(cand[1].first, 3);
-  EXPECT_EQ(cand[2].first, 1);
+  EXPECT_EQ(cand.size(), static_cast<size_t>(3));
+  EXPECT_EQ(2, cand[0].first);
+  EXPECT_EQ(3, cand[1].first);
+  EXPECT_EQ(1, cand[2].first);
 
   // check response consistency
   EXPECT_GE(cand[0].second, 0);
@@ -85,6 +85,6 @@ TEST(PLSH, Retrieval) {
   plsh.query(q3, cand);
 
   // check ranks
-  EXPECT_EQ(cand.size(), size_t(3));
-  EXPECT_EQ(cand[0].first, 3);
+  EXPECT_EQ(cand.size(), static_cast<size_t>(3));
+  EXPECT_EQ(3, cand[0].first);
 }

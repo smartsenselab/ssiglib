@@ -1,4 +1,4 @@
-/*L****************************************************************************
+/*L*****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,47 +37,30 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-****************************************************************************L*/
+*****************************************************************************L*/
 
-#ifndef _SSF_HASHING_PLSH_HPP_
-#define _SSF_HASHING_PLSH_HPP_
-
-#include <vector>
-#include <random>
-#include <utility>
-
-#include "ml/pls.hpp"
-#include "hashing_defs.hpp"
+#include "core/math.hpp"
+#include <opencv2/core.hpp>
 
 namespace ssig {
-class EPLSH {
- public:
-  typedef std::vector<std::pair<int, float>> CandListType;
 
-  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples,
-                       const cv::Mat_<int> labels,
-                       const int models,
-                       const int factors = 10,
-                       const int ndim = 5000);
+Math::Math() {
+  // Constructor
+}
 
-  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
-                                     CandListType& candidates);
+Math::~Math() {
+  // Destructor
+}
 
- private:
-  struct HashModel {
-    PLS mHashFunc;
-    std::vector<int> mSubjects;
-    std::vector<size_t> mIndexes;
-  };
+Math::Math(const Math& rhs) {
+  // Constructor Copy
+}
 
-  std::vector<HashModel> mHashModels;
-  std::vector<int> mSubjects;
-
-  int mFactors;
-};
-
+Math& Math::operator=(const Math& rhs) {
+  if (this != &rhs) {
+    // code here
+  }
+  return *this;
+}
 }  // namespace ssig
-
-#endif  // !_SSF_HASHING_PLSH_HPP_
-
 

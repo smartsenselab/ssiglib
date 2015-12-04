@@ -31,3 +31,8 @@
 .vagrant/
 
 build*/*
+
+lint.sh
+cpplint.py
+CMakeFiles/2.8.12.2/
+vagrant_test.sh

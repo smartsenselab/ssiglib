@@ -51,7 +51,7 @@
 #include "core/similarity_builder.hpp"
 
 TEST(PLSIC, CorrelationClusteringTest) {
-  srand(0);
+  srand(1234);
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
 
@@ -85,7 +85,7 @@ TEST(PLSIC, CorrelationClusteringTest) {
   clustering.setMergeThreshold(0.7f);
   clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
   clustering.setDiscoveryConfiguration(discoverySubsets);
-  clustering.setMValue(5);
+  clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
   clustering.setClassifier(oaaclassifier);
 
@@ -164,7 +164,7 @@ TEST(PLSIC, CosineClusteringTest) {
   clustering.addNaturalWorld(neg, natVector);
 
   clustering.setDiscoveryConfiguration(discoverySubsets);
-  clustering.setMValue(5);
+  clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
   clustering.setClassifier(oaaclassifier);
 

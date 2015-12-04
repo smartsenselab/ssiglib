@@ -60,13 +60,13 @@ void ClassifierClustering::setup(cv::Mat_<float>& input) {
   const int N = mSamples.rows;
   const int k = static_cast<int>(N / 8);
 
-  mInitialK = std::min(static_cast<int>(k), mMaximumK);
+  mInitialK = cv::min(static_cast<int>(k), mMaximumK);
 
   initializeClusterings(mDiscovery[0]);
   initializeClassifiers();
   trainClassifiers(mSamples, mClusters, mNatural[0]);
 
-  assignment(mSamples, mMValue, static_cast<int>(mClusters.size()),
+  assignment(mSamples, mClusterSize, static_cast<int>(mClusters.size()),
              mDiscovery[1], mClustersResponses, mClustersIds, mNewClusters);
   trainClassifiers(mSamples, mClusters, mNatural[1]);
 
@@ -85,7 +85,7 @@ bool ClassifierClustering::iterate() {
   mClusters = mNewClusters;
   mNewClusters.clear();
 
-  assignment(mSamples, mMValue, static_cast<int>(mClusters.size()),
+  assignment(mSamples, mClusterSize, static_cast<int>(mClusters.size()),
              mDiscovery[order], mClustersResponses, mClustersIds, mNewClusters);
   trainClassifiers(mSamples, mNewClusters, mNatural[order]);
 
@@ -101,28 +101,38 @@ bool ClassifierClustering::iterate() {
 }
 
 void ClassifierClustering::addNaturalWorld(
-    cv::Mat_<float>& natSamples, std::vector<std::vector<int>>& distribution) {
+  cv::Mat_<float>& natSamples, std::vector<std::vector<int>>& distribution) {
   mNatural = distribution;
   mNaturalSamples = natSamples;
 }
 
-int ClassifierClustering::getInitialK() const { return mInitialK; }
-
-void ClassifierClustering::setInitialK(int mInitialK1) {
-  mInitialK = mInitialK1;
+int ClassifierClustering::getInitialK() const {
+  return mInitialK;
 }
 
-int ClassifierClustering::getMValue() const { return mMValue; }
+int ClassifierClustering::getClusterSize() const {
+  return mClusterSize;
+}
 
-void ClassifierClustering::setMValue(int m) { mMValue = m; }
+void ClassifierClustering::setClusterSize(int m) {
+  mClusterSize = m;
+}
 
 std::vector<std::vector<int>> ClassifierClustering::getDiscovery() const {
   return mDiscovery;
 }
 
 void ClassifierClustering::setDiscoveryConfiguration(
-    const std::vector<std::vector<int>>& discovery) {
+  const std::vector<std::vector<int>>& discovery) {
   mDiscovery = discovery;
+}
+
+int ClassifierClustering::getMaximumK() const {
+  return mMaximumK;
+}
+
+void ClassifierClustering::setMaximumK(const int maximumK) {
+  mMaximumK = maximumK;
 }
 
 void ClassifierClustering::precondition() {
@@ -148,8 +158,10 @@ void ClassifierClustering::learn(cv::Mat_<float>& input) {
 }
 
 std::vector<std::vector<float>> ClassifierClustering::getClustersResponses()
-    const {
+const {
   return mClustersResponses;
 }
 
 }  // namespace ssig
+
+

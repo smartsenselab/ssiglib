@@ -46,6 +46,7 @@
 
 #include <cassert>
 #include <string>
+#include <unordered_set>
 
 namespace ssig {
 
@@ -86,7 +87,16 @@ void SVMClassifier::setup(cv::Mat_<float>& input) {
   mSvm->setP(mP);
 }
 
-void SVMClassifier::addLabels(cv::Mat_<int>& labels) { mLabels = labels; }
+void SVMClassifier::addLabels(cv::Mat_<int>& labels) {
+  std::unordered_set<int> labelsSet;
+  for (int r = 0; r < labels.rows; ++r)
+    labelsSet.insert(labels[r][0]);
+  if (labelsSet.size() > 2) {
+    std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
+      "This is a binary classifier!\n");
+  }
+  mLabels = labels;
+}
 
 void SVMClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   setup(input);
@@ -114,17 +124,25 @@ void SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   resp = ans;
 }
 
-cv::Mat_<int> SVMClassifier::getLabels() const { return mLabels; }
+cv::Mat_<int> SVMClassifier::getLabels() const {
+  return mLabels;
+}
 
 void SVMClassifier::setClassWeights(const int classLabel, const float weight) {
   mWeights[classLabel] = weight;
 }
 
-bool SVMClassifier::empty() const { return mSvm.empty(); }
+bool SVMClassifier::empty() const {
+  return mSvm.empty();
+}
 
-bool SVMClassifier::isTrained() const { return mSvm->isTrained(); }
+bool SVMClassifier::isTrained() const {
+  return mSvm->isTrained();
+}
 
-bool SVMClassifier::isClassifier() const { return mSvm->isClassifier(); }
+bool SVMClassifier::isClassifier() const {
+  return mSvm->isClassifier();
+}
 
 void SVMClassifier::load(const std::string& filename,
                          const std::string& nodename) {
@@ -147,7 +165,9 @@ void SVMClassifier::read(const cv::FileNode& fn) {
   mSvm->read(fn);
 }
 
-void SVMClassifier::write(cv::FileStorage& fs) const { mSvm->write(fs); }
+void SVMClassifier::write(cv::FileStorage& fs) const {
+  mSvm->write(fs);
+}
 
 Classifier* SVMClassifier::clone() const {
   auto copy = new SVMClassifier();
@@ -166,36 +186,70 @@ Classifier* SVMClassifier::clone() const {
   return copy;
 }
 
-int SVMClassifier::getKernelType() const { return mKernelType; }
+int SVMClassifier::getKernelType() const {
+  return mKernelType;
+}
 
-void SVMClassifier::setKernelType(int kernelType) { mKernelType = kernelType; }
+void SVMClassifier::setKernelType(int kernelType) {
+  mKernelType = kernelType;
+}
 
-int SVMClassifier::getModelType() const { return mModelType; }
+int SVMClassifier::getModelType() const {
+  return mModelType;
+}
 
-void SVMClassifier::setModelType(int modelType) { mModelType = modelType; }
+void SVMClassifier::setModelType(int modelType) {
+  mModelType = modelType;
+}
 
-float SVMClassifier::getC() const { return mC; }
+float SVMClassifier::getC() const {
+  return mC;
+}
 
-void SVMClassifier::setC(float c) { mC = c; }
+void SVMClassifier::setC(float c) {
+  mC = c;
+}
 
-float SVMClassifier::getGamma() const { return mGamma; }
+float SVMClassifier::getGamma() const {
+  return mGamma;
+}
 
-void SVMClassifier::setGamma(float gamma) { mGamma = gamma; }
+void SVMClassifier::setGamma(float gamma) {
+  mGamma = gamma;
+}
 
-float SVMClassifier::getP() const { return mP; }
+float SVMClassifier::getP() const {
+  return mP;
+}
 
-void SVMClassifier::setP(float p) { mP = p; }
+void SVMClassifier::setP(float p) {
+  mP = p;
+}
 
-float SVMClassifier::getNu() const { return mNu; }
+float SVMClassifier::getNu() const {
+  return mNu;
+}
 
-void SVMClassifier::setNu(float nu) { mNu = nu; }
+void SVMClassifier::setNu(float nu) {
+  mNu = nu;
+}
 
-float SVMClassifier::getCoef() const { return mCoef; }
+float SVMClassifier::getCoef() const {
+  return mCoef;
+}
 
-void SVMClassifier::setCoef(float coef) { mCoef = coef; }
+void SVMClassifier::setCoef(float coef) {
+  mCoef = coef;
+}
 
-float SVMClassifier::getDegree() const { return mDegree; }
+float SVMClassifier::getDegree() const {
+  return mDegree;
+}
 
-void SVMClassifier::setDegree(float degree) { mDegree = degree; }
+void SVMClassifier::setDegree(float degree) {
+  mDegree = degree;
+}
 
 }  // namespace ssig
+
+

@@ -41,11 +41,16 @@
 
 #include "ml/pls.hpp"
 
+#include <core/math.hpp>
+#include <opencv2/ml.hpp>
+
 #include <random>
 #include <map>
 #include <utility>
-#include <string>
 #include <vector>
+#include <string>
+
+
 
 namespace ssig {
 

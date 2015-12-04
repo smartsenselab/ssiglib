@@ -44,13 +44,13 @@
 #define _SSIG_ML_PLS_HPP_
 
 #include <opencv2/core.hpp>
-#include <opencv2/ml.hpp>
+#include <ml/ml_defs.hpp>
 
-#include <string>
 #include <stdexcept>
 #include <vector>
+#include <string>
 
-#include "ml_defs.hpp"
+
 
 namespace ssig {
 
@@ -114,51 +114,6 @@ class PLS {
   cv::Mat_<float> mYscaled;
   int mNFactors;
 };
-
-template <class T>
-void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
-                    cv::Mat_<T>& std) {
-  cv::Mat aux, auxMean, auxStd;
-  int x;
-  int len;
-  if (layout == cv::ml::ROW_SAMPLE) {
-    len = m.rows;
-    mean = cv::Mat_<T>::zeros(len, 1);
-    std = cv::Mat_<T>::zeros(len, 1);
-  } else {
-    len = m.cols;
-    mean = cv::Mat_<T>::zeros(1, len);
-    std = cv::Mat_<T>::zeros(1, len);
-  }
-
-  for (x = 0; x < len; x++) {
-    if (layout == cv::ml::ROW_SAMPLE) {
-      aux = m.row(x);
-    } else {
-      aux = m.col(x);
-    }
-
-    cv::meanStdDev(aux, auxMean, auxStd);
-    if (layout == cv::ml::ROW_SAMPLE) {
-      mean[x][0] = static_cast<T>(auxMean.at<double>(0, 0));
-      std[x][0] = static_cast<T>(auxStd.at<double>(0, 0));
-    } else {
-      mean[0][x] = static_cast<T>(auxMean.at<double>(0, 0));
-      std[0][x] = static_cast<T>(auxStd.at<double>(0, 0));
-    }
-  }
-}
-
-template <typename Type>
-void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
-                   cv::Mat_<Type>& std) {
-  int y;
-
-  for (y = 0; y < M.rows; y++) {
-    M.row(y) -= mean;
-    M.row(y) /= std;
-  }
-}
 
 }  // namespace ssig
 

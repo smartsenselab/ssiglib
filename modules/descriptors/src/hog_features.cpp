@@ -275,6 +275,7 @@ void HOG::setClipping(float clipping1) {
 }
 
 void HOG::beforeProcess() {
+  if (mImage.empty())return;
   mIntegralImages = computeIntegralGradientImages(mImage);
 }
 

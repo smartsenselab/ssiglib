@@ -57,6 +57,7 @@ enum ClusterRepresentationType { Centroids, ClustersResponses };
 
 class PLSImageClustering : public ClassifierClustering {
  public:
+  ML_EXPORT PLSImageClustering() = default;
   ML_EXPORT PLSImageClustering(
     ssig::OAAClassifier& classifier,
     const std::vector<std::vector<int>>& discoverySubset,

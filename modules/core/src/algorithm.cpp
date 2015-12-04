@@ -52,12 +52,19 @@ Algorithm::~Algorithm() {}
 
 Algorithm::Algorithm(const Algorithm& rhs) {}
 
-Algorithm& Algorithm::operator=(const Algorithm& rhs) { return *this; }
+Algorithm& Algorithm::operator=(const Algorithm& rhs) {
+  return *this;
+}
 
-void Algorithm::load(const std::string& filename, const std::string& nodename) {
+void Algorithm::load(const std::string& filename,
+                     const std::string& nodename) {
   cv::FileStorage fileStorage;
   fileStorage.open(filename, cv::FileStorage::READ);
-  auto node = fileStorage[nodename];
+  cv::FileNode node;
+  if (!nodename.empty())
+    node = fileStorage[nodename];
+  else
+    node = fileStorage.root();
   this->read(node);
   fileStorage.release();
 }
@@ -66,12 +73,18 @@ void Algorithm::save(const std::string& filename,
                      const std::string& nodename) const {
   cv::FileStorage fileStorage;
   fileStorage.open(filename, cv::FileStorage::WRITE);
-  fileStorage << nodename << "{";
+  if (!nodename.empty()) {
+    fileStorage << nodename << "{";
 
-  write(fileStorage);
+    write(fileStorage);
 
-  fileStorage << "}";
+    fileStorage << "}";
+  } else {
+    write(fileStorage);
+  }
   fileStorage.release();
 }
 
 }  // namespace ssig
+
+

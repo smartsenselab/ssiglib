@@ -11,6 +11,10 @@ set(PROJECT_ACRONYM_STR "SSIGLib")
 set(PROJECT_NAME_STR "Smart Surveillance Interest Group Library")
 project(${PROJECT_ACRONYM_STR} CXX)
 
+set(CMAKE_DEBUG_POSTFIX "_ssiglib_d")
+#set(IMPORT_PREFIX , "ssiglib_")
+set(CMAKE_RELEASE_POSTFIX "_ssiglib")
+
 ###############################################################################
 # USER OPTIONS
 ###############################################################################

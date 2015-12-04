@@ -63,11 +63,11 @@ namespace ssig {
 
 class Util {
  public:
-  static std::string ltrim(std::string str);
+  CORE_EXPORT static std::string ltrim(std::string str);
 
-  static std::string rtrim(std::string str);
+  CORE_EXPORT static std::string rtrim(std::string str);
 
-  static std::string trim(std::string str);
+  CORE_EXPORT static std::string trim(std::string str);
 
   CORE_EXPORT static void reorder(const cv::Mat& collection,
                                   cv::Mat_<int>& ordering, cv::Mat& out);
