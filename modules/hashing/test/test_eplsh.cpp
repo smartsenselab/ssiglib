@@ -55,7 +55,7 @@ TEST(EPLSH, Retrieval) {
   cv::Mat_<float> q2 = (cv::Mat_<float>(1, 2) << 0, 3);
   cv::Mat_<float> q3 = (cv::Mat_<float>(1, 2) << 0, 0);
 
-  ssig::EPLSH plsh(gallery, labels, 10, 2, 1);
+  ssig::EPLSH plsh(gallery, labels, 1000, 2, 1);
   ssig::EPLSH::CandListType cand;
 
   plsh.query(q1, cand);
@@ -65,6 +65,7 @@ TEST(EPLSH, Retrieval) {
   EXPECT_EQ(cand[0].first, 1);
   EXPECT_EQ(cand[1].first, 3);
   EXPECT_EQ(cand[2].first, 2);
+
   // check response consistency
   EXPECT_GE(cand[0].second, 0);
   EXPECT_LE(cand[2].second, 0);
@@ -100,7 +101,7 @@ TEST(EPLSH, FactorsDims) {
   cv::Mat_<float> q2 = (cv::Mat_<float>(1, 2) << 0, 3);
   cv::Mat_<float> q3 = (cv::Mat_<float>(1, 2) << 0, 0);
 
-  ssig::EPLSH plsh(gallery, labels, 10, 2, 2);
+  ssig::EPLSH plsh(gallery, labels, 1000, 1, 2);
   ssig::EPLSH::CandListType cand;
 
   plsh.query(q1, cand);
@@ -110,6 +111,7 @@ TEST(EPLSH, FactorsDims) {
   EXPECT_EQ(cand[0].first, 1);
   EXPECT_EQ(cand[1].first, 3);
   EXPECT_EQ(cand[2].first, 2);
+
   // check response consistency
   EXPECT_GE(cand[0].second, 0);
   EXPECT_LE(cand[2].second, 0);
