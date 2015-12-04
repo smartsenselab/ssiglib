@@ -55,7 +55,7 @@ TEST(PLSH, Retrieval) {
   cv::Mat_<float> q2 = (cv::Mat_<float>(1, 2) << 0, 3);
   cv::Mat_<float> q3 = (cv::Mat_<float>(1, 2) << 0, 0);
 
-  ssig::PLSH plsh(gallery, labels, 10, 1);
+  ssig::PLSH plsh(gallery, labels, 1000, 1);
   ssig::PLSH::CandListType cand;
 
   plsh.query(q1, cand);

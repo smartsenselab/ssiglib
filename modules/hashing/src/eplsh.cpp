@@ -41,6 +41,7 @@
 
 #include "hashing/eplsh.hpp"
 
+#include <time.h>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -57,16 +58,15 @@ class PLSB : public PLS {
 
 EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
              const int models, const int factors, const int ndim)
-  : mHashModels(models), mFactors(factors) {
-  std::default_random_engine gen;
+    : mHashModels(models), mFactors(factors) {
+
+  std::mt19937 gen((uint) time(NULL));
 
   std::unordered_set<int> ulab;
-  for (const auto& label : labels) {
-    if (ulab.find(label) == ulab.end()) {
-      ulab.insert(label);
-      mSubjects.push_back(label);
-    }
-  }
+  for (const int label : labels)
+    ulab.insert(label);
+  for (const int label : ulab)
+    mSubjects.push_back(label);
 
   std::uniform_int_distribution<int> dist(0, 1);
 
@@ -74,7 +74,7 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     cv::Mat_<float> responses(samples.rows, 1);
     responses = -1.0f;
 
-    for (int l = 0; l < static_cast<int>(mSubjects.size()); ++l) {
+    for (int l = 0; l < static_cast<int> (mSubjects.size()); ++l) {
       if (dist(gen) == 0) {
         for (int row = 0; row < samples.rows; ++row)
           if (labels.at<int>(row, 0) == mSubjects[l]) {
@@ -98,21 +98,20 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
     std::vector<std::pair<int, float>> weights(beta.rows);
     for (int row = 0; row < beta.rows; ++row) {
       weights[row].first = row;
-      weights[row].second = beta[0][row];
+      weights[row].second = beta.at<float>(row, 0);
     }
 
     std::sort(weights.begin(), weights.end(),
-              [](
-              const std::pair<int, float>& a,
-              const std::pair<int, float>& b) {
-                return a.second > b.second;});
+         [](const std::pair<int, float> &a, const std::pair<int, float> &b) {
+           return a.second > b.second;
+         });
 
     mHashModels[m].mIndexes.clear();
     for (int col = 0; col < ndim; ++col)
       mHashModels[m].mIndexes.push_back(weights[col].first);
     weights.clear();
 
-    for (const auto& col : mHashModels[m].mIndexes) {
+    for (const size_t col : mHashModels[m].mIndexes) {
       if (s.empty())
         s = samples.col(static_cast<int>(col)).clone();
       else
@@ -125,7 +124,7 @@ EPLSH::EPLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
 }
 
 EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
-                                  EPLSH::CandListType& candidates) {
+                                  EPLSH::CandListType &candidates) {
   if (candidates.size() != mSubjects.size())
     candidates.resize(mSubjects.size());
 
@@ -136,7 +135,7 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
 
   cv::Mat_<float> r, s;
   for (size_t m = 0; m < mHashModels.size(); ++m) {
-    for (const auto& col : mHashModels[m].mIndexes)
+    for (const size_t col : mHashModels[m].mIndexes)
       if (s.empty())
         s = sample.col(static_cast<int>(col)).clone();
       else
@@ -151,12 +150,11 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
   }
 
   std::sort(candidates.begin(), candidates.end(),
-            [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
-              return a.second > b.second;
-            });
+       [](const std::pair<int, float> &a, const std::pair<int, float> & b) {
+         return a.second > b.second;
+       });
 
   return candidates;
 }
 
 };  // namespace ssig
-
