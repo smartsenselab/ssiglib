@@ -3,7 +3,6 @@
 
 namespace ssig {{
 class {className} {{
-
  public:
   {className}(void);
   virtual ~{className}(void);

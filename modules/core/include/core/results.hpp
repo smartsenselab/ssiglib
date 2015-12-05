@@ -44,7 +44,6 @@
 
 namespace ssig {
 class Results {
-
  public:
   Results(void);
   virtual ~Results(void);
@@ -54,5 +53,5 @@ class Results {
  private:
   // private members
 };
-}  // ssig namespace
+}  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_

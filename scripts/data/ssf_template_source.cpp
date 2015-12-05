@@ -20,4 +20,3 @@ namespace ssig {{
   return *this;
 }}
 }}  // namespace ssig
-
