@@ -41,24 +41,24 @@
 
 #include "core/results.hpp"
 
-namespace ssig{
-Results::Results(){
-  //Constructor
+namespace ssig {
+Results::Results() {
+  // Constructor
 }
 
-Results::~Results(){
-  //Destructor
+Results::~Results() {
+  // Destructor
 }
 
-Results::Results(const Results& rhs){
-  //Constructor Copy
+Results::Results(const Results& rhs) {
+  // Constructor Copy
 }
 
-Results& Results::operator=(const Results& rhs){
-  if (this != &rhs){
-    //code here
+Results& Results::operator=(const Results& rhs) {
+  if (this != &rhs) {
+    // code here
   }
   return *this;
 }
-}  // ssig namespace
+}  // namespace ssig
 

@@ -42,8 +42,8 @@
 #ifndef _SSIG_CORE_RESULTS_HPP_
 #define _SSIG_CORE_RESULTS_HPP_
 
-namespace ssig{
-class Results{
+namespace ssig {
+class Results {
 
  public:
   Results(void);

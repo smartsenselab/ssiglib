@@ -1,8 +1,8 @@
 #ifndef _SSIG_{componentUpper}_{fileNameUpper}_HPP_
 #define _SSIG_{componentUpper}_{fileNameUpper}_HPP_
 
-namespace ssig{{
-class {className}{{
+namespace ssig {{
+class {className} {{
 
  public:
   {className}(void);
@@ -13,5 +13,5 @@ class {className}{{
  private:
   // private members
 }};
-}}  // ssig namespace
+}}  // namespace ssig
 #endif  // !_SSF_{componentUpper}_{fileNameUpper}_HPP_
