@@ -42,10 +42,16 @@
 #ifndef _SSIG_CORE_RESULTS_HPP_
 #define _SSIG_CORE_RESULTS_HPP_
 
+#include <opencv2/core.hpp>
+
 namespace ssig {
 class Results {
+  int mClassesLen;
+  cv::Mat mConfusionMatrix;
+
  public:
-  Results(void);
+  Results(const cv::Mat_<int>& actualLabels,
+    const cv::Mat_<int>& expectedLabels);
   virtual ~Results(void);
   Results(const Results& rhs);
   Results& operator=(const Results& rhs);

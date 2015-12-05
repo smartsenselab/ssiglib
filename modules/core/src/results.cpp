@@ -42,7 +42,8 @@
 #include "core/results.hpp"
 
 namespace ssig {
-Results::Results() {
+  Results::Results(const cv::Mat_<int>& actualLabels,
+    const cv::Mat_<int>& expectedLabels) {
   // Constructor
 }
 
