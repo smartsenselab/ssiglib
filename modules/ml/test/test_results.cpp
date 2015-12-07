@@ -68,12 +68,12 @@ TEST(Results, binaryConfMat) {
 TEST(Results, simpleConfMat) {
   cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 2, 1);
   cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0, 1, 1, 2);
-  
+
   ssig::Results results(labels, gt);
 
   auto confMat = results.getConfusionMatrix();
 
-  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 3) << 
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 3) <<
     1, 0, 0,
     0, 1, 1,
     0, 1, 0);

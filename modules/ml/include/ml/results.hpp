@@ -43,7 +43,8 @@
 #define _SSIG_CORE_RESULTS_HPP_
 
 #include <opencv2/core.hpp>
-#include "ml_defs.hpp"
+#include <ml/ml_defs.hpp>
+
 #include <unordered_map>
 
 namespace ssig {
@@ -75,7 +76,7 @@ class Results {
     std::vector<Results>& out);
 
  private:
-    std::unordered_map<int, int> compute(
+  std::unordered_map<int, int> compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
     cv::Mat_<int>& confusionMatrix) const;

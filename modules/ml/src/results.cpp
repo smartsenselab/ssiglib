@@ -40,12 +40,16 @@
 *****************************************************************************L*/
 
 #include "ml/results.hpp"
+#include <limits.h>
 
 #include <ml/classification.hpp>
+
+#include <algorithm>
 #include <unordered_map>
 #include <utility>
 #include <ctime>
-#include <limits.h>
+#include <vector>
+
 
 namespace ssig {
 Results::Results(const cv::Mat_<int>& actualLabels,
@@ -96,11 +100,12 @@ cv::Mat Results::getConfusionMatrix() {
   return mConfusionMatrix;
 }
 
-std::pair<float, float> Results::crossValidation(const cv::Mat_<float>& features,
-                                                 const cv::Mat_<int>& labels,
-                                                 const int nfolds,
-                                                 ssig::Classifier& classifier,
-                                                 std::vector<Results>& out) {
+std::pair<float, float> Results::crossValidation(
+  const cv::Mat_<float>& features,
+  const cv::Mat_<int>& labels,
+  const int nfolds,
+  ssig::Classifier& classifier,
+  std::vector<Results>& out) {
   cv::Mat_<float> accuracies(nfolds, 1, 0.0f);
   cv::RNG rng(time(nullptr));
   const int len = features.rows;
@@ -113,7 +118,7 @@ std::pair<float, float> Results::crossValidation(const cv::Mat_<float>& features
   for (int fold = 0; fold < nfolds; ++fold) {
     const int offset = foldLen * fold;
     cv::Mat_<int> foldOrdering = ordering(cv::Range(offset, foldLen + offset),
-                                          cv::Range(0, ordering.cols));
+                                          cv::Range(0, ordering.cols)).clone();
     cv::sort(foldOrdering, foldOrdering, CV_SORT_EVERY_COLUMN);
     int testIndex = 0;
     cv::Mat_<int> testLabels, trainLabels;
@@ -141,8 +146,9 @@ std::pair<float, float> Results::crossValidation(const cv::Mat_<float>& features
       float maxResp = -FLT_MAX;
       int bestLabel = 0;
       for (auto& p : labelOrdering) {
-        if (p.second > maxResp) {
-          maxResp = resp.at<float>(p.second);
+        float curResp = resp.at<float>(p.second);
+        if (curResp > maxResp) {
+          maxResp = curResp;
           bestLabel = p.first;
         }
       }
@@ -156,11 +162,12 @@ std::pair<float, float> Results::crossValidation(const cv::Mat_<float>& features
     train.release();
     test.release();
   }
-  cv::Scalar_<float> mean, stdev;
+  cv::Scalar mean, stdev;
   cv::meanStdDev(accuracies, mean, stdev);
 
-  return std::make_pair(mean[0], stdev[0]);
+  return std::make_pair(static_cast<float>(mean[0]),
+                        static_cast<float>(stdev[0]));
 }
-} // namespace ssig
+}  // namespace ssig
 
 
