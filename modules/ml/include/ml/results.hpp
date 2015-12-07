@@ -45,6 +45,8 @@
 #include <opencv2/core.hpp>
 #include <ml/ml_defs.hpp>
 
+#include <utility>
+#include <vector>
 #include <unordered_map>
 
 namespace ssig {
