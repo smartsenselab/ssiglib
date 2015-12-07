@@ -20,4 +20,6 @@ Simple way:
 
 Detailed way:
 
+As a side note new test cases, documentation and bug reports would be really helpful.
+
 Please visit our [Wiki Page](https://github.com/ssig/ssiglib/wiki).

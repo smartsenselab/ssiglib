@@ -39,26 +39,49 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/results.hpp"
 
-namespace ssig {
-Results::Results() {
-  // Constructor
+#include <gtest/gtest.h>
+#include <opencv2/core.hpp>
+
+#include <ml/results.hpp>
+
+TEST(Results, binaryConfMat) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 0, 1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0, 1, 1, 1);
+
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(2, 2) <<
+    1, 1,
+    0, 2);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 4);
+
+  ASSERT_FLOAT_EQ(0.75f, results.getAccuracy());
 }
 
-Results::~Results() {
-  // Destructor
-}
+TEST(Results, simpleConfMat) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 2, 1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0, 1, 1, 2);
 
-Results::Results(const Results& rhs) {
-  // Constructor Copy
-}
+  ssig::Results results(labels, gt);
 
-Results& Results::operator=(const Results& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
-}  // namespace ssig
+  auto confMat = results.getConfusionMatrix();
 
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 3) <<
+    1, 0, 0,
+    0, 1, 1,
+    0, 1, 0);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 9);
+
+  ASSERT_FLOAT_EQ(0.5f, results.getAccuracy());
+}
