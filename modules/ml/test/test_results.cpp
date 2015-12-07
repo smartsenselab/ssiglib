@@ -39,25 +39,49 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_CORE_RESULTS_HPP_
-#define _SSIG_CORE_RESULTS_HPP_
 
+#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-namespace ssig {
-class Results {
-  int mClassesLen;
-  cv::Mat mConfusionMatrix;
+#include <ml/results.hpp>
 
- public:
-  Results(const cv::Mat_<int>& actualLabels,
-    const cv::Mat_<int>& expectedLabels);
-  virtual ~Results(void);
-  Results(const Results& rhs);
-  Results& operator=(const Results& rhs);
+TEST(Results, binaryConfMat) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 0, 1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0, 1, 1, 1);
 
- private:
-  // private members
-};
-}  // namespace ssig
-#endif  // !_SSF_CORE_RESULTS_HPP_
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(2, 2) <<
+    1, 1,
+    0, 2);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 4);
+
+  ASSERT_FLOAT_EQ(0.75f, results.getAccuracy());
+}
+
+TEST(Results, simpleConfMat) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 2, 1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0, 1, 1, 2);
+  
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 3) << 
+    1, 0, 0,
+    0, 1, 1,
+    0, 1, 0);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 9);
+
+  ASSERT_FLOAT_EQ(0.5f, results.getAccuracy());
+}

@@ -39,27 +39,49 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/results.hpp"
+#ifndef _SSIG_CORE_RESULTS_HPP_
+#define _SSIG_CORE_RESULTS_HPP_
+
+#include <opencv2/core.hpp>
+#include "ml_defs.hpp"
+#include <unordered_map>
 
 namespace ssig {
-  Results::Results(const cv::Mat_<int>& actualLabels,
-    const cv::Mat_<int>& expectedLabels) {
-  // Constructor
-}
+class Classifier;
 
-Results::~Results() {
-  // Destructor
-}
+class Results {
+  cv::Mat_<int> mConfusionMatrix;
+  cv::Mat_<int> mGroundTruth;
+  cv::Mat_<int> mLabels;
 
-Results::Results(const Results& rhs) {
-  // Constructor Copy
-}
+ public:
+  ML_EXPORT Results() = default;
+  ML_EXPORT Results(
+    const cv::Mat_<int>& actualLabels,
+    const cv::Mat_<int>& expectedLabels);
+  ML_EXPORT virtual ~Results(void) = default;
 
-Results& Results::operator=(const Results& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
+  int getClassesLen() const;
+
+  ML_EXPORT float getAccuracy();
+
+  ML_EXPORT cv::Mat getConfusionMatrix();
+
+  ML_EXPORT static std::pair<float, float> crossValidation(
+    const cv::Mat_<float>& features,
+    const cv::Mat_<int>& labels,
+    const int nfolds,
+    ssig::Classifier& classifier,
+    std::vector<Results>& out);
+
+ private:
+    std::unordered_map<int, int> compute(
+    const cv::Mat_<int>& groundTruth,
+    const cv::Mat_<int>& labels,
+    cv::Mat_<int>& confusionMatrix) const;
+  // private members
+};
 }  // namespace ssig
+#endif  // !_SSF_CORE_RESULTS_HPP_
+
 
