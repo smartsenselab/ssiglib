@@ -46,11 +46,13 @@
 #include <descriptors/bic_features.hpp>
 
 TEST(BIC, BIC_Simple) {
-
-  cv::Mat img = cv::imread("Lena.jpg");
+  //"bic.png"
+  //"lena.jpg"
+  cv::Mat img = cv::imread("bic.png");
   ASSERT_FALSE(img.empty());
   ssig::BIC bic(img);
   cv::Mat featVector;
+
   bic.extract(featVector);
 }
 

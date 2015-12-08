@@ -73,7 +73,7 @@ void BIC::beforeProcess() {
   // binaryze image
   cv::threshold(mEdgeMask, mEdgeMask, 128, 255, CV_THRESH_BINARY);
   // find edges
-  cv::Canny(mEdgeMask, mEdgeMask, lowThreshold, ratio * lowThreshold, 5);
+  cv::Canny(mEdgeMask, mEdgeMask, lowThreshold, ratio * lowThreshold, 3, true);
 
   // convert image to HSV color space
   cv::cvtColor(mImage, mImage, CV_BGR2HSV);
@@ -82,7 +82,24 @@ void BIC::beforeProcess() {
 void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::Mat roi = mImage(patch);
   cv::Mat roiMask = mEdgeMask(patch);
-  cv::calcHist(roi, {0}, roiMask, output, {1}, {0, 180});
+
+  int channels[] = {0};
+  int histSize[] = {16};
+  float hranges[] = {0, 180};
+  const float* ranges[] = {hranges};
+
+  cv::Mat border, interior;
+
+  cv::calcHist(&roi, 1, channels, roiMask, border, 1, histSize, ranges);
+  cv::calcHist(&roi, 1, channels, 255 - roiMask, interior, 1, histSize, ranges);
+
+  cv::transpose(border, border);
+  cv::normalize(border, border, 1, 0, cv::NORM_L1);
+
+  cv::transpose(interior, interior);
+  cv::normalize(interior, interior, 1, 0, cv::NORM_L1);
+
+  cv::hconcat(border, interior, output);
 }
 } // namespace ssig
 
