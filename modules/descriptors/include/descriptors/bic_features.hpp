@@ -61,7 +61,8 @@ protected:
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
 private:
-  cv::Mat mEdgeMask;
+  int nbins = 64;
+  cv::Mat mInteriorMask;
   // private members
 };
 } // namespace ssig

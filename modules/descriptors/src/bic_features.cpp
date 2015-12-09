@@ -66,32 +66,42 @@ void BIC::write(cv::FileStorage& fs) const {
 }
 
 void BIC::beforeProcess() {
-  int lowThreshold = 50;
-  int ratio = 4;
-  // convert to grayscale
-  cv::cvtColor(mImage, mEdgeMask, CV_BGR2GRAY);
-  // binaryze image
-  cv::threshold(mEdgeMask, mEdgeMask, 128, 255, CV_THRESH_BINARY);
-  // find edges
-  cv::Canny(mEdgeMask, mEdgeMask, lowThreshold, ratio * lowThreshold, 3, true);
+  std::vector<cv::Mat> channels;
+  cv::Mat imageInt;
+  mImage.convertTo(imageInt, CV_32SC3);
+  cv::split(imageInt, channels);
 
-  // convert image to HSV color space
-  cv::cvtColor(mImage, mImage, CV_BGR2HSV);
+  const int rows = mImage.rows, cols = mImage.cols;
+  cv::Mat_<int> temp(rows, cols, 0);
+
+  temp = channels[0] + 256 * channels[1] + (65537) * channels[2];
+  const int MAX_VALUE = 1 << 24;
+  const int bucketLen = MAX_VALUE >> 6;
+  temp = temp / bucketLen;
+  temp.convertTo(mImage, CV_8U);
+
+  cv::Mat_<int> filter = (cv::Mat_<int>(3, 3) << 0 , 1 , 0 , 1 , 1 , 1 , 0 , 1 , 0);
+  cv::filter2D(mImage, mInteriorMask, CV_32F, filter);
+  mInteriorMask = mInteriorMask / 5;
+  mInteriorMask.convertTo(mInteriorMask, CV_8UC1);
+  cv::compare(mImage, mInteriorMask, mInteriorMask, CV_CMP_EQ);
 }
 
 void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::Mat roi = mImage(patch);
-  cv::Mat roiMask = mEdgeMask(patch);
+  cv::Mat roiMask = mInteriorMask(patch);
 
   int channels[] = {0};
-  int histSize[] = {16};
-  float hranges[] = {0, 180};
-  const float* ranges[] = {hranges};
+  int histSize[] = {65};
+  float range[] = {0, 65};
+  const float* ranges[] = {range};
 
   cv::Mat border, interior;
 
-  cv::calcHist(&roi, 1, channels, roiMask, border, 1, histSize, ranges);
-  cv::calcHist(&roi, 1, channels, 255 - roiMask, interior, 1, histSize, ranges);
+  cv::calcHist(&roi, 1, channels,
+               roiMask, interior, 1, histSize, ranges);
+  cv::calcHist(&roi, 1, channels,
+               255 - roiMask, border, 1, histSize, ranges);
 
   cv::transpose(border, border);
   cv::normalize(border, border, 1, 0, cv::NORM_L1);
