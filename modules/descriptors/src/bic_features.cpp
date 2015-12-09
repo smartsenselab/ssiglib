@@ -77,7 +77,7 @@ void BIC::beforeProcess() {
 
   temp = channels[0] + 256 * channels[1] + (65537) * channels[2];
   const int MAX_VALUE = 1 << 24;
-  const int bucketLen = MAX_VALUE >> 6;
+  const int bucketLen = MAX_VALUE / 63;
   temp = temp / bucketLen;
   temp.convertTo(mImage, CV_8U);
 
@@ -95,8 +95,8 @@ void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::Mat roiMask = mInteriorMask(patch);
 
   int channels[] = {0};
-  int histSize[] = {65};
-  float range[] = {0, 65};
+  int histSize[] = {64};
+  float range[] = {0, 64};
   const float* ranges[] = {range};
 
   cv::Mat border, interior;
