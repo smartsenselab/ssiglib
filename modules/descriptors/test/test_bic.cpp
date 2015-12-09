@@ -46,8 +46,6 @@
 #include <descriptors/bic_features.hpp>
 
 TEST(BIC, BIC_Simple) {
-  //"bic.png"
-  //"lena.jpg"
   cv::Mat img = cv::imread("bic.png");
   ASSERT_FALSE(img.empty());
   ssig::BIC bic(img);

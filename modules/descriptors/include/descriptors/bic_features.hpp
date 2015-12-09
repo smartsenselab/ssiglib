@@ -47,20 +47,21 @@
 
 namespace ssig {
 class BIC : public Descriptor {
-public:
+ public:
   DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
   DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);
   DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
   DESCRIPTORS_EXPORT BIC(const BIC& rhs);
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
 
   DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+                                          cv::Mat& output) override;
 
-private:
+ private:
   int nbins = 64;
   cv::Mat mInteriorMask;
   // private members
