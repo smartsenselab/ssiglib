@@ -74,8 +74,8 @@ void BIC::beforeProcess() {
 
   const int rows = mImage.rows, cols = mImage.cols;
   cv::Mat_<int> temp(rows, cols, 0);
-  //BGR to RGB
-  temp = channels[2] + 256 * channels[1] + (65537) * channels[0];
+  // BGR to RGB
+  temp = channels[2] + 256 * channels[1] + 65536 * channels[0];
   const int MAX_VALUE = 1 << 24;
   const int bucketLen = MAX_VALUE / 63;
   temp = temp / bucketLen;
