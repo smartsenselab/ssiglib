@@ -42,6 +42,7 @@
 #include "descriptors/bic_features.hpp"
 
 #include <opencv2/imgproc.hpp>
+#include <vector>
 
 namespace ssig {
 
@@ -80,7 +81,9 @@ void BIC::beforeProcess() {
   temp = temp / bucketLen;
   temp.convertTo(mImage, CV_8U);
 
-  cv::Mat_<int> filter = (cv::Mat_<int>(3, 3) << 0 , 1 , 0 , 1 , 1 , 1 , 0 , 1 , 0);
+  cv::Mat_<int> filter = (cv::Mat_<int>(3, 3) << 0 , 1 , 0 ,
+    1 , 1 , 1 ,
+    0 , 1 , 0);
   cv::filter2D(mImage, mInteriorMask, CV_32F, filter);
   mInteriorMask = mInteriorMask / 5;
   mInteriorMask.convertTo(mInteriorMask, CV_8UC1);
@@ -111,6 +114,6 @@ void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
 
   cv::hconcat(border, interior, output);
 }
-} // namespace ssig
+}  // namespace ssig
 
 

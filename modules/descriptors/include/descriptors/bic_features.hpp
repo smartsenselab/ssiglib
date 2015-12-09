@@ -53,19 +53,19 @@ public:
   DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
   DESCRIPTORS_EXPORT BIC(const BIC& rhs);
 
-
 protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
 
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+
 private:
   int nbins = 64;
   cv::Mat mInteriorMask;
   // private members
 };
-} // namespace ssig
-#endif // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
+}  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
 
 
