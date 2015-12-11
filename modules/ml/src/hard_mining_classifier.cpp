@@ -59,9 +59,9 @@ HardMiningClassifier& HardMiningClassifier::operator=(
   return *this;
 }
 
-void HardMiningClassifier::predict(cv::Mat_<float>& inp,
-                                   cv::Mat_<float>& resp) const {
-  mClassifier->predict(inp, resp);
+int HardMiningClassifier::predict(cv::Mat_<float>& inp,
+                                  cv::Mat_<float>& resp) const {
+  return mClassifier->predict(inp, resp);
 }
 
 void HardMiningClassifier::learn(cv::Mat_<float>& input,

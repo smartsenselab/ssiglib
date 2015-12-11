@@ -87,10 +87,11 @@ void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   mTrained = true;
 }
 
-void OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   resp =
       cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
-
+  float maxResp = -FLT_MAX;
+  int bestLabel = 0;
   for (int r = 0; r < inp.rows; ++r) {
     int c = 0;
     for (auto& classifier : mClassifiers) {
@@ -99,10 +100,16 @@ void OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
       classifier->predict(rowFeat, auxResp);
       auto ordering = classifier->getLabelsOrdering();
       const int idx = ordering[1];
-      resp[r][c] = auxResp[0][idx];
+      float response = auxResp[0][idx];
+      resp[r][c] = response;
+      if(response > maxResp) {
+        bestLabel = c;
+        maxResp = response;
+      }
       ++c;
     }
   }
+  return inp.rows > 1 ? 0 : bestLabel;
 }
 
 cv::Mat_<int> OAAClassifier::getLabels() const { return mLabels; }
