@@ -45,11 +45,15 @@
 
 namespace ssig {
 
-ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input): Descriptor(input) {}
+ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input):
+  Descriptor(input) {}
 
-ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input, const Descriptor& descriptor): Descriptor(input, descriptor) {}
+ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input,
+                                     const Descriptor& descriptor):
+  Descriptor(input, descriptor) {}
 
-ColorHistogramHSV::ColorHistogramHSV(const Descriptor& descriptor): Descriptor(descriptor) {}
+ColorHistogramHSV::ColorHistogramHSV(const Descriptor& descriptor):
+  Descriptor(descriptor) {}
 
 ColorHistogramHSV::ColorHistogramHSV(const ColorHistogramHSV& rhs) :
   Descriptor(rhs) {
@@ -68,7 +72,8 @@ int ColorHistogramHSV::getNumberSaturationBins() const {
   return mNumberSaturationBins;
 }
 
-void ColorHistogramHSV::setNumberSaturationBins(const int numberSaturationBins) {
+void ColorHistogramHSV::setNumberSaturationBins(
+  const int numberSaturationBins) {
   mNumberSaturationBins = numberSaturationBins;
 }
 
@@ -122,6 +127,6 @@ void ColorHistogramHSV::extractFeatures(const cv::Rect& patch,
   cv::normalize(linearHist, linearHist, 1, 0, cv::NORM_L1);
   output = linearHist;
 }
-} // namespace ssig
+}  // namespace ssig
 
 

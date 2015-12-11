@@ -48,10 +48,11 @@
 
 namespace ssig {
 class ColorHistogramHSV : public Descriptor {
-public:
+ public:
   DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
 
-  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input, const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input,
+                                       const Descriptor& descriptor);
 
   DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor& descriptor);
 
@@ -65,7 +66,8 @@ public:
 
   DESCRIPTORS_EXPORT int getNumberSaturationBins() const;
 
-  DESCRIPTORS_EXPORT void setNumberSaturationBins(const int numberSaturationBins);
+  DESCRIPTORS_EXPORT void setNumberSaturationBins(
+    const int numberSaturationBins);
 
   DESCRIPTORS_EXPORT int getNumberValueBins() const;
 
@@ -77,13 +79,14 @@ protected:
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
                                           cv::Mat& output) override;
+
 private:
   // private members
   int mNumberHueBins = 16;
   int mNumberSaturationBins = 4;
   int mNumberValueBins = 4;
 };
-} // namespace ssig
-#endif // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
+}  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
 
