@@ -73,14 +73,14 @@ class ColorHistogramHSV : public Descriptor {
 
   DESCRIPTORS_EXPORT void setNumberValueBins(const int numberValueBins);
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
                                           cv::Mat& output) override;
 
-private:
+ private:
   // private members
   int mNumberHueBins = 16;
   int mNumberSaturationBins = 4;
