@@ -1,4 +1,4 @@
-/*L*****************************************************************************
+/*L****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,53 +37,39 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
-
-#ifndef _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
-#define _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
-
-#include <descriptors/descriptor.hpp>
-
-#include <descriptors/descriptors_defs.hpp>
-
-namespace ssig {
-class ColorHistogramHSV : public Descriptor {
-public:
-  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
-
-  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input, const Descriptor& descriptor);
-
-  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor& descriptor);
-
-  DESCRIPTORS_EXPORT virtual ~ColorHistogramHSV(void) = default;
-  DESCRIPTORS_EXPORT ColorHistogramHSV(const ColorHistogramHSV& rhs);
+****************************************************************************L*/
 
 
-  DESCRIPTORS_EXPORT int getNumberHueBins() const;
+#include <gtest/gtest.h>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <descriptors/color_histogram_hsv.hpp>
 
-  DESCRIPTORS_EXPORT void setNumberHueBins(const int numberHueBins);
+TEST(HAV_Histogram, HSV_Simple) {
+  cv::Mat img(1, 4, CV_8UC3);
 
-  DESCRIPTORS_EXPORT int getNumberSaturationBins() const;
+  img.at<cv::Vec3b>(0, 0) = cv::Vec3b(255, 21, 0);
+  img.at<cv::Vec3b>(0, 1) = cv::Vec3b(208, 255, 0);
+  img.at<cv::Vec3b>(0, 2) = cv::Vec3b(0, 223, 255);
+  img.at<cv::Vec3b>(0, 3) = cv::Vec3b(0, 0, 255);
 
-  DESCRIPTORS_EXPORT void setNumberSaturationBins(const int numberSaturationBins);
+  ssig::ColorHistogramHSV hsv(img);
+  cv::Mat featVector;
 
-  DESCRIPTORS_EXPORT int getNumberValueBins() const;
+  hsv.extract(featVector);
+  int total = static_cast<int>(cv::sum(featVector)[0]);
+  ASSERT_EQ(1, total);
 
-  DESCRIPTORS_EXPORT void setNumberValueBins(const int numberValueBins);
+  cv::Mat_<float> expected(1, 256, 0.f);
+  expected[0][240] = .25f;
+  expected[0][242] = .25f;
+  expected[0][247] = .25f;
+  expected[0][250] = .25f;
 
-protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
-private:
-  // private members
-  int mNumberHueBins = 16;
-  int mNumberSaturationBins = 4;
-  int mNumberValueBins = 4;
-};
-} // namespace ssig
-#endif // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
+  cv::Mat comparison;
+  cv::compare(featVector, expected, comparison, CV_CMP_EQ);
 
+  int diff = static_cast<int>(cv::countNonZero(comparison));
+  ASSERT_EQ(featVector.rows * featVector.cols, diff);
+}
 

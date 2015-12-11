@@ -56,17 +56,71 @@ ColorHistogramHSV::ColorHistogramHSV(const ColorHistogramHSV& rhs) :
   // Constructor Copy
 }
 
+int ColorHistogramHSV::getNumberHueBins() const {
+  return mNumberHueBins;
+}
+
+void ColorHistogramHSV::setNumberHueBins(const int numberHueBins) {
+  mNumberHueBins = numberHueBins;
+}
+
+int ColorHistogramHSV::getNumberSaturationBins() const {
+  return mNumberSaturationBins;
+}
+
+void ColorHistogramHSV::setNumberSaturationBins(const int numberSaturationBins) {
+  mNumberSaturationBins = numberSaturationBins;
+}
+
+int ColorHistogramHSV::getNumberValueBins() const {
+  return mNumberValueBins;
+}
+
+void ColorHistogramHSV::setNumberValueBins(const int numberValueBins) {
+  mNumberValueBins = numberValueBins;
+}
+
+void ColorHistogramHSV::read(const cv::FileNode& fn) {
+  std::runtime_error("Unimplemented");
+}
+
+void ColorHistogramHSV::write(cv::FileStorage& fs) const {
+  std::runtime_error("Unimplemented");
+}
+
 void ColorHistogramHSV::beforeProcess() {
   if (mImage.channels() != 3)
     std::invalid_argument("Mat needs to have 3 channels");
-  cv::cvtColor(mImage, mImage, CV_BGR2HSV);
+  cv::Mat temp;
+  cv::cvtColor(mImage, temp, CV_BGR2HSV);
+  mImage = temp;
 }
 
 void ColorHistogramHSV::extractFeatures(const cv::Rect& patch,
-  cv::Mat& output) {
+                                        cv::Mat& output) {
   auto roi = mImage(patch);
 
-  cv::calcHist(roi, )
+  const int bins = mNumberHueBins * mNumberValueBins * mNumberSaturationBins;
+  int channels[] = {0, 1, 2};
+  int histSize[] = {mNumberHueBins, mNumberSaturationBins, mNumberValueBins};
+  float hrange[] = {0, 180};
+  float srange[] = {0, 256};
+  float vrange[] = {0, 256};
+  const float* ranges[] = {hrange, srange, vrange};
+  cv::calcHist(&roi, 1, channels, cv::Mat(), output, 3, histSize,
+               ranges);
+
+  cv::Mat_<float> linearHist(1, bins, 0.0f);
+  int idx = 0;
+  for (int j = 0; j < mNumberSaturationBins; ++j) {
+    for (int k = 0; k < mNumberValueBins; ++k) {
+      for (int i = 0; i < mNumberHueBins; ++i) {
+        linearHist.at<float>(idx++) = output.at<float>(i, j, k);
+      }
+    }
+  }
+  cv::normalize(linearHist, linearHist, 1, 0, cv::NORM_L1);
+  output = linearHist;
 }
 } // namespace ssig
 
