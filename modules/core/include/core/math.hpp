@@ -46,14 +46,21 @@
 
 namespace ssig {
 
+class UtilityFunctor {
+public:
+  virtual ~UtilityFunctor() {}
+
+  virtual float operator()(const cv::Mat& vector)const = 0;
+};
+
 class Math {
- public:
+public:
   Math(void);
   virtual ~Math(void);
   Math(const Math& rhs);
   Math& operator=(const Math& rhs);
 
- private:
+private:
   // private members
 };
 
@@ -101,8 +108,8 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
     M.row(y) /= std;
   }
 }
-}  // namespace ssig
+} // namespace ssig
 
-#endif  // !_SSF_CORE_MATH_HPP_
+#endif // !_SSF_CORE_MATH_HPP_
 
 

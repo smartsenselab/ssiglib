@@ -48,14 +48,24 @@
 
 namespace ssig {
 
+class DistanceFunctor {
+public:
+  virtual ~DistanceFunctor() = default;
+
+  virtual float operator()(const cv::Mat& x,
+                           const cv::Mat& y) const = 0;
+};
+
+typedef DistanceFunctor SimilarityFunctor;
+
 class SimilarityBuilder {
- public:
+public:
   enum SimilarityType { Cosine, Correlation };
 
   CORE_EXPORT static cv::Mat_<float> buildSimilarity(
-      const cv::Mat_<float>& input,
-      const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-          similarityFunction);
+    const cv::Mat_<float>& input,
+    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
+    similarityFunction);
 
   CORE_EXPORT static float cosineFunction(const cv::Mat_<float>& x,
                                           const cv::Mat_<float>& y);
@@ -64,6 +74,8 @@ class SimilarityBuilder {
                                                const cv::Mat_<float>& y);
 };
 
-}  // namespace ssig
+} // namespace ssig
 
-#endif  // !_SSIG_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+#endif // !_SSIG_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+
+
