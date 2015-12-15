@@ -42,13 +42,15 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#include <core/math.hpp>
+
 #include <string>
 #include <random>
 #include <memory>
 #include <set>
 #include <utility>
 #include <vector>
-#include <core/math.hpp>
+
 
 
 namespace ssig {
@@ -455,6 +457,6 @@ bool PLSImageClustering::findClosestClusters(const cv::Mat& similarityMatrix,
   return max >= threshold;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
