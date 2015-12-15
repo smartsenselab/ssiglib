@@ -40,6 +40,8 @@
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #include <opencv2/core.hpp>
 
+#include <string>
+
 #include <core/math.hpp>
 #include <core/algorithm.hpp>
 #include "core_defs.hpp"
@@ -64,9 +66,9 @@ class Firefly : public Algorithm {
 
   CORE_EXPORT cv::Mat_<float> getState() const;
 
-  CORE_EXPORT virtual void save(const std::string& filename,
+  CORE_EXPORT void save(const std::string& filename,
                                 const std::string& nodename) const override;
-  CORE_EXPORT virtual void load(const std::string& filename,
+  CORE_EXPORT void load(const std::string& filename,
                                 const std::string& nodename) override;
 
   CORE_EXPORT float getAbsorption() const;

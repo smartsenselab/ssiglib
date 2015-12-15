@@ -48,14 +48,14 @@
 namespace ssig {
 
 class UtilityFunctor {
-public:
+ public:
   virtual ~UtilityFunctor() {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
 };
 
 class DistanceFunctor {
-public:
+ public:
   virtual ~DistanceFunctor() = default;
 
   CORE_EXPORT virtual float operator()(const cv::Mat& x,
@@ -75,7 +75,7 @@ struct CorrelationSimilarity : DistanceFunctor {
 typedef DistanceFunctor SimilarityFunctor;
 
 class Math {
-public:
+ public:
   Math(void);
   virtual ~Math(void);
   Math(const Math& rhs);

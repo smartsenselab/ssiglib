@@ -119,7 +119,8 @@ TEST(Correlation, CorrelatedOddSized) {
 }
 
 TEST(Correlation, InverseCorrelatedOddSized) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3 , 5 , 7 , -6 , -18 , -14);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3 , 5 , 7 ,
+    -6 , -18 , -14);
 
   ssig::CorrelationSimilarity correlation;
   cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
