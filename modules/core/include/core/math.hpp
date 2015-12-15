@@ -131,8 +131,8 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
     M.row(y) /= std;
   }
 }
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSF_CORE_MATH_HPP_
+#endif  // !_SSF_CORE_MATH_HPP_
 
 
