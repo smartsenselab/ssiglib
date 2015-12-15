@@ -55,8 +55,8 @@ namespace ssig {
 
 class Classifier : public Algorithm {
  public:
-  ML_EXPORT virtual void predict(cv::Mat_<float>& inp,
-                                 cv::Mat_<float>& resp) const = 0;
+  ML_EXPORT virtual int predict(cv::Mat_<float>& inp,
+                      cv::Mat_<float>& resp) const = 0;
 
   ML_EXPORT Classifier(void) = default;
   ML_EXPORT virtual ~Classifier(void) = default;
@@ -77,8 +77,8 @@ class Classifier : public Algorithm {
   ML_EXPORT virtual bool isTrained() const = 0;
   ML_EXPORT virtual bool isClassifier() const = 0;
 
-  ML_EXPORT virtual void read(const cv::FileNode& fn) = 0;
-  ML_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
+  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
+  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
   ML_EXPORT virtual Classifier* clone() const = 0;
   // TODO(Ricardo): ML_EXPORT virtual void copyConfigurationTo(Algorithm& obj)

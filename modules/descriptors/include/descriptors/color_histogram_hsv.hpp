@@ -39,31 +39,54 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
+#define _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-#ifndef _SSIG_ALGORITHMS_SIMILARITY_BUILDER_HPP_
-#define _SSIG_ALGORITHMS_SIMILARITY_BUILDER_HPP_
-#include <opencv2/core/mat.hpp>
-#include <functional>
-#include "core/core_defs.hpp"
+#include <descriptors/descriptor.hpp>
+
+#include <descriptors/descriptors_defs.hpp>
 
 namespace ssig {
-
-class SimilarityBuilder {
+class ColorHistogramHSV : public Descriptor {
  public:
-  enum SimilarityType { Cosine, Correlation };
+  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
 
-  CORE_EXPORT static cv::Mat_<float> buildSimilarity(
-      const cv::Mat_<float>& input,
-      const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-          similarityFunction);
+  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input,
+                                       const Descriptor& descriptor);
 
-  CORE_EXPORT static float cosineFunction(const cv::Mat_<float>& x,
-                                          const cv::Mat_<float>& y);
+  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor& descriptor);
 
-  CORE_EXPORT static float correlationFunction(const cv::Mat_<float>& x,
-                                               const cv::Mat_<float>& y);
+  DESCRIPTORS_EXPORT virtual ~ColorHistogramHSV(void) = default;
+  DESCRIPTORS_EXPORT ColorHistogramHSV(const ColorHistogramHSV& rhs);
+
+
+  DESCRIPTORS_EXPORT int getNumberHueBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberHueBins(const int numberHueBins);
+
+  DESCRIPTORS_EXPORT int getNumberSaturationBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberSaturationBins(
+    const int numberSaturationBins);
+
+  DESCRIPTORS_EXPORT int getNumberValueBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberValueBins(const int numberValueBins);
+
+ protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+  DESCRIPTORS_EXPORT void beforeProcess() override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+                                          cv::Mat& output) override;
+
+ private:
+  // private members
+  int mNumberHueBins = 16;
+  int mNumberSaturationBins = 4;
+  int mNumberValueBins = 4;
 };
-
 }  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-#endif  // !_SSIG_ALGORITHMS_SIMILARITY_BUILDER_HPP_
+

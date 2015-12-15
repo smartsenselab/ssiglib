@@ -59,15 +59,19 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
   // Constructor Copy
 }
 
-void PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   mPls->predict(inp, resp);
   cv::Mat_<float> r;
   r.create(inp.rows, 2);
+  int ans = 0;
   for (int row = 0; row < inp.rows; ++row) {
     r[row][0] = resp[row][0];
     r[row][1] = -1 * resp[row][0];
   }
   resp = r;
+  int labelIdx = resp[0][0] > 0 ? 1 : -1;
+
+  return inp.rows > 1 ? 0 : labelIdx;
 }
 
 void PLSClassifier::addLabels(cv::Mat_<int>& labels) {

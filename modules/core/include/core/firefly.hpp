@@ -39,93 +39,75 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/hard_mining_classifier.hpp"
+#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#include <opencv2/core.hpp>
+#include <core/math.hpp>
+#include <core/algorithm.hpp>
+
+#include <string>
+
+#include "core_defs.hpp"
 
 namespace ssig {
+class Firefly : public Algorithm {
+  cv::Mat_<float> randomVector() const;
 
-HardMiningClassifier::HardMiningClassifier(Classifier& c) {
-  mClassifier = std::unique_ptr<Classifier>(c.clone());
-}
+ public:
+  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
+                      DistanceFunctor& distanceFunction);
+  CORE_EXPORT Firefly(DistanceFunctor& distanceFunction,
+                      UtilityFunctor& utilityFunction);
 
-HardMiningClassifier::HardMiningClassifier(const HardMiningClassifier& rhs) {
-  // Constructor Copy
-}
+  CORE_EXPORT void setup(cv::Mat_<float>& input);
 
-HardMiningClassifier& HardMiningClassifier::operator=(
-  const HardMiningClassifier& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
+  CORE_EXPORT bool iterate();
 
-int HardMiningClassifier::predict(cv::Mat_<float>& inp,
-                                  cv::Mat_<float>& resp) const {
-  return mClassifier->predict(inp, resp);
-}
+  CORE_EXPORT cv::Mat_<float> learn
+  (cv::Mat_<float>& input);
 
-void HardMiningClassifier::learn(cv::Mat_<float>& input,
-                                 cv::Mat_<int>& labels) {
-  cv::Mat_<float> inp = input.clone();
-  mLabels = labels.clone();
+  CORE_EXPORT cv::Mat_<float> getResults() const;
 
-  mClassifier->learn(inp, mLabels);
-  cv::Mat_<float> resp;
+  CORE_EXPORT cv::Mat_<float> getState() const;
 
-  for (int it = 0; it < mMaxIterations; ++it) {
-    auto labelOrdering = mClassifier->getLabelsOrdering();
-    mClassifier->predict(mSamples, resp);
-    for (int r = 0; r < resp.rows; ++r) {
-      auto col = labelOrdering[1];
-      if (resp[r][col] > 0) {
-        inp.push_back(mSamples.row(r));
-        mLabels.push_back(-1);
-      }
-    }
-    mClassifier->learn(inp, mLabels);
-  }
-}
+  CORE_EXPORT void save(const std::string& filename,
+                                const std::string& nodename) const override;
+  CORE_EXPORT void load(const std::string& filename,
+                                const std::string& nodename) override;
 
-cv::Mat_<int> HardMiningClassifier::getLabels() const {
-  return mLabels;
-}
+  CORE_EXPORT float getAbsorption() const;
 
-void HardMiningClassifier::setNegatives(const cv::Mat_<float>& negatives) {
-  mSamples = negatives.clone();
-}
+  CORE_EXPORT void setAbsorption(float absorption);
 
-std::unordered_map<int, int> HardMiningClassifier::getLabelsOrdering() const {
-  return mClassifier->getLabelsOrdering();
-}
+  CORE_EXPORT int getMaxIterations() const;
 
-bool HardMiningClassifier::empty() const {
-  return mClassifier->empty();
-}
+  CORE_EXPORT void setMaxIterations(int maxIterations);
 
-bool HardMiningClassifier::isTrained() const {
-  return !mClassifier->empty();
-}
+  CORE_EXPORT float getAnnealling() const;
 
-bool HardMiningClassifier::isClassifier() const {
-  return true;
-}
+  CORE_EXPORT void setAnnealling(float annealling);
 
-void HardMiningClassifier::read(const cv::FileNode& fn) {
-  if (!mClassifier)
-    std::runtime_error("The classifier must be set before calling this method");
+  CORE_EXPORT float getStep() const;
 
-  mClassifier->read(fn);
-}
+  CORE_EXPORT void setStep(float step);
 
-void HardMiningClassifier::write(cv::FileStorage& fs) const {
-  mClassifier->write(fs);
-}
+ protected:
+  CORE_EXPORT void read(const cv::FileNode& fn) override;
+  CORE_EXPORT void write(cv::FileStorage& fs) const override;
 
-Classifier* HardMiningClassifier::clone() const {
-  // TODO(Ricardo):
-  return nullptr;
-}
-
+ private:
+  UtilityFunctor& utility;
+  DistanceFunctor& distance;
+  cv::Mat_<float> mPopulation;
+  cv::Mat_<float> mUtilities;
+  float mAbsorption = 0.01f;
+  int mIterations = 0;
+  int mMaxIterations = 10;
+  float mAnnealling = 0.97f;
+  float mStep = 0.01f;
+  cv::RNG mRng;
+};
 }  // namespace ssig
+#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 
 

@@ -1,4 +1,4 @@
-/*L*****************************************************************************
+/*L****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,56 +37,39 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-*****************************************************************************L*/
+****************************************************************************L*/
 
 
+#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
-#include "core/similarity_builder.hpp"
+#include <opencv2/highgui.hpp>
+#include <descriptors/color_histogram_hsv.hpp>
 
-namespace ssig {
+TEST(HAV_Histogram, HSV_Simple) {
+  cv::Mat img(1, 4, CV_8UC3);
 
-cv::Mat_<float> SimilarityBuilder::buildSimilarity(
-    const cv::Mat_<float>& input,
-    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-        similarityFunction) {
-  int len = input.rows;
-  cv::Mat_<float> similarity(len, len);
-  similarity = 0;
-  for (int i = 0; i < len; ++i) {
-    for (int j = i + 1; j < len; ++j) {
-      cv::Mat_<float> x = input.row(i);
-      cv::Mat_<float> y = input.row(j);
+  img.at<cv::Vec3b>(0, 0) = cv::Vec3b(255, 21, 0);
+  img.at<cv::Vec3b>(0, 1) = cv::Vec3b(208, 255, 0);
+  img.at<cv::Vec3b>(0, 2) = cv::Vec3b(0, 223, 255);
+  img.at<cv::Vec3b>(0, 3) = cv::Vec3b(0, 0, 255);
 
-      similarity[i][j] = similarityFunction(x, y);
-    }
-  }
-  return similarity;
+  ssig::ColorHistogramHSV hsv(img);
+  cv::Mat featVector;
+
+  hsv.extract(featVector);
+  int total = static_cast<int>(cv::sum(featVector)[0]);
+  ASSERT_EQ(1, total);
+
+  cv::Mat_<float> expected(1, 256, 0.f);
+  expected[0][240] = .25f;
+  expected[0][242] = .25f;
+  expected[0][247] = .25f;
+  expected[0][250] = .25f;
+
+  cv::Mat comparison;
+  cv::compare(featVector, expected, comparison, CV_CMP_EQ);
+
+  int diff = static_cast<int>(cv::countNonZero(comparison));
+  ASSERT_EQ(featVector.rows * featVector.cols, diff);
 }
 
-float SimilarityBuilder::cosineFunction(const cv::Mat_<float>& x,
-                                        const cv::Mat_<float>& y) {
-  return static_cast<float>(
-      x.dot(y) / (cv::norm(x, cv::NORM_L2) * cv::norm(y, cv::NORM_L2)));
-}
-
-float SimilarityBuilder::correlationFunction(const cv::Mat_<float>& x,
-                                             const cv::Mat_<float>& y) {
-  float correlation = 0;
-  float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
-  const int n = x.cols;
-
-  for (int s = 0; s < n; ++s) {
-    i += x[0][s];
-    ii += x[0][s] * x[0][s];
-
-    j += y[0][s];
-    jj += y[0][s] * y[0][s];
-
-    ij += x[0][s] * y[0][s];
-  }
-  correlation =
-      (n * ij - i * j) / (sqrt(n * ii - i * i) * sqrt(n * jj - j * j));
-  return correlation;
-}
-
-}  //  namespace ssig

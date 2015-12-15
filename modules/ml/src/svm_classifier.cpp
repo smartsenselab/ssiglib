@@ -106,7 +106,7 @@ void SVMClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   mSvm->train(mSamples, cv::ml::ROW_SAMPLE, mLabels);
 }
 
-void SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   cv::Mat_<float> label;
   mSvm->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
   mSvm->predict(inp, label);
@@ -122,6 +122,10 @@ void SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
     }
   }
   resp = ans;
+
+  int labelIdx = ans[0][0] > 0?1 : -1;
+
+  return inp.rows > 1 ? 0 : labelIdx;
 }
 
 cv::Mat_<int> SVMClassifier::getLabels() const {

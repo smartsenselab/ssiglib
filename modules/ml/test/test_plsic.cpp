@@ -41,6 +41,7 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
+#include <core/math.hpp>
 
 #include <vector>
 
@@ -48,7 +49,6 @@
 #include "ml/pls_classifier.hpp"
 #include "ml/pls_image_clustering.hpp"
 
-#include "core/similarity_builder.hpp"
 
 TEST(PLSIC, CorrelationClusteringTest) {
   srand(1234);
@@ -83,7 +83,9 @@ TEST(PLSIC, CorrelationClusteringTest) {
   clustering.setClusterRepresentationType(
     ssig::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
-  clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
+  auto correlation = std::unique_ptr<ssig::CorrelationSimilarity>(
+    new ssig::CorrelationSimilarity);
+  clustering.setSimBuilder(std::move(correlation));
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
@@ -159,7 +161,9 @@ TEST(PLSIC, CosineClusteringTest) {
     ssig::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
 
-  clustering.setSimBuilder(ssig::SimilarityBuilder::cosineFunction);
+  auto cosine = std::unique_ptr<ssig::CosineSimilarity>(
+    new ssig::CosineSimilarity);
+  clustering.setSimBuilder(std::move(cosine));
 
   clustering.addNaturalWorld(neg, natVector);
 

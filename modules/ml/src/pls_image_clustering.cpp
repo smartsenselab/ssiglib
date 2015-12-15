@@ -42,7 +42,7 @@
 
 #include "ml/pls_image_clustering.hpp"
 
-#include <core/similarity_builder.hpp>
+#include <core/math.hpp>
 
 #include <string>
 #include <random>
@@ -50,6 +50,7 @@
 #include <set>
 #include <utility>
 #include <vector>
+
 
 
 namespace ssig {
@@ -360,15 +361,11 @@ std::shared_ptr<OAAClassifier> PLSImageClustering::getClassifier() const {
     dynamic_cast<OAAClassifier*>(mClassifier->clone()));
 }
 
-std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-PLSImageClustering::getSimBuilder() const {
-  return mSimilarityFunction;
+void PLSImageClustering::setSimBuilder(
+  std::unique_ptr<ssig::SimilarityFunctor> function) {
+  mSimilarityFunction = std::move(function);
 }
 
-void PLSImageClustering::setSimBuilder(
-  const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function) {
-  mSimilarityFunction = function;
-}
 
 int PLSImageClustering::getRepresentationType() const {
   return mRepresentationType;
@@ -416,8 +413,8 @@ void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
     cv::Mat_<float> clusterRepresentation;
     buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
 
-    cv::Mat_<float> similarity = SimilarityBuilder::buildSimilarity(
-      clusterRepresentation, mSimilarityFunction);
+    cv::Mat_<float> similarity = Math::buildSimilarity(
+      clusterRepresentation, *mSimilarityFunction);
 
     // similarity = cv::abs(similarity);
     std::pair<int, int> mergedPair;

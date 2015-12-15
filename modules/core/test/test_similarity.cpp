@@ -43,41 +43,45 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include "core/similarity_builder.hpp"
+#include <core/math.hpp>
 
 TEST(Cosine, PerpendicularitySimilarityTest) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0, 1, 1, 0);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 1 , 0);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::cosineFunction);
+  ssig::CosineSimilarity cosine;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, cosine);
 
   EXPECT_FLOAT_EQ(0, simMat[0][1]);
 }
 
 TEST(Cosine, OposityTest) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0, 1, 0, -1);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 0 , -1);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::cosineFunction);
+  ssig::CosineSimilarity cosine;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, cosine);
 
   EXPECT_FLOAT_EQ(-1, simMat[0][1]);
 }
 
 TEST(Cosine, SimpleTest) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 3, 4, 1, 2);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 3 , 4 , 1 , 2);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::cosineFunction);
+  ssig::CosineSimilarity cosine;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, cosine);
 
   EXPECT_FLOAT_EQ(0.9838699101f, simMat[0][1]);
 }
 
 TEST(Cosine, OddDimensionalityTest) {
   cv::Mat_<float> samples =
-      (cv::Mat_<float>(3, 3) << 0, 0, 1, 0, 1, 0, 0, -1, 0);
+    (cv::Mat_<float>(3, 3) << 0 , 0 , 1 , 0 , 1 , 0 , 0 , -1 , 0);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::cosineFunction);
+  ssig::CosineSimilarity cosine;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, cosine);
 
   ASSERT_FLOAT_EQ(0, simMat[0][1]);
   ASSERT_FLOAT_EQ(0, simMat[0][2]);
@@ -85,46 +89,53 @@ TEST(Cosine, OddDimensionalityTest) {
 }
 
 TEST(Correlation, CorrelatedCheck) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 1, 2, 3, 4);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 1 , 2 , 3 , 4);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::correlationFunction);
+  ssig::CorrelationSimilarity correlation;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, correlation);
 
   EXPECT_GT(simMat[0][1], 0.5);
 }
 
 TEST(Correlation, InverseCorrelatedCheck) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 1, 2, -1, -2);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 1 , 2 , -1 , -2);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::correlationFunction);
+  ssig::CorrelationSimilarity correlation;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, correlation);
 
   EXPECT_LT(simMat[0][1], -0.5);
 }
 
 TEST(Correlation, CorrelatedOddSized) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3, 5, 7, 6, 18, 14);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3 , 5 , 7 , 6 , 18 , 14);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::correlationFunction);
+  ssig::CorrelationSimilarity correlation;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, correlation);
 
   EXPECT_GT(simMat[0][1], 0.5);
 }
 
 TEST(Correlation, InverseCorrelatedOddSized) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3, 5, 7, -6, -18, -14);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3 , 5 , 7 ,
+    -6 , -18 , -14);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::correlationFunction);
+  ssig::CorrelationSimilarity correlation;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, correlation);
 
   EXPECT_LT(simMat[0][1], -0.5);
 }
 
 TEST(Correlation, UncorrelatedOddSized) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3, 5, 7, 1, -5, 2);
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 3 , 5 , 7 , 1 , -5 , 2);
 
-  cv::Mat_<float> simMat = ssig::SimilarityBuilder::buildSimilarity(
-      samples, ssig::SimilarityBuilder::correlationFunction);
+  ssig::CorrelationSimilarity correlation;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, correlation);
 
   EXPECT_LT(abs(simMat[0][1]), 0.5);
 }
+

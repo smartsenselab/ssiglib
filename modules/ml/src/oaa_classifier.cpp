@@ -49,7 +49,7 @@ namespace ssig {
 
 OAAClassifier::OAAClassifier(const Classifier& prototypeClassifier) {
   mUnderlyingClassifier =
-      std::unique_ptr<Classifier>(prototypeClassifier.clone());
+    std::unique_ptr<Classifier>(prototypeClassifier.clone());
 }
 
 void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
@@ -81,16 +81,17 @@ void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
       }
     }
     mClassifiers[labelIdx.second] =
-        std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
+      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
     mClassifiers[labelIdx.second]->learn(mSamples, localLabels);
   }
   mTrained = true;
 }
 
-void OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
   resp =
-      cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
-
+    cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
+  float maxResp = -FLT_MAX;
+  int bestLabel = 0;
   for (int r = 0; r < inp.rows; ++r) {
     int c = 0;
     for (auto& classifier : mClassifiers) {
@@ -99,23 +100,37 @@ void OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
       classifier->predict(rowFeat, auxResp);
       auto ordering = classifier->getLabelsOrdering();
       const int idx = ordering[1];
-      resp[r][c] = auxResp[0][idx];
+      float response = auxResp[0][idx];
+      resp[r][c] = response;
+      if (response > maxResp) {
+        bestLabel = c;
+        maxResp = response;
+      }
       ++c;
     }
   }
+  return inp.rows > 1?0 : bestLabel;
 }
 
-cv::Mat_<int> OAAClassifier::getLabels() const { return mLabels; }
+cv::Mat_<int> OAAClassifier::getLabels() const {
+  return mLabels;
+}
 
 std::unordered_map<int, int> OAAClassifier::getLabelsOrdering() const {
   return mLabelOrderings;
 }
 
-bool OAAClassifier::empty() const { return mClassifiers.empty(); }
+bool OAAClassifier::empty() const {
+  return mClassifiers.empty();
+}
 
-bool OAAClassifier::isTrained() const { return mTrained; }
+bool OAAClassifier::isTrained() const {
+  return mTrained;
+}
 
-bool OAAClassifier::isClassifier() const { return true; }
+bool OAAClassifier::isClassifier() const {
+  return true;
+}
 
 void OAAClassifier::load(const std::string& filename,
                          const std::string& nodename) {
@@ -139,19 +154,19 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
     mClassifiers.push_back(
-        std::shared_ptr<Classifier>(mUnderlyingClassifier->clone()));
+      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone()));
     mClassifiers.back()->read(*it);
   }
 }
 
 void OAAClassifier::write(cv::FileStorage& fs) const {
   fs << "labelOrdering"
-     << "{";
+    << "{";
   ssig::Util::write<int, int>(mLabelOrderings, fs);
   fs << "}";
 
   fs << "classifiers"
-     << "{";
+    << "{";
   int i = 0;
   for (auto& c : mClassifiers) {
     fs << "c" + std::to_string(i++) << "{";
@@ -175,9 +190,9 @@ std::shared_ptr<Classifier> OAAClassifier::getUnderlyingClassifier() const {
 }
 
 void OAAClassifier::setUnderlyingClassifier(
-    const Classifier& underlyingClassifier) {
+  const Classifier& underlyingClassifier) {
   mUnderlyingClassifier =
-      std::unique_ptr<Classifier>(underlyingClassifier.clone());
+    std::unique_ptr<Classifier>(underlyingClassifier.clone());
 }
 
 void OAAClassifier::addLabels(cv::Mat_<int>& labels) {
@@ -186,3 +201,5 @@ void OAAClassifier::addLabels(cv::Mat_<int>& labels) {
 }
 
 }  // namespace ssig
+
+

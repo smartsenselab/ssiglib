@@ -45,11 +45,13 @@
 
 #include <core/util.hpp>
 
+#include <core/math.hpp>
+
+#include <ml/classifier_clustering.hpp>
+#include <ml/oaa_classifier.hpp>
+
 #include <utility>
 #include <vector>
-
-#include "classifier_clustering.hpp"
-#include "oaa_classifier.hpp"
 
 namespace ssig {
 
@@ -85,11 +87,8 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT std::shared_ptr<OAAClassifier> getClassifier() const;
 
-  ML_EXPORT std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-  getSimBuilder() const;
-
   ML_EXPORT void setSimBuilder(
-    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function);
+    std::unique_ptr<ssig::SimilarityFunctor> function);
 
   ML_EXPORT int getRepresentationType() const;
 
@@ -164,7 +163,7 @@ class PLSImageClustering : public ClassifierClustering {
  private:
   // private members
   std::unique_ptr<OAAClassifier> mClassifier;
-  std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> mSimilarityFunction;
+  std::unique_ptr<SimilarityFunctor> mSimilarityFunction;
 
   int mRepresentationType = ClustersResponses;
 

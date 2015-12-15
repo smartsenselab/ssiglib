@@ -58,8 +58,8 @@ class PLSClassifier : public Classifier {
   ML_EXPORT virtual ~PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT int predict(cv::Mat_<float>& inp,
+              cv::Mat_<float>& resp) const override;
   ML_EXPORT void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
   ML_EXPORT cv::Mat_<int> getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
