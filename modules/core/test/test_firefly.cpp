@@ -69,7 +69,7 @@ struct Utility : ssig::UtilityFunctor {
 
 struct Distance : ssig::DistanceFunctor {
   virtual float operator()(const cv::Mat& x,
-                           const cv::Mat& y) const override {
+    const cv::Mat& y) const override {
     return static_cast<float>(cv::norm(x - y, cv::NORM_L2));
   }
 };
@@ -81,7 +81,7 @@ TEST(Utils, Reorder) {
   cv::Mat_<float> a;
   cv::Mat_<int> o;
   for (int i = 0; i < 20; ++i) {
-    float rndValue = cv::theRNG().gaussian(20);
+    float rndValue = static_cast<float>(cv::theRNG().gaussian(20));
     a.push_back(rndValue);
   }
 
@@ -103,7 +103,7 @@ TEST(Utils, StlReorder) {
   std::vector<int> a;
   std::vector<int> o;
   for (int i = 0; i < 20; ++i) {
-    float rndValue = cv::theRNG().gaussian(20);
+    auto rndValue = static_cast<int>(cv::theRNG().gaussian(20));
     a.push_back(rndValue);
   }
   auto gt = a;
