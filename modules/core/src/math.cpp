@@ -62,5 +62,61 @@ Math& Math::operator=(const Math& rhs) {
   }
   return *this;
 }
+
+float CosineSimilarity::operator()(const cv::Mat& x,
+                                   const cv::Mat& y) const {
+  return static_cast<float>(
+    x.dot(y) / (cv::norm(x, cv::NORM_L2)
+      * cv::norm(y, cv::NORM_L2)));
+}
+
+float CorrelationSimilarity::operator()(const cv::Mat& x,
+                                        const cv::Mat& y) const {
+  float correlation = 0;
+  float mX = static_cast<float>(cv::mean(x)[0]);
+  float mY = static_cast<float>(cv::mean(y)[0]);
+  auto centeredX = x - mX;
+  auto centeredY = y - mY;
+  correlation = static_cast<float>(centeredX.dot(centeredY) / (
+    (cv::norm(centeredX, cv::NORM_L2) * cv::norm(centeredY, cv::NORM_L2))));
+
+  /*
+  cv::Mat_<float> floatX, floatY;
+  x.convertTo(floatX, CV_32FC1);
+  y.convertTo(floatY, CV_32FC1);
+  const auto n = x.cols;
+  float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
+  for (int s = 0; s < n; ++s) {
+    i += floatX[0][s];
+    ii += floatX[0][s] * floatX[0][s];
+
+    j += floatY[0][s];
+    jj += floatY[0][s] * floatY[0][s];
+
+    ij += floatX[0][s] * floatY[0][s];
+  }
+  correlation =
+    (n * ij - i * j) / (cv::sqrt(n * ii - i * i) * cv::sqrt(n * jj - j * j));*/
+  return correlation;
+}
+
+cv::Mat_<float> Math::buildSimilarity(
+  const cv::Mat_<float>& input,
+  SimilarityFunctor
+  & similarityFunction) {
+  int len = input.rows;
+  cv::Mat_<float> similarity(len, len);
+  similarity = 0;
+  for (int i = 0; i < len; ++i) {
+    for (int j = i + 1; j < len; ++j) {
+      cv::Mat_<float> x = input.row(i);
+      cv::Mat_<float> y = input.row(j);
+
+      similarity[i][j] = similarityFunction(x, y);
+    }
+  }
+  return similarity;
+}
 }  // namespace ssig
+
 

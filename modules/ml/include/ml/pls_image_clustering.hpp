@@ -48,15 +48,17 @@
 #include <utility>
 #include <vector>
 
-#include "classifier_clustering.hpp"
-#include "oaa_classifier.hpp"
+#include <core/math.hpp>
+
+#include <ml/classifier_clustering.hpp>
+#include <ml/oaa_classifier.hpp>
 
 namespace ssig {
 
 enum ClusterRepresentationType { Centroids, ClustersResponses };
 
 class PLSImageClustering : public ClassifierClustering {
- public:
+public:
   ML_EXPORT PLSImageClustering() = default;
   ML_EXPORT PLSImageClustering(
     ssig::OAAClassifier& classifier,
@@ -85,11 +87,8 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT std::shared_ptr<OAAClassifier> getClassifier() const;
 
-  ML_EXPORT std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>
-  getSimBuilder() const;
-
   ML_EXPORT void setSimBuilder(
-    const std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)>& function);
+    std::unique_ptr<ssig::SimilarityFunctor> function);
 
   ML_EXPORT int getRepresentationType() const;
 
@@ -113,7 +112,7 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT void setMaximumMergedPairs(int nMergesPerIteration1);
 
- protected:
+protected:
   ML_EXPORT void precondition() override;
 
   ML_EXPORT void initializeClusterings(
@@ -161,10 +160,10 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void removeMeaninglessClusters(
     std::vector<Cluster>& clusters) const;
 
- private:
+private:
   // private members
   std::unique_ptr<OAAClassifier> mClassifier;
-  std::function<float(cv::Mat_<float>&, cv::Mat_<float>&)> mSimilarityFunction;
+  std::unique_ptr<SimilarityFunctor> mSimilarityFunction;
 
   int mRepresentationType = ClustersResponses;
 
@@ -177,7 +176,7 @@ class PLSImageClustering : public ClassifierClustering {
   int nMergesPerIteration = 8;
 };
 
-}  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
+} // namespace ssig
+#endif // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 
 

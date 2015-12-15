@@ -43,6 +43,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
+#include "core_defs.hpp"
 
 namespace ssig {
 
@@ -50,8 +51,28 @@ class UtilityFunctor {
 public:
   virtual ~UtilityFunctor() {}
 
-  virtual float operator()(const cv::Mat& vector)const = 0;
+  CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
 };
+
+class DistanceFunctor {
+public:
+  virtual ~DistanceFunctor() = default;
+
+  CORE_EXPORT virtual float operator()(const cv::Mat& x,
+                                       const cv::Mat& y) const = 0;
+};
+
+struct CosineSimilarity : DistanceFunctor {
+  CORE_EXPORT float operator()(const cv::Mat& x,
+                               const cv::Mat& y) const override;
+};
+
+struct CorrelationSimilarity : DistanceFunctor {
+  CORE_EXPORT float operator()(const cv::Mat& x,
+                               const cv::Mat& y) const override;
+};
+
+typedef DistanceFunctor SimilarityFunctor;
 
 class Math {
 public:
@@ -60,8 +81,10 @@ public:
   Math(const Math& rhs);
   Math& operator=(const Math& rhs);
 
-private:
-  // private members
+  CORE_EXPORT static cv::Mat_<float> buildSimilarity(
+    const cv::Mat_<float>& input,
+    SimilarityFunctor
+    & similarityFunction);
 };
 
 template<class T>

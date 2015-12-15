@@ -47,8 +47,7 @@
 #include "ml/kmeans.hpp"
 #include "ml/pls_classifier.hpp"
 #include "ml/pls_image_clustering.hpp"
-
-#include "core/similarity_builder.hpp"
+#include <core/math.hpp>
 
 TEST(PLSIC, CorrelationClusteringTest) {
   srand(1234);
@@ -74,8 +73,8 @@ TEST(PLSIC, CorrelationClusteringTest) {
   stg.release();
 
   std::vector<ssig::Cluster> initialClustering =
-    {{1}, {8}, {14}, {15}, {23}, {28}};
-  std::vector<ssig::Cluster> natVector = {{}, {}};
+    {{1},{8},{14},{15},{23},{28}};
+  std::vector<ssig::Cluster> natVector = {{},{}};
 
   ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
                                       initialClustering);
@@ -83,7 +82,9 @@ TEST(PLSIC, CorrelationClusteringTest) {
   clustering.setClusterRepresentationType(
     ssig::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
-  clustering.setSimBuilder(ssig::SimilarityBuilder::correlationFunction);
+  auto correlation = std::unique_ptr<ssig::CorrelationSimilarity>(
+    new ssig::CorrelationSimilarity);
+  clustering.setSimBuilder(std::move(correlation));
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
@@ -149,8 +150,8 @@ TEST(PLSIC, CosineClusteringTest) {
   stg.release();
 
   std::vector<ssig::Cluster> initialClustering =
-    {{1}, {8}, {14}, {15}, {23}, {28}};
-  std::vector<ssig::Cluster> natVector = {{}, {}};
+    {{1},{8},{14},{15},{23},{28}};
+  std::vector<ssig::Cluster> natVector = {{},{}};
 
   ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
                                       initialClustering);
@@ -159,7 +160,9 @@ TEST(PLSIC, CosineClusteringTest) {
     ssig::ClusterRepresentationType::ClustersResponses);
   clustering.setMergeThreshold(0.7f);
 
-  clustering.setSimBuilder(ssig::SimilarityBuilder::cosineFunction);
+  auto cosine = std::unique_ptr<ssig::CosineSimilarity>(
+    new ssig::CosineSimilarity);
+  clustering.setSimBuilder(std::move(cosine));
 
   clustering.addNaturalWorld(neg, natVector);
 

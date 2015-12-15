@@ -39,16 +39,15 @@
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #include <opencv2/core.hpp>
-#include "core/math.hpp"
-#include "algorithm.hpp"
-#include <memory>
-#include "similarity_builder.hpp"
+
+#include <core/math.hpp>
+#include <core/algorithm.hpp>
 #include "core_defs.hpp"
 
 namespace ssig {
 class Firefly : public Algorithm {
   cv::Mat_<float> randomVector() const;
-public:
+ public:
   CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
                       DistanceFunctor& distanceFunction);
   CORE_EXPORT Firefly(DistanceFunctor& distanceFunction,
@@ -86,11 +85,11 @@ public:
 
   CORE_EXPORT void setStep(float step);
 
-protected:
+ protected:
   CORE_EXPORT void read(const cv::FileNode& fn) override;
   CORE_EXPORT void write(cv::FileStorage& fs) const override;
 
-private:
+ private:
   UtilityFunctor& utility;
   DistanceFunctor& distance;
   cv::Mat_<float> mPopulation;
@@ -102,7 +101,7 @@ private:
   float mStep = 0.01f;
   cv::RNG mRng;
 };
-} // namespace ssig
-#endif // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+}  // namespace ssig
+#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 
 
