@@ -53,7 +53,7 @@ namespace ssig {
 class Firefly : public Algorithm {
   cv::Mat_<float> randomVector() const;
 
-  public:
+ public:
   CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
                       DistanceFunctor& distanceFunction);
   CORE_EXPORT Firefly(DistanceFunctor& distanceFunction,
