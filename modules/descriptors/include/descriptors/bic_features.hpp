@@ -42,11 +42,11 @@
 #ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
 
-#include "descriptor.hpp"
 #include "descriptors_defs.hpp"
+#include "descriptor_2d.hpp"
 
 namespace ssig {
-class BIC : public Descriptor {
+class BIC : public Descriptor2D {
  public:
   DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
   DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);

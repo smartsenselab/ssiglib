@@ -39,25 +39,70 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor.hpp"
+#include "descriptors/descriptor_2d.hpp"
+
+#include <vector>
 
 namespace ssig {
-Descriptor::Descriptor() {
-  // Constructor
+
+Descriptor2D::Descriptor2D(const cv::Mat& input) {
+  mImage = input.clone();
 }
 
-Descriptor::~Descriptor() {
-  // Destructor
+Descriptor2D::Descriptor2D(const cv::Mat& input, const Descriptor& descriptor) {
+  mImage = input.clone();
 }
 
-Descriptor::Descriptor(const Descriptor& rhs) {
-  // Constructor Copy
+Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
+  mImage = descriptor.mImage;
 }
 
-Descriptor& Descriptor::operator=(const Descriptor& rhs) {
-  if (this != &rhs) {
-    // code here
+void Descriptor2D::extract(cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
   }
-  return *this;
+  extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
+}
+
+void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
+                           cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  for (auto& window : windows) {
+    cv::Mat feat;
+    extractFeatures(window, feat);
+    output.push_back(feat);
+  }
+}
+
+void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
+                           cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  const float SQROOT_TWO = 1.4142136237f;
+  for (auto& keypoint : keypoints) {
+    cv::Mat feat;
+    // diameter = l\|2
+    int length = static_cast<int>(keypoint.size * SQROOT_TWO);
+    const int x = static_cast<int>(keypoint.pt.x),
+      y = static_cast<int>(keypoint.pt.y),
+      width = length, height = length;
+    auto window = cv::Rect(x, y, width, height);
+    extractFeatures(window, feat);
+    output.push_back(feat);
+  }
+}
+
+void Descriptor2D::setData(const cv::Mat& img) {
+  mImage = img.clone();
+  beforeProcess();
+  mIsPrepared = true;
 }
 }  // namespace ssig
+
+
