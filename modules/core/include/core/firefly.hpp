@@ -69,6 +69,8 @@ class Firefly : public Algorithm {
   CORE_EXPORT cv::Mat_<float> getResults() const;
 
   CORE_EXPORT cv::Mat_<float> getState() const;
+  
+  CORE_EXPORT void setState(const cv::Mat_<float>& state);
 
   CORE_EXPORT void save(const std::string& filename,
                                 const std::string& nodename) const override;
@@ -77,6 +79,10 @@ class Firefly : public Algorithm {
 
   CORE_EXPORT float getAbsorption() const;
 
+  /**
+  @brief: This parameter controls how much one particle perceives another
+   particle attractiveness
+  */
   CORE_EXPORT void setAbsorption(float absorption);
 
   CORE_EXPORT int getMaxIterations() const;
@@ -100,11 +106,11 @@ class Firefly : public Algorithm {
   DistanceFunctor& distance;
   cv::Mat_<float> mPopulation;
   cv::Mat_<float> mUtilities;
-  float mAbsorption = 0.01f;
+  float mAbsorption = 1.5f;
   int mIterations = 0;
   int mMaxIterations = 10;
   float mAnnealling = 0.97f;
-  float mStep = 0.01f;
+  float mStep = 0.9f;
   cv::RNG mRng;
 };
 }  // namespace ssig
