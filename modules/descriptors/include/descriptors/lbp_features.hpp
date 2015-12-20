@@ -42,12 +42,13 @@
 
 #ifndef _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
-#include "descriptor.hpp"
+
 #include "descriptors_defs.hpp"
+#include "descriptor_2d.hpp"
 
 namespace ssig {
 
-class LBP : public Descriptor{
+class LBP : public Descriptor2D{
  public:
   DESCRIPTORS_EXPORT LBP(const cv::Mat& input);
   DESCRIPTORS_EXPORT LBP(const cv::Mat& input, const LBP& descriptor);

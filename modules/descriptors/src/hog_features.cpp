@@ -53,10 +53,10 @@
 namespace ssig {
 
 
-HOG::HOG(const cv::Mat& input): Descriptor(input) {}
+  HOG::HOG(const cv::Mat& input) : Descriptor2D(input) {}
 
 HOG::HOG(const cv::Mat& input, const ssig::HOG& descriptor)
-  : Descriptor(input, descriptor) {
+  : Descriptor2D(input, descriptor) {
   mBlockConfiguration = descriptor.getBlockConfiguration();
   mBlockStride = descriptor.getBlockStride();
   mCellConfiguration = descriptor.getCellConfiguration();
@@ -64,7 +64,7 @@ HOG::HOG(const cv::Mat& input, const ssig::HOG& descriptor)
   mNumberOfBins = descriptor.getNumberOfBins();
 }
 
-HOG::HOG(const ssig::HOG& descriptor): Descriptor(descriptor) {
+HOG::HOG(const ssig::HOG& descriptor) : Descriptor2D(descriptor) {
   mBlockConfiguration = descriptor.getBlockConfiguration();
   mBlockStride = descriptor.getBlockStride();
   mCellConfiguration = descriptor.getCellConfiguration();

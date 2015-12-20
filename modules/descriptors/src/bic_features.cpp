@@ -47,14 +47,14 @@
 namespace ssig {
 
 
-BIC::BIC(const cv::Mat& input) : Descriptor(input) {}
+BIC::BIC(const cv::Mat& input) : Descriptor2D(input) {}
 
 BIC::BIC(const cv::Mat& input,
          const BIC& descriptor) :
-  Descriptor(input,
+  Descriptor2D(input,
              descriptor) {}
 
-BIC::BIC(const BIC& rhs) : Descriptor(rhs) {
+BIC::BIC(const BIC& rhs) : Descriptor2D(rhs) {
   // Constructor Copy
 }
 

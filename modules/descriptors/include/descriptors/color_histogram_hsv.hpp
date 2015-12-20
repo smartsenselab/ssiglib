@@ -42,19 +42,21 @@
 #ifndef _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 #define _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-#include <descriptors/descriptor.hpp>
 
 #include <descriptors/descriptors_defs.hpp>
+#include "descriptor_2d.hpp"
 
 namespace ssig {
-class ColorHistogramHSV : public Descriptor {
+class Descriptor2D;
+
+class ColorHistogramHSV : public Descriptor2D {
  public:
   DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
 
   DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input,
-                                       const Descriptor& descriptor);
+                                       const Descriptor2D& descriptor);
 
-  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor2D& descriptor);
 
   DESCRIPTORS_EXPORT virtual ~ColorHistogramHSV(void) = default;
   DESCRIPTORS_EXPORT ColorHistogramHSV(const ColorHistogramHSV& rhs);

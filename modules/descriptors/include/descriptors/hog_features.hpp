@@ -45,11 +45,11 @@
 #include <string>
 #include <vector>
 
-#include "descriptors/descriptor.hpp"
+#include "descriptor_2d.hpp"
 
 namespace ssig {
 
-class HOG : public Descriptor {
+class HOG : public Descriptor2D {
   cv::Size mBlockConfiguration;
   cv::Size mCellConfiguration;
   cv::Size mBlockStride;

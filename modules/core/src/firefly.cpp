@@ -115,6 +115,7 @@ bool ssig::Firefly::iterate() {
   mUtilities = nuti;
 
   if (++mIterations > mMaxIterations) return true;
+  if (mStep < 0.001f) return true;
   return false;
 }
 
@@ -136,6 +137,9 @@ cv::Mat_<float> ssig::Firefly::getState() const {
   return mPopulation;
 }
 
+void ssig::Firefly::setState(const cv::Mat_<float>& state) {
+  mPopulation = state.clone();
+}
 
 void ssig::Firefly::save(const std::string& filename,
                          const std::string& nodename) const {

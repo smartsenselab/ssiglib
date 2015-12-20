@@ -44,12 +44,12 @@
 
 namespace ssig {
 
-LBP::LBP(const cv::Mat& img): Descriptor(img) {}
+  LBP::LBP(const cv::Mat& img) : Descriptor2D(img) {}
 
 LBP::LBP(const cv::Mat& img, const LBP& descriptor) :
-  Descriptor(img, descriptor) {}
+Descriptor2D(img, descriptor) {}
 
-LBP::LBP(const LBP& rhs): Descriptor(rhs) {
+LBP::LBP(const LBP& rhs) : Descriptor2D(rhs) {
   setKernel(rhs.getKernel());
 }
 

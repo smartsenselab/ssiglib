@@ -46,17 +46,17 @@
 namespace ssig {
 
 ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input):
-  Descriptor(input) {}
+  Descriptor2D(input) {}
 
 ColorHistogramHSV::ColorHistogramHSV(const cv::Mat& input,
-                                     const Descriptor& descriptor):
-  Descriptor(input, descriptor) {}
+                                     const Descriptor2D& descriptor) :
+  Descriptor2D(input, descriptor) {}
 
-ColorHistogramHSV::ColorHistogramHSV(const Descriptor& descriptor):
-  Descriptor(descriptor) {}
+ColorHistogramHSV::ColorHistogramHSV(const Descriptor2D& descriptor) :
+Descriptor2D(descriptor) {}
 
 ColorHistogramHSV::ColorHistogramHSV(const ColorHistogramHSV& rhs) :
-  Descriptor(rhs) {
+  Descriptor2D(rhs) {
   // Constructor Copy
 }
 

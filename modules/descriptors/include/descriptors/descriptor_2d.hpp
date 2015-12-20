@@ -39,25 +39,55 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor.hpp"
+
+#ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+#define _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+
+#include <core/algorithm.hpp>
+#include <opencv2/core.hpp>
+#include <vector>
+
+#include "descriptors_defs.hpp"
+#include "descriptor.hpp"
 
 namespace ssig {
-Descriptor::Descriptor() {
-  // Constructor
-}
 
-Descriptor::~Descriptor() {
-  // Destructor
-}
+class Descriptor2D : public Descriptor {
+ public:
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input);
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input,
+                                           const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const Descriptor2D& descriptor);
 
-Descriptor::Descriptor(const Descriptor& rhs) {
-  // Constructor Copy
-}
+  DESCRIPTORS_EXPORT virtual ~Descriptor2D(void) = default;
 
-Descriptor& Descriptor::operator=(const Descriptor& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
+  /**
+  On the first call to this function it returns the feature vector
+  of the mat set up in the constructor call.
+  @param out The matrix that will contain the feature vector for the current
+  patch.
+  */
+  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
+                                  cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,
+                                  cv::Mat& output);
+
+  DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
+
+
+ protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+
+  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch,
+                                                  cv::Mat& output) = 0;
+  std::vector<cv::Rect> mPatches;
+  cv::Mat mImage;
+  bool mIsPrepared = false;
+};
+
 }  // namespace ssig
+
+#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_

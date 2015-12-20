@@ -39,54 +39,23 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
-#define _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
-
+#ifndef _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
+#define _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
 #include <core/algorithm.hpp>
-#include <opencv2/core.hpp>
-#include <vector>
-
 #include "descriptors_defs.hpp"
 
-namespace cv {
-class Mat;
-}
-
 namespace ssig {
-
-class Descriptor : public Algorithm {
+class Descriptor : public ssig::Algorithm {
  public:
-  DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit Descriptor(const cv::Mat& input,
-    const Descriptor& descriptor);
-  DESCRIPTORS_EXPORT explicit Descriptor(const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT Descriptor(void);
+  DESCRIPTORS_EXPORT virtual ~Descriptor(void);
+  DESCRIPTORS_EXPORT Descriptor(const Descriptor& rhs);
+  DESCRIPTORS_EXPORT Descriptor& operator=(const Descriptor& rhs);
 
-  DESCRIPTORS_EXPORT virtual ~Descriptor(void) = default;
-
-  /**
-  On the first call to this function it returns the feature vector
-  of the mat set up in the constructor call.
-  @param out The matrix that will contain the feature vector for the current
-  patch.
-  */
-  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,
-    cv::Mat& output);
-
-  DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
-
- protected:
-  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch,
-    cv::Mat& output) = 0;
-  std::vector<cv::Rect> mPatches;
-  cv::Mat mImage;
-  bool mIsPrepared = false;
+ private:
+  // private members
 };
-
 }  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_DESRIPTOR_HPP_
 
-#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+
