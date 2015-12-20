@@ -127,6 +127,6 @@ void ColorHistogramHSV::extractFeatures(const cv::Rect& patch,
   cv::normalize(linearHist, linearHist, 1, 0, cv::NORM_L1);
   output = linearHist;
 }
-} // namespace ssig
+}  // namespace ssig
 
 

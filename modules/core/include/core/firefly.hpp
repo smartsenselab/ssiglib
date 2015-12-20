@@ -115,5 +115,3 @@ class Firefly : public Algorithm {
 };
 }  // namespace ssig
 #endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-
-

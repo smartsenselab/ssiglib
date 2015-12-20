@@ -46,16 +46,16 @@
 
 namespace ssig {
 class Descriptor : public ssig::Algorithm {
-public:
+ public:
   DESCRIPTORS_EXPORT Descriptor(void);
   DESCRIPTORS_EXPORT virtual ~Descriptor(void);
   DESCRIPTORS_EXPORT Descriptor(const Descriptor& rhs);
   DESCRIPTORS_EXPORT Descriptor& operator=(const Descriptor& rhs);
 
-private:
+ private:
   // private members
 };
-} // namespace ssig
-#endif // !_SSF_DESCRIPTORS_DESRIPTOR_HPP_
+}  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_DESRIPTOR_HPP_
 
 

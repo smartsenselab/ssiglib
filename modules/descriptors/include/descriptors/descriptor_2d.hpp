@@ -50,14 +50,10 @@
 #include "descriptors_defs.hpp"
 #include "descriptor.hpp"
 
-namespace cv {
-class Mat;
-}
-
 namespace ssig {
 
 class Descriptor2D : public Descriptor {
-public:
+ public:
   DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input);
   DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input,
                                            const Descriptor& descriptor);
@@ -80,7 +76,7 @@ public:
   DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
 
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
@@ -92,8 +88,6 @@ protected:
   bool mIsPrepared = false;
 };
 
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
-
-
+#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
