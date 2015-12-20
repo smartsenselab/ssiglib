@@ -69,7 +69,7 @@ class Firefly : public Algorithm {
   CORE_EXPORT cv::Mat_<float> getResults() const;
 
   CORE_EXPORT cv::Mat_<float> getState() const;
-  
+
   CORE_EXPORT void setState(const cv::Mat_<float>& state);
 
   CORE_EXPORT void save(const std::string& filename,
