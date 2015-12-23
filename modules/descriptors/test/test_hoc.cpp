@@ -1,4 +1,4 @@
-/*L****************************************************************************
+/*L*****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,39 +37,31 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-****************************************************************************L*/
+*****************************************************************************L*/
 
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <descriptors/color_histogram_hsv.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc.hpp>
 
-TEST(HSV_Histogram, HSV_Simple) {
-  cv::Mat img(1, 4, CV_8UC3);
+#include <vector>
 
-  img.at<cv::Vec3b>(0, 0) = cv::Vec3b(255, 21, 0);
-  img.at<cv::Vec3b>(0, 1) = cv::Vec3b(208, 255, 0);
-  img.at<cv::Vec3b>(0, 2) = cv::Vec3b(0, 223, 255);
-  img.at<cv::Vec3b>(0, 3) = cv::Vec3b(0, 0, 255);
+#include "descriptors/hoc_features.hpp"
 
-  ssig::ColorHistogramHSV hsv(img);
-  cv::Mat featVector;
+TEST(HOC, HocTest) {
+  cv::Mat img;
+  cv::Mat_<float> out;
+  cv::Mat_<float> cvOut;
+  std::vector<float> descriptors;
 
-  hsv.extract(featVector);
-  int total = static_cast<int>(cv::sum(featVector)[0]);
+  img = cv::imread("diag2.png");
+
+  ssig::HOC hog(img);
+  hog.extract(out);
+
+  int total = static_cast<int>(cv::sum(out)[0]);
   ASSERT_EQ(1, total);
-
-  cv::Mat_<float> expected(1, 256, 0.f);
-  expected[0][240] = .25f;
-  expected[0][242] = .25f;
-  expected[0][247] = .25f;
-  expected[0][250] = .25f;
-
-  cv::Mat comparison;
-  cv::compare(featVector, expected, comparison, CV_CMP_EQ);
-
-  int diff = static_cast<int>(cv::countNonZero(comparison));
-  ASSERT_EQ(featVector.rows * featVector.cols, diff);
 }
 
