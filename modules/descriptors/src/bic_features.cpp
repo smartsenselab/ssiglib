@@ -52,7 +52,7 @@ BIC::BIC(const cv::Mat& input) : Descriptor2D(input) {}
 BIC::BIC(const cv::Mat& input,
          const BIC& descriptor) :
   Descriptor2D(input,
-             descriptor) {}
+               descriptor) {}
 
 BIC::BIC(const BIC& rhs) : Descriptor2D(rhs) {
   // Constructor Copy
@@ -76,7 +76,7 @@ void BIC::beforeProcess() {
   cv::Mat_<int> temp(rows, cols, 0);
   // BGR to RGB
   temp = channels[2] + 256 * channels[1] + 65536 * channels[0];
-  const int MAX_VALUE = 1 << 24;
+  const int MAX_VALUE = 255 + 256 * 255 + 65536 * 255;
   const int bucketLen = MAX_VALUE / 63;
   temp = temp / bucketLen;
   temp.convertTo(mImage, CV_8U);
@@ -95,8 +95,8 @@ void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::Mat roiMask = mInteriorMask(patch);
 
   int channels[] = {0};
-  int histSize[] = {64};
-  float range[] = {0, 64};
+  int histSize[] = {nbins};
+  float range[] = {0, static_cast<float>(nbins)};
   const float* ranges[] = {range};
 
   cv::Mat border, interior;
@@ -112,8 +112,53 @@ void BIC::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   cv::transpose(interior, interior);
   cv::normalize(interior, interior, 1, 0, cv::NORM_L1);
 
-  cv::hconcat(border, interior, output);
-}
-}  // namespace ssig
+  cv::Mat_<float> cBorder, cInterior;
 
+  compressHistogram(border, cBorder);
+  compressHistogram(interior, cInterior);
+
+  cv::hconcat(cBorder, cInterior, output);
+}
+
+
+void BIC::compressHistogram(const cv::Mat_<float>& hist,
+                            cv::Mat_<float>& ch) {
+  int size = hist.cols;
+  ch.create(1, hist.cols);
+
+  for (int i = 0; i < size; i++) {
+    auto v = computeLog(hist.at<float>(i));
+    ch.at<float>(i) = v;
+  }
+}
+
+float BIC::computeLog(float value) {
+  float result;
+
+  value = 255.f * value;
+  if (value == 0.)
+    result = 0;
+  else if (value < 1.f)
+    result = 1.f;
+  else if (value < 2.f)
+    result = 2.f;
+  else if (value < 4.f)
+    result = 3.f;
+  else if (value < 8.f)
+    result = 4.f;
+  else if (value < 16.f)
+    result = 5.f;
+  else if (value < 32.f)
+    result = 6.f;
+  else if (value < 64.f)
+    result = 7.f;
+  else if (value < 128.f)
+    result = 8.f;
+  else
+    result = 9.f;
+
+  return (result);
+}
+
+}  // namespace ssig
 

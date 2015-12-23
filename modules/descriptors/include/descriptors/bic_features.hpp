@@ -62,6 +62,11 @@ class BIC : public Descriptor2D {
                                           cv::Mat& output) override;
 
  private:
+  static
+  DESCRIPTORS_EXPORT void compressHistogram(const cv::Mat_<float>& hist,
+   cv::Mat_<float>& ch);
+  static
+  DESCRIPTORS_EXPORT float computeLog(float value);
   int nbins = 64;
   cv::Mat mInteriorMask;
   // private members

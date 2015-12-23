@@ -52,9 +52,7 @@ TEST(BIC, BIC_Simple) {
   cv::Mat featVector;
 
   bic.extract(featVector);
-  int total = static_cast<int>(cv::sum(featVector)[0]);
-  ASSERT_EQ(2, total);
-  ASSERT_FLOAT_EQ(1, featVector.at<float>(127));
-  ASSERT_FLOAT_EQ(0.5f, featVector.at<float>(63));
+  ASSERT_FLOAT_EQ(9, featVector.at<float>(127));
+  ASSERT_FLOAT_EQ(8, featVector.at<float>(63));
 }
 
