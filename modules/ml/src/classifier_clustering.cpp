@@ -48,7 +48,10 @@
 namespace ssig {
 
 std::vector<Cluster> ClassifierClustering::getClustering() const {
-  return mNewClusters;
+  auto ans = mNewClusters;
+  if (ans.empty())
+    ans = mClusters;
+  return ans;
 }
 
 ClassifierClustering::~ClassifierClustering() {}

@@ -53,7 +53,7 @@
 namespace ssig {
 
 
-  HOG::HOG(const cv::Mat& input) : Descriptor2D(input) {}
+HOG::HOG(const cv::Mat& input) : Descriptor2D(input) {}
 
 HOG::HOG(const cv::Mat& input, const ssig::HOG& descriptor)
   : Descriptor2D(input, descriptor) {
@@ -115,6 +115,9 @@ std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
   cv::Mat grad, angleOfs;
   int rows, cols = 0;
   std::vector<cv::Mat_<float>> integralImages;
+  hogCalculator.L2HysThreshold = mClipping;
+  hogCalculator.gammaCorrection = true;
+  hogCalculator.signedGradient = true;
   hogCalculator.computeGradient(img, grad, angleOfs);
   rows = img.rows , cols = img.cols;
   integralImages.resize(9);
@@ -147,6 +150,37 @@ std::vector<cv::Mat_<float>> HOG::computeIntegralGradientImages(
   return integralImages;
 }
 
+void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
+  const int imgRows = patch.height;
+  const int imgCols = patch.width;
+
+  const int blockWidth = mBlockConfiguration.width;
+  const int blockHeight = mBlockConfiguration.height;
+  const int rowOffset = imgRows % blockHeight;
+  const int colOffset = imgCols % blockWidth;
+
+  /*cv::HOGDescriptor hog({mImg.rows, mImg.cols}, mBlockConfiguration,
+  mBlockConfiguration, mBlockConfiguration, 9);
+  std::vector<float> descriptors;
+  hog.compute(mImg, descriptors);
+  out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
+  descriptors.data());
+  */
+  for (int row = 0; row <= imgRows - rowOffset - blockHeight; row += mBlockStride.height) {
+    for (int col = 0; col <= imgCols - colOffset - blockWidth; col += mBlockStride.width) {
+      cv::Mat_<float> cellDescriptor;
+      getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
+      
+      if(output.empty()) {
+        output = cellDescriptor;
+      } else {
+        cv::hconcat(output.clone(), cellDescriptor, output);
+      }
+      
+    }
+  }
+}
+
 void HOG::getBlockDescriptor(int rowOffset, int colOffset,
                              const
                              std::vector<cv::Mat_<float>>& integralImages,
@@ -163,7 +197,7 @@ void HOG::getBlockDescriptor(int rowOffset, int colOffset,
 
   cv::Mat_<float> ans;
   ans.create(1, mNumberOfBins * ncells_cols * ncells_rows);
-  ans = FLT_MAX;
+  ans = FLT_MAX ;
   for (int cellRow = 0; cellRow < ncells_rows; ++cellRow) {
     for (int cellCol = 0; cellCol < ncells_cols; ++cellCol) {
       const int binOffset = ncells_rows * cellRow + cellCol;
@@ -274,51 +308,27 @@ void HOG::setClipping(float clipping1) {
   mClipping = clipping1;
 }
 
+bool HOG::getGammaCorrection() const {
+  return mGammaCorrection;
+}
+
+void HOG::setGammaCorrection(const bool gammaCorrection) {
+  mGammaCorrection = gammaCorrection;
+}
+
+bool HOG::getSignedGradient() const {
+  return mSignedGradient;
+}
+
+void HOG::setSignedGradient(const bool signedGradient) {
+  mSignedGradient = signedGradient;
+}
+
 void HOG::beforeProcess() {
   if (mImage.empty())return;
   mIntegralImages = computeIntegralGradientImages(mImage);
 }
 
-void HOG::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
-  const int imgRows = patch.height;
-  const int imgCols = patch.width;
-
-  const int blockWidth = mBlockConfiguration.width;
-  const int blockHeight = mBlockConfiguration.height;
-  const int rowOffset = imgRows % blockHeight;
-  const int colOffset = imgCols % blockWidth;
-
-  const int blocksPerRows = imgRows / (mBlockStride.height);
-  const int blocksPerCols = imgCols / mBlockStride.width;
-  const int nblocks = blocksPerCols * blocksPerRows;
-  const int nCellsPerBlock = mCellConfiguration.area();
-  const int dimensionsPerBlock = mNumberOfBins * nCellsPerBlock;
-  output.create(1, dimensionsPerBlock * nblocks, CV_32F);
-  output = 0;
-  int blockNumber = 0;
-  /*cv::HOGDescriptor hog({mImg.rows, mImg.cols}, mBlockConfiguration,
-  mBlockConfiguration, mBlockConfiguration, 9);
-  std::vector<float> descriptors;
-  hog.compute(mImg, descriptors);
-  out = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
-  descriptors.data());
-  */
-  for (int row = 0; row < imgRows - rowOffset; row += mBlockStride.height) {
-    if (blockNumber == nblocks) break;
-    for (int col = 0; col < imgCols - colOffset; col += mBlockStride.width) {
-      if (blockNumber == nblocks) break;
-      cv::Mat_<float> cellDescriptor;
-      getBlockDescriptor(row, col, mIntegralImages, cellDescriptor);
-
-      auto blockFeat = output(cv::Range(0, 1),
-                              cv::Range(blockNumber * dimensionsPerBlock,
-                                        (blockNumber + 1)
-                                        * dimensionsPerBlock));
-      ++blockNumber;
-      cellDescriptor.copyTo(blockFeat);
-    }
-  }
-}
-}  // namespace ssig
+} // namespace ssig
 
 

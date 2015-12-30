@@ -55,6 +55,8 @@ class HOG : public Descriptor2D {
   cv::Size mBlockStride;
   int mNumberOfBins = 9;
   float mClipping = 0.2f;
+  bool mGammaCorrection = true;
+  bool mSignedGradient = false.;
 
   std::vector<cv::Mat_<float>> mIntegralImages;
 

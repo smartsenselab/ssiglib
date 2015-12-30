@@ -87,7 +87,7 @@ TEST(HOG, LenaTest) {
   img = cv::imread("Lena_bw.png");
   ssig::HOG hog(img);
   hog.setBlockConfiguration({16, 16});
-  hog.setBlockStride({16, 16});
+  hog.setBlockStride({8, 8});
   hog.setCellConfiguration({2, 2});
   hog.setNumberOfBins(9);
   hog.extract(out);
@@ -96,7 +96,7 @@ TEST(HOG, LenaTest) {
   ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
   img.cols, img.rows }, vis);*/
 
-  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
+  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {8, 8}, {8, 8}, 9);
   cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
                           descriptors.data());
