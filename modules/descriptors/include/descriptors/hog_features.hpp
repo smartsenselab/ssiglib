@@ -50,6 +50,15 @@
 namespace ssig {
 
 class HOG : public Descriptor2D {
+  cv::Size mBlockConfiguration;
+  cv::Size mCellConfiguration;
+  cv::Size mBlockStride;
+  int mNumberOfBins = 9;
+  float mClipping = 0.2f;
+  bool mGammaCorrection = true;
+  bool mSignedGradient = false;
+
+  std::vector<cv::Mat_<double>> mIntegralImages;
 public:
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
 
@@ -101,15 +110,7 @@ public:
   DESCRIPTORS_EXPORT void setSignedGradient(const bool signedGradient);
 
 protected:
-  cv::Size mBlockConfiguration;
-  cv::Size mCellConfiguration;
-  cv::Size mBlockStride;
-  int mNumberOfBins = 9;
-  float mClipping = 0.2f;
-  bool mGammaCorrection = true;
-  bool mSignedGradient = false;
 
-  std::vector<cv::Mat_<double>> mIntegralImages;
 
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
