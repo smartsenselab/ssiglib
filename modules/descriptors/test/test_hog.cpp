@@ -50,6 +50,67 @@
 
 #include "descriptors/hog_features.hpp"
 
+TEST(HOG, Simple) {
+  cv::Mat img;
+  cv::Mat_<float> out;
+
+  img = cv::imread("hog1.png");
+
+  ssig::HOG hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({16, 16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+  hog.extract(out);
+
+  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
+  cv::Mat_<float> expected;
+  stg["expected"]>>expected;
+  
+  auto sum = static_cast<float>(cv::sum(out(cv::Rect(18, 0, 18, 1)))[0]);
+
+  cv::Mat diff;
+  cv::compare(out, expected, diff, cv::CMP_EQ);
+  int diffSum = cv::countNonZero(diff);
+  EXPECT_FLOAT_EQ(0, sum);
+  EXPECT_EQ(36, diffSum);
+}
+
+TEST(HOG, SimpleSigned) {
+  cv::Mat img;
+  cv::Mat_<float> out;
+
+  img = cv::imread("hog1.png");
+  /*img = (cv::Mat_<uchar>(5, 5)<<
+  0,0,255,0,0,
+  0,0,255,0,0,
+  255,255,255,255,255,
+  0,0,255,0,0,
+  0,0,255,0,0);
+  cv::resize(img, img, cv::Size(16,16));*/
+
+  ssig::HOG hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({16, 16});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(18);
+  hog.setSignedGradient(true);
+  hog.extract(out);
+
+  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
+  cv::Mat_<float> expected;
+  stg["signed_expected"]>>expected;
+
+  auto sum = static_cast<float>(cv::sum(out(cv::Rect(36, 0, 36, 1)))[0]);
+
+  cv::Mat diff;
+  cv::compare(out, expected, diff, cv::CMP_EQ);
+  int diffSum = cv::countNonZero(diff);
+
+  EXPECT_FLOAT_EQ(0, sum);
+  EXPECT_EQ(72, diffSum);
+}
+
 TEST(HOG, HogTest) {
   cv::Mat img;
   cv::Mat_<float> out;
@@ -65,46 +126,48 @@ TEST(HOG, HogTest) {
   hog.setNumberOfBins(9);
   hog.extract(out);
 
-  /*cv::Mat vis;
-  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
-  img.cols, img.rows }, vis);*/
+  cv::Mat vis;
+  ssig::HOG::computeVisualization(out, 9, {16, 16}, {16, 16}, {2, 2}, {
+                                      img.cols, img.rows}, vis);
 
-  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {16, 16}, {8, 8}, 9);
+  cv::HOGDescriptor cvHog({img.cols, img.rows}, {16, 16}, {16, 16}, {8, 8}, 9);
   cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
                           descriptors.data());
+  cv::Mat cvvis;
+  ssig::HOG::computeVisualization(cvOut, 9, {16, 16}, {16, 16}, {2, 2}, {
+                                      img.cols, img.rows}, cvvis);
+
   auto sim =
     static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
   EXPECT_GE(sim, 0.7f);
 }
 
-TEST(HOG, LenaTest) {
+TEST(HOG, SignedGradientTest) {
   cv::Mat img;
   cv::Mat_<float> out;
   cv::Mat_<float> cvOut;
   std::vector<float> descriptors;
 
-  img = cv::imread("Lena_bw.png");
+  img = cv::imread("hog.png");
   ssig::HOG hog(img);
   hog.setBlockConfiguration({16, 16});
   hog.setBlockStride({8, 8});
   hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
+  hog.setNumberOfBins(18);
+  hog.setSignedGradient(true);
+  hog.setGammaCorrection(true);
   hog.extract(out);
 
-  /*cv::Mat vis;
-  ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 }, {
-  img.cols, img.rows }, vis);*/
-
-  cv::HOGDescriptor cvHog({512, 512}, {16, 16}, {8, 8}, {8, 8}, 9);
+  cv::HOGDescriptor cvHog({img.cols, img.rows}, {16, 16}, {8, 8}, {8, 8}, 18, 1, -1,
+                          cv::HOGDescriptor::L2Hys, 0.2,
+                          true,
+                          cv::HOGDescriptor::DEFAULT_NLEVELS, true);
   cvHog.compute(img, descriptors);
   cvOut = cv::Mat_<float>(1, static_cast<int>(descriptors.size()),
                           descriptors.data());
 
-  /*ssig::HOG::computeVisualization(out, 9, { 16, 16 }, { 16, 16 }, { 2, 2 },
-  {
-   * img.cols, img.rows }, vis);*/
-
+  cv::Mat diff = cv::abs(cvOut - out);
   float sim =
     static_cast<float>(cvOut.dot(out) / (cv::norm(cvOut) * cv::norm(out)));
   EXPECT_GE(sim, 0.70f);

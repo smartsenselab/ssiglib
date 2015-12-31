@@ -50,17 +50,7 @@
 namespace ssig {
 
 class HOG : public Descriptor2D {
-  cv::Size mBlockConfiguration;
-  cv::Size mCellConfiguration;
-  cv::Size mBlockStride;
-  int mNumberOfBins = 9;
-  float mClipping = 0.2f;
-  bool mGammaCorrection = true;
-  bool mSignedGradient = false.;
-
-  std::vector<cv::Mat_<float>> mIntegralImages;
-
- public:
+public:
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
 
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input, const ssig::HOG& descriptor);
@@ -69,15 +59,20 @@ class HOG : public Descriptor2D {
 
   DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
 
+  //DESCRIPTORS_EXPORT void computeGradient(
+  //  const cv::Mat& img,
+  //  std::vector<cv::Mat_<double>>& magnitudes,
+  //  std::vector<cv::Mat_<uint8_t>>& binnings) const;
+
   DESCRIPTORS_EXPORT static void computeVisualization(
-      const cv::Mat_<float> feat, const int nBins, const cv::Size& blockSize,
-      const cv::Size& blockStride, const cv::Size& cellSize,
-      const cv::Size& imgSize, cv::Mat& vis);
+    const cv::Mat_<float> feat, const int nBins, const cv::Size& blockSize,
+    const cv::Size& blockStride, const cv::Size& cellSize,
+    const cv::Size& imgSize, cv::Mat& vis);
 
   DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
 
   DESCRIPTORS_EXPORT void setBlockConfiguration(
-      const cv::Size& blockConfiguration);
+    const cv::Size& blockConfiguration);
 
   DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
 
@@ -86,7 +81,7 @@ class HOG : public Descriptor2D {
   DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
 
   DESCRIPTORS_EXPORT void setCellConfiguration(
-      const cv::Size& cellConfiguration);
+    const cv::Size& cellConfiguration);
 
   DESCRIPTORS_EXPORT int getNumberOfBins() const;
 
@@ -96,29 +91,52 @@ class HOG : public Descriptor2D {
 
   DESCRIPTORS_EXPORT void setClipping(float clipping1);
 
- protected:
+
+  DESCRIPTORS_EXPORT bool getGammaCorrection() const;
+
+  DESCRIPTORS_EXPORT void setGammaCorrection(const bool gammaCorrection);
+
+  DESCRIPTORS_EXPORT bool getSignedGradient() const;
+
+  DESCRIPTORS_EXPORT void setSignedGradient(const bool signedGradient);
+
+protected:
+  cv::Size mBlockConfiguration;
+  cv::Size mCellConfiguration;
+  cv::Size mBlockStride;
+  int mNumberOfBins = 9;
+  float mClipping = 0.2f;
+  bool mGammaCorrection = true;
+  bool mSignedGradient = false;
+
+  std::vector<cv::Mat_<double>> mIntegralImages;
+
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-    cv::Mat& output) override;
+                                          cv::Mat& output) override;
   CORE_EXPORT void read(const cv::FileNode& fn) override {}
 
   CORE_EXPORT void write(cv::FileStorage& fs) const override {}
 
- private:
+  DESCRIPTORS_EXPORT virtual void computeBlockDescriptor(
+    int rowOffset,
+    int colOffset,
+    const std::vector<cv::Mat_<double>>& integralImages,
+    cv::Mat_<float>& out) const;
+
+private:
   // private members
 
-  std::vector<cv::Mat_<float>> computeIntegralGradientImages(
-      const cv::Mat& img) const;
-
-  void getBlockDescriptor(int x, int y,
-                          const std::vector<cv::Mat_<float>>& integralImages,
-                          cv::Mat_<float>& out) const;
+  std::vector<cv::Mat_<double>> computeIntegralGradientImages(
+    const cv::Mat& img) const;
 
   static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
                                          const int nBins,
                                          cv::Mat& visualization);
 };
 
-}  // namespace ssig
+} // namespace ssig
 
-#endif  // !_SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
+#endif // !_SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
+
+
