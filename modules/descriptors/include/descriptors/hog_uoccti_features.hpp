@@ -39,45 +39,36 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
+#ifndef _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
+#define _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
 
-#include <string>
 #include <vector>
 
 #include "descriptor_2d.hpp"
 
-namespace ssig {
 
-class HOG : public Descriptor2D {
+
+namespace ssig {
+class HOGUOCCTI : public ssig::Descriptor2D {
   cv::Size mBlockConfiguration;
   cv::Size mCellConfiguration;
   cv::Size mBlockStride;
   int mNumberOfBins = 9;
   float mClipping = 0.2f;
   bool mGammaCorrection = true;
-  bool mSignedGradient = false;
 
+  std::vector<cv::Mat_<double>> mSignedIntegralImages;
   std::vector<cv::Mat_<double>> mIntegralImages;
 
  public:
-  DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
+  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input);
 
-  DESCRIPTORS_EXPORT HOG(const cv::Mat& input, const ssig::HOG& descriptor);
+  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input,
+                               const ssig::HOGUOCCTI& descriptor);
 
-  DESCRIPTORS_EXPORT HOG(const ssig::HOG& descriptor);
+  DESCRIPTORS_EXPORT HOGUOCCTI(const ssig::HOGUOCCTI& descriptor);
 
-  DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
-
-  // DESCRIPTORS_EXPORT void computeGradient(
-  //  const cv::Mat& img,
-  //  std::vector<cv::Mat_<double>>& magnitudes,
-  //  std::vector<cv::Mat_<uint8_t>>& binnings) const;
-
-  DESCRIPTORS_EXPORT static void computeVisualization(
-    const cv::Mat_<float> feat, const int nBins, const cv::Size& blockSize,
-    const cv::Size& blockStride, const cv::Size& cellSize,
-    const cv::Size& imgSize, cv::Mat& vis);
+  DESCRIPTORS_EXPORT virtual ~HOGUOCCTI(void) = default;
 
   DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
 
@@ -99,44 +90,36 @@ class HOG : public Descriptor2D {
 
   DESCRIPTORS_EXPORT float getClipping() const;
 
-  DESCRIPTORS_EXPORT void setClipping(float clipping1);
+  DESCRIPTORS_EXPORT void setClipping(float clipping);
 
-
-  DESCRIPTORS_EXPORT bool getGammaCorrection() const;
-
-  DESCRIPTORS_EXPORT void setGammaCorrection(const bool gammaCorrection);
-
-  DESCRIPTORS_EXPORT bool getSignedGradient() const;
-
-  DESCRIPTORS_EXPORT void setSignedGradient(const bool signedGradient);
 
  protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+
+  DESCRIPTORS_EXPORT void extractFeatures(
+    const cv::Rect& patch,
+    cv::Mat& output) override;
+
   DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
-  CORE_EXPORT void read(const cv::FileNode& fn) override {}
 
-  CORE_EXPORT void write(cv::FileStorage& fs) const override {}
-
-  DESCRIPTORS_EXPORT virtual void computeBlockDescriptor(
+ private:
+  DESCRIPTORS_EXPORT void computeBlockDescriptor(
     int rowOffset,
     int colOffset,
     const std::vector<cv::Mat_<double>>& integralImages,
+    const std::vector<cv::Mat_<double>>& signedIntegralImages,
     cv::Mat_<float>& out) const;
 
- private:
-  // private members
-
+  DESCRIPTORS_EXPORT
   std::vector<cv::Mat_<double>> computeIntegralGradientImages(
-    const cv::Mat& img) const;
+    const cv::Mat& img,
+    bool signedGradient) const;
 
-  static void generateBlockVisualization(const cv::Mat_<float>& blockFeatures,
-                                         const int nBins,
-                                         cv::Mat& visualization);
+  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(
+    const cv::Mat_<float>& blockFeat) const;
 };
-
 }  // namespace ssig
-
-#endif  // !_SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
+#endif  // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
 
 
