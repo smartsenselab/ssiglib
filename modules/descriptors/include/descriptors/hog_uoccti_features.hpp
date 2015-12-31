@@ -42,7 +42,11 @@
 #ifndef _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
 #define _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
 
+#include <vector>
+
 #include "descriptor_2d.hpp"
+
+
 
 namespace ssig {
 class HOGUOCCTI : public ssig::Descriptor2D {
@@ -56,7 +60,7 @@ class HOGUOCCTI : public ssig::Descriptor2D {
   std::vector<cv::Mat_<double>> mSignedIntegralImages;
   std::vector<cv::Mat_<double>> mIntegralImages;
 
-public:
+ public:
   DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input);
 
   DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input,
@@ -89,15 +93,17 @@ public:
   DESCRIPTORS_EXPORT void setClipping(float clipping);
 
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+
+  DESCRIPTORS_EXPORT void extractFeatures(
+    const cv::Rect& patch,
+    cv::Mat& output) override;
 
   DESCRIPTORS_EXPORT void beforeProcess() override;
 
-private:
+ private:
   DESCRIPTORS_EXPORT void computeBlockDescriptor(
     int rowOffset,
     int colOffset,
@@ -105,13 +111,15 @@ private:
     const std::vector<cv::Mat_<double>>& signedIntegralImages,
     cv::Mat_<float>& out) const;
 
-  DESCRIPTORS_EXPORT std::vector<cv::Mat_<double>> computeIntegralGradientImages(
-    const cv::Mat& img, bool signedGradient) const;
+  DESCRIPTORS_EXPORT
+  std::vector<cv::Mat_<double>> computeIntegralGradientImages(
+    const cv::Mat& img,
+    bool signedGradient) const;
 
-  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(const cv::Mat_<float>& blockFeat) const;
-
+  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(
+    const cv::Mat_<float>& blockFeat) const;
 };
-} // namespace ssig
-#endif // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
+}  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
 
 

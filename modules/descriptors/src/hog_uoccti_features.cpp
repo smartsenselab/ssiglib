@@ -1,47 +1,50 @@
-///*L*****************************************************************************
-//*
-//*  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
-//*
-//*  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
-//*
-//*  By downloading, copying, installing or using the software you agree to this
-//*  license. If you do not agree to this license, do not download, install, copy
-//*  or use the software.
-//*
-//*                Software License Agreement (BSD License)
-//*             For Smart Surveillance Interest Group Library
-//*                         http://ssig.dcc.ufmg.br
-//*
-//*  Redistribution and use in source and binary forms, with or without
-//*  modification, are permitted provided that the following conditions are met:
-//*
-//*    1. Redistributions of source code must retain the above copyright notice,
-//*       this list of conditions and the following disclaimer.
-//*
-//*    2. Redistributions in binary form must reproduce the above copyright
-//*       notice, this list of conditions and the following disclaimer in the
-//*       documentation and/or other materials provided with the distribution.
-//*
-//*    3. Neither the name of the copyright holder nor the names of its
-//*       contributors may be used to endorse or promote products derived from
-//*       this software without specific prior written permission.
-//*
-//*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-//*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-//*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-//*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-//*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-//*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-//*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-//*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-//*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-//*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-//*  POSSIBILITY OF SUCH DAMAGE.
-//*****************************************************************************L*/
+/*L*************************************************************************
+*
+*  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
+*
+*  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
+*
+*  By downloading, copying, installing or using the software you agree to this
+*  license. If you do not agree to this license, do not download, install, copy
+*  or use the software.
+*
+*                Software License Agreement (BSD License)
+*             For Smart Surveillance Interest Group Library
+*                         http://ssig.dcc.ufmg.br
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions are met:
+*
+*    1. Redistributions of source code must retain the above copyright notice,
+*       this list of conditions and the following disclaimer.
+*
+*    2. Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*
+*    3. Neither the name of the copyright holder nor the names of its
+*       contributors may be used to endorse or promote products derived from
+*       this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+*  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+*  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+*  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+*  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+*  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+*  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+*  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+*  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*****************************************************************************L*/
 
 #include "descriptors/hog_uoccti_features.hpp"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/objdetect.hpp>
+
+#include <vector>
+#include <algorithm>
 
 namespace ssig {
 
@@ -56,7 +59,8 @@ HOGUOCCTI::HOGUOCCTI(const cv::Mat& input, const ssig::HOGUOCCTI& descriptor)
   mNumberOfBins = descriptor.getNumberOfBins();
 }
 
-HOGUOCCTI::HOGUOCCTI(const ssig::HOGUOCCTI& descriptor) : Descriptor2D(descriptor) {
+HOGUOCCTI::HOGUOCCTI(const ssig::HOGUOCCTI& descriptor) :
+  Descriptor2D(descriptor) {
   mBlockConfiguration = descriptor.getBlockConfiguration();
   mBlockStride = descriptor.getBlockStride();
   mCellConfiguration = descriptor.getCellConfiguration();
@@ -121,9 +125,9 @@ void HOGUOCCTI::computeBlockDescriptor(
   std::vector<cv::Mat_<float>> cellSignedHistograms(ncells);
   for (int i = 0; i < ncells; ++i) {
     cellHistograms[i].create(1, mNumberOfBins);
-    cellHistograms[i] = FLT_MAX ;
+    cellHistograms[i] = FLT_MAX;
     cellSignedHistograms[i].create(1, signedBins);
-    cellSignedHistograms[i] = FLT_MAX ;
+    cellSignedHistograms[i] = FLT_MAX;
   }
   int cell_it = 0;
   for (int cellRow = 0; cellRow < ncells_rows; ++cellRow) {
@@ -161,14 +165,14 @@ void HOGUOCCTI::computeBlockDescriptor(
 
   cv::Mat_<float> signed_ans, unsigned_ans;
 
-  for (const auto& hist: cellHistograms) {
+  for (const auto& hist : cellHistograms) {
     if (unsigned_ans.empty())
       unsigned_ans = hist;
     else
       cv::hconcat(unsigned_ans.clone(), hist, unsigned_ans);
   }
   unsigned_ans = normalizeBlock(unsigned_ans);
-  for (const auto& hist: cellSignedHistograms) {
+  for (const auto& hist : cellSignedHistograms) {
     if (signed_ans.empty())
       signed_ans = hist;
     else
@@ -190,7 +194,6 @@ void HOGUOCCTI::computeBlockDescriptor(
     l1norms.at<float>(1) += unsigned_ans.at<float>(i + mNumberOfBins);
     l1norms.at<float>(2) += unsigned_ans.at<float>(i + 2 * mNumberOfBins);
     l1norms.at<float>(3) += unsigned_ans.at<float>(i + 3 * mNumberOfBins);
-
   }
   unsigned_avg = unsigned_avg * 0.25f;
 
@@ -206,8 +209,9 @@ void HOGUOCCTI::computeBlockDescriptor(
   cv::hconcat(out.clone(), l1norms, out);
 }
 
-std::vector<cv::Mat_<double>> HOGUOCCTI::computeIntegralGradientImages(const cv::Mat& img,
-                                                                       bool signedGradient) const {
+std::vector<cv::Mat_<double>> HOGUOCCTI::computeIntegralGradientImages(
+  const cv::Mat& img,
+  bool signedGradient) const {
   cv::HOGDescriptor hogCalculator;
   cv::Mat grad, angleOfs;
   int rows, cols = 0;
@@ -313,6 +317,6 @@ void HOGUOCCTI::setClipping(float clipping1) {
 void HOGUOCCTI::read(const cv::FileNode& fn) {}
 
 void HOGUOCCTI::write(cv::FileStorage& fs) const {}
-} // namespace ssig
+}  // namespace ssig
 
 

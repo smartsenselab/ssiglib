@@ -59,7 +59,8 @@ class HOG : public Descriptor2D {
   bool mSignedGradient = false;
 
   std::vector<cv::Mat_<double>> mIntegralImages;
-public:
+
+ public:
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input);
 
   DESCRIPTORS_EXPORT HOG(const cv::Mat& input, const ssig::HOG& descriptor);
@@ -68,7 +69,7 @@ public:
 
   DESCRIPTORS_EXPORT virtual ~HOG(void) = default;
 
-  //DESCRIPTORS_EXPORT void computeGradient(
+  // DESCRIPTORS_EXPORT void computeGradient(
   //  const cv::Mat& img,
   //  std::vector<cv::Mat_<double>>& magnitudes,
   //  std::vector<cv::Mat_<uint8_t>>& binnings) const;
@@ -109,9 +110,7 @@ public:
 
   DESCRIPTORS_EXPORT void setSignedGradient(const bool signedGradient);
 
-protected:
-
-
+ protected:
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
                                           cv::Mat& output) override;
@@ -125,7 +124,7 @@ protected:
     const std::vector<cv::Mat_<double>>& integralImages,
     cv::Mat_<float>& out) const;
 
-private:
+ private:
   // private members
 
   std::vector<cv::Mat_<double>> computeIntegralGradientImages(
@@ -136,8 +135,8 @@ private:
                                          cv::Mat& visualization);
 };
 
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
+#endif  // !_SSIG_DESCRIPTORS_HOG_FEATURES_HPP_
 
 

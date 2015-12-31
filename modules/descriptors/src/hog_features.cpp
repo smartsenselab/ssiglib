@@ -72,7 +72,7 @@ HOG::HOG(const ssig::HOG& descriptor) : Descriptor2D(descriptor) {
   mNumberOfBins = descriptor.getNumberOfBins();
 }
 
-//void HOG::computeGradient(
+// void HOG::computeGradient(
 //  const cv::Mat& img,
 //  std::vector<cv::Mat_<double>>& magnitudes,
 //  std::vector<cv::Mat_<uint8_t>>& binnings) const {
@@ -106,7 +106,7 @@ HOG::HOG(const ssig::HOG& descriptor) : Descriptor2D(descriptor) {
 //    cv::Mat g = localdy + localdx;
 //    cv::sqrt(g.clone(), g);
 //    gradients[c] = g;
-//    gradient = cv::max(gradient, g);    
+//    gradient = cv::max(gradient, g);
 //  }
 //
 //  const float angleRange = mSignedGradient?360.f : 180.f;
@@ -257,7 +257,7 @@ void HOG::computeBlockDescriptor(
       ++cell_it;
     }
   }
-  for (const auto& hist: cellsHist) {
+  for (const auto& hist : cellsHist) {
     if (ans.empty())
       ans = hist;
     else
@@ -410,6 +410,6 @@ void HOG::computeVisualization(const cv::Mat_<float> feat,
   }
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
