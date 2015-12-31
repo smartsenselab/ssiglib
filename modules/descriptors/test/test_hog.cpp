@@ -65,8 +65,8 @@ TEST(HOG, Simple) {
 
   cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
   cv::Mat_<float> expected;
-  stg["expected"]>>expected;
-  
+  stg["expected"] >> expected;
+
   auto sum = static_cast<float>(cv::sum(out(cv::Rect(18, 0, 18, 1)))[0]);
 
   cv::Mat diff;
@@ -99,7 +99,7 @@ TEST(HOG, SimpleSigned) {
 
   cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
   cv::Mat_<float> expected;
-  stg["signed_expected"]>>expected;
+  stg["signed_expected"] >> expected;
 
   auto sum = static_cast<float>(cv::sum(out(cv::Rect(36, 0, 36, 1)))[0]);
 
@@ -159,7 +159,8 @@ TEST(HOG, SignedGradientTest) {
   hog.setGammaCorrection(true);
   hog.extract(out);
 
-  cv::HOGDescriptor cvHog({img.cols, img.rows}, {16, 16}, {8, 8}, {8, 8}, 18, 1, -1,
+  cv::HOGDescriptor cvHog({img.cols, img.rows}, {16, 16}, {8, 8}, {8, 8},
+                          18, 1, -1,
                           cv::HOGDescriptor::L2Hys, 0.2,
                           true,
                           cv::HOGDescriptor::DEFAULT_NLEVELS, true);
