@@ -111,8 +111,10 @@ class ClassifierClustering : public Clustering {
   virtual void initializeClusterings(const std::vector<int>& assignmentSet) = 0;
   virtual void initializeClassifiers() = 0;
   virtual void trainClassifiers(
-      const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-      const std::vector<int>& negativeLearningSet) = 0;
+    const cv::Mat_<float>& samples,
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet,
+    const std::vector<int>& negativeExtras) = 0;
   virtual bool isFinished() = 0;
 
   virtual void postCondition() = 0;
