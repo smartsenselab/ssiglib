@@ -187,8 +187,10 @@ void PLSImageClustering::initializeClusterings(
 void PLSImageClustering::initializeClassifiers() {}
 
 void PLSImageClustering::trainClassifiers(
-  const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-  const std::vector<int>& negativeLearningSet) {
+  const cv::Mat_<float>& samples,
+  const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet,
+  const std::vector<int>& negativeExtras) {
   trainClassifiers(clusters, negativeLearningSet, (*mClassifier));
 }
 

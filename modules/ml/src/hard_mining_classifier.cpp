@@ -123,6 +123,7 @@ void HardMiningClassifier::write(cv::FileStorage& fs) const {
 
 Classifier* HardMiningClassifier::clone() const {
   // TODO(Ricardo):
+
   return nullptr;
 }
 

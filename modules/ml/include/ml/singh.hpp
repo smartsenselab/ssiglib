@@ -48,6 +48,7 @@
 #include <vector>
 
 #include "ml/classifier_clustering.hpp"
+#include "ml/hard_mining_classifier.hpp"
 #include "ml/kmeans.hpp"
 
 namespace ssig {
@@ -79,8 +80,10 @@ class Singh : public ClassifierClustering {
       const std::vector<int>& assignmentSet) override;
   ML_EXPORT void initializeClassifiers() override;
   ML_EXPORT void trainClassifiers(
-      const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-      const std::vector<int>& negativeLearningSet) override;
+    const cv::Mat_<float>& samples,
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet,
+    const std::vector<int>& negativeExtras) override;
   ML_EXPORT bool isFinished() override;
   ML_EXPORT void postCondition() override;
   ML_EXPORT void assignment(const cv::Mat_<float>& samples,
@@ -94,7 +97,7 @@ class Singh : public ClassifierClustering {
   // private members
   float mLambda;
   bool mTrained;
-  std::vector<Classifier*> mClassifiers;
+  std::vector<HardMiningClassifier*> mClassifiers;
   std::unique_ptr<Classifier> mUnderlyingClassifier;
 };
 
