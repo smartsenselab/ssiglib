@@ -42,6 +42,12 @@
 #include "ml/oaa_classifier.hpp"
 
 #include <core/util.hpp>
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+#include <vector>
+
 
 #include <string>
 
@@ -63,26 +69,32 @@ void OAAClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   mSamples = input;
   addLabels(labels);
   int c = -1;
+  std::vector<int> labelOrdering;
   for (int i = 0; i < labels.rows; ++i) {
     auto label = labels[0][i];
     if (mLabelOrderings.find(label) == mLabelOrderings.end()) {
       mLabelOrderings[label] = ++c;
+      labelOrdering.push_back(label);
     }
   }
 
   mClassifiers.resize(mLabelOrderings.size());
-  for (auto& labelIdx : mLabelOrderings) {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i) {
+    const int label = labelOrdering[i];
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
     for (int i = 0; i < labels.rows; ++i) {
-      if (labels[i][0] == labelIdx.first) {
+      if (labels[i][0] == label) {
         localLabels[i][0] = 1;
       } else {
         localLabels[i][0] = -1;
       }
     }
-    mClassifiers[labelIdx.second] =
+    mClassifiers[i] =
       std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
-    mClassifiers[labelIdx.second]->learn(mSamples, localLabels);
+    mClassifiers[i]->learn(mSamples, localLabels);
   }
   mTrained = true;
 }
@@ -92,6 +104,9 @@ int OAAClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
     cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   float maxResp = -FLT_MAX;
   int bestLabel = 0;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int r = 0; r < inp.rows; ++r) {
     int c = 0;
     for (auto& classifier : mClassifiers) {

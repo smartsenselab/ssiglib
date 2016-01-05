@@ -90,6 +90,9 @@ void Kmeans::learn(cv::Mat_<float>& input) {
 void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp) const {
   const int n = mCentroids.rows;
   resp = cv::Mat_<float>::zeros(1, n);
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < n; ++i) {
     resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
                                                   mPredictionDistanceType));

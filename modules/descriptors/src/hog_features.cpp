@@ -40,6 +40,10 @@
 *****************************************************************************L*/
 
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <opencv2/core.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
@@ -166,6 +170,9 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
   cv::split(grad, gradients);
   cv::split(angleOfs, angles);
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < grad.rows; ++i) {
     for (int j = 0; j < grad.cols; ++j) {
       for (int k = 0; k < 2; ++k) {
@@ -177,6 +184,10 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
       }
     }
   }
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int bin = 0; bin < mNumberOfBins; ++bin) {
     cv::Mat intImage;
     auto bingrad = integralImages[bin];
