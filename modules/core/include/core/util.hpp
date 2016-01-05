@@ -91,6 +91,9 @@ class Util {
     }
   }
 
+  /** The order of the sorted elements is stored in ordering.
+  * This employs an Ascending Order
+  **/
   template <class C>
   static C sort(const C& collection, const size_t len,
                 std::vector<int>& ordering) {
@@ -100,8 +103,6 @@ class Util {
     std::sort(ordering.begin(), ordering.end(),
               [&collection](const int& i, const int& j) -> bool {
                 bool ans = collection[i] < collection[j];
-                if (ans) {
-                }
                 return ans;
               });
     C out;
