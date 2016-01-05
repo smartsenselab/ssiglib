@@ -42,6 +42,10 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <core/math.hpp>
 
 #include <string>
@@ -443,7 +447,7 @@ void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
     if (nMergesPerIteration > 0 && merges >= nMergesPerIteration) break;
   } while (hasMerged);
   if (clusters.size() > 0) {
-    ans.insert(ans.end(), clusters.begin(), clusters.end());
+    ans.insert(ans.begin(), clusters.begin(), clusters.end());
   }
   if (merges) mMergeOcurred = true;
   clusters = ans;
