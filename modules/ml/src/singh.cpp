@@ -54,7 +54,7 @@ Singh::~Singh() {
 
 void Singh::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) {
+  cv::Mat_<float>& resp) const{
   resp =
     cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   for (int r = 0; r < inp.rows; ++r) {

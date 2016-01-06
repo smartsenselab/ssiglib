@@ -69,7 +69,7 @@ class Kmeans : public Clustering {
   ML_EXPORT void learn(const cv::Mat_<float>& input) override;
 
   ML_EXPORT void predict(const cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) override;
+                         cv::Mat_<float>& resp) const override;
 
   ML_EXPORT std::vector<Cluster> getClustering() const override;
 
