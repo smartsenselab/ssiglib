@@ -62,7 +62,7 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT void predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) override = 0;
+    cv::Mat_<float>& resp) const override = 0;
 
   ML_EXPORT std::vector<Cluster> getClustering() const override;
   ML_EXPORT bool empty() const override = 0;

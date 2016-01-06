@@ -107,7 +107,7 @@ PLSImageClustering::PLSImageClustering(
 
 void PLSImageClustering::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) {
+  cv::Mat_<float>& resp) const {
   resp.release();
   mClassifier->predict(inp, resp);
 }
