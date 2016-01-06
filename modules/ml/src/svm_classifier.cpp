@@ -62,7 +62,7 @@ std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
   return {{1, 0}, {-1, 1}};
 }
 
-void SVMClassifier::setup(cv::Mat_<float>& input) {
+void SVMClassifier::setup(const cv::Mat_<float>& input) {
   mSamples = input;
   cv::TermCriteria termCrit(mTermType, mMaxIterations, mEpsilon);
 
@@ -87,7 +87,7 @@ void SVMClassifier::setup(cv::Mat_<float>& input) {
   mSvm->setP(mP);
 }
 
-void SVMClassifier::addLabels(cv::Mat_<int>& labels) {
+void SVMClassifier::addLabels(const cv::Mat_<int>& labels) {
   std::unordered_set<int> labelsSet;
   for (int r = 0; r < labels.rows; ++r)
     labelsSet.insert(labels[r][0]);
@@ -98,7 +98,9 @@ void SVMClassifier::addLabels(cv::Mat_<int>& labels) {
   mLabels = labels;
 }
 
-void SVMClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
+void SVMClassifier::learn(
+  const cv::Mat_<float>& input,
+  const cv::Mat_<int>& labels) {
   setup(input);
   assert(!labels.empty());
   addLabels(labels);
@@ -106,7 +108,9 @@ void SVMClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   mSvm->train(mSamples, cv::ml::ROW_SAMPLE, mLabels);
 }
 
-int SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int SVMClassifier::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) const {
   cv::Mat_<float> label;
   mSvm->predict(inp, resp, cv::ml::StatModel::RAW_OUTPUT);
   mSvm->predict(inp, label);
@@ -125,7 +129,7 @@ int SVMClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
 
   int labelIdx = ans[0][0] > 0?1 : -1;
 
-  return inp.rows > 1 ? 0 : labelIdx;
+  return inp.rows > 1?0 : labelIdx;
 }
 
 cv::Mat_<int> SVMClassifier::getLabels() const {

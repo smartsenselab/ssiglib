@@ -78,7 +78,7 @@ std::vector<cv::Rect> Sampling::sampleImage(const cv::Mat& img,
   auto w = winSize.width;
   auto H = img.rows;
   auto W = img.cols;
-  double minDistance = cv::sqrt(h * h / 4 + w * w / 4);
+  double minDistance = cv::sqrt(h * h + w * w) / 1.5;
   cv::Mat bwImg;
   if (img.channels() > 1) {
     cv::cvtColor(img, bwImg, CV_BGR2GRAY);

@@ -39,6 +39,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <opencv2/core.hpp>
 #include <core/util.hpp>
 #include <core/firefly.hpp>
@@ -68,6 +72,9 @@ void ssig::Firefly::setup(cv::Mat_<float>& input) {
   mPopulation = input;
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     mUtilities[0][i] = utility(mPopulation.row(i));
   }
@@ -86,6 +93,9 @@ void ssig::Firefly::setup(cv::Mat_<float>& input) {
 
 
 bool ssig::Firefly::iterate() {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     for (int j = 0; j < mPopulation.rows; ++j) {
       if (mUtilities[0][j] > mUtilities[0][i]) {
@@ -99,6 +109,10 @@ bool ssig::Firefly::iterate() {
       }
     }
   }
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     mUtilities[0][i] = utility(mPopulation.row(i));
   }

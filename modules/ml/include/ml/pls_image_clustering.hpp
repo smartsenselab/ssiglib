@@ -67,8 +67,8 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT virtual ~PLSImageClustering() = default;
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) override;
 
   ML_EXPORT bool empty() const override;
 
@@ -122,7 +122,8 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT void trainClassifiers(
     const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-    const std::vector<int>& negativeLearningSet) override;
+    const std::vector<int>& negativeLearningSet,
+    const std::vector<int>& negativeExtras) override;
 
   ML_EXPORT virtual void trainClassifiers(
     const std::vector<Cluster>& clusters,

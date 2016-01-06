@@ -42,6 +42,10 @@
 
 #include "ml/pls_image_clustering.hpp"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include <core/math.hpp>
 
 #include <string>
@@ -50,7 +54,6 @@
 #include <set>
 #include <utility>
 #include <vector>
-
 
 
 namespace ssig {
@@ -102,8 +105,9 @@ PLSImageClustering::PLSImageClustering(
   Clustering::setInitialClustering(initialClustering);
 }
 
-void PLSImageClustering::predict(cv::Mat_<float>& inp,
-                                 cv::Mat_<float>& resp) const {
+void PLSImageClustering::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) {
   resp.release();
   mClassifier->predict(inp, resp);
 }
@@ -187,8 +191,10 @@ void PLSImageClustering::initializeClusterings(
 void PLSImageClustering::initializeClassifiers() {}
 
 void PLSImageClustering::trainClassifiers(
-  const cv::Mat_<float>& samples, const std::vector<Cluster>& clusters,
-  const std::vector<int>& negativeLearningSet) {
+  const cv::Mat_<float>& samples,
+  const std::vector<Cluster>& clusters,
+  const std::vector<int>& negativeLearningSet,
+  const std::vector<int>& negativeExtras) {
   trainClassifiers(clusters, negativeLearningSet, (*mClassifier));
 }
 
@@ -441,7 +447,7 @@ void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
     if (nMergesPerIteration > 0 && merges >= nMergesPerIteration) break;
   } while (hasMerged);
   if (clusters.size() > 0) {
-    ans.insert(ans.end(), clusters.begin(), clusters.end());
+    ans.insert(ans.begin(), clusters.begin(), clusters.end());
   }
   if (merges) mMergeOcurred = true;
   clusters = ans;

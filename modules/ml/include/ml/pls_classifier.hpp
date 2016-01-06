@@ -51,16 +51,19 @@
 namespace ssig {
 
 class PLSClassifier : public Classifier {
-  virtual void addLabels(cv::Mat_<int>& labels);
+  virtual void addLabels(const cv::Mat_<int>& labels);
 
  public:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT virtual ~PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
-  ML_EXPORT int predict(cv::Mat_<float>& inp,
+  ML_EXPORT int predict(
+    const cv::Mat_<float>& inp,
               cv::Mat_<float>& resp) const override;
-  ML_EXPORT void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ML_EXPORT void learn(
+    const cv::Mat_<float>& input,
+    const cv::Mat_<int>& labels) override;
   ML_EXPORT cv::Mat_<int> getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
   ML_EXPORT bool empty() const override;

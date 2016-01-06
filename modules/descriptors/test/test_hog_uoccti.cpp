@@ -40,73 +40,34 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
-#define _SSIG_ALGORITHMS_CLUSTERING_HPP_
-
+#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/objdetect.hpp>
 
 #include <vector>
-#include <string>
 
-#include "ml/ml_defs.hpp"
-#include "core/algorithm.hpp"
+#include "descriptors/hog_uoccti_features.hpp"
 
-namespace ssig {
-typedef std::vector<int> Cluster;
+TEST(HOGUOCCTI, Simple) {
+  cv::Mat img;
+  cv::Mat_<float> out;
 
-class Clustering : public Algorithm {
- public:
-  ML_EXPORT Clustering(void) = default;
-  ML_EXPORT virtual ~Clustering(void) = default;
+  img = cv::imread("hog1.png");
 
-  ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
+  ssig::HOGUOCCTI hog(img);
+  hog.setBlockConfiguration({16, 16});
+  hog.setBlockStride({8, 8});
+  hog.setCellConfiguration({2, 2});
+  hog.setNumberOfBins(9);
+  hog.extract(out);
 
-  ML_EXPORT virtual void setup(
-    const cv::Mat_<float>& input) = 0;
-
-  ML_EXPORT virtual void learn(
-    const cv::Mat_<float>& input) = 0;
-
-  ML_EXPORT virtual void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) = 0;
-
-  ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
-
-  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
-
-  ML_EXPORT virtual bool empty() const = 0;
-  ML_EXPORT virtual bool isTrained() const = 0;
-  ML_EXPORT virtual bool isClassifier() const = 0;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
-  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  ML_EXPORT int getK() const {
-    return mK;
-  }
-
-  ML_EXPORT void setK(int k) {
-    mK = k;
-  }
-
-  ML_EXPORT int getMaxIterations() const {
-    return mMaxIterations;
-  }
-
-  ML_EXPORT void setMaxIterations(int maxIterations) {
-    mMaxIterations = maxIterations;
-  }
-
- protected:
-  cv::Mat_<float> mSamples;
-  std::vector<Cluster> mClusters;
-  int mK;
-  int mMaxIterations;
-  bool mReady;
-};
-
-}  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
-
+  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
+  cv::Mat_<float> expected;
+  stg["expected_uoccti"] >> expected;
+  cv::Mat diff;
+  cv::compare(out, expected, diff, cv::CMP_EQ);
+  int diffSum = cv::countNonZero(diff);
+  EXPECT_EQ(out.cols, diffSum);
+}
 

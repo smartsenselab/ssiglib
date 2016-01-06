@@ -45,22 +45,31 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "ml/clustering.hpp"
+#include "classification.hpp"
+#include "oaa_classifier.hpp"
 
 namespace ssig {
 
 class Kmeans : public Clustering {
  public:
+  enum PredictionType {
+    NORM_L1 = cv::NormTypes::NORM_L1,
+    NORM_L2 = cv::NormTypes::NORM_L2,
+    CLASSIFIER_PREDICTION
+  };
+
   ML_EXPORT Kmeans(void) = default;
   ML_EXPORT virtual ~Kmeans(void) = default;
   Kmeans(const Kmeans& rhs);
   Kmeans& operator=(const Kmeans& rhs);
 
-  ML_EXPORT void learn(cv::Mat_<float>& input) override;
+  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) override;
 
   ML_EXPORT std::vector<Cluster> getClustering() const override;
 
@@ -70,7 +79,7 @@ class Kmeans : public Clustering {
   ML_EXPORT bool isTrained() const override;
   ML_EXPORT bool isClassifier() const override;
 
-  ML_EXPORT void setup(cv::Mat_<float>& input) override;
+  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
 
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
@@ -85,8 +94,15 @@ class Kmeans : public Clustering {
 
   ML_EXPORT int getPredictionDistanceType() const;
 
-  ML_EXPORT void setPredicitonDistanceType(
-      cv::NormTypes predicitonDistanceType);
+  /**
+  Use this method for simple distance metrics against the centroid of each
+   cluster
+  */
+  ML_EXPORT void setPredictionDistanceType(
+    ssig::Kmeans::PredictionType predicitonDistanceType);
+
+  ML_EXPORT void setPredictionDistanceType(
+    std::unique_ptr<ssig::Classifier> predictionClassifier);
 
  private:
   // private members
@@ -94,11 +110,13 @@ class Kmeans : public Clustering {
   int mFlags;
   int mNumberOfAttempts;
   int mPredictionDistanceType;
+  std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
 
- private:
   void setupLabelMatFromInitialization(cv::Mat& labels);
 };
 
 }  // namespace ssig
 
 #endif  // !_SSIG_ALGORITHMS_KMEANS_HPP_
+
+

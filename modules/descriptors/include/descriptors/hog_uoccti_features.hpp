@@ -39,74 +39,87 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
-#define _SSIG_ALGORITHMS_CLUSTERING_HPP_
-
-#include <opencv2/core.hpp>
+#ifndef _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
+#define _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
 
 #include <vector>
-#include <string>
 
-#include "ml/ml_defs.hpp"
-#include "core/algorithm.hpp"
+#include "descriptor_2d.hpp"
+
+
 
 namespace ssig {
-typedef std::vector<int> Cluster;
+class HOGUOCCTI : public ssig::Descriptor2D {
+  cv::Size mBlockConfiguration;
+  cv::Size mCellConfiguration;
+  cv::Size mBlockStride;
+  int mNumberOfBins = 9;
+  float mClipping = 0.2f;
+  bool mGammaCorrection = true;
 
-class Clustering : public Algorithm {
+  std::vector<cv::Mat_<double>> mSignedIntegralImages;
+  std::vector<cv::Mat_<double>> mIntegralImages;
+
  public:
-  ML_EXPORT Clustering(void) = default;
-  ML_EXPORT virtual ~Clustering(void) = default;
+  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input);
 
-  ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
+  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input,
+                               const ssig::HOGUOCCTI& descriptor);
 
-  ML_EXPORT virtual void setup(
-    const cv::Mat_<float>& input) = 0;
+  DESCRIPTORS_EXPORT HOGUOCCTI(const ssig::HOGUOCCTI& descriptor);
 
-  ML_EXPORT virtual void learn(
-    const cv::Mat_<float>& input) = 0;
+  DESCRIPTORS_EXPORT virtual ~HOGUOCCTI(void) = default;
 
-  ML_EXPORT virtual void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) = 0;
+  DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
 
-  ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
+  DESCRIPTORS_EXPORT void setBlockConfiguration(
+    const cv::Size& blockConfiguration);
 
-  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
+  DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
 
-  ML_EXPORT virtual bool empty() const = 0;
-  ML_EXPORT virtual bool isTrained() const = 0;
-  ML_EXPORT virtual bool isClassifier() const = 0;
+  DESCRIPTORS_EXPORT void setBlockStride(const cv::Size& blockStride);
 
-  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
-  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
+  DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
 
-  ML_EXPORT int getK() const {
-    return mK;
-  }
+  DESCRIPTORS_EXPORT void setCellConfiguration(
+    const cv::Size& cellConfiguration);
 
-  ML_EXPORT void setK(int k) {
-    mK = k;
-  }
+  DESCRIPTORS_EXPORT int getNumberOfBins() const;
 
-  ML_EXPORT int getMaxIterations() const {
-    return mMaxIterations;
-  }
+  DESCRIPTORS_EXPORT void setNumberOfBins(int numberOfBins);
 
-  ML_EXPORT void setMaxIterations(int maxIterations) {
-    mMaxIterations = maxIterations;
-  }
+  DESCRIPTORS_EXPORT float getClipping() const;
+
+  DESCRIPTORS_EXPORT void setClipping(float clipping);
+
 
  protected:
-  cv::Mat_<float> mSamples;
-  std::vector<Cluster> mClusters;
-  int mK;
-  int mMaxIterations;
-  bool mReady;
-};
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
 
+  DESCRIPTORS_EXPORT void extractFeatures(
+    const cv::Rect& patch,
+    cv::Mat& output) override;
+
+  DESCRIPTORS_EXPORT void beforeProcess() override;
+
+ private:
+  DESCRIPTORS_EXPORT void computeBlockDescriptor(
+    int rowOffset,
+    int colOffset,
+    const std::vector<cv::Mat_<double>>& integralImages,
+    const std::vector<cv::Mat_<double>>& signedIntegralImages,
+    cv::Mat_<float>& out) const;
+
+  DESCRIPTORS_EXPORT
+  std::vector<cv::Mat_<double>> computeIntegralGradientImages(
+    const cv::Mat& img,
+    bool signedGradient) const;
+
+  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(
+    const cv::Mat_<float>& blockFeat) const;
+};
 }  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+#endif  // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
 
 

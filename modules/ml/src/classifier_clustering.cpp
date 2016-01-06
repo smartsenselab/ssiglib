@@ -48,12 +48,15 @@
 namespace ssig {
 
 std::vector<Cluster> ClassifierClustering::getClustering() const {
-  return mNewClusters;
+  auto ans = mNewClusters;
+  if (ans.empty())
+    ans = mClusters;
+  return ans;
 }
 
 ClassifierClustering::~ClassifierClustering() {}
 
-void ClassifierClustering::setup(cv::Mat_<float>& input) {
+void ClassifierClustering::setup(const cv::Mat_<float>& input) {
   Clustering::setup(input);
   precondition();
 
@@ -64,11 +67,11 @@ void ClassifierClustering::setup(cv::Mat_<float>& input) {
 
   initializeClusterings(mDiscovery[0]);
   initializeClassifiers();
-  trainClassifiers(mSamples, mClusters, mNatural[0]);
+  trainClassifiers(mSamples, mClusters, mNatural[0], mNatural[1]);
 
   assignment(mSamples, mClusterSize, static_cast<int>(mClusters.size()),
              mDiscovery[1], mClustersResponses, mClustersIds, mNewClusters);
-  trainClassifiers(mSamples, mClusters, mNatural[1]);
+  trainClassifiers(mSamples, mClusters, mNatural[1], mNatural[0]);
 
   mClustersOld = mClusters;
 
@@ -87,7 +90,9 @@ bool ClassifierClustering::iterate() {
 
   assignment(mSamples, mClusterSize, static_cast<int>(mClusters.size()),
              mDiscovery[order], mClustersResponses, mClustersIds, mNewClusters);
-  trainClassifiers(mSamples, mNewClusters, mNatural[order]);
+  trainClassifiers(mSamples, mNewClusters,
+                   mNatural[order],
+                   mNatural[(order + 1) % 2]);
 
   mClustersOld = mClusters;
 
@@ -143,7 +148,7 @@ void ClassifierClustering::precondition() {
   if (mDiscovery.size() <= 0) throw std::length_error("Argument not Set");
 }
 
-void ClassifierClustering::learn(cv::Mat_<float>& input) {
+void ClassifierClustering::learn(const cv::Mat_<float>& input) {
   setup(input);
   /********
     **main loop
