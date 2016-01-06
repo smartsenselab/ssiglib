@@ -59,7 +59,7 @@ SVMClassifier::~SVMClassifier() {
 }
 
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
-  return {{1, 0},{-1, 1}};
+  return {{1, 0}, {-1, 1}};
 }
 
 void SVMClassifier::setup(const cv::Mat_<float>& input) {
@@ -258,6 +258,6 @@ void SVMClassifier::setDegree(float degree) {
   mDegree = degree;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 

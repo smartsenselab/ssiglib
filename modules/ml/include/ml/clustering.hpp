@@ -55,7 +55,7 @@ namespace ssig {
 typedef std::vector<int> Cluster;
 
 class Clustering : public Algorithm {
-public:
+ public:
   ML_EXPORT Clustering(void) = default;
   ML_EXPORT virtual ~Clustering(void) = default;
 
@@ -98,7 +98,7 @@ public:
     mMaxIterations = maxIterations;
   }
 
-protected:
+ protected:
   cv::Mat_<float> mSamples;
   std::vector<Cluster> mClusters;
   int mK;
@@ -106,7 +106,7 @@ protected:
   bool mReady;
 };
 
-} // namespace ssig
-#endif // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
 
 

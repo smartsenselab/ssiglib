@@ -45,16 +45,16 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "ml/clustering.hpp"
 #include "classification.hpp"
-#include <memory>
 #include "oaa_classifier.hpp"
 
 namespace ssig {
 
 class Kmeans : public Clustering {
-public:
+ public:
   enum PredictionType {
     NORM_L1 = cv::NormTypes::NORM_L1,
     NORM_L2 = cv::NormTypes::NORM_L2,
@@ -104,7 +104,7 @@ public:
   ML_EXPORT void setPredictionDistanceType(
     std::unique_ptr<ssig::Classifier> predictionClassifier);
 
-private:
+ private:
   // private members
   cv::Mat_<float> mCentroids;
   int mFlags;
@@ -112,12 +112,11 @@ private:
   int mPredictionDistanceType;
   std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
 
-private:
   void setupLabelMatFromInitialization(cv::Mat& labels);
 };
 
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSIG_ALGORITHMS_KMEANS_HPP_
+#endif  // !_SSIG_ALGORITHMS_KMEANS_HPP_
 
 
