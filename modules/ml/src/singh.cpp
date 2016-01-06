@@ -52,7 +52,9 @@ Singh::~Singh() {
   for (auto& label : mClassifiers) delete label;
 }
 
-void Singh::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+void Singh::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) {
   resp =
     cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   for (int r = 0; r < inp.rows; ++r) {
@@ -135,7 +137,7 @@ void Singh::initializeClusterings(const std::vector<int>& assignmentSet) {
   kmeans.setK(mInitialK);
   kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
   kmeans.setNAttempts(1);
-  kmeans.setPredicitonDistanceType(cv::NORM_L2);
+  kmeans.setPredictionDistanceType(ssig::Kmeans::NORM_L2);
   kmeans.setMaxIterations(1000);
 
   kmeans.learn(feats);

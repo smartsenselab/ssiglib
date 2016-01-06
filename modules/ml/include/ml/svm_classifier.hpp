@@ -53,17 +53,20 @@
 namespace ssig {
 
 class SVMClassifier : public Classifier {
-  ML_EXPORT virtual void setup(cv::Mat_<float>& input);
-  ML_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
+  ML_EXPORT virtual void setup(const cv::Mat_<float>& input);
+  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
 
  public:
   ML_EXPORT SVMClassifier(void);
   ML_EXPORT virtual ~SVMClassifier(void);
 
-  ML_EXPORT void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ML_EXPORT void learn(
+    const cv::Mat_<float>& input,
+    const cv::Mat_<int>& labels) override;
 
-  ML_EXPORT int predict(cv::Mat_<float>& inp,
-              cv::Mat_<float>& resp) const override;
+  ML_EXPORT int predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const override;
 
   ML_EXPORT cv::Mat_<int> getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
@@ -137,3 +140,5 @@ class SVMClassifier : public Classifier {
 }  // namespace ssig
 
 #endif  // !_SSIG_ML_SVMCLASSIFIER_HPP_
+
+

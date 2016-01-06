@@ -67,8 +67,8 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT virtual ~PLSImageClustering() = default;
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) override;
 
   ML_EXPORT bool empty() const override;
 

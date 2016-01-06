@@ -59,13 +59,15 @@ HardMiningClassifier& HardMiningClassifier::operator=(
   return *this;
 }
 
-int HardMiningClassifier::predict(cv::Mat_<float>& inp,
-                                  cv::Mat_<float>& resp) const {
+int HardMiningClassifier::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) const {
   return mClassifier->predict(inp, resp);
 }
 
-void HardMiningClassifier::learn(cv::Mat_<float>& input,
-                                 cv::Mat_<int>& labels) {
+void HardMiningClassifier::learn(
+  const cv::Mat_<float>& input,
+  const cv::Mat_<int>& labels) {
   cv::Mat_<float> inp = input.clone();
   mLabels = labels.clone();
 
@@ -122,9 +124,10 @@ void HardMiningClassifier::write(cv::FileStorage& fs) const {
 }
 
 Classifier* HardMiningClassifier::clone() const {
-  // TODO(Ricardo):
+  auto ans = new HardMiningClassifier(*mClassifier);
+  ans->setNegatives(mSamples);
 
-  return nullptr;
+  return ans;
 }
 
 }  // namespace ssig

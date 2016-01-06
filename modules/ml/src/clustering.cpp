@@ -45,7 +45,7 @@
 
 namespace ssig {
 
-void Clustering::setup(cv::Mat_<float>& input) {
+void Clustering::setup(const cv::Mat_<float>& input) {
   mReady = true;
   mSamples = input;
 }

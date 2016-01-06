@@ -53,16 +53,19 @@
 namespace ssig {
 
 class OAAClassifier : public Classifier {
-  ML_EXPORT virtual void addLabels(cv::Mat_<int>& labels);
+  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
 
- public:
+public:
   ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
   virtual ~OAAClassifier(void) = default;
 
-  ML_EXPORT int predict(cv::Mat_<float>& inp,
-              cv::Mat_<float>& resp) const override;
+  ML_EXPORT int predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const override;
 
-  ML_EXPORT void learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) override;
+  ML_EXPORT void learn(
+    const cv::Mat_<float>& input,
+    const cv::Mat_<int>& labels) override;
   ML_EXPORT cv::Mat_<int> getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
   ML_EXPORT bool empty() const override;
@@ -80,12 +83,12 @@ class OAAClassifier : public Classifier {
 
   ML_EXPORT std::shared_ptr<Classifier> getUnderlyingClassifier() const;
   ML_EXPORT void setUnderlyingClassifier(
-      const Classifier& underlyingClassifier);
+    const Classifier& underlyingClassifier);
 
- protected:
+protected:
   OAAClassifier() = default;
 
- private:
+private:
   // private members
   std::unordered_map<int, int> mLabelOrderings;
   std::vector<std::shared_ptr<Classifier>> mClassifiers;
@@ -95,6 +98,8 @@ class OAAClassifier : public Classifier {
   bool mTrained = false;
 };
 
-}  // namespace ssig
+} // namespace ssig
 
-#endif  // !_SSIG_ML_OAACLASSIFIER_HPP_
+#endif // !_SSIG_ML_OAACLASSIFIER_HPP_
+
+

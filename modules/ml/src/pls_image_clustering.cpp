@@ -56,7 +56,6 @@
 #include <vector>
 
 
-
 namespace ssig {
 
 void PLSImageClustering::buildResponses(
@@ -106,8 +105,9 @@ PLSImageClustering::PLSImageClustering(
   Clustering::setInitialClustering(initialClustering);
 }
 
-void PLSImageClustering::predict(cv::Mat_<float>& inp,
-                                 cv::Mat_<float>& resp) const {
+void PLSImageClustering::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) {
   resp.release();
   mClassifier->predict(inp, resp);
 }
