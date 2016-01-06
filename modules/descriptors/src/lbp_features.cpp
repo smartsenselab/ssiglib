@@ -42,6 +42,10 @@
 
 #include "descriptors/lbp_features.hpp"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace ssig {
 
   LBP::LBP(const cv::Mat& img) : Descriptor2D(img) {}
@@ -118,7 +122,9 @@ void LBP::extractFeatures(const cv::Rect& patch, cv::Mat& output) {
   output = 0;
   cv::Mat_<float> feat = output;
 
-  // TODO(Ricardo): can be parallel
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < patch.width; ++i) {
     for (int j = 0; j < patch.height; ++j) {
       int bin = mBinaryPattern[j + patch.y][i + patch.x];

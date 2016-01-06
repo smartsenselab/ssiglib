@@ -56,7 +56,7 @@ std::vector<Cluster> ClassifierClustering::getClustering() const {
 
 ClassifierClustering::~ClassifierClustering() {}
 
-void ClassifierClustering::setup(cv::Mat_<float>& input) {
+void ClassifierClustering::setup(const cv::Mat_<float>& input) {
   Clustering::setup(input);
   precondition();
 
@@ -148,7 +148,7 @@ void ClassifierClustering::precondition() {
   if (mDiscovery.size() <= 0) throw std::length_error("Argument not Set");
 }
 
-void ClassifierClustering::learn(cv::Mat_<float>& input) {
+void ClassifierClustering::learn(const cv::Mat_<float>& input) {
   setup(input);
   /********
     **main loop

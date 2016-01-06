@@ -71,6 +71,9 @@ std::unordered_map<int, int> Results::compute(
 
   auto len = static_cast<int>(labelsMap.size());
   confusionMatrix = cv::Mat_<int>::zeros(len, len);
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < groundTruth.rows; ++i) {
     auto value = labels.at<int>(i);
     auto gt = groundTruth.at<int>(i);
@@ -115,6 +118,7 @@ std::pair<float, float> Results::crossValidation(
   cv::randShuffle(ordering, 5, &rng);
   int foldLen = static_cast<int>(len / static_cast<float>(nfolds));
   cv::Mat_<float> test, train;
+
   for (int fold = 0; fold < nfolds; ++fold) {
     const int offset = foldLen * fold;
     cv::Mat_<int> foldOrdering = ordering(cv::Range(offset, foldLen + offset),

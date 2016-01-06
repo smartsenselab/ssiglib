@@ -107,6 +107,10 @@ cv::Mat_<float> Math::buildSimilarity(
   int len = input.rows;
   cv::Mat_<float> similarity(len, len);
   similarity = 0;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < len; ++i) {
     for (int j = i + 1; j < len; ++j) {
       cv::Mat_<float> x = input.row(i);

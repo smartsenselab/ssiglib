@@ -59,7 +59,9 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
   // Constructor Copy
 }
 
-int PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
+int PLSClassifier::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) const {
   mPls->predict(inp, resp);
   cv::Mat_<float> r;
   r.create(inp.rows, 2);
@@ -69,23 +71,25 @@ int PLSClassifier::predict(cv::Mat_<float>& inp, cv::Mat_<float>& resp) const {
     r[row][1] = -1 * resp[row][0];
   }
   resp = r;
-  int labelIdx = resp[0][0] > 0 ? 1 : -1;
+  int labelIdx = resp[0][0] > 0?1 : -1;
 
-  return inp.rows > 1 ? 0 : labelIdx;
+  return inp.rows > 1?0 : labelIdx;
 }
 
-void PLSClassifier::addLabels(cv::Mat_<int>& labels) {
+void PLSClassifier::addLabels(const cv::Mat_<int>& labels) {
   std::unordered_set<int> labelsSet;
   for (int r = 0; r < labels.rows; ++r)
     labelsSet.insert(labels[r][0]);
   if (labelsSet.size() > 2) {
     std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
-                       "This is a binary classifier!\n");
+      "This is a binary classifier!\n");
   }
   mLabels = labels;
 }
 
-void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
+void PLSClassifier::learn(
+  const cv::Mat_<float>& input,
+  const cv::Mat_<int>& labels) {
   // TODO(Ricardo): assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
@@ -99,17 +103,25 @@ void PLSClassifier::learn(cv::Mat_<float>& input, cv::Mat_<int>& labels) {
   mTrained = true;
 }
 
-cv::Mat_<int> PLSClassifier::getLabels() const { return mLabels; }
+cv::Mat_<int> PLSClassifier::getLabels() const {
+  return mLabels;
+}
 
 std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
   return {{1, 0}, {-1, 1}};
 }
 
-bool PLSClassifier::empty() const { return static_cast<bool>(mPls); }
+bool PLSClassifier::empty() const {
+  return static_cast<bool>(mPls);
+}
 
-bool PLSClassifier::isTrained() const { return mTrained; }
+bool PLSClassifier::isTrained() const {
+  return mTrained;
+}
 
-bool PLSClassifier::isClassifier() const { return true; }
+bool PLSClassifier::isClassifier() const {
+  return true;
+}
 
 void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
 
@@ -130,10 +142,14 @@ Classifier* PLSClassifier::clone() const {
   return copy;
 }
 
-int PLSClassifier::getNumberOfFactors() const { return mNumberOfFactors; }
+int PLSClassifier::getNumberOfFactors() const {
+  return mNumberOfFactors;
+}
 
 void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
   mNumberOfFactors = numberOfFactors;
 }
 
 }  // namespace ssig
+
+

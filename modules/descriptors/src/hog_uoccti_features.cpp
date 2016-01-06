@@ -123,6 +123,9 @@ void HOGUOCCTI::computeBlockDescriptor(
 
   std::vector<cv::Mat_<float>> cellHistograms(ncells);
   std::vector<cv::Mat_<float>> cellSignedHistograms(ncells);
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < ncells; ++i) {
     cellHistograms[i].create(1, mNumberOfBins);
     cellHistograms[i] = FLT_MAX;

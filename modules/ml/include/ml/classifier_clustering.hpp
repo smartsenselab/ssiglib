@@ -56,12 +56,13 @@ class ClassifierClustering : public Clustering {
  public:
   ML_EXPORT virtual ~ClassifierClustering(void);
 
-  ML_EXPORT void setup(cv::Mat_<float>& input) override;
+  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
 
-  ML_EXPORT void learn(cv::Mat_<float>& input) override;
+  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override = 0;
+  ML_EXPORT void predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) override = 0;
 
   ML_EXPORT std::vector<Cluster> getClustering() const override;
   ML_EXPORT bool empty() const override = 0;
@@ -71,7 +72,7 @@ class ClassifierClustering : public Clustering {
   ML_EXPORT bool iterate();
 
   ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override =
-      0;
+  0;
 
   /**
   This function works as a setter for the natural samples and its split subsets
@@ -96,7 +97,7 @@ class ClassifierClustering : public Clustering {
   ML_EXPORT std::vector<std::vector<int>> getDiscovery() const;
 
   ML_EXPORT void setDiscoveryConfiguration(
-      const std::vector<std::vector<int>>& discoveryConfiguration);
+    const std::vector<std::vector<int>>& discoveryConfiguration);
 
   ML_EXPORT virtual void setClassifier(Classifier& classifier) = 0;
 
@@ -149,3 +150,5 @@ class ClassifierClustering : public Clustering {
 }  // namespace ssig
 
 #endif  // !_SSIG_ML_CLASSIFICATION_CLUSTERING_HPP_
+
+

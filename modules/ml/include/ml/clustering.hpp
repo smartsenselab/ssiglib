@@ -55,18 +55,21 @@ namespace ssig {
 typedef std::vector<int> Cluster;
 
 class Clustering : public Algorithm {
- public:
+public:
   ML_EXPORT Clustering(void) = default;
   ML_EXPORT virtual ~Clustering(void) = default;
 
   ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
 
-  ML_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
+  ML_EXPORT virtual void setup(
+    const cv::Mat_<float>& input) = 0;
 
-  ML_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
+  ML_EXPORT virtual void learn(
+    const cv::Mat_<float>& input) = 0;
 
-  ML_EXPORT virtual void predict(cv::Mat_<float>& inp,
-                                 cv::Mat_<float>& resp) const = 0;
+  ML_EXPORT virtual void predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) = 0;
 
   ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
 
@@ -79,17 +82,23 @@ class Clustering : public Algorithm {
   ML_EXPORT void read(const cv::FileNode& fn) override = 0;
   ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
-  ML_EXPORT int getK() const { return mK; }
+  ML_EXPORT int getK() const {
+    return mK;
+  }
 
-  ML_EXPORT void setK(int k) { mK = k; }
+  ML_EXPORT void setK(int k) {
+    mK = k;
+  }
 
-  ML_EXPORT int getMaxIterations() const { return mMaxIterations; }
+  ML_EXPORT int getMaxIterations() const {
+    return mMaxIterations;
+  }
 
   ML_EXPORT void setMaxIterations(int maxIterations) {
     mMaxIterations = maxIterations;
   }
 
- protected:
+protected:
   cv::Mat_<float> mSamples;
   std::vector<Cluster> mClusters;
   int mK;
@@ -97,5 +106,7 @@ class Clustering : public Algorithm {
   bool mReady;
 };
 
-}  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+} // namespace ssig
+#endif // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+
+

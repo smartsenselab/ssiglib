@@ -55,14 +55,16 @@ namespace ssig {
 
 class Classifier : public Algorithm {
  public:
-  ML_EXPORT virtual int predict(cv::Mat_<float>& inp,
-                      cv::Mat_<float>& resp) const = 0;
+  ML_EXPORT virtual int predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const = 0;
 
   ML_EXPORT Classifier(void) = default;
   ML_EXPORT virtual ~Classifier(void) = default;
 
-  ML_EXPORT virtual void learn(cv::Mat_<float>& input,
-                               cv::Mat_<int>& labels) = 0;
+  ML_EXPORT virtual void learn(
+    const cv::Mat_<float>& input,
+    const cv::Mat_<int>& labels) = 0;
 
   ML_EXPORT virtual cv::Mat_<int> getLabels() const = 0;
   ML_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
@@ -70,7 +72,7 @@ class Classifier : public Algorithm {
   ML_EXPORT virtual void setClassWeights(const int classLabel,
                                          const float weight);
   ML_EXPORT virtual void setClassWeights(
-      const std::unordered_map<int, float>& weights);
+    const std::unordered_map<int, float>& weights);
   ML_EXPORT virtual std::unordered_map<int, float> getClassWeights() const;
 
   ML_EXPORT virtual bool empty() const = 0;
@@ -110,12 +112,12 @@ class Classifier : public Algorithm {
 };
 
 inline void Classifier::setClassWeights(const int classLabel,
-                                            const float weight) {
+                                        const float weight) {
   mWeights[classLabel] = weight;
 }
 
 inline void Classifier::setClassWeights(
-    const std::unordered_map<int, float>& weights) {
+  const std::unordered_map<int, float>& weights) {
   mWeights = weights;
 }
 
@@ -123,15 +125,25 @@ inline std::unordered_map<int, float> Classifier::getClassWeights() const {
   return mWeights;
 }
 
-inline int Classifier::getTermType() const { return mTermType; }
+inline int Classifier::getTermType() const {
+  return mTermType;
+}
 
-inline void Classifier::setTermType(int termType) { mTermType = termType; }
+inline void Classifier::setTermType(int termType) {
+  mTermType = termType;
+}
 
-inline float Classifier::getEpsilon() const { return mEpsilon; }
+inline float Classifier::getEpsilon() const {
+  return mEpsilon;
+}
 
-inline void Classifier::setEpsilon(float epsilon) { mEpsilon = epsilon; }
+inline void Classifier::setEpsilon(float epsilon) {
+  mEpsilon = epsilon;
+}
 
-inline int Classifier::getMaxIterations() const { return mMaxIterations; }
+inline int Classifier::getMaxIterations() const {
+  return mMaxIterations;
+}
 
 inline void Classifier::setMaxIterations(int maxIterations) {
   mMaxIterations = maxIterations;
@@ -144,3 +156,5 @@ inline void Classifier::precondition() {
 }  // namespace ssig
 
 #endif  // !_SSIG_ML_CLASSIFICATION_HPP_
+
+

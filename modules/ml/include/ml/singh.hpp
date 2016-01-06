@@ -58,8 +58,8 @@ class Singh : public ClassifierClustering {
   ML_EXPORT Singh(void) = default;
   ML_EXPORT virtual ~Singh(void);
 
-  ML_EXPORT void predict(cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) override;
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
   ML_EXPORT bool isClassifier() const override;

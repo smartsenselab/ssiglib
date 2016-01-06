@@ -62,7 +62,8 @@ Kmeans& Kmeans::operator=(const Kmeans& rhs) {
   return *this;
 }
 
-void Kmeans::learn(cv::Mat_<float>& input) {
+void Kmeans::learn(
+  const cv::Mat_<float>& input) {
   mCentroids.release();
   mSamples.release();
   mClusters.clear();
@@ -87,12 +88,35 @@ void Kmeans::learn(cv::Mat_<float>& input) {
   }
 }
 
-void Kmeans::predict(cv::Mat_<float>& sample, cv::Mat_<float>& resp) const {
+void Kmeans::predict(
+  const cv::Mat_<float>& sample,
+  cv::Mat_<float>& resp) {
   const int n = mCentroids.rows;
-  resp = cv::Mat_<float>::zeros(1, n);
-  for (int i = 0; i < n; ++i) {
-    resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
-                                                  mPredictionDistanceType));
+
+  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
+    if (mPredictionClassifier)
+      std::runtime_error("Please Set the Classifier before hand!");
+
+    for (int c = 0; c < mClusters.size(); ++c) {
+      cv::Mat_<int> labels(mSamples.rows, 1, -1);
+      for (const auto& id : mClusters[c]) {
+        labels.at<int>(id) = c;
+      }
+      mPredictionClassifier->learn(mSamples, labels);
+    }
+  }
+
+  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
+    mPredictionClassifier->predict(sample, resp);
+  } else {
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int i = 0; i < n; ++i) {
+      resp = cv::Mat_<float>::zeros(1, n);
+      resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
+                                                    mPredictionDistanceType));
+    }
   }
 }
 
@@ -116,16 +140,21 @@ bool Kmeans::isClassifier() const {
   return false;
 }
 
-void Kmeans::setup(cv::Mat_<float>& input) {
+void Kmeans::setup(const cv::Mat_<float>& input) {
   mSamples = input;
 }
 
 void Kmeans::read(const cv::FileNode& fn) {
+  fn["PredictionType"] >> mPredictionDistanceType;
   fn["Centroids"] >> mCentroids;
+  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) { }
 }
 
 void Kmeans::write(cv::FileStorage& fs) const {
-  fs << "Centroids" << mCentroids;
+  if (mPredictionDistanceType != CLASSIFIER_PREDICTION) {
+    fs << "PredictionType" << mPredictionDistanceType;
+    fs << "Centroids" << mCentroids;
+  } else { }
 }
 
 int Kmeans::getFlags() const {
@@ -148,8 +177,16 @@ int Kmeans::getPredictionDistanceType() const {
   return mPredictionDistanceType;
 }
 
-void Kmeans::setPredicitonDistanceType(cv::NormTypes predicitonDistanceType) {
+void Kmeans::setPredictionDistanceType(
+  ssig::Kmeans::PredictionType predicitonDistanceType) {
   mPredictionDistanceType = predicitonDistanceType;
+}
+
+void Kmeans::setPredictionDistanceType(
+  std::unique_ptr<ssig::Classifier> predictionClassifier) {
+  mPredictionDistanceType = CLASSIFIER_PREDICTION;
+  mPredictionClassifier = std::unique_ptr<ssig::OAAClassifier>
+    (new ssig::OAAClassifier(*predictionClassifier));
 }
 
 void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels) {
