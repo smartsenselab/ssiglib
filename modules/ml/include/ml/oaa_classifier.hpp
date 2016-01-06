@@ -55,7 +55,7 @@ namespace ssig {
 class OAAClassifier : public Classifier {
   ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
 
-public:
+ public:
   ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
   virtual ~OAAClassifier(void) = default;
 
@@ -85,10 +85,10 @@ public:
   ML_EXPORT void setUnderlyingClassifier(
     const Classifier& underlyingClassifier);
 
-protected:
+ protected:
   OAAClassifier() = default;
 
-private:
+ private:
   // private members
   std::unordered_map<int, int> mLabelOrderings;
   std::vector<std::shared_ptr<Classifier>> mClassifiers;
@@ -98,8 +98,8 @@ private:
   bool mTrained = false;
 };
 
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSIG_ML_OAACLASSIFIER_HPP_
+#endif  // !_SSIG_ML_OAACLASSIFIER_HPP_
 
 
