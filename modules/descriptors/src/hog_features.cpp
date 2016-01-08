@@ -170,8 +170,8 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
   cv::split(grad, gradients);
   cv::split(angleOfs, angles);
 
-  const int cellWidth = mBlockConfiguration.width/mCellConfiguration.width;
-  const int cellHeight = mBlockConfiguration.height/mCellConfiguration.height;
+  const int cellWidth = mBlockConfiguration.width / mCellConfiguration.width;
+  const int cellHeight = mBlockConfiguration.height / mCellConfiguration.height;
 
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -187,11 +187,11 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
         int centerCol = static_cast<int>(j / cellWidth) + 4;
         int centerRow = static_cast<int>(i / cellHeight) + 4;
         cv::Mat_<int> centerRows = (cv::Mat_<int>(1, 5) <<
-          centerRow, centerRow - cellHeight,
-          centerRow + cellHeight, centerRow, centerRow);
+          centerRow , centerRow - cellHeight ,
+          centerRow + cellHeight , centerRow , centerRow);
         cv::Mat_<int> centerCols = (cv::Mat_<int>(1, 5) <<
-          centerCol, centerCol, centerCol,
-          centerCol - cellWidth, centerCol + cellWidth);
+          centerCol , centerCol , centerCol ,
+          centerCol - cellWidth , centerCol + cellWidth);
 
 
         /* This mat stores the values of the distance of
@@ -215,16 +215,25 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
 
         integralImages[bin][i][j] += mag *
           centerDistances.at<float>(CENTER);
-        if (i >= 0 && i < img.rows && j + cellWidth >= 0 && j + cellWidth < img.cols)
+        if (i >= 0 && i < img.rows
+          && j + cellWidth >= 0
+          && j + cellWidth < img.cols)
           integralImages[bin][i][j + 8] += mag *
             centerDistances.at<float>(TOP);
-        if (i >= 0 && i < img.rows && j - cellWidth >= 0 && j - cellWidth < img.cols)
+        if (i >= 0 && i < img.rows
+          && j - cellWidth >= 0
+          && j - cellWidth < img.cols)
           integralImages[bin][i][j - 8] += mag *
             centerDistances.at<float>(BOTTOM);
-        if (i + cellHeight >= 0 && i + cellHeight < img.rows && j >= 0 && j < img.cols)
+        if (i + cellHeight >= 0 &&
+          i + cellHeight < img.rows &&
+          j >= 0 && j < img.cols)
           integralImages[bin][i + 8][j] += mag *
             centerDistances.at<float>(LEFT);
-        if (i - cellHeight >= 0 && i - cellHeight < img.rows && j >= 0 && j < img.cols)
+        if (i - cellHeight >= 0 &&
+          i - cellHeight < img.rows &&
+          j >= 0 &&
+          j < img.cols)
           integralImages[bin][i - 8][j] += mag *
             centerDistances.at<float>(RIGHT);
       }
