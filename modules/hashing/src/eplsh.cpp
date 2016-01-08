@@ -144,8 +144,8 @@ EPLSH::CandListType& EPLSH::query(const cv::Mat_<float> sample,
     s.release();
 
     float x = r.at<float>(0, 0);
-    for (const int s : mHashModels[m].mSubjects)
-      candidates[s].second += x;
+    for (const int s_it : mHashModels[m].mSubjects)
+      candidates[s_it].second += x;
   }
 
   std::sort(candidates.begin(), candidates.end(),

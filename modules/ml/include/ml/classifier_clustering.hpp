@@ -142,9 +142,6 @@ class ClassifierClustering : public Clustering {
   std::vector<Cluster> mClustersOld, mNewClusters;
   std::vector<std::vector<float>> mClustersResponses;
   std::vector<int> mClustersIds;
-
- private:
-  // private members
 };
 
 }  // namespace ssig

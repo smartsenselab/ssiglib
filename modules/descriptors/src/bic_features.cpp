@@ -73,7 +73,7 @@ void BIC::beforeProcess() {
   cv::split(imageInt, channels);
 
   const int rows = mImage.rows, cols = mImage.cols;
-  cv::Mat_<int> temp(rows, cols, 0);
+  cv::Mat_<int> temp;
   // BGR to RGB
   temp = channels[2] + 256 * channels[1] + 65536 * channels[0];
   const int MAX_VALUE = 255 + 256 * 255 + 65536 * 255;

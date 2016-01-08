@@ -231,7 +231,7 @@ void PLS::computeBstar(int nfactors) {
                  mT.colRange(0, nfactors).t() * mYscaled;
 }
 
-int PLS::getNFactors() { return this->mNFactors; }
+int PLS::getNFactors() const { return this->mNFactors; }
 
 void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
                   int nfactors) {
@@ -286,7 +286,7 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
   }
 }
 
-void PLS::save(cv::FileStorage& storage) {
+void PLS::save(cv::FileStorage& storage) const {
   if (storage.isOpened() == false) {
     throw std::logic_error("Invalid file storage!");
   }
@@ -343,7 +343,7 @@ void PLS::load(std::string filename) {
 }
 
 void PLS::setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                    std::vector<size_t>& indices) {
+                    std::vector<size_t>& indices) const {
   size_t i;
 
   output.create(0, 0);
@@ -353,7 +353,7 @@ void PLS::setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
   }
 }
 
-float PLS::regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) {
+float PLS::regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const {
   float error = 0.0f;
   int i;
 

@@ -65,7 +65,6 @@ int PLSClassifier::predict(
   mPls->predict(inp, resp);
   cv::Mat_<float> r;
   r.create(inp.rows, 2);
-  int ans = 0;
   for (int row = 0; row < inp.rows; ++row) {
     r[row][0] = resp[row][0];
     r[row][1] = -1 * resp[row][0];

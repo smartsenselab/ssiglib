@@ -57,10 +57,10 @@ namespace ssig {
 class PLS {
   // set output matrix according to indices
   void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
+                 std::vector<size_t>& indices) const;
 
   // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses);
+  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
 
   // function to computer the Bstar (nfactors must be the maximum the number of
   // factors of the PLS model)
@@ -77,7 +77,7 @@ class PLS {
                          int nfactors);
 
   // retrieve the number of factors
-  ML_EXPORT int getNFactors();
+  ML_EXPORT int getNFactors() const;
 
   // projection Bstar considering a number of factors (must be smaller than the
   // maximum)
@@ -85,7 +85,7 @@ class PLS {
 
   // save PLS model
   ML_EXPORT void save(std::string filename);
-  ML_EXPORT void save(cv::FileStorage& storage);
+  ML_EXPORT void save(cv::FileStorage& storage) const;
 
   // load PLS model
   ML_EXPORT void load(std::string filename);
