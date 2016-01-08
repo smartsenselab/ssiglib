@@ -72,7 +72,7 @@ float CosineSimilarity::operator()(const cv::Mat& x,
 
 float CorrelationSimilarity::operator()(const cv::Mat& x,
                                         const cv::Mat& y) const {
-  float correlation = 0;
+  float correlation;
   float mX = static_cast<float>(cv::mean(x)[0]);
   float mY = static_cast<float>(cv::mean(y)[0]);
   auto centeredX = x - mX;

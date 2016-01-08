@@ -62,7 +62,7 @@ class Exception : public std::exception {
 
   CORE_EXPORT Exception& operator=(const Exception& rhs);
 
-  CORE_EXPORT virtual const char* what() const throw();
+  CORE_EXPORT const char* what() const throw() override;
 
  protected:
   std::string mMessage;
