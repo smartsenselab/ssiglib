@@ -69,7 +69,7 @@ class Clustering : public Algorithm {
 
   ML_EXPORT virtual void predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) = 0;
+    cv::Mat_<float>& resp) const = 0;
 
   ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
 

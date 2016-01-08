@@ -90,24 +90,26 @@ void Kmeans::learn(
 
 void Kmeans::predict(
   const cv::Mat_<float>& sample,
-  cv::Mat_<float>& resp) {
+  cv::Mat_<float>& resp) const {
   const int n = mCentroids.rows;
 
+  ssig::Classifier* classifier = nullptr;
   if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
-    if (mPredictionClassifier)
+    if (!mPredictionClassifier)
       std::runtime_error("Please Set the Classifier before hand!");
 
+    classifier = mPredictionClassifier->clone();
     for (int c = 0; c < mClusters.size(); ++c) {
       cv::Mat_<int> labels(mSamples.rows, 1, -1);
       for (const auto& id : mClusters[c]) {
         labels.at<int>(id) = c;
       }
-      mPredictionClassifier->learn(mSamples, labels);
+      classifier->learn(mSamples, labels);
     }
   }
 
   if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
-    mPredictionClassifier->predict(sample, resp);
+    classifier->predict(sample, resp);
   } else {
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -118,6 +120,8 @@ void Kmeans::predict(
                                                     mPredictionDistanceType));
     }
   }
+  if (classifier)
+    delete classifier;
 }
 
 std::vector<Cluster> Kmeans::getClustering() const {

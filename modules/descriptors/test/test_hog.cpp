@@ -67,12 +67,13 @@ TEST(HOG, Simple) {
   cv::Mat_<float> expected;
   stg["expected"] >> expected;
 
-  auto sum = static_cast<float>(cv::sum(out(cv::Rect(18, 0, 18, 1)))[0]);
+  auto sum1 = static_cast<float>(cv::sum(out(cv::Rect(0, 0, 36, 1)))[0]);
+  auto sum2 = static_cast<float>(cv::sum(out(cv::Rect(18, 0, 18, 1)))[0]);
 
   cv::Mat diff;
   cv::compare(out, expected, diff, cv::CMP_EQ);
   int diffSum = cv::countNonZero(diff);
-  EXPECT_FLOAT_EQ(0, sum);
+  EXPECT_GT(sum1, sum2);
   EXPECT_EQ(36, diffSum);
 }
 
@@ -101,13 +102,14 @@ TEST(HOG, SimpleSigned) {
   cv::Mat_<float> expected;
   stg["signed_expected"] >> expected;
 
-  auto sum = static_cast<float>(cv::sum(out(cv::Rect(36, 0, 36, 1)))[0]);
+  auto sum1 = static_cast<float>(cv::sum(out(cv::Rect(0, 0, 36, 1)))[0]);
+  auto sum2 = static_cast<float>(cv::sum(out(cv::Rect(36, 0, 36, 1)))[0]);
 
   cv::Mat diff;
   cv::compare(out, expected, diff, cv::CMP_EQ);
   int diffSum = cv::countNonZero(diff);
 
-  EXPECT_FLOAT_EQ(0, sum);
+  EXPECT_GT(sum1, sum2);
   EXPECT_EQ(72, diffSum);
 }
 
