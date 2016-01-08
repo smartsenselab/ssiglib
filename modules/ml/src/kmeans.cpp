@@ -104,7 +104,6 @@ void Kmeans::predict(
       for (const auto& id : mClusters[c]) {
         labels.at<int>(id) = c;
       }
-      
       classifier->learn(mSamples, labels);
     }
   }
@@ -121,7 +120,7 @@ void Kmeans::predict(
                                                     mPredictionDistanceType));
     }
   }
-  if(classifier)
+  if (classifier)
     delete classifier;
 }
 
