@@ -50,6 +50,10 @@ void Clustering::setup(const cv::Mat_<float>& input) {
   mSamples = input;
 }
 
+size_t Clustering::getSize() const {
+  return mClusters.size();
+}
+
 void Clustering::setInitialClustering(const std::vector<Cluster>& init) {
   mClusters = init;
 }

@@ -326,7 +326,7 @@ void PLS::load(const cv::FileNode& node) {
   n["Ystd"] >> mYstd;
 }
 
-void PLS::save(std::string filename) {
+void PLS::save(std::string filename) const {
   cv::FileStorage storage;
 
   storage.open(filename, cv::FileStorage::WRITE);
@@ -343,7 +343,7 @@ void PLS::load(std::string filename) {
 }
 
 void PLS::setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                    std::vector<size_t>& indices) const {
+                    std::vector<size_t>& indices) {
   size_t i;
 
   output.create(0, 0);
