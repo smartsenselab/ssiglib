@@ -39,76 +39,30 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
-#define _SSIG_ALGORITHMS_CLUSTERING_HPP_
-
-#include <opencv2/core.hpp>
-
-#include <vector>
-#include <string>
-
-#include "ml/ml_defs.hpp"
-#include "core/algorithm.hpp"
+#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#include <core/algorithm.hpp>
+#include <memory>
+#include "clustering.hpp"
 
 namespace ssig {
-typedef std::vector<int> Cluster;
+class SpatialPyramid : public ssig::Algorithm {
+public:
+  SpatialPyramid(void);
+  virtual ~SpatialPyramid(void);
+  SpatialPyramid(const SpatialPyramid& rhs);
+  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-class Clustering : public Algorithm {
- public:
-  ML_EXPORT Clustering(void) = default;
-  ML_EXPORT virtual ~Clustering(void) = default;
-
-  ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
-
-  ML_EXPORT virtual void setup(
-    const cv::Mat_<float>& input) = 0;
-
-  ML_EXPORT virtual void learn(
-    const cv::Mat_<float>& input) = 0;
-
-  ML_EXPORT virtual void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const = 0;
-
-  ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
-
-  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
-
-  ML_EXPORT virtual size_t getSize() const;
-
-  ML_EXPORT virtual bool empty() const = 0;
-  ML_EXPORT virtual bool isTrained() const = 0;
-  ML_EXPORT virtual bool isClassifier() const = 0;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
-  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  ML_EXPORT int getK() const {
-    return mK;
-  }
-
-  ML_EXPORT void setK(int k) {
-    mK = k;
-  }
-
-  ML_EXPORT int getMaxIterations() const {
-    return mMaxIterations;
-  }
-
-  ML_EXPORT void setMaxIterations(int maxIterations) {
-    mMaxIterations = maxIterations;
-  }
-
- protected:
-  cv::Mat_<float> mSamples;
-  std::vector<Cluster> mClusters;
-  int mK;
-  int mMaxIterations;
-  bool mReady;
+  void pool(
+    const cv::Size& imageSize,
+    const std::vector<ssig::Clustering*> clusteringMethods,
+    const std::vector<cv::Vec2i>& pyramidConfigurations,
+    const std::vector<float>& poolingWeights,
+    const std::vector<cv::Mat_<float>>& partFeatures,
+    const std::vector<cv::Rect>& partWindows,
+    cv::Mat_<float>& output) const;
 };
-
-}  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+} // namespace ssig
+#endif // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
 
