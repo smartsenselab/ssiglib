@@ -43,9 +43,10 @@
 #define _SSIG_ML_SPATIAL_PYRAMID_HPP_
 #include <core/algorithm.hpp>
 #include <memory>
+#include <vector>
+
 #include "clustering.hpp"
 
-#include <vector>
 
 namespace ssig {
 class SpatialPyramid : public ssig::Algorithm {
