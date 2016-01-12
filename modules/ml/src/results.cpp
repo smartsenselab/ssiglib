@@ -42,6 +42,10 @@
 #include "ml/results.hpp"
 #include <limits.h>
 
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+
 #include <ml/classification.hpp>
 
 #include <algorithm>
@@ -172,6 +176,31 @@ std::pair<float, float> Results::crossValidation(
   return std::make_pair(static_cast<float>(mean[0]),
                         static_cast<float>(stdev[0]));
 }
-}  // namespace ssig
+
+void Results::makeConfusionMatrixVisualization(
+  const int blockWidth,
+  const cv::Mat_<float>& confusionMatrix,
+  cv::Mat& visualization) {
+  if (confusionMatrix.rows != confusionMatrix.cols)
+    std::runtime_error("A confusion matrix must have same\
+      number of rows and cols");
+  const int nclasses = confusionMatrix.rows;
+
+  cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
+    (blockWidth * nclasses, blockWidth * nclasses);
+  for(int i  = 0; i < nclasses; ++i) {
+    for(int j  = 0; j < nclasses; ++j) {
+      cv::Mat aux = visFloat(cv::Rect(i * blockWidth, j * blockWidth,
+        blockWidth, blockWidth));
+      aux = confusionMatrix[i][j];
+    }
+  }
+  cv::Mat aux;
+  cv::normalize(visFloat, aux, 1, 0, cv::NORM_MINMAX);
+  aux.convertTo(aux, CV_8UC1, 255);
+
+  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+}
+} // namespace ssig
 
 
