@@ -41,6 +41,8 @@
 
 #include "ml/spatial_pyramid.hpp"
 
+#include <vector>
+
 namespace ssig {
 SpatialPyramid::SpatialPyramid() {
   // Constructor
@@ -69,14 +71,14 @@ void SpatialPyramid::pool(
   const std::vector<cv::Mat_<float>>& partFeatures,
   const std::vector<cv::Rect>& partWindows,
   cv::Mat_<float>& output) const {
-  if(partFeatures.size() != partWindows.size()) {
+  if (partFeatures.size() != partWindows.size()) {
     std::runtime_error("The number of windows and features must be the same!");
   }
 
   const int modelSize = static_cast<int>(clusteringMethods[0]->getSize());
   const int nbins =
     modelSize * static_cast<int>(clusteringMethods.size());
-  
+
 
   std::vector<cv::Mat_<float>> configurationHistograms(
     pyramidConfigurations.size());
@@ -89,9 +91,9 @@ void SpatialPyramid::pool(
     const int horizontalBucketSize = imageSize.width / currConf[0];
     const int verticalBucketSize = imageSize.height / currConf[1];
 
-    #ifdef _OPENMP
+#ifdef _OPENMP
     #pragma omp parallel for
-    #endif
+#endif
     for (int part_it = 0; part_it < partFeatures.size(); ++part_it) {
       auto partFeature = partFeatures[part_it];
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
@@ -101,7 +103,7 @@ void SpatialPyramid::pool(
         auto clusteringMethod = clusteringMethods[model_it];
         cv::Mat_<float> partResponse;
         clusteringMethod->predict(partFeature, partResponse);
-        
+
         const int x = model_it * modelSize;
         const int width = (model_it + 1) * modelSize;
         partResponse.copyTo(response(cv::Rect(x, 0, width, 1)));
@@ -126,6 +128,6 @@ void SpatialPyramid::pool(
   // TODO(Ricardo): implement a test for this method
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 

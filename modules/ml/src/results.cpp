@@ -49,6 +49,7 @@
 #include <ml/classification.hpp>
 
 #include <algorithm>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <ctime>
@@ -181,17 +182,20 @@ void Results::makeConfusionMatrixVisualization(
   const int blockWidth,
   const cv::Mat_<float>& confusionMatrix,
   cv::Mat& visualization) {
-  if (confusionMatrix.rows != confusionMatrix.cols)
-    std::runtime_error("A confusion matrix must have same\
-      number of rows and cols");
+  if (confusionMatrix.rows != confusionMatrix.cols) {
+    std::string warningMessage = "A confusion matrix must have same";
+    warningMessage = warningMessage + "number of rows and cols";
+    std::runtime_error(warningMessage.c_str());
+  }
   const int nclasses = confusionMatrix.rows;
+
 
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
     (blockWidth * nclasses, blockWidth * nclasses);
-  for(int i  = 0; i < nclasses; ++i) {
-    for(int j  = 0; j < nclasses; ++j) {
+  for (int i = 0; i < nclasses; ++i) {
+    for (int j = 0; j < nclasses; ++j) {
       cv::Mat aux = visFloat(cv::Rect(i * blockWidth, j * blockWidth,
-        blockWidth, blockWidth));
+                                      blockWidth, blockWidth));
       aux = confusionMatrix[i][j];
     }
   }
@@ -201,6 +205,6 @@ void Results::makeConfusionMatrixVisualization(
 
   cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
 }
-} // namespace ssig
+}  // namespace ssig
 
 

@@ -45,9 +45,11 @@
 #include <memory>
 #include "clustering.hpp"
 
+#include <vector>
+
 namespace ssig {
 class SpatialPyramid : public ssig::Algorithm {
-public:
+ public:
   SpatialPyramid(void);
   virtual ~SpatialPyramid(void);
   SpatialPyramid(const SpatialPyramid& rhs);
@@ -62,7 +64,7 @@ public:
     const std::vector<cv::Rect>& partWindows,
     cv::Mat_<float>& output) const;
 };
-} // namespace ssig
-#endif // !_SSF_ML_SPATIAL_PYRAMID_HPP_
+}  // namespace ssig
+#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
 
