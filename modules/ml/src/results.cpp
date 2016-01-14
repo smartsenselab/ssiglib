@@ -188,22 +188,53 @@ void Results::makeConfusionMatrixVisualization(
     std::runtime_error(warningMessage.c_str());
   }
   const int nclasses = confusionMatrix.rows;
-
+  
+  cv::Mat aux = confusionMatrix.clone();
 
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
     (blockWidth * nclasses, blockWidth * nclasses);
+  for(int r = 0; r < confusionMatrix.rows; ++r){
+    cv::normalize(confusionMatrix.row(r), aux.row(r), 1, 0, cv::NORM_L1);
+  }
   for (int i = 0; i < nclasses; ++i) {
     for (int j = 0; j < nclasses; ++j) {
-      cv::Mat aux = visFloat(cv::Rect(i * blockWidth, j * blockWidth,
+      cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
                                       blockWidth, blockWidth));
-      aux = confusionMatrix[i][j];
+      roi = aux.at<float>(i,j);
     }
   }
-  cv::Mat aux;
-  cv::normalize(visFloat, aux, 1, 0, cv::NORM_MINMAX);
-  aux.convertTo(aux, CV_8UC1, 255);
+  
+  visFloat.convertTo(aux, CV_8UC1, 255);
 
   cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+
+  for (int i = 0; i < nclasses; ++i) {
+    cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
+                                          blockWidth, blockWidth));
+    const int x = i * blockWidth;
+    const int y = i * blockWidth;
+    auto color = CV_RGB(255, 255, 255);
+    const int len = blockWidth - 1;
+    cv::line(visualization,
+             cv::Point(x, y),
+             cv::Point(x + len, y),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x, y),
+             cv::Point(x, y + len),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x + len, y),
+             cv::Point(x + len, y + len),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x, y + len),
+             cv::Point(x + len, y + len),
+             color, 1);
+  }
 }
 }  // namespace ssig
 

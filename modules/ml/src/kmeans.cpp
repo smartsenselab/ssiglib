@@ -111,13 +111,14 @@ void Kmeans::predict(
   if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
     classifier->predict(sample, resp);
   } else {
+    resp = cv::Mat_<float>::zeros(1, n);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
     for (int i = 0; i < n; ++i) {
-      resp = cv::Mat_<float>::zeros(1, n);
+      auto cvNorm = static_cast<cv::NormTypes>(mPredictionDistanceType);
       resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
-                                                    mPredictionDistanceType));
+                                                    cvNorm));
     }
   }
   if (classifier)
@@ -158,7 +159,9 @@ void Kmeans::write(cv::FileStorage& fs) const {
   if (mPredictionDistanceType != CLASSIFIER_PREDICTION) {
     fs << "PredictionType" << mPredictionDistanceType;
     fs << "Centroids" << mCentroids;
-  } else { }
+  } else {
+    // TODO(Ricardo):
+  }
 }
 
 int Kmeans::getFlags() const {
