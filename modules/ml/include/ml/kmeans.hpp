@@ -53,7 +53,7 @@
 
 namespace ssig {
 
-  class Kmeans : public Clustering {
+class Kmeans : public Clustering {
  public:
     enum PredictionType {
       NORM_L1 = cv::NormTypes::NORM_L1,
@@ -73,7 +73,8 @@ namespace ssig {
 
     ML_EXPORT std::vector<Cluster> getClustering() const override;
 
-    ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+    ML_EXPORT void getCentroids(
+      cv::Mat_<float>& centroidsMatrix) const override;
 
     ML_EXPORT bool empty() const override;
     ML_EXPORT bool isTrained() const override;
@@ -103,7 +104,8 @@ namespace ssig {
     ML_EXPORT void setPredictionDistanceType(
       ssig::Kmeans::PredictionType predicitonDistanceType);
 
-    ML_EXPORT void setPredictionDistanceType(ssig::Classifier& predictionClassifier);
+    ML_EXPORT void setPredictionDistanceType(
+      ssig::Classifier& predictionClassifier);
 
  private:
     // private members

@@ -49,7 +49,6 @@
 #include <random>
 
 class KmeansClusteringTest : public ::testing::Test {
-
  protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
@@ -77,7 +76,6 @@ class KmeansClusteringTest : public ::testing::Test {
 };
 
 class KmeansClusteringClassifierTest : public ::testing::Test {
-
  protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
