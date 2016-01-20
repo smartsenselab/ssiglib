@@ -43,6 +43,8 @@
 #ifndef _SSIG_DESCRIPTORS_DEFS_HPP_
 #define _SSIG_DESCRIPTORS_DEFS_HPP_
 
+#include <inttypes.h>
+
 namespace ssig {
 
 #ifndef DESCRIPTORS_EXPORT

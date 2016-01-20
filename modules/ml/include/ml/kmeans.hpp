@@ -94,15 +94,16 @@ class Kmeans : public Clustering {
 
   ML_EXPORT int getPredictionDistanceType() const;
 
+
+  ML_EXPORT size_t getSize() const override;
   /**
-  Use this method for simple distance metrics against the centroid of each
-   cluster
-  */
+    Use this method for simple distance metrics against the centroid of each
+     cluster
+    */
   ML_EXPORT void setPredictionDistanceType(
     ssig::Kmeans::PredictionType predicitonDistanceType);
 
-  ML_EXPORT void setPredictionDistanceType(
-    std::unique_ptr<ssig::Classifier> predictionClassifier);
+  ML_EXPORT void setPredictionDistanceType(ssig::Classifier& predictionClassifier);
 
  private:
   // private members

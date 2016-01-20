@@ -40,28 +40,73 @@
 *****************************************************************************L*/
 #include <ml/kmeans.hpp>
 
+#include <ml/pls_classifier.hpp>
+
+
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <vector>
 #include <random>
 
-TEST(KmeansClustering, SanityClusteringTest) {
+class KmeansClusteringTest : public ::testing::Test {
+  protected:
+  cv::Mat_<int> labels;
   cv::Mat_<float> inp;
-  inp = cv::Mat_<float>::zeros(6, 2);
-  auto rnd = std::default_random_engine(1234);
-  for (int i = 0; i < 3; ++i) {
-    inp[i][0] = static_cast<float>(rnd() % 5);
-    inp[i][1] = static_cast<float>(rnd() % 5);
-    inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
-  }
-
+  cv::Mat_<float> negatives;
   ssig::Kmeans kmeans;
-  kmeans.setK(2);
-  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-  kmeans.setMaxIterations(500);
-  kmeans.setNAttempts(1);
-  kmeans.learn(inp);
+  
+
+  void SetUp() override {
+    auto rnd = std::default_random_engine(1234);
+    inp = cv::Mat_<float>::zeros(6, 2);
+    for (int i = 0; i < 3; ++i) {
+      inp[i][0] = static_cast<float>(rnd() % 5);
+      inp[i][1] = static_cast<float>(rnd() % 5);
+      inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
+      inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+    }
+
+    kmeans.setK(2);
+    kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
+    kmeans.setMaxIterations(500);
+    kmeans.setNAttempts(1);
+    kmeans.setPredictionDistanceType(ssig::Kmeans::NORM_L2);
+    kmeans.learn(inp);
+  }
+};
+
+class KmeansClusteringClassifierTest : public ::testing::Test {
+  protected:
+  cv::Mat_<int> labels;
+  cv::Mat_<float> inp;
+  cv::Mat_<float> negatives;
+  ssig::Kmeans kmeans;
+
+
+  void SetUp() override {
+    auto rnd = std::default_random_engine(1234);
+    inp = cv::Mat_<float>::zeros(6, 2);
+    for (int i = 0; i < 3; ++i) {
+      inp[i][0] = static_cast<float>(rnd() % 5);
+      inp[i][1] = static_cast<float>(rnd() % 5);
+      inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
+      inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+    }
+
+    kmeans.setK(2);
+    kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
+    kmeans.setMaxIterations(500);
+    kmeans.setNAttempts(1);
+
+    ssig::PLSClassifier pls;
+    pls.setNumberOfFactors(5);
+    kmeans.setPredictionDistanceType(pls);
+
+    kmeans.learn(inp);
+  }
+};
+
+TEST_F(KmeansClusteringTest, SanityClusteringTest) {
   auto clusters = kmeans.getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
@@ -75,23 +120,21 @@ TEST(KmeansClustering, SanityClusteringTest) {
   }
 }
 
-TEST(KmeansClustering, Persistence) {
-  auto rnd = std::default_random_engine(1234);
-  cv::Mat_<float> inp;
-  inp = cv::Mat_<float>::zeros(6, 2);
-  for (int i = 0; i < 3; ++i) {
-    inp[i][0] = static_cast<float>(rnd() % 5);
-    inp[i][1] = static_cast<float>(rnd() % 5);
-    inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+TEST_F(KmeansClusteringClassifierTest, SanityClusteringTest) {
+  auto clusters = kmeans.getClustering();
+  std::vector<int> gt1 = { 0, 1, 2 };
+  std::vector<int> gt2 = { 3, 4, 5 };
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
+  for (auto& cluster : clusters) {
+    if (cluster != gt1) {
+      EXPECT_EQ(cluster, gt2);
+    } else {
+      EXPECT_EQ(cluster, gt1);
+    }
   }
+}
 
-  ssig::Kmeans kmeans;
-  kmeans.setK(2);
-  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-  kmeans.setMaxIterations(500);
-  kmeans.setNAttempts(1);
-  kmeans.learn(inp);
+TEST_F(KmeansClusteringTest, Persistence) {
   auto clusters = kmeans.getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};

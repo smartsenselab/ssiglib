@@ -46,166 +46,190 @@
 #include <vector>
 #include <string>
 
-namespace ssig {
+namespace ssig{
 
-Kmeans::Kmeans(const Kmeans& rhs): mFlags(rhs.mFlags),
-                                   mNumberOfAttempts(rhs.mNumberOfAttempts),
-                                   mPredictionDistanceType(
-                                     rhs.mPredictionDistanceType) {
-  // Constructor Copy
-}
-
-Kmeans& Kmeans::operator=(const Kmeans& rhs) {
-  if (this != &rhs) {
-    // code here
+  Kmeans::Kmeans(const Kmeans& rhs) : mFlags(rhs.mFlags),
+                                      mNumberOfAttempts(rhs.mNumberOfAttempts),
+                                      mPredictionDistanceType(
+                                                              rhs.mPredictionDistanceType){
+    // Constructor Copy
   }
-  return *this;
-}
 
-void Kmeans::learn(
-  const cv::Mat_<float>& input) {
-  mCentroids.release();
-  mSamples.release();
-  mClusters.clear();
-
-  setup(input);
-  cv::Mat labels;
-  setupLabelMatFromInitialization(labels);
-  cv::TermCriteria term;
-  term.maxCount = mMaxIterations;
-  term.type = term.MAX_ITER;
-
-  cv::Mat centroids = mCentroids;
-  cv::kmeans(mSamples, mK, labels, term, mNumberOfAttempts, mFlags, mCentroids);
-
-  std::unordered_map<int, Cluster> clusters;
-  for (int i = 0; i < labels.rows; ++i) {
-    clusters[labels.at<int>(i, 0)].push_back(i);
+  Kmeans& Kmeans::operator=(const Kmeans& rhs){
+    if (this != &rhs){
+      // code here
+    }
+    return *this;
   }
-  for (int i = 0; i < static_cast<int>(clusters.size()); ++i) {
-    auto cluster = clusters[i];
-    mClusters.push_back(cluster);
-  }
-}
 
-void Kmeans::predict(
-  const cv::Mat_<float>& sample,
-  cv::Mat_<float>& resp) const {
-  const int n = mCentroids.rows;
+  void Kmeans::learn(
+    const cv::Mat_<float>& input){
+    mCentroids.release();
+    mSamples.release();
+    mClusters.clear();
 
-  ssig::Classifier* classifier = nullptr;
-  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
-    if (!mPredictionClassifier)
-      std::runtime_error("Please Set the Classifier before hand!");
+    setup(input);
+    cv::Mat labels;
+    setupLabelMatFromInitialization(labels);
+    cv::TermCriteria term;
+    term.maxCount = mMaxIterations;
+    term.type = term.MAX_ITER;
 
-    classifier = mPredictionClassifier->clone();
-    for (int c = 0; c < mClusters.size(); ++c) {
-      cv::Mat_<int> labels(mSamples.rows, 1, -1);
-      for (const auto& id : mClusters[c]) {
-        labels.at<int>(id) = c;
-      }
-      classifier->learn(mSamples, labels);
+    cv::Mat centroids = mCentroids;
+    cv::kmeans(mSamples, mK, labels, term, mNumberOfAttempts, mFlags, mCentroids);
+
+    std::unordered_map<int, Cluster> clusters;
+    for (int i = 0; i < labels.rows; ++i){
+      clusters[labels.at<int>(i, 0)].push_back(i);
+    }
+    for (int i = 0; i < static_cast<int>(clusters.size()); ++i){
+      auto cluster = clusters[i];
+      mClusters.push_back(cluster);
     }
   }
 
-  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) {
-    classifier->predict(sample, resp);
-  } else {
-    resp = cv::Mat_<float>::zeros(1, n);
+  void Kmeans::predict(
+    const cv::Mat_<float>& sample,
+    cv::Mat_<float>& resp) const{
+    const int n = mCentroids.rows;
+
+    ssig::Classifier* classifier = nullptr;
+    if (mPredictionDistanceType == CLASSIFIER_PREDICTION){
+      if (!mPredictionClassifier)
+        std::runtime_error("Please Set the Classifier before hand!");
+
+      classifier = mPredictionClassifier->clone();
+      for (int c = 0; c < mClusters.size(); ++c){
+        cv::Mat_<int> labels(mSamples.rows, 1, -1);
+        for (const auto& id : mClusters[c]){
+          labels.at<int>(id) = c;
+        }
+        classifier->learn(mSamples, labels);
+      }
+    }
+
+    if (mPredictionDistanceType == CLASSIFIER_PREDICTION){
+      classifier->predict(sample, resp);
+    } else{
+      resp = cv::Mat_<float>::zeros(1, n);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-    for (int i = 0; i < n; ++i) {
-      auto cvNorm = static_cast<cv::NormTypes>(mPredictionDistanceType);
-      resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
-                                                    cvNorm));
+      for (int i = 0; i < n; ++i){
+        auto cvNorm = static_cast<cv::NormTypes>(mPredictionDistanceType);
+        resp[0][i] = -1 * static_cast<float>(cv::norm(sample - mCentroids.row(i),
+                                                      cvNorm));
+      }
+    }
+    if (classifier)
+      delete classifier;
+  }
+
+  std::vector<Cluster> Kmeans::getClustering() const{
+    return mClusters;
+  }
+
+  void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const{
+    centroidsMatrix = mCentroids.clone();
+  }
+
+  bool Kmeans::empty() const{
+    return mCentroids.empty();
+  }
+
+  bool Kmeans::isTrained() const{
+    return !mCentroids.empty();
+  }
+
+  bool Kmeans::isClassifier() const{
+    return false;
+  }
+
+  void Kmeans::setup(const cv::Mat_<float>& input){
+    mSamples = input;
+  }
+
+  void Kmeans::read(const cv::FileNode& fn){
+    fn["PredictionType"] >> mPredictionDistanceType;
+    fn["Centroids"] >> mCentroids;
+    if (mPredictionDistanceType == CLASSIFIER_PREDICTION){
+      if (mPredictionClassifier == nullptr){
+        std::runtime_error("Classifier not set for this prediction type");
+      }
+      mPredictionClassifier->read(fn);
     }
   }
-  if (classifier)
-    delete classifier;
-}
 
-std::vector<Cluster> Kmeans::getClustering() const {
-  return mClusters;
-}
-
-void Kmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
-  centroidsMatrix = mCentroids.clone();
-}
-
-bool Kmeans::empty() const {
-  return mCentroids.empty();
-}
-
-bool Kmeans::isTrained() const {
-  return !mCentroids.empty();
-}
-
-bool Kmeans::isClassifier() const {
-  return false;
-}
-
-void Kmeans::setup(const cv::Mat_<float>& input) {
-  mSamples = input;
-}
-
-void Kmeans::read(const cv::FileNode& fn) {
-  fn["PredictionType"] >> mPredictionDistanceType;
-  fn["Centroids"] >> mCentroids;
-  if (mPredictionDistanceType == CLASSIFIER_PREDICTION) { }
-}
-
-void Kmeans::write(cv::FileStorage& fs) const {
-  if (mPredictionDistanceType != CLASSIFIER_PREDICTION) {
+  void Kmeans::write(cv::FileStorage& fs) const{
     fs << "PredictionType" << mPredictionDistanceType;
     fs << "Centroids" << mCentroids;
-  } else {
-    // TODO(Ricardo):
-  }
-}
+    if (mPredictionDistanceType == CLASSIFIER_PREDICTION){
+      cv::Mat_<float> inp;
+      cv::Mat_<int> labels;
+      int label = 0;
+      for (const auto& cluster : mClusters){
+        for (const auto& clusterElement: cluster){
+          inp.push_back(mSamples.row(clusterElement));
+          labels.push_back(label);
+        }
+        ++label;
+      }
+      mPredictionClassifier->learn(inp, labels);
 
-int Kmeans::getFlags() const {
-  return mFlags;
-}
-
-void Kmeans::setFlags(int flags) {
-  mFlags = flags;
-}
-
-int Kmeans::getNAttempts() const {
-  return mNumberOfAttempts;
-}
-
-void Kmeans::setNAttempts(int nAttempts) {
-  mNumberOfAttempts = nAttempts;
-}
-
-int Kmeans::getPredictionDistanceType() const {
-  return mPredictionDistanceType;
-}
-
-void Kmeans::setPredictionDistanceType(
-  ssig::Kmeans::PredictionType predicitonDistanceType) {
-  mPredictionDistanceType = predicitonDistanceType;
-}
-
-void Kmeans::setPredictionDistanceType(
-  std::unique_ptr<ssig::Classifier> predictionClassifier) {
-  mPredictionDistanceType = CLASSIFIER_PREDICTION;
-  mPredictionClassifier = std::unique_ptr<ssig::OAAClassifier>
-    (new ssig::OAAClassifier(*predictionClassifier));
-}
-
-void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels) {
-  if (mClusters.empty()) return;
-  labels = cv::Mat_<int>::zeros(mSamples.rows, mSamples.cols);
-  for (int c = 0; c < static_cast<int>(mClusters.size()); ++c) {
-    for (int s = 0; s < static_cast<int>(mClusters[c].size()); ++s) {
-      labels.at<int>(mClusters[c][s], 0) = c;
+      mPredictionClassifier->write(fs);
     }
   }
-}
+
+  int Kmeans::getFlags() const{
+    return mFlags;
+  }
+
+  void Kmeans::setFlags(int flags){
+    mFlags = flags;
+  }
+
+  int Kmeans::getNAttempts() const{
+    return mNumberOfAttempts;
+  }
+
+  void Kmeans::setNAttempts(int nAttempts){
+    mNumberOfAttempts = nAttempts;
+  }
+
+  int Kmeans::getPredictionDistanceType() const{
+    return mPredictionDistanceType;
+  }
+
+  size_t Kmeans::getSize() const{
+    int ans = 0;
+    if (mCentroids.empty())
+      ans = ~static_cast<int>(mClusters.size());
+    else
+      ans = mCentroids.rows;
+    return ans;
+  }
+
+  void Kmeans::setPredictionDistanceType(
+    ssig::Kmeans::PredictionType predicitonDistanceType){
+    mPredictionDistanceType = predicitonDistanceType;
+  }
+
+  void Kmeans::setPredictionDistanceType(
+    Classifier& predictionClassifier){
+    mPredictionDistanceType = CLASSIFIER_PREDICTION;
+    mPredictionClassifier = std::unique_ptr<ssig::OAAClassifier>
+      (new ssig::OAAClassifier(predictionClassifier));
+  }
+
+  void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels){
+    if (mClusters.empty()) return;
+    labels = cv::Mat_<int>::zeros(mSamples.rows, mSamples.cols);
+    for (int c = 0; c < static_cast<int>(mClusters.size()); ++c){
+      for (int s = 0; s < static_cast<int>(mClusters[c].size()); ++s){
+        labels.at<int>(mClusters[c][s], 0) = c;
+      }
+    }
+  }
 
 }  // namespace ssig
-
 

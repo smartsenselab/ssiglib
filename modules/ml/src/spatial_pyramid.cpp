@@ -65,12 +65,13 @@ SpatialPyramid& SpatialPyramid::operator=(const SpatialPyramid& rhs) {
 
 void SpatialPyramid::pool(
   const cv::Size& imageSize,
-  const std::vector<ssig::Clustering*> clusteringMethods,
+  const std::vector<ssig::Clustering*>& clusteringMethods,
   const std::vector<cv::Vec2i>& pyramidConfigurations,
   const std::vector<float>& poolingWeights,
   const std::vector<cv::Mat_<float>>& partFeatures,
   const std::vector<cv::Rect>& partWindows,
-  cv::Mat_<float>& output) const {
+  const std::vector<int>& scaledHeights,
+  cv::Mat_<float>& output) {
   if (partFeatures.size() != partWindows.size()) {
     std::runtime_error("The number of windows and features must be the same!");
   }
@@ -88,25 +89,29 @@ void SpatialPyramid::pool(
     const int configurationArea = currConf[0] * currConf[1];
     cv::Mat_<float> configurationHistogram(1, nbins * configurationArea);
     configurationHistogram = 0;
-    const int horizontalBucketSize = imageSize.width / currConf[0];
-    const int verticalBucketSize = imageSize.height / currConf[1];
 
-#ifdef _OPENMP
-    #pragma omp parallel for
-#endif
     for (int part_it = 0; part_it < partFeatures.size(); ++part_it) {
       auto partFeature = partFeatures[part_it];
+      auto scaledHeight = static_cast<float>(scaledHeights[part_it]);
+      float scale = scaledHeight / imageSize.height;
+
+      const int horizontalBucketSize = static_cast<int>(imageSize.width * scale)
+        / currConf[0];
+      const int verticalBucketSize = static_cast<int>(imageSize.height * scale)
+        / currConf[1];
+
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
       const int pyramidCol = partWindows[part_it].y / verticalBucketSize;
-      cv::Mat_<float> response(1, nbins);
+      cv::Mat_<float> response = cv::Mat_<float>::zeros(1, nbins);
       for (int model_it = 0; model_it < clusteringMethods.size(); ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];
         cv::Mat_<float> partResponse;
         clusteringMethod->predict(partFeature, partResponse);
 
         const int x = model_it * modelSize;
-        const int width = (model_it + 1) * modelSize;
-        partResponse.copyTo(response(cv::Rect(x, 0, width, 1)));
+        const int width = modelSize;
+        cv::Mat_<float> roi = response(cv::Rect(x, 0, width, 1));
+        partResponse.copyTo(roi);
       }
       cv::Mat_<int> ordering;
       cv::sortIdx(response, ordering, cv::SORT_DESCENDING);
@@ -128,6 +133,13 @@ void SpatialPyramid::pool(
   // TODO(Ricardo): implement a test for this method
 }
 
+void SpatialPyramid::read(const cv::FileNode& fn) {
+  std::runtime_error("Unimplemented");
+}
+
+void SpatialPyramid::write(cv::FileStorage& fs) const {
+  std::runtime_error("Unimplemented");
+}
 }  // namespace ssig
 
 

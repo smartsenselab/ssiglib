@@ -45,6 +45,8 @@
 #include <memory>
 #include <vector>
 
+
+#include "ml_defs.hpp"
 #include "clustering.hpp"
 
 
@@ -56,14 +58,19 @@ class SpatialPyramid : public ssig::Algorithm {
   SpatialPyramid(const SpatialPyramid& rhs);
   SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-  void pool(
+  ML_EXPORT static void pool(
     const cv::Size& imageSize,
-    const std::vector<ssig::Clustering*> clusteringMethods,
+    const std::vector<ssig::Clustering*>& clusteringMethods,
     const std::vector<cv::Vec2i>& pyramidConfigurations,
     const std::vector<float>& poolingWeights,
     const std::vector<cv::Mat_<float>>& partFeatures,
     const std::vector<cv::Rect>& partWindows,
-    cv::Mat_<float>& output) const;
+    const std::vector<int>& scaledHeights,
+    cv::Mat_<float>& output);
+
+protected:
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 };
 }  // namespace ssig
 #endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_

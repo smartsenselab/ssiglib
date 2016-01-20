@@ -188,22 +188,21 @@ void Results::makeConfusionMatrixVisualization(
     std::runtime_error(warningMessage.c_str());
   }
   const int nclasses = confusionMatrix.rows;
-  
   cv::Mat aux = confusionMatrix.clone();
 
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
     (blockWidth * nclasses, blockWidth * nclasses);
-  for(int r = 0; r < confusionMatrix.rows; ++r){
+  for (int r = 0; r < confusionMatrix.rows; ++r) {
     cv::normalize(confusionMatrix.row(r), aux.row(r), 1, 0, cv::NORM_L1);
   }
   for (int i = 0; i < nclasses; ++i) {
     for (int j = 0; j < nclasses; ++j) {
       cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
                                       blockWidth, blockWidth));
-      roi = aux.at<float>(i,j);
+      roi = aux.at<float>(i, j);
     }
   }
-  
+
   visFloat.convertTo(aux, CV_8UC1, 255);
 
   cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
