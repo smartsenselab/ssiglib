@@ -173,9 +173,9 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
   const int cellWidth = mBlockConfiguration.width / mCellConfiguration.width;
   const int cellHeight = mBlockConfiguration.height / mCellConfiguration.height;
 
-//#ifdef _OPENMP
-//#pragma omp parallel for
-//#endif
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < grad.rows; ++i) {
     for (int j = 0; j < grad.cols; ++j) {
       for (int k = 0; k < 2; ++k) {
@@ -240,9 +240,9 @@ std::vector<cv::Mat_<double>> HOG::computeIntegralGradientImages(
     }
   }
 
-//#ifdef _OPENMP
-//  #pragma omp parallel for
-//#endif
+#ifdef _OPENMP
+  #pragma omp parallel for
+#endif
   for (int bin = 0; bin < mNumberOfBins; ++bin) {
     cv::Mat intImage;
     auto bingrad = integralImages[bin];

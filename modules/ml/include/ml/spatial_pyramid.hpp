@@ -68,7 +68,7 @@ class SpatialPyramid : public ssig::Algorithm {
     const std::vector<int>& scaledHeights,
     cv::Mat_<float>& output);
 
-protected:
+ protected:
   void read(const cv::FileNode& fn) override;
   void write(cv::FileStorage& fs) const override;
 };

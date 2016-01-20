@@ -49,12 +49,13 @@
 #include <random>
 
 class KmeansClusteringTest : public ::testing::Test {
-  protected:
+
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
   ssig::Kmeans kmeans;
-  
+
 
   void SetUp() override {
     auto rnd = std::default_random_engine(1234);
@@ -76,7 +77,8 @@ class KmeansClusteringTest : public ::testing::Test {
 };
 
 class KmeansClusteringClassifierTest : public ::testing::Test {
-  protected:
+
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
@@ -122,8 +124,8 @@ TEST_F(KmeansClusteringTest, SanityClusteringTest) {
 
 TEST_F(KmeansClusteringClassifierTest, SanityClusteringTest) {
   auto clusters = kmeans.getClustering();
-  std::vector<int> gt1 = { 0, 1, 2 };
-  std::vector<int> gt2 = { 3, 4, 5 };
+  std::vector<int> gt1 = {0, 1, 2};
+  std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, static_cast<int>(clusters.size()));
   for (auto& cluster : clusters) {
     if (cluster != gt1) {

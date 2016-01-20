@@ -53,68 +53,68 @@
 
 namespace ssig {
 
-class Kmeans : public Clustering {
+  class Kmeans : public Clustering {
  public:
-  enum PredictionType {
-    NORM_L1 = cv::NormTypes::NORM_L1,
-    NORM_L2 = cv::NormTypes::NORM_L2,
-    CLASSIFIER_PREDICTION
-  };
+    enum PredictionType {
+      NORM_L1 = cv::NormTypes::NORM_L1,
+      NORM_L2 = cv::NormTypes::NORM_L2,
+      CLASSIFIER_PREDICTION
+    };
 
-  ML_EXPORT Kmeans(void) = default;
-  ML_EXPORT virtual ~Kmeans(void) = default;
-  Kmeans(const Kmeans& rhs);
-  Kmeans& operator=(const Kmeans& rhs);
+    ML_EXPORT Kmeans(void) = default;
+    ML_EXPORT virtual ~Kmeans(void) = default;
+    Kmeans(const Kmeans& rhs);
+    Kmeans& operator=(const Kmeans& rhs);
 
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
+    ML_EXPORT void learn(const cv::Mat_<float>& input) override;
 
-  ML_EXPORT void predict(const cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
+    ML_EXPORT void predict(const cv::Mat_<float>& inp,
+      cv::Mat_<float>& resp) const override;
 
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
+    ML_EXPORT std::vector<Cluster> getClustering() const override;
 
-  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+    ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
+    ML_EXPORT bool empty() const override;
+    ML_EXPORT bool isTrained() const override;
+    ML_EXPORT bool isClassifier() const override;
 
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
+    ML_EXPORT void setup(const cv::Mat_<float>& input) override;
 
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
+    ML_EXPORT void read(const cv::FileNode& fn) override;
+    ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT int getFlags() const;
+    ML_EXPORT int getFlags() const;
 
-  ML_EXPORT void setFlags(int flags);
+    ML_EXPORT void setFlags(int flags);
 
-  ML_EXPORT int getNAttempts() const;
+    ML_EXPORT int getNAttempts() const;
 
-  ML_EXPORT void setNAttempts(int nAttempts);
+    ML_EXPORT void setNAttempts(int nAttempts);
 
-  ML_EXPORT int getPredictionDistanceType() const;
+    ML_EXPORT int getPredictionDistanceType() const;
 
 
-  ML_EXPORT size_t getSize() const override;
-  /**
-    Use this method for simple distance metrics against the centroid of each
-     cluster
-    */
-  ML_EXPORT void setPredictionDistanceType(
-    ssig::Kmeans::PredictionType predicitonDistanceType);
+    ML_EXPORT size_t getSize() const override;
+    /**
+      Use this method for simple distance metrics against the centroid of each
+       cluster
+      */
+    ML_EXPORT void setPredictionDistanceType(
+      ssig::Kmeans::PredictionType predicitonDistanceType);
 
-  ML_EXPORT void setPredictionDistanceType(ssig::Classifier& predictionClassifier);
+    ML_EXPORT void setPredictionDistanceType(ssig::Classifier& predictionClassifier);
 
  private:
-  // private members
-  cv::Mat_<float> mCentroids;
-  int mFlags;
-  int mNumberOfAttempts;
-  int mPredictionDistanceType;
-  std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
+    // private members
+    cv::Mat_<float> mCentroids;
+    int mFlags;
+    int mNumberOfAttempts;
+    int mPredictionDistanceType;
+    std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
 
-  void setupLabelMatFromInitialization(cv::Mat& labels);
-};
+    void setupLabelMatFromInitialization(cv::Mat& labels);
+  };
 
 }  // namespace ssig
 
