@@ -116,8 +116,7 @@ class Kmeans : public Clustering {
     std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
 
     void setupLabelMatFromInitialization(cv::Mat& labels);
-  };
-
+};
 }  // namespace ssig
 
 #endif  // !_SSIG_ALGORITHMS_KMEANS_HPP_
