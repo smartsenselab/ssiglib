@@ -1,6 +1,6 @@
 macro(ssig_add_module _name)
 
-	set(module_options REQUIRED)
+	set(module_options REQUIRED CUDA)
 	set(module_oneValueArgs "")
 	set(module_multiValueArgs DEPENDENCIES OPENCV)
 	cmake_parse_arguments(ADD_MODULE_ARGS "${module_options}" "${module_oneValueArgs}" "${module_multiValueArgs}" ${ARGN} )
@@ -44,11 +44,16 @@ macro(ssig_add_module _name)
 
 	list(LENGTH ADD_MODULE_ARGS_OPENCV list_size)
 	if(NOT ${list_size} STREQUAL "0")
-		message(STATUS "Link to OpenCV Libraries:")
 		foreach(lib ${ADD_MODULE_ARGS_OPENCV})
 			message(STATUS "    - ${lib}")
 		endforeach()
-		ssig_link_opencv(${MODULE_NAME} ${ADD_MODULE_ARGS_OPENCV} REQUIRED QUIET)
+		ssig_link_opencv(${MODULE_NAME} ${ADD_MODULE_ARGS_OPENCV})
+	endif()
+
+	if(WITH_CUDA)
+		if(${ADD_MODULE_ARGS_CUDA})
+			ssig_link_cuda(${MODULE_NAME})
+		endif()
 	endif()
 
 	install (TARGETS ${MODULE_NAME} DESTINATION bin)
