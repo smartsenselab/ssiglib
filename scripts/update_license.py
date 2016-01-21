@@ -1,31 +1,37 @@
 #!/usr/bin/python
+"""
+Update SSIGLib lincence
+"""
 
-import sys, getopt
 import re
 import os
 
-def main(argv):
-
-	with open('data/ssf_template_license.txt', 'r') as fTemplateLicense :
-		strTemplateLicense = fTemplateLicense.read()
-
-	rootdir ='../modules'
-	for subdir, dirs, files in os.walk(rootdir, topdown=False):
-		for filename in files:
-			if (filename.endswith('.h') or filename.endswith('.hpp') or filename.endswith('.cpp')):
-				fullpath = os.path.join(subdir, filename)
-				print(fullpath)
-				content = ''
-				with open(fullpath, 'r') as fr:
-					content = fr.read()
-				with open(fullpath, 'w') as fw:
-					matchPattern = re.search('/\*L(.+?)L\*/', content, re.DOTALL)
-					if matchPattern:
-						content = content.replace(matchPattern.group(0), strTemplateLicense)
-						fw.write(content)
-					else:
-						content = strTemplateLicense.rstrip('\r\n') + '\n\n' + content
-						fw.write(content)
-
 if __name__ == "__main__":
-	main(sys.argv[1:])
+
+    with open('data/ssiglib_template_license.txt', 'r') as f_template_license:
+        TEMPLATE = f_template_license.read()
+
+    ROOT_DIR = '../modules'
+    for subdir, _, files in os.walk(ROOT_DIR, topdown=False):
+        for filename in files:
+            if filename.endswith('.h') or \
+					filename.endswith('.hpp') or \
+			   		filename.endswith('.cpp') or \
+			   		filename.endswith('.cu') or filename.endswith('.cuh'):
+                fullpath = os.path.join(subdir, filename)
+                print fullpath
+                content = ''
+                with open(fullpath, 'r') as file_reader:
+                    content = file_reader.read()
+                with open(fullpath, 'w') as file_writer:
+                    match_pattern = re.search(
+                        r'/\*L(.+?)L\*/', content, re.DOTALL)
+                    if match_pattern:
+                        template_strip = TEMPLATE.rstrip('\r\n')
+                        content = content.replace(
+                            match_pattern.group(0), template_strip)
+                        file_writer.write(content)
+                    else:
+                        content = TEMPLATE.rstrip(
+                            '\r\n') + '\n\n' + content
+                        file_writer.write(content)

@@ -1,0 +1,22 @@
+#include "{module}/{file_name}.hpp"
+
+namespace ssig {{
+{class_name}::{class_name}() {{
+  // Constructor
+}}
+
+{class_name}::~{class_name}() {{
+  // Destructor
+}}
+
+{class_name}::{class_name}(const {class_name}& rhs) {{
+  // Constructor Copy
+}}
+
+{class_name}& {class_name}::operator=(const {class_name}& rhs) {{
+  if (this != &rhs) {{
+    // code here
+  }}
+  return *this;
+}}
+}}  // namespace ssig
