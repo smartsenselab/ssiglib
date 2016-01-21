@@ -66,8 +66,13 @@ TEST(HOGUOCCTI, Simple) {
   cv::Mat_<float> expected;
   stg["expected_uoccti"] >> expected;
 
-  auto sim = expected.dot(out) / (cv::norm(expected) * cv::norm(out));
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = 2 * FLT_EPSILON;
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
 
-  EXPECT_GT(sim, 0.7);
+  EXPECT_EQ(31, diffSum);
 }
 
