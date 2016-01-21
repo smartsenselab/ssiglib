@@ -9,6 +9,20 @@ import sys
 import getopt
 
 
+def print_help():
+    "Help Method"
+
+    print'This scripts generates a empty c++ file class" \
+            "(.h and .cpp) according with ssiglib coding style guide.'
+    print 'Options:'
+    print '-h: shows this help.'
+    print '-m --module: specifies which module the new class \
+            will be part.'
+    print '-n --name: the name class.'
+    print '-f --file: the file name of the new class. \
+            (i.e. if file=test the files class will be named test.cpp and test.h)'
+
+
 def read_values(argv):
     "Read variable values"
 
@@ -23,12 +37,12 @@ def read_values(argv):
                                    ["module=", "name=", "file=", \
                                     "only_interface"])
     except getopt.GetoptError:
-        help()
+        print_help()
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            help()
+            print_help()
             sys.exit()
         elif opt in ("-m", "--module"):
             values['module'] = arg
@@ -75,20 +89,6 @@ def generate(argv):
                           str_template_source.format(**values))
 
     print 'Class files generate with success!'
-
-
-def print_help():
-    "Help Method"
-
-    print'This scripts generates a empty c++ file class" \
-            "(.h and .cpp) according with ssiglib coding style guide.'
-    print 'Options:'
-    print '-h: shows this help.'
-    print '-c --component: specifies which component the new class \
-            will be part.'
-    print '-n --name: the name class.'
-    print '-f --file: the file name of the new class. \
-            (i.e. if file=test the files class will be named test.cpp and test.h)'
 
 
 if __name__ == "__main__":
