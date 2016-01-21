@@ -1,4 +1,4 @@
-/*L****************************************************************************
+/*L*****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -37,7 +37,7 @@
 *  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
-****************************************************************************L*/
+*****************************************************************************L*/
 
 #ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_

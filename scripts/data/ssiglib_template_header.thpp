@@ -1,0 +1,16 @@
+#ifndef _SSIG_{module_upper}_{file_name_upper}_HPP_
+#define _SSIG_{module_upper}_{file_name_upper}_HPP_
+
+namespace ssig {{
+class {class_name} {{
+ public:
+  {class_name}(void);
+  virtual ~{class_name}(void);
+  {class_name}(const {class_name}& rhs);
+  {class_name}& operator=(const {class_name}& rhs);
+
+ private:
+  // private members
+}};
+}}  // namespace ssig
+#endif  // !_SSIG_{module_upper}_{file_name_upper}_HPP_
