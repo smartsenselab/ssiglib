@@ -83,14 +83,15 @@ void SpatialPyramid::pool(
 
   std::vector<cv::Mat_<float>> configurationHistograms(
     pyramidConfigurations.size());
-
-  for (int conf_it = 0; conf_it < pyramidConfigurations.size(); ++conf_it) {
+  int len = static_cast<int>(pyramidConfigurations.size());
+  for (int conf_it = 0; conf_it < len; ++conf_it) {
     auto currConf = pyramidConfigurations[conf_it];
     const int configurationArea = currConf[0] * currConf[1];
     cv::Mat_<float> configurationHistogram(1, nbins * configurationArea);
     configurationHistogram = 0;
 
-    for (int part_it = 0; part_it < partFeatures.size(); ++part_it) {
+    const int len2 = static_cast<int>(partFeatures.size());
+    for (int part_it = 0; part_it < len2; ++part_it) {
       auto partFeature = partFeatures[part_it];
       auto scaledHeight = static_cast<float>(scaledHeights[part_it]);
       float scale = scaledHeight / imageSize.height;
@@ -103,7 +104,8 @@ void SpatialPyramid::pool(
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
       const int pyramidCol = partWindows[part_it].y / verticalBucketSize;
       cv::Mat_<float> response = cv::Mat_<float>::zeros(1, nbins);
-      for (int model_it = 0; model_it < clusteringMethods.size(); ++model_it) {
+      const int len3 = static_cast<int>(clusteringMethods.size());
+      for (int model_it = 0; model_it < len3; ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];
         cv::Mat_<float> partResponse;
         clusteringMethod->predict(partFeature, partResponse);
@@ -115,7 +117,8 @@ void SpatialPyramid::pool(
       }
       cv::Mat_<int> ordering;
       cv::sortIdx(response, ordering, cv::SORT_DESCENDING);
-      for (int weight_it = 0; weight_it < poolingWeights.size(); ++weight_it) {
+      const int len4 = static_cast<int>(poolingWeights.size());
+      for (int weight_it = 0; weight_it < len4; ++weight_it) {
         int idx = ordering.at<int>(weight_it);
         idx = idx + pyramidRow * 2 + pyramidCol;
         configurationHistogram.at<float>(idx) += poolingWeights[weight_it];

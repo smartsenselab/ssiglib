@@ -100,7 +100,7 @@ namespace ssig {
         std::runtime_error("Please Set the Classifier before hand!");
 
       classifier = mPredictionClassifier->clone();
-      for (int c = 0; c < mClusters.size(); ++c) {
+      for (int c = 0; c < static_cast<int>(mClusters.size()); ++c) {
         cv::Mat_<int> labels(mSamples.rows, 1, -1);
         for (const auto& id : mClusters[c]) {
           labels.at<int>(id) = c;

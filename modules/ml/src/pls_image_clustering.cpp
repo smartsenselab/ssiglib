@@ -42,10 +42,6 @@
 
 #include "ml/pls_image_clustering.hpp"
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 #include <core/math.hpp>
 
 #include <string>
