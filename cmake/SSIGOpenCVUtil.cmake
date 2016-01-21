@@ -20,12 +20,12 @@ macro(ssig_find_opencv)
 	mark_as_advanced(OPENCV_FOUND)
 endmacro()
 
-macro(ssig_link_opencv TARGET)
+macro(ssig_link_opencv SSIGLIB_MODULE)
 	ssig_find_opencv(COMPONENTS ${ARGN} REQUIRED)
 
 	find_path(OpenCV_INCLUDE_DIR "opencv/cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" DOC "")
-	target_include_directories(${TARGET} PUBLIC ${OpenCV_INCLUDE_DIR})
+	target_include_directories(${SSIGLIB_MODULE} PUBLIC ${OpenCV_INCLUDE_DIR})
 
-	target_link_libraries(${TARGET} ${OpenCV_LIBS})
+	target_link_libraries(${SSIGLIB_MODULE} ${OpenCV_LIBS})
 
 endmacro()

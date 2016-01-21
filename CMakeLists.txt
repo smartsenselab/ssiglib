@@ -149,6 +149,7 @@ endif()
 # CMake Auxiliary Files
 ###############################################################################
 include(cmake/SSIGOpenCVUtil.cmake)
+include(cmake/SSIGCudaUtil.cmake)
 include(cmake/SSIGModules.cmake)
 include(cmake/SSIGUtil.cmake)
 
