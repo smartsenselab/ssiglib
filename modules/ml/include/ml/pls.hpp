@@ -56,8 +56,8 @@ namespace ssig {
 
 class PLS {
   // set output matrix according to indices
-  void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices) const;
+  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+                 std::vector<size_t>& indices);
 
   // compute regression error
   float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
@@ -84,7 +84,7 @@ class PLS {
   ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
   // save PLS model
-  ML_EXPORT void save(std::string filename);
+  ML_EXPORT void save(std::string filename) const;
   ML_EXPORT void save(cv::FileStorage& storage) const;
 
   // load PLS model

@@ -39,57 +39,40 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_CORE_RESULTS_HPP_
-#define _SSIG_CORE_RESULTS_HPP_
-
-#include <opencv2/core.hpp>
-#include <ml/ml_defs.hpp>
-
-#include <utility>
+#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#include <core/algorithm.hpp>
+#include <memory>
 #include <vector>
-#include <unordered_map>
+
+
+#include "ml_defs.hpp"
+#include "clustering.hpp"
+
 
 namespace ssig {
-class Classifier;
-
-class Results {
-  cv::Mat_<int> mConfusionMatrix;
-  cv::Mat_<int> mGroundTruth;
-  cv::Mat_<int> mLabels;
-
+class SpatialPyramid : public ssig::Algorithm {
  public:
-  ML_EXPORT Results() = default;
-  ML_EXPORT Results(
-    const cv::Mat_<int>& actualLabels,
-    const cv::Mat_<int>& expectedLabels);
-  ML_EXPORT virtual ~Results(void) = default;
+  SpatialPyramid(void);
+  virtual ~SpatialPyramid(void);
+  SpatialPyramid(const SpatialPyramid& rhs);
+  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-  int getClassesLen() const;
+  ML_EXPORT static void pool(
+    const cv::Size& imageSize,
+    const std::vector<ssig::Clustering*>& clusteringMethods,
+    const std::vector<cv::Vec2i>& pyramidConfigurations,
+    const std::vector<float>& poolingWeights,
+    const std::vector<cv::Mat_<float>>& partFeatures,
+    const std::vector<cv::Rect>& partWindows,
+    const std::vector<int>& scaledHeights,
+    cv::Mat_<float>& output);
 
-  ML_EXPORT float getAccuracy();
-
-  ML_EXPORT cv::Mat getConfusionMatrix();
-
-  ML_EXPORT static std::pair<float, float> crossValidation(
-    const cv::Mat_<float>& features,
-    const cv::Mat_<int>& labels,
-    const int nfolds,
-    ssig::Classifier& classifier,
-    std::vector<Results>& out);
-
-  ML_EXPORT static void makeConfusionMatrixVisualization(
-    const int blockWidth,
-    const cv::Mat_<float>& confusionMatrix,
-    cv::Mat& visualization);
-
- private:
-  std::unordered_map<int, int> compute(
-    const cv::Mat_<int>& groundTruth,
-    const cv::Mat_<int>& labels,
-    cv::Mat_<int>& confusionMatrix) const;
-  // private members
+ protected:
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 };
 }  // namespace ssig
-#endif  // !_SSF_CORE_RESULTS_HPP_
+#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
 

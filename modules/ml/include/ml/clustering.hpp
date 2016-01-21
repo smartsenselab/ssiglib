@@ -75,6 +75,8 @@ class Clustering : public Algorithm {
 
   virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
 
+  ML_EXPORT virtual size_t getSize() const;
+
   ML_EXPORT virtual bool empty() const = 0;
   ML_EXPORT virtual bool isTrained() const = 0;
   ML_EXPORT virtual bool isClassifier() const = 0;

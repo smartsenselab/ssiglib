@@ -164,6 +164,10 @@ void PLSImageClustering::setMaximumMergedPairs(int nMergesPerIteration1) {
   nMergesPerIteration = nMergesPerIteration1;
 }
 
+size_t PLSImageClustering::getSize() const {
+  return mNewClusters.size();
+}
+
 void PLSImageClustering::precondition() {}
 
 void PLSImageClustering::initializeClusterings(

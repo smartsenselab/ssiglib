@@ -45,7 +45,7 @@
 #include <opencv2/highgui.hpp>
 #include <descriptors/color_histogram_hsv.hpp>
 
-TEST(HAV_Histogram, HSV_Simple) {
+TEST(HSV_Histogram, HSV_Simple) {
   cv::Mat img(1, 4, CV_8UC3);
 
   img.at<cv::Vec3b>(0, 0) = cv::Vec3b(255, 21, 0);

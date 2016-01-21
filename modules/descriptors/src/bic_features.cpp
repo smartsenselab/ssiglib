@@ -72,7 +72,6 @@ void BIC::beforeProcess() {
   mImage.convertTo(imageInt, CV_32SC3);
   cv::split(imageInt, channels);
 
-  const int rows = mImage.rows, cols = mImage.cols;
   cv::Mat_<int> temp;
   // BGR to RGB
   temp = channels[2] + 256 * channels[1] + 65536 * channels[0];
