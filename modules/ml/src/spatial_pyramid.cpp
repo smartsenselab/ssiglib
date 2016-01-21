@@ -89,7 +89,7 @@ void SpatialPyramid::pool(
     const int configurationArea = currConf[0] * currConf[1];
     cv::Mat_<float> configurationHistogram(1, nbins * configurationArea);
     configurationHistogram = 0;
-    
+
     const int len2 = static_cast<int>(partFeatures.size());
     for (int part_it = 0; part_it < len2; ++part_it) {
       auto partFeature = partFeatures[part_it];

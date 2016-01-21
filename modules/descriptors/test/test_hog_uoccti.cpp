@@ -65,9 +65,9 @@ TEST(HOGUOCCTI, Simple) {
   cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
   cv::Mat_<float> expected;
   stg["expected_uoccti"] >> expected;
-  
+
   auto sim = expected.dot(out) / (cv::norm(expected) * cv::norm(out));
-  
+
   EXPECT_GT(sim, 0.7);
 }
 
