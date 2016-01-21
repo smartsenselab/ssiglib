@@ -27,8 +27,9 @@ if __name__ == "__main__":
                     match_pattern = re.search(
                         r'/\*L(.+?)L\*/', content, re.DOTALL)
                     if match_pattern:
+                        template_strip = TEMPLATE.rstrip('\r\n')
                         content = content.replace(
-                            match_pattern.group(0), TEMPLATE)
+                            match_pattern.group(0), template_strip)
                         file_writer.write(content)
                     else:
                         content = TEMPLATE.rstrip(
