@@ -70,9 +70,12 @@ TEST(HOG, Simple) {
   auto sum1 = static_cast<float>(cv::sum(out(cv::Rect(0, 0, 36, 1)))[0]);
   auto sum2 = static_cast<float>(cv::sum(out(cv::Rect(18, 0, 18, 1)))[0]);
 
-  cv::Mat diff;
-  cv::compare(out, expected, diff, cv::CMP_EQ);
-  int diffSum = cv::countNonZero(diff);
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = 2*FLT_EPSILON;
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
   EXPECT_GT(sum1, sum2);
   EXPECT_EQ(36, diffSum);
 }
