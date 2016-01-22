@@ -7,9 +7,9 @@ endif()
 
 add_library(hayai STATIC "src/hayai_posix_main.cpp")
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-  set_target_properties(hayai PROPERTIES COMPILE_FLAGS "/WX- /W0")
-endif()
+# if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+#   set_target_properties(hayai PROPERTIES COMPILE_FLAGS "/WX- /W0")
+# endif()
 
 target_include_directories(hayai PUBLIC ${hayai_SOURCE_DIR}/include)
 
