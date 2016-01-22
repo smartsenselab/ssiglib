@@ -55,9 +55,8 @@ class Haralick {
 
   DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
 
-private:
-  float static f1_asm(const cv::Mat& mat);
-  
+ private:
+  static float f1_asm(const cv::Mat& mat);
 };
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_

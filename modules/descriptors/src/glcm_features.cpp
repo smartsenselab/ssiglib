@@ -42,24 +42,19 @@
 #include "descriptors/glcm_features.hpp"
 
 namespace ssig {
-GLCM::GLCM(){
-}
+GLCM::GLCM() {}
 
-GLCM::~GLCM() {
-}
+GLCM::~GLCM() {}
 
-GLCM::GLCM(const GLCM& rhs) {
-}
+GLCM::GLCM(const GLCM& rhs) {}
 
 GLCM& GLCM::operator=(const GLCM& rhs) {
   /*if (this != &rhs) {
-    
+
   }*/
   return *this;
 }
 
-cv::Mat GLCM::calculate_haralick(const cv::Mat& mat){
-  return cv::Mat();
-}
+cv::Mat GLCM::calculate_haralick(const cv::Mat& mat) { return cv::Mat(); }
 
 }  // namespace ssig

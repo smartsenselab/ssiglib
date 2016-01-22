@@ -61,12 +61,12 @@ Haralick& Haralick::operator=(const Haralick& rhs) {
   return *this;
 }
 
-cv::Mat Haralick::compute(const cv::Mat& mat){
+cv::Mat Haralick::compute(const cv::Mat& mat) {
   float f1 = Haralick::f1_asm(mat);
   return cv::Mat();
 }
 
-float Haralick::f1_asm(const cv::Mat& mat){
+float Haralick::f1_asm(const cv::Mat& mat) {
   float sum = 0.0;
 
   for (int i = 0; i < mat.rows; ++i)

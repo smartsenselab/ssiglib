@@ -49,7 +49,6 @@ namespace ssig {
 
 class GLCM {
  public:
-
   DESCRIPTORS_EXPORT GLCM();
 
   DESCRIPTORS_EXPORT virtual ~GLCM(void);
@@ -61,9 +60,6 @@ class GLCM {
   DESCRIPTORS_EXPORT static cv::Mat calculate_haralick(const cv::Mat& mat);
 
  private:
-  
-
-
 };
 
 }  // namespace ssig
