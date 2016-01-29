@@ -88,6 +88,8 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT int getInitialK() const;
 
+  ML_EXPORT size_t getSize() const override;
+
   ML_EXPORT int getClusterSize() const;
 
   ML_EXPORT void setClusterSize(int m);
@@ -135,6 +137,7 @@ class ClassifierClustering : public Clustering {
   // A.K.A the M value in Singh et al.(2012)
   int mClusterSize = 5;
   int mIt = 0;
+  size_t mLength = 0;
 
   std::vector<std::vector<int>> mDiscovery;
   std::vector<std::vector<int>> mNatural;

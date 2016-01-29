@@ -112,9 +112,6 @@ class PLSImageClustering : public ClassifierClustering {
 
   ML_EXPORT void setMaximumMergedPairs(int nMergesPerIteration1);
 
-
-  ML_EXPORT size_t getSize() const override;
-
  protected:
   ML_EXPORT void precondition() override;
 
