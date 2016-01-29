@@ -81,7 +81,7 @@ void SpatialPyramid::pool(
   for (int model_it = 0; model_it < len3; ++model_it) {
     // This loop counts how many bins exists in the total number of models
     auto clusteringMethod = clusteringMethods[model_it];
-    nbins += clusteringMethod->getSize();
+    nbins += static_cast<int>(clusteringMethod->getSize());
   }
  
   std::vector<cv::Mat_<float>> configurationHistograms(
@@ -112,7 +112,7 @@ void SpatialPyramid::pool(
       int x = 0;
       for (int model_it = 0; model_it < len3; ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];
-        const int modelSize = clusteringMethod->getSize();
+        const int modelSize = static_cast<int>(clusteringMethod->getSize());
         
         cv::Mat_<float> partResponse;
         clusteringMethod->predict(partFeature, partResponse);
