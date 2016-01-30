@@ -139,6 +139,7 @@ void PLSImageClustering::setClusterRepresentationType(
 void PLSImageClustering::read(const cv::FileNode& fn) {
   auto node = fn["Classifier"];
   mClassifier->read(node);
+  mLength  = static_cast<int>(mClassifier->getLabelsOrdering().size());
 }
 
 void PLSImageClustering::write(cv::FileStorage& fs) const {
