@@ -77,8 +77,8 @@ void SpatialPyramid::pool(
   }
 
   int nbins = 0;
-  int len3 = static_cast<int>(clusteringMethods.size());
-  for (int model_it = 0; model_it < len3; ++model_it) {
+  const int modelsLength = static_cast<int>(clusteringMethods.size());
+  for (int model_it = 0; model_it < modelsLength; ++model_it) {
     // This loop counts how many bins exists in the total number of models
     auto clusteringMethod = clusteringMethods[model_it];
     nbins += static_cast<int>(clusteringMethod->getSize());
@@ -108,9 +108,9 @@ void SpatialPyramid::pool(
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
       const int pyramidCol = partWindows[part_it].y / verticalBucketSize;
       cv::Mat_<float> response = cv::Mat_<float>::zeros(1, nbins);
-      const int len3 = static_cast<int>(clusteringMethods.size());
+      
       int x = 0;
-      for (int model_it = 0; model_it < len3; ++model_it) {
+      for (int model_it = 0; model_it < modelsLength; ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];
         const int modelSize = static_cast<int>(clusteringMethod->getSize());
 
