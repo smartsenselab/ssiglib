@@ -92,4 +92,7 @@ def generate(argv):
 
 
 if __name__ == "__main__":
-    generate(sys.argv[1:])
+    if len(sys.argv) == 1:
+        print_help()
+    else:
+        generate(sys.argv[1:])
