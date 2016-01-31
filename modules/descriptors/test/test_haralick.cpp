@@ -39,37 +39,20 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
 
+#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
-#include "descriptors/descriptors_defs.hpp"
+#include <opencv2/highgui.hpp>
+#include <descriptors/haralick.hpp>
 
-namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT Haralick(void);
-  DESCRIPTORS_EXPORT virtual ~Haralick(void);
-  DESCRIPTORS_EXPORT Haralick(const Haralick& rhs);
-  DESCRIPTORS_EXPORT Haralick& operator=(const Haralick& rhs);
+TEST(HARALICK, BIC_Simple) {
+  cv::Mat img = cv::imread("bic.png");
+  ASSERT_FALSE(img.empty());
+  ssig::BIC bic(img);
+  cv::Mat featVector;
 
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
+  bic.extract(featVector);
+  ASSERT_FLOAT_EQ(9, featVector.at<float>(127));
+  ASSERT_FLOAT_EQ(8, featVector.at<float>(63));
+}
 
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Dierctionality(const cv::Mat& mat);
-};
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
