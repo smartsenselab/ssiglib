@@ -67,7 +67,8 @@ namespace ssig {
     cv::TermCriteria termCrit(mTermType, mMaxIterations, mEpsilon);
 
     if (!mWeights.empty()) {
-      mClassWeights = cv::Mat::ones(static_cast<int>(mWeights.size()), 1, CV_32F);
+      mClassWeights = cv::Mat::ones(
+        static_cast<int>(mWeights.size()), 1, CV_32F);
       for (auto& it : mWeights) {
         mClassWeights.at<float>(it.first) = it.second;
       }
@@ -142,7 +143,9 @@ namespace ssig {
     return mLabels;
   }
 
-  void SVMClassifier::setClassWeights(const int classLabel, const float weight) {
+  void SVMClassifier::setClassWeights(
+    const int classLabel,
+    const float weight) {
     mWeights[classLabel] = weight;
   }
 

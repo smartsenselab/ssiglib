@@ -108,7 +108,7 @@ void SpatialPyramid::pool(
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
       const int pyramidCol = partWindows[part_it].y / verticalBucketSize;
       cv::Mat_<float> response = cv::Mat_<float>::zeros(1, nbins);
-      
+
       int x = 0;
       for (int model_it = 0; model_it < modelsLength; ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];

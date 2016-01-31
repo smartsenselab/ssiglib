@@ -122,7 +122,7 @@ class SVMClassifier : public Classifier {
   ML_EXPORT size_t getCrossValidationState() const;
 
   ML_EXPORT void setCrossValidationState(int kfolds);
- 
+
  private:
   // private members
   cv::Ptr<cv::ml::SVM> mSvm;
