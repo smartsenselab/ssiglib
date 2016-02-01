@@ -68,7 +68,7 @@ TEST(HOGUOCCTI, Simple) {
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = 2 * FLT_EPSILON;
+  epsilon = static_cast<float>(1e-5);
   cv::Mat cmpson;
   cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
   int diffSum = cv::countNonZero(cmpson);
