@@ -39,79 +39,58 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor_2d.hpp"
+#ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
+#define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
 
-#include <vector>
+#include <opencv2/core.hpp>
+
+#include "descriptor_2d.hpp"
+
 
 namespace ssig {
+  class ColorCoOccurrence : public Descriptor2D {
+ public:
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input,
+      const ColorCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const ColorCoOccurrence& descriptor);
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input) {
-    mImage = input.clone();
-  }
+    DESCRIPTORS_EXPORT virtual ~ColorCoOccurrence(void) = default;
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input,
-    const Descriptor& descriptor) {
-    mImage = input.clone();
-  }
 
-  Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
-    mImage = descriptor.mImage;
-  }
+    DESCRIPTORS_EXPORT std::vector<int> getLevels() const;
+    DESCRIPTORS_EXPORT void setLevels(const std::vector<int>& levels);
+    DESCRIPTORS_EXPORT std::vector<int> getBins() const;
+    DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
 
-  void Descriptor2D::extract(cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
-  }
+ protected:
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
 
-  void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
-    cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    for (auto& window : windows) {
-      cv::Mat feat;
+ private:
+    // private members
+    // the number of levels in each channel
+    std::vector<int> mLevels;
+    std::vector<int> mBins;
 
-      auto windowRoi = cv::Rect(0, 0, mImage.cols, mImage.rows);
-      auto intersection = windowRoi & window;
+    int mDi = 0, mDj = 1;
 
-      if (intersection != window) {
-        std::runtime_error(
-          "Invalid patch, its intersection with the image is" +
-          std::string("different than the patch itself"));
-      }
-      extractFeatures(window, feat);
-      output.push_back(feat);
-    }
-  }
+    std::vector<cv::Mat> mChannels;
+    static void ColorCoOccurrence::extractFromPair(
+      const cv::Mat& m1,
+      const cv::Mat& m2,
+      const int levels1,
+      const int bins1,
+      const int levels2,
+      const int bins2,
+      const cv::Rect window,
+      cv::Mat& out);
 
-  void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
-    cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    const float SQROOT_TWO = 1.4142136237f;
-    for (auto& keypoint : keypoints) {
-      cv::Mat feat;
-      // diameter = l\|2
-      int length = static_cast<int>(keypoint.size * SQROOT_TWO);
-      const int x = static_cast<int>(keypoint.pt.x),
-          y = static_cast<int>(keypoint.pt.y),
-          width = length, height = length;
-      auto window = cv::Rect(x, y, width, height);
-      extractFeatures(window, feat);
-      output.push_back(feat);
-    }
-  }
-
-  void Descriptor2D::setData(const cv::Mat& img) {
-    mImage = img.clone();
-    beforeProcess();
-    mIsPrepared = true;
-  }
+    static int isValidPixel(int i, int j, int rows, int cols);
+  };
 }  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
+
 

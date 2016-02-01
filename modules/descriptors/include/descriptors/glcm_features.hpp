@@ -47,32 +47,40 @@
 #include <opencv2/core.hpp>
 
 namespace ssig {
-  class GrayLevelCoOccurrence : Descriptor2D {
-  public:
-    GrayLevelCoOccurrence(void);
-    virtual ~GrayLevelCoOccurrence(void);
-    GrayLevelCoOccurrence(const GrayLevelCoOccurrence& rhs);
-    GrayLevelCoOccurrence& operator=(const GrayLevelCoOccurrence& rhs);
+  class GrayLevelCoOccurrence : public Descriptor2D {
+ public:
 
-  protected:
-    void read(const cv::FileNode& fn) override;
-    void write(cv::FileStorage& fs) const override;
-    void beforeProcess() override;
-    void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input,
+      const GrayLevelCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const GrayLevelCoOccurrence& descriptor);
 
-  private:
+    DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
+
+    DESCRIPTORS_EXPORT int getLevels() const;
+    DESCRIPTORS_EXPORT int getBins() const;
+
+    DESCRIPTORS_EXPORT void setLevels(const int levels);
+    DESCRIPTORS_EXPORT void setBins(const int bins);
+
+ protected:
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+
+ private:
     // private members
+    // the number of levels of intensity
+    int mLevels = 256;
+    int mBins = 8;
 
-    static int isPixel(int i, int j, int rows, int cols);
+    int mDi = 0, mDj = 1;
 
-    void GrayLevelCoOccurrence::getGLCM(
-      const cv::Mat& img,
-      const int bin_width,
-      const int di,
-      const int dj,
-      cv::Mat& glcm) const;
+    cv::Mat mGreyImg;
+    static int isValidPixel(int i, int j, int rows, int cols);
   };
-} // namespace ssig
-#endif // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
 

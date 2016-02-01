@@ -64,6 +64,7 @@ class Descriptor2D : public Descriptor {
   /**
   On the first call to this function it returns the feature vector
   of the mat set up in the constructor call.
+
   @param out The matrix that will contain the feature vector for the current
   patch.
   */
