@@ -42,18 +42,18 @@
 #ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
-#include "descriptor_2d.hpp"
-
 #include <opencv2/core.hpp>
 
-namespace ssig {
-  class GrayLevelCoOccurrence : public Descriptor2D {
- public:
+#include "descriptor_2d.hpp"
 
+namespace ssig {
+class GrayLevelCoOccurrence : public Descriptor2D {
+ public:
     DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
     DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input,
       const GrayLevelCoOccurrence& descriptor);
-    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const GrayLevelCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
+      const GrayLevelCoOccurrence& descriptor);
 
     DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
 
@@ -67,7 +67,8 @@ namespace ssig {
     DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
     DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
     DESCRIPTORS_EXPORT void beforeProcess() override;
-    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+      cv::Mat& output) override;
 
  private:
     // private members
