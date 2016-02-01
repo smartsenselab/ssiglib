@@ -58,9 +58,9 @@ TEST(GLCM, GLCM_Simple) {
 
   cv::Mat_<float> expected = (cv::Mat_<float>(1, 16) <<
     235, 0, 0, 1,
-    2,0,0,0,
-    0,0,0,0,
-    0,2,0,0);
+    2, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 2, 0, 0);
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);

@@ -80,7 +80,7 @@ class GrayLevelCoOccurrence : public Descriptor2D {
 
     cv::Mat mGreyImg;
     static int isValidPixel(int i, int j, int rows, int cols);
-  };
+};
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 

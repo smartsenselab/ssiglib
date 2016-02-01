@@ -46,6 +46,7 @@
 
 #include "descriptor_2d.hpp"
 
+#include <vector>
 
 namespace ssig {
 class ColorCoOccurrence : public Descriptor2D {
@@ -91,7 +92,7 @@ class ColorCoOccurrence : public Descriptor2D {
       cv::Mat& out);
 
     static int isValidPixel(int i, int j, int rows, int cols);
-  };
+};
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
 
