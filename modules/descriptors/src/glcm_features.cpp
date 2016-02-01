@@ -39,79 +39,81 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor_2d.hpp"
+#include "descriptors/glcm_features.hpp"
 
-#include <vector>
+#include <opencv2/imgproc.hpp>
 
 namespace ssig {
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
+    Descriptor2D(input) {}
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input) {
-    mImage = input.clone();
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input,
+    const GrayLevelCoOccurrence& descriptor) :
+    Descriptor2D(input, descriptor) {}
+
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(
+    const GrayLevelCoOccurrence& descriptor) : Descriptor2D(descriptor) {}
+
+  int GrayLevelCoOccurrence::getLevels() const {
+    return mLevels;
   }
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input,
-    const Descriptor& descriptor) {
-    mImage = input.clone();
+  int GrayLevelCoOccurrence::getBins() const {
+    return mBins;
   }
 
-  Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
-    mImage = descriptor.mImage;
+  void GrayLevelCoOccurrence::setLevels(const int levels) {
+    mLevels = levels;
   }
 
-  void Descriptor2D::extract(cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
+  void GrayLevelCoOccurrence::setBins(const int bins) {
+    mBins = bins;
   }
 
-  void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
+  void GrayLevelCoOccurrence::read(const cv::FileNode& fn) { }
+
+  void GrayLevelCoOccurrence::write(cv::FileStorage& fs) const { }
+
+  void GrayLevelCoOccurrence::beforeProcess() {
+    if (mImage.channels() == 3 || mImage.channels() == 4)
+      cv::cvtColor(mImage, mGreyImg, CV_BGR2GRAY);
+    else
+      mImage.copyTo(mGreyImg);
+
+    mGreyImg.convertTo(mGreyImg, CV_32FC1);
+  }
+
+  void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
     cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    for (auto& window : windows) {
-      cv::Mat feat;
+    output = cv::Mat::zeros(mBins, mBins, CV_32FC1);
+    int binWidth = mLevels / mBins;
 
-      auto windowRoi = cv::Rect(0, 0, mImage.cols, mImage.rows);
-      auto intersection = windowRoi & window;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int i = patch.y; i < patch.height; i++) {
+      for (int j = patch.x; j < patch.width; j++) {
+        if (isValidPixel(i + mDi, j + mDj, mGreyImg.rows, mGreyImg.cols)) {
+          auto val1 = static_cast<int>(mGreyImg.at<float>(i, j) / binWidth);
+          auto val2 = static_cast<int>(
+            mGreyImg.at<float>(i + mDi, j + mDj) / binWidth);
 
-      if (intersection != window) {
-        std::runtime_error(
-          "Invalid patch, its intersection with the image is" +
-          std::string("different than the patch itself"));
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+          {
+            output.at<float>(val1, val2)++;
+          }
+        }
       }
-      extractFeatures(window, feat);
-      output.push_back(feat);
     }
+    output = output.reshape(1, 1);
   }
 
-  void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
-    cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    const float SQROOT_TWO = 1.4142136237f;
-    for (auto& keypoint : keypoints) {
-      cv::Mat feat;
-      // diameter = l\|2
-      int length = static_cast<int>(keypoint.size * SQROOT_TWO);
-      const int x = static_cast<int>(keypoint.pt.x),
-          y = static_cast<int>(keypoint.pt.y),
-          width = length, height = length;
-      auto window = cv::Rect(x, y, width, height);
-      extractFeatures(window, feat);
-      output.push_back(feat);
-    }
+  int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+    return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
   }
 
-  void Descriptor2D::setData(const cv::Mat& img) {
-    mImage = img.clone();
-    beforeProcess();
-    mIsPrepared = true;
-  }
 }  // namespace ssig
+
 

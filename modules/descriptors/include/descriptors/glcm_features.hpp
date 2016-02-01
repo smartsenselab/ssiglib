@@ -39,79 +39,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor_2d.hpp"
+#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
-#include <vector>
+#include "descriptor_2d.hpp"
+
+#include <opencv2/core.hpp>
 
 namespace ssig {
+  class GrayLevelCoOccurrence : public Descriptor2D {
+ public:
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input) {
-    mImage = input.clone();
-  }
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input,
+      const GrayLevelCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const GrayLevelCoOccurrence& descriptor);
 
-  Descriptor2D::Descriptor2D(const cv::Mat& input,
-    const Descriptor& descriptor) {
-    mImage = input.clone();
-  }
+    DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
 
-  Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
-    mImage = descriptor.mImage;
-  }
+    DESCRIPTORS_EXPORT int getLevels() const;
+    DESCRIPTORS_EXPORT int getBins() const;
 
-  void Descriptor2D::extract(cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
-  }
+    DESCRIPTORS_EXPORT void setLevels(const int levels);
+    DESCRIPTORS_EXPORT void setBins(const int bins);
 
-  void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
-    cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    for (auto& window : windows) {
-      cv::Mat feat;
+ protected:
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch, cv::Mat& output) override;
 
-      auto windowRoi = cv::Rect(0, 0, mImage.cols, mImage.rows);
-      auto intersection = windowRoi & window;
+ private:
+    // private members
+    // the number of levels of intensity
+    int mLevels = 256;
+    int mBins = 8;
 
-      if (intersection != window) {
-        std::runtime_error(
-          "Invalid patch, its intersection with the image is" +
-          std::string("different than the patch itself"));
-      }
-      extractFeatures(window, feat);
-      output.push_back(feat);
-    }
-  }
+    int mDi = 0, mDj = 1;
 
-  void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
-    cv::Mat& output) {
-    if (!mIsPrepared) {
-      beforeProcess();
-      mIsPrepared = true;
-    }
-    const float SQROOT_TWO = 1.4142136237f;
-    for (auto& keypoint : keypoints) {
-      cv::Mat feat;
-      // diameter = l\|2
-      int length = static_cast<int>(keypoint.size * SQROOT_TWO);
-      const int x = static_cast<int>(keypoint.pt.x),
-          y = static_cast<int>(keypoint.pt.y),
-          width = length, height = length;
-      auto window = cv::Rect(x, y, width, height);
-      extractFeatures(window, feat);
-      output.push_back(feat);
-    }
-  }
-
-  void Descriptor2D::setData(const cv::Mat& img) {
-    mImage = img.clone();
-    beforeProcess();
-    mIsPrepared = true;
-  }
+    cv::Mat mGreyImg;
+    static int isValidPixel(int i, int j, int rows, int cols);
+  };
 }  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+
 
