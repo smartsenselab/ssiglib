@@ -44,9 +44,10 @@
 
 #include <opencv2/core.hpp>
 
+#include <vector>
+
 #include "descriptor_2d.hpp"
 
-#include <vector>
 
 namespace ssig {
 class ColorCoOccurrence : public Descriptor2D {
@@ -81,7 +82,7 @@ class ColorCoOccurrence : public Descriptor2D {
     int mDi = 0, mDj = 1;
 
     std::vector<cv::Mat> mChannels;
-    static void ColorCoOccurrence::extractFromPair(
+    static void extractFromPair(
       const cv::Mat& m1,
       const cv::Mat& m2,
       const int levels1,
