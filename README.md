@@ -1,5 +1,5 @@
 # SSIGLib - Smart Surveillance Interest Group Library
-
+[![Win Build Status](https://ci.appveyor.com/api/projects/status/5u15qvg6pyqaddcf?svg=true)]()
 [![BSD License](https://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)
 [![Build Status](https://travis-ci.org/ssig/ssiglib.svg?branch=develop)](https://travis-ci.org/ssig/ssiglib)
 [![codecov.io](https://codecov.io/github/ssig/ssiglib/coverage.svg?branch=develop)](https://codecov.io/github/ssig/ssiglib?branch=develop)
