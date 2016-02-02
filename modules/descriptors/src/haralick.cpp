@@ -125,8 +125,7 @@ float Haralick::f3Correlation(const cv::Mat& mat) {
     sumSqrX += px[i] * i * i;
   }
 
-  auto meanY = meanX;      // Because matrix is simetric
-  auto sumSqrY = sumSqrX;  // Because matrix is simetric
+  auto meanY = meanX;  // Because matrix is simetric
   auto stdDevX = sqrt(sumSqrX - (meanX * meanX));
   stdDevX += static_cast<float>(static_cast<float>(HARALICK_EPSILON));
   auto stdDevY = stdDevX;
