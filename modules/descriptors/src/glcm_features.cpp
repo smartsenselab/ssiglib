@@ -39,40 +39,81 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include "descriptors/glcm_features.hpp"
 
-#include <gtest/gtest.h>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc.hpp>
 
-#include <vector>
+namespace ssig {
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
+    Descriptor2D(input) {}
 
-#include "descriptors/hog_uoccti_features.hpp"
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input,
+    const GrayLevelCoOccurrence& descriptor) :
+    Descriptor2D(input, descriptor) {}
 
-TEST(HOGUOCCTI, Simple) {
-  cv::Mat img;
-  cv::Mat_<float> out;
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(
+    const GrayLevelCoOccurrence& descriptor) : Descriptor2D(descriptor) {}
 
-  img = cv::imread("hog1.png");
+  int GrayLevelCoOccurrence::getLevels() const {
+    return mLevels;
+  }
 
-  ssig::HOGUOCCTI hog(img);
-  hog.setBlockConfiguration({16, 16});
-  hog.setBlockStride({8, 8});
-  hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
-  hog.extract(out);
+  int GrayLevelCoOccurrence::getBins() const {
+    return mBins;
+  }
 
-  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
-  cv::Mat_<float> expected;
-  stg["expected_uoccti"] >> expected;
+  void GrayLevelCoOccurrence::setLevels(const int levels) {
+    mLevels = levels;
+  }
 
-  cv::Mat diff = cv::abs(out - expected);
-  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = static_cast<float>(1e-5);
-  cv::Mat cmpson;
-  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
-  int diffSum = cv::countNonZero(cmpson);
+  void GrayLevelCoOccurrence::setBins(const int bins) {
+    mBins = bins;
+  }
 
-  EXPECT_EQ(31, diffSum);
-}
+  void GrayLevelCoOccurrence::read(const cv::FileNode& fn) { }
+
+  void GrayLevelCoOccurrence::write(cv::FileStorage& fs) const { }
+
+  void GrayLevelCoOccurrence::beforeProcess() {
+    if (mImage.channels() == 3 || mImage.channels() == 4)
+      cv::cvtColor(mImage, mGreyImg, CV_BGR2GRAY);
+    else
+      mImage.copyTo(mGreyImg);
+
+    mGreyImg.convertTo(mGreyImg, CV_32FC1);
+  }
+
+  void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
+    cv::Mat& output) {
+    output = cv::Mat::zeros(mBins, mBins, CV_32FC1);
+    int binWidth = mLevels / mBins;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int i = patch.y; i < patch.height; i++) {
+      for (int j = patch.x; j < patch.width; j++) {
+        if (isValidPixel(i + mDi, j + mDj, mGreyImg.rows, mGreyImg.cols)) {
+          auto val1 = static_cast<int>(mGreyImg.at<float>(i, j) / binWidth);
+          auto val2 = static_cast<int>(
+            mGreyImg.at<float>(i + mDi, j + mDj) / binWidth);
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+          {
+            output.at<float>(val1, val2)++;
+          }
+        }
+      }
+    }
+    output = output.reshape(1, 1);
+  }
+
+  int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+    return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
+  }
+
+}  // namespace ssig
+
 

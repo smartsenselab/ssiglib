@@ -76,9 +76,6 @@ std::unordered_map<int, int> Results::compute(
 
   auto len = static_cast<int>(labelsMap.size());
   confusionMatrix = cv::Mat_<int>::zeros(len, len);
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
   for (int i = 0; i < groundTruth.rows; ++i) {
     auto value = labels.at<int>(i);
     auto gt = groundTruth.at<int>(i);

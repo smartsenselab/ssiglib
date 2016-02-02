@@ -76,14 +76,18 @@ void SpatialPyramid::pool(
     std::runtime_error("The number of windows and features must be the same!");
   }
 
-  const int modelSize = static_cast<int>(clusteringMethods[0]->getSize());
-  const int nbins =
-    modelSize * static_cast<int>(clusteringMethods.size());
-
+  int nbins = 0;
+  const int modelsLength = static_cast<int>(clusteringMethods.size());
+  for (int model_it = 0; model_it < modelsLength; ++model_it) {
+    // This loop counts how many bins exists in the total number of models
+    auto clusteringMethod = clusteringMethods[model_it];
+    nbins += static_cast<int>(clusteringMethod->getSize());
+  }
 
   std::vector<cv::Mat_<float>> configurationHistograms(
     pyramidConfigurations.size());
   int len = static_cast<int>(pyramidConfigurations.size());
+
   for (int conf_it = 0; conf_it < len; ++conf_it) {
     auto currConf = pyramidConfigurations[conf_it];
     const int configurationArea = currConf[0] * currConf[1];
@@ -104,15 +108,19 @@ void SpatialPyramid::pool(
       const int pyramidRow = partWindows[part_it].x / horizontalBucketSize;
       const int pyramidCol = partWindows[part_it].y / verticalBucketSize;
       cv::Mat_<float> response = cv::Mat_<float>::zeros(1, nbins);
-      const int len3 = static_cast<int>(clusteringMethods.size());
-      for (int model_it = 0; model_it < len3; ++model_it) {
+
+      int x = 0;
+      for (int model_it = 0; model_it < modelsLength; ++model_it) {
         auto clusteringMethod = clusteringMethods[model_it];
+        const int modelSize = static_cast<int>(clusteringMethod->getSize());
+
         cv::Mat_<float> partResponse;
         clusteringMethod->predict(partFeature, partResponse);
 
-        const int x = model_it * modelSize;
         const int width = modelSize;
         cv::Mat_<float> roi = response(cv::Rect(x, 0, width, 1));
+        x += modelSize;
+
         partResponse.copyTo(roi);
       }
       cv::Mat_<int> ordering;
