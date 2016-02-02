@@ -42,17 +42,78 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
 #include <descriptors/haralick.hpp>
 
-TEST(HARALICK, BIC_Simple) {
-  cv::Mat img = cv::imread("bic.png");
-  ASSERT_FALSE(img.empty());
-  ssig::BIC bic(img);
-  cv::Mat featVector;
+TEST(Haralick, compute_size8) {
 
-  bic.extract(featVector);
-  ASSERT_FLOAT_EQ(9, featVector.at<float>(127));
-  ASSERT_FLOAT_EQ(8, featVector.at<float>(63));
+  cv::FileStorage fs("haralick/haralick8.yml", cv::FileStorage::READ);
+
+  for (int i = 1; i <= 50; i++){
+    std::stringstream ss;
+    ss << std::setw(2) << std::setfill('0') << i;
+    std::string number = ss.str();
+
+    cv::Mat mat;
+    fs["matrix" + number] >> mat;
+
+    cv::Mat feature;
+    fs["feature" + number] >> feature;
+
+    cv::Mat result;
+    result = ssig::Haralick::compute(mat);
+
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 0), result.at<float>(0, 0));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 1), result.at<float>(0, 1));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 2), result.at<float>(0, 2));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 3), result.at<float>(0, 3));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 4), result.at<float>(0, 4));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 5), result.at<float>(0, 5));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 6), result.at<float>(0, 6));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 7), result.at<float>(0, 7));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 8), result.at<float>(0, 8));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 9), result.at<float>(0, 9));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 10), result.at<float>(0, 10));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 11), result.at<float>(0, 14));
+
+  }
+  fs.release();
+
+}
+
+
+TEST(Haralick, compute_size256) {
+
+  cv::FileStorage fs("haralick/haralick256.yml", cv::FileStorage::READ);
+
+  for (int i = 1; i <= 10; i++){
+    std::stringstream ss;
+    ss << std::setw(2) << std::setfill('0') << i;
+    std::string number = ss.str();
+
+    cv::Mat mat;
+    fs["matrix" + number] >> mat;
+
+    cv::Mat feature;
+    fs["feature" + number] >> feature;
+
+    cv::Mat result;
+    result = ssig::Haralick::compute(mat);
+
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 0), result.at<float>(0, 0));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 1), result.at<float>(0, 1));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 2), result.at<float>(0, 2));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 3), result.at<float>(0, 3));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 4), result.at<float>(0, 4));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 5), result.at<float>(0, 5));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 6), result.at<float>(0, 6));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 7), result.at<float>(0, 7));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 8), result.at<float>(0, 8));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 9), result.at<float>(0, 9));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 10), result.at<float>(0, 10));
+    EXPECT_FLOAT_EQ(feature.at<float>(0, 11), result.at<float>(0, 14));
+
+  }
+  fs.release();
+
 }
 

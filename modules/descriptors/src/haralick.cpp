@@ -42,30 +42,12 @@
 #include "descriptors/haralick.hpp"
 
 namespace ssig {
-Haralick::Haralick() {
-  // Constructor
-}
-
-Haralick::~Haralick() {
-  // Destructor
-}
-
-Haralick::Haralick(const Haralick& rhs) {
-  // Constructor Copy
-}
-
-Haralick& Haralick::operator=(const Haralick& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
 
 cv::Mat Haralick::compute(const cv::Mat& mat) {
 
   cv::Mat output = cv::Mat::zeros(1, 15, CV_32F);
 
-  output.at<float>(0, 0) = Haralick::f1ASM(mat);
+  output.at<float>(0, 0) = Haralick::f1ASM(mat); 
   output.at<float>(0, 1) = Haralick::f2Contrast(mat);
   output.at<float>(0, 2) = Haralick::f3Correlation(mat);
   output.at<float>(0, 3) = Haralick::f4Variance(mat);
@@ -80,6 +62,10 @@ cv::Mat Haralick::compute(const cv::Mat& mat) {
   output.at<float>(0, 12) = Haralick::f13InformationCorrelation02(mat);
   output.at<float>(0, 13) = 0.0f;
   output.at<float>(0, 14) = Haralick::f15_Dierctionality(mat);
+
+  for (int i = 0; i < 15; i++)
+    if (isnan(output.at<float>(0, i)))
+      output.at<float>(0, i) = 0.0f;
 
   return output;
 
@@ -148,8 +134,7 @@ float Haralick::f3Correlation(const cv::Mat& mat){
   auto meanY = meanX; //Because matrix is simetric
   auto sumSqrY = sumSqrX; //Because matrix is simetric
   auto stdDevX = sqrt(sumSqrX - (meanX * meanX));
-  if (stdDevX == 0)
-    stdDevX = std::numeric_limits<float>::min();
+  stdDevX += static_cast<float>(static_cast<float>(HARALICK_EPSILON));
   auto stdDevY = stdDevX;
 
   /* Finally, the correlation ... */
@@ -240,7 +225,7 @@ float Haralick::f8SumEntropy(const cv::Mat& mat){
 
   float sumEntropy = 0.0;
   for (auto i = 2; i <= mat.rows + mat.cols; ++i) {
-    sumEntropy += pXY[i] * log10(pXY[i] + std::numeric_limits<float>::min());
+    sumEntropy += pXY[i] * log10(pXY[i] + static_cast<float>(HARALICK_EPSILON));
   }
 
   return -sumEntropy;
@@ -252,7 +237,7 @@ float Haralick::f9Entropy(const cv::Mat& mat){
   float entropy = 0.0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j)
-      entropy += mat.at<float>(i, j) * log10(mat.at<float>(i, j) + std::numeric_limits<float>::min());
+      entropy += mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
 
   return -entropy;
   /* Entropy */
@@ -274,7 +259,7 @@ float Haralick::f10DifferenceVariance(const cv::Mat& mat){
     sum += pXY[i];
     sumSqr += pXY[i] * pXY[i];
   }
-  float tmp = static_cast<float>(mat.rows * mat.rows);
+  float tmp = static_cast<float>(mat.rows * mat.cols);
   float diffVar = ((tmp * sumSqr) - (sum * sum)) / (tmp * tmp);
 
   return diffVar;
@@ -291,7 +276,7 @@ float Haralick::f11DifferenceEntropy(const cv::Mat& mat){
 
   float sum = 0.0;
   for (auto i = 0; i < mat.rows; ++i)
-    sum += pXY[i] * log10(pXY[i] + std::numeric_limits<float>::min());
+    sum += pXY[i] * log10(pXY[i] + static_cast<float>(HARALICK_EPSILON));
 
   return -sum;
 
@@ -318,15 +303,15 @@ float Haralick::f12InformationCorrelation01(const cv::Mat& mat){
   float hx = 0, hy = 0, hxy = 0, hxy1 = 0, hxy2 = 0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j) {
-      hxy1 -= mat.at<float>(i, j) * log10(pX[i] * pY[j] + std::numeric_limits<float>::min());
-      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + std::numeric_limits<float>::min());
-      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + std::numeric_limits<float>::min());
+      hxy1 -= mat.at<float>(i, j) * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
     }
 
   /* Calculate entropies of px and py - is this right? */
   for (auto i = 0; i < mat.rows; ++i) {
-    hx -= pX[i] * log10(pX[i] + std::numeric_limits<float>::min());
-    hy -= pY[i] * log10(pY[i] + std::numeric_limits<float>::min());
+    hx -= pX[i] * log10(pX[i] + static_cast<float>(HARALICK_EPSILON));
+    hy -= pY[i] * log10(pY[i] + static_cast<float>(HARALICK_EPSILON));
   }
   
   /* fprintf(stderr,"hxy1=%f\thxy=%f\thx=%f\thy=%f\n",hxy1,hxy,hx,hy); */
@@ -353,15 +338,15 @@ float Haralick::f13InformationCorrelation02(const cv::Mat& mat){
   float hx = 0, hy = 0, hxy = 0, hxy1 = 0, hxy2 = 0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j) {
-      hxy1 -= mat.at<float>(i, j) * log10(pY[i] * pY[j] + std::numeric_limits<float>::min());
-      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + std::numeric_limits<float>::min());
-      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + std::numeric_limits<float>::min());
+      hxy1 -= mat.at<float>(i, j) * log10(pY[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
     }
 
   /* Calculate entropies of px and py */
   for (auto i = 0; i < mat.rows; ++i) {
-    hx -= pX[i] * log10(pX[i] + std::numeric_limits<float>::min());
-    hy -= pY[i] * log10(pY[i] + std::numeric_limits<float>::min());
+    hx -= pX[i] * log10(pX[i] + static_cast<float>(HARALICK_EPSILON));
+    hy -= pY[i] * log10(pY[i] + static_cast<float>(HARALICK_EPSILON));
   }
 
   /* fprintf(stderr,"hx=%f\thxy2=%f\n",hx,hxy2); */

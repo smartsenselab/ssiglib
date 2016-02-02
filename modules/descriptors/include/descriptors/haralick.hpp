@@ -45,13 +45,11 @@
 #include <opencv2/core.hpp>
 #include "descriptors/descriptors_defs.hpp"
 
+#define HARALICK_EPSILON 0.00001
+
 namespace ssig {
 class Haralick {
  public:
-  DESCRIPTORS_EXPORT Haralick(void);
-  DESCRIPTORS_EXPORT virtual ~Haralick(void);
-  DESCRIPTORS_EXPORT Haralick(const Haralick& rhs);
-  DESCRIPTORS_EXPORT Haralick& operator=(const Haralick& rhs);
 
   DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
 
