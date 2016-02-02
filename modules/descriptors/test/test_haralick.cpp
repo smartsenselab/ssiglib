@@ -39,16 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <descriptors/haralick.hpp>
 
-TEST(Haralick, compute_size8) {
+#include <string>
 
+TEST(Haralick, compute_size8) {
   cv::FileStorage fs("haralick/haralick8.yml", cv::FileStorage::READ);
 
-  for (int i = 1; i <= 50; i++){
+  for (int i = 1; i <= 50; i++) {
     std::stringstream ss;
     ss << std::setw(2) << std::setfill('0') << i;
     std::string number = ss.str();
@@ -62,30 +62,26 @@ TEST(Haralick, compute_size8) {
     cv::Mat result;
     result = ssig::Haralick::compute(mat);
 
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 0), result.at<float>(0, 0));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 1), result.at<float>(0, 1));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 2), result.at<float>(0, 2));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 3), result.at<float>(0, 3));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 4), result.at<float>(0, 4));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 5), result.at<float>(0, 5));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 6), result.at<float>(0, 6));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 7), result.at<float>(0, 7));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 8), result.at<float>(0, 8));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 9), result.at<float>(0, 9));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 10), result.at<float>(0, 10));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 11), result.at<float>(0, 14));
-
+    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.0001);
   }
   fs.release();
-
 }
-
 
 TEST(Haralick, compute_size256) {
-
   cv::FileStorage fs("haralick/haralick256.yml", cv::FileStorage::READ);
 
-  for (int i = 1; i <= 10; i++){
+  for (int i = 1; i <= 10; i++) {
     std::stringstream ss;
     ss << std::setw(2) << std::setfill('0') << i;
     std::string number = ss.str();
@@ -99,21 +95,18 @@ TEST(Haralick, compute_size256) {
     cv::Mat result;
     result = ssig::Haralick::compute(mat);
 
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 0), result.at<float>(0, 0));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 1), result.at<float>(0, 1));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 2), result.at<float>(0, 2));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 3), result.at<float>(0, 3));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 4), result.at<float>(0, 4));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 5), result.at<float>(0, 5));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 6), result.at<float>(0, 6));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 7), result.at<float>(0, 7));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 8), result.at<float>(0, 8));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 9), result.at<float>(0, 9));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 10), result.at<float>(0, 10));
-    EXPECT_FLOAT_EQ(feature.at<float>(0, 11), result.at<float>(0, 14));
-
+    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.0001);
   }
   fs.release();
-
 }
-

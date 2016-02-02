@@ -41,13 +41,14 @@
 
 #include "descriptors/haralick.hpp"
 
+#include <vector>
+
 namespace ssig {
 
 cv::Mat Haralick::compute(const cv::Mat& mat) {
-
   cv::Mat output = cv::Mat::zeros(1, 15, CV_32F);
 
-  output.at<float>(0, 0) = Haralick::f1ASM(mat); 
+  output.at<float>(0, 0) = Haralick::f1ASM(mat);
   output.at<float>(0, 1) = Haralick::f2Contrast(mat);
   output.at<float>(0, 2) = Haralick::f3Correlation(mat);
   output.at<float>(0, 3) = Haralick::f4Variance(mat);
@@ -64,11 +65,9 @@ cv::Mat Haralick::compute(const cv::Mat& mat) {
   output.at<float>(0, 14) = Haralick::f15_Dierctionality(mat);
 
   for (int i = 0; i < 15; i++)
-    if (isnan(output.at<float>(0, i)))
-      output.at<float>(0, i) = 0.0f;
+    if (isnan(output.at<float>(0, i))) output.at<float>(0, i) = 0.0f;
 
   return output;
-
 }
 
 float Haralick::f1ASM(const cv::Mat& mat) {
@@ -87,15 +86,13 @@ float Haralick::f1ASM(const cv::Mat& mat) {
   */
 }
 
-float Haralick::f2Contrast(const cv::Mat& mat){
-  
+float Haralick::f2Contrast(const cv::Mat& mat) {
   float sum = 0.0, bigsum = 0.0;
 
-  for (auto k = 0; k < mat.rows; ++k){
+  for (auto k = 0; k < mat.rows; ++k) {
     for (auto i = 0; i < mat.cols; ++i)
       for (auto j = 0; j < mat.rows; ++j)
-        if ((i - j) == k || (j - i) == k)
-          sum += mat.at<float>(i, j);
+        if ((i - j) == k || (j - i) == k) sum += mat.at<float>(i, j);
     bigsum += k * k * sum;
     sum = 0;
   }
@@ -107,18 +104,15 @@ float Haralick::f2Contrast(const cv::Mat& mat){
   */
 }
 
-float Haralick::f3Correlation(const cv::Mat& mat){
-  
-  std::vector<float> px(mat.rows, 0);  
+float Haralick::f3Correlation(const cv::Mat& mat) {
+  std::vector<float> px(mat.rows, 0);
 
   /*
   * px[i] is the (i-1)th entry in the marginal probability matrix obtained
   * by summing the rows of p[i][j]
   */
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      px[i] += mat.at<float>(i, j);
-
+    for (auto j = 0; j < mat.cols; ++j) px[i] += mat.at<float>(i, j);
 
   /* Now calculate the means and standard deviations of px and py */
   /*- fix supplied by J. Michael Christensen, 21 Jun 1991 */
@@ -126,13 +120,13 @@ float Haralick::f3Correlation(const cv::Mat& mat){
   *     after realizing that meanx=meany and stddevx=stddevy
   */
   float meanX = 0.0, sumSqrX = 0.0;
-  for (auto i = 0; i < mat.rows; ++i){
+  for (auto i = 0; i < mat.rows; ++i) {
     meanX += px[i] * i;
-    sumSqrX += px[i] * i*i;
+    sumSqrX += px[i] * i * i;
   }
 
-  auto meanY = meanX; //Because matrix is simetric
-  auto sumSqrY = sumSqrX; //Because matrix is simetric
+  auto meanY = meanX;      // Because matrix is simetric
+  auto sumSqrY = sumSqrX;  // Because matrix is simetric
   auto stdDevX = sqrt(sumSqrX - (meanX * meanX));
   stdDevX += static_cast<float>(static_cast<float>(HARALICK_EPSILON));
   auto stdDevY = stdDevX;
@@ -140,8 +134,7 @@ float Haralick::f3Correlation(const cv::Mat& mat){
   /* Finally, the correlation ... */
   float sum = 0.0;
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      sum += i * j * mat.at<float>(i, j);
+    for (auto j = 0; j < mat.cols; ++j) sum += i * j * mat.at<float>(i, j);
 
   return (sum - meanX * meanY) / (stdDevX * stdDevY);
   /*
@@ -150,12 +143,10 @@ float Haralick::f3Correlation(const cv::Mat& mat){
   */
 }
 
-float Haralick::f4Variance(const cv::Mat& mat){
-
+float Haralick::f4Variance(const cv::Mat& mat) {
   float mean = 0;
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      mean += i * mat.at<float>(i, j);
+    for (auto j = 0; j < mat.cols; ++j) mean += i * mat.at<float>(i, j);
 
   float variance = 0;
   for (auto i = 0; i < mat.rows; ++i)
@@ -165,8 +156,7 @@ float Haralick::f4Variance(const cv::Mat& mat){
   return variance;
 }
 
-float Haralick::f5IDM(const cv::Mat& mat){
-  
+float Haralick::f5IDM(const cv::Mat& mat) {
   float idm = 0.0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j)
@@ -176,13 +166,11 @@ float Haralick::f5IDM(const cv::Mat& mat){
   /* Inverse Difference Moment */
 }
 
-float Haralick::f6SumAverage(const cv::Mat& mat){
-
+float Haralick::f6SumAverage(const cv::Mat& mat) {
   std::vector<float> pXY(mat.rows + mat.cols + 1, 0);
 
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      pXY[i + j + 2] += mat.at<float>(i, j);
+    for (auto j = 0; j < mat.cols; ++j) pXY[i + j + 2] += mat.at<float>(i, j);
 
   float sumAvg = 0;
   for (auto i = 2; i <= mat.rows + mat.cols; ++i) {
@@ -193,13 +181,11 @@ float Haralick::f6SumAverage(const cv::Mat& mat){
   /* Sum Average */
 }
 
-float Haralick::f7SumVariance(const cv::Mat& mat){
-
+float Haralick::f7SumVariance(const cv::Mat& mat) {
   std::vector<float> pXY(mat.rows + mat.cols + 1, 0);
 
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      pXY[i + j + 2] += mat.at<float>(i, j);
+    for (auto j = 0; j < mat.cols; ++j) pXY[i + j + 2] += mat.at<float>(i, j);
 
   float f6SumAvg = 0.0;
   for (auto i = 2; i <= mat.rows + mat.cols; ++i) {
@@ -215,13 +201,11 @@ float Haralick::f7SumVariance(const cv::Mat& mat){
   /* Sum Variance */
 }
 
-float Haralick::f8SumEntropy(const cv::Mat& mat){
-  
+float Haralick::f8SumEntropy(const cv::Mat& mat) {
   std::vector<float> pXY(mat.rows + mat.cols + 1, 0);
 
   for (auto i = 0; i < mat.rows; ++i)
-    for (auto j = 0; j < mat.cols; ++j)
-      pXY[i + j + 2] += mat.at<float>(i, j);
+    for (auto j = 0; j < mat.cols; ++j) pXY[i + j + 2] += mat.at<float>(i, j);
 
   float sumEntropy = 0.0;
   for (auto i = 2; i <= mat.rows + mat.cols; ++i) {
@@ -232,30 +216,29 @@ float Haralick::f8SumEntropy(const cv::Mat& mat){
   /* Sum Entropy */
 }
 
-float Haralick::f9Entropy(const cv::Mat& mat){
-
+float Haralick::f9Entropy(const cv::Mat& mat) {
   float entropy = 0.0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j)
-      entropy += mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
+      entropy +=
+          mat.at<float>(i, j) *
+          log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
 
   return -entropy;
   /* Entropy */
 }
 
-float Haralick::f10DifferenceVariance(const cv::Mat& mat){
-
+float Haralick::f10DifferenceVariance(const cv::Mat& mat) {
   std::vector<float> pXY(mat.rows + mat.cols + 1, 0);
 
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j)
       pXY[std::abs(i - j)] += mat.at<float>(i, j);
 
-
   /* Now calculate the variance of Pxpy (Px-y) */
   float sum = 0.0;
   float sumSqr = 0.0;
-  for (auto i = 0; i < mat.rows; ++i){
+  for (auto i = 0; i < mat.rows; ++i) {
     sum += pXY[i];
     sumSqr += pXY[i] * pXY[i];
   }
@@ -266,8 +249,7 @@ float Haralick::f10DifferenceVariance(const cv::Mat& mat){
   /* Difference Variance */
 }
 
-float Haralick::f11DifferenceEntropy(const cv::Mat& mat){
-
+float Haralick::f11DifferenceEntropy(const cv::Mat& mat) {
   std::vector<float> pXY(mat.rows + mat.cols + 1, 0);
 
   for (auto i = 0; i < mat.rows; ++i)
@@ -283,12 +265,10 @@ float Haralick::f11DifferenceEntropy(const cv::Mat& mat){
   /* Difference Entropy */
 }
 
-
-float Haralick::f12InformationCorrelation01(const cv::Mat& mat){
-  
+float Haralick::f12InformationCorrelation01(const cv::Mat& mat) {
   std::vector<float> pX(mat.rows, 0);
   std::vector<float> pY(mat.cols, 0);
-  
+
   /*
   * px[i] is the (i-1)th entry in the marginal probability matrix obtained
   * by summing the rows of p[i][j]
@@ -303,9 +283,12 @@ float Haralick::f12InformationCorrelation01(const cv::Mat& mat){
   float hx = 0, hy = 0, hxy = 0, hxy1 = 0, hxy2 = 0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j) {
-      hxy1 -= mat.at<float>(i, j) * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
-      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
-      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
+      hxy1 -= mat.at<float>(i, j) *
+              log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy2 -= pX[i] * pY[j] *
+              log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy -= mat.at<float>(i, j) *
+             log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
     }
 
   /* Calculate entropies of px and py - is this right? */
@@ -313,14 +296,12 @@ float Haralick::f12InformationCorrelation01(const cv::Mat& mat){
     hx -= pX[i] * log10(pX[i] + static_cast<float>(HARALICK_EPSILON));
     hy -= pY[i] * log10(pY[i] + static_cast<float>(HARALICK_EPSILON));
   }
-  
+
   /* fprintf(stderr,"hxy1=%f\thxy=%f\thx=%f\thy=%f\n",hxy1,hxy,hx,hy); */
   return ((hxy - hxy1) / (hx > hy ? hx : hy));
 }
 
-
-float Haralick::f13InformationCorrelation02(const cv::Mat& mat){
-
+float Haralick::f13InformationCorrelation02(const cv::Mat& mat) {
   std::vector<float> pX(mat.rows, 0);
   std::vector<float> pY(mat.cols, 0);
 
@@ -338,9 +319,12 @@ float Haralick::f13InformationCorrelation02(const cv::Mat& mat){
   float hx = 0, hy = 0, hxy = 0, hxy1 = 0, hxy2 = 0;
   for (auto i = 0; i < mat.rows; ++i)
     for (auto j = 0; j < mat.cols; ++j) {
-      hxy1 -= mat.at<float>(i, j) * log10(pY[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
-      hxy2 -= pX[i] * pY[j] * log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
-      hxy -= mat.at<float>(i, j) * log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
+      hxy1 -= mat.at<float>(i, j) *
+              log10(pY[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy2 -= pX[i] * pY[j] *
+              log10(pX[i] * pY[j] + static_cast<float>(HARALICK_EPSILON));
+      hxy -= mat.at<float>(i, j) *
+             log10(mat.at<float>(i, j) + static_cast<float>(HARALICK_EPSILON));
     }
 
   /* Calculate entropies of px and py */
@@ -353,18 +337,15 @@ float Haralick::f13InformationCorrelation02(const cv::Mat& mat){
   return static_cast<float>(sqrt(abs(1 - exp(-2.0 * (hxy2 - hxy)))));
 
   /* Information Measures of Correlation */
-
 }
 
-float Haralick::f15_Dierctionality(const cv::Mat& mat){
-
+float Haralick::f15_Dierctionality(const cv::Mat& mat) {
   float sum = 0.0;
   for (auto i = 0; i < mat.rows; ++i) {
     sum += mat.at<float>(i, i);
   }
 
   return sum;
-
 }
 
 }  // namespace ssig

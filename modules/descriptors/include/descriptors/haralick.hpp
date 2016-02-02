@@ -50,7 +50,6 @@
 namespace ssig {
 class Haralick {
  public:
-
   DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
 
  private:
