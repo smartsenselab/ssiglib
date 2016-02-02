@@ -62,18 +62,18 @@ TEST(Haralick, compute_size8) {
     cv::Mat result;
     result = ssig::Haralick::compute(mat);
 
-    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.001);
   }
   fs.release();
 }
@@ -95,18 +95,18 @@ TEST(Haralick, compute_size256) {
     cv::Mat result;
     result = ssig::Haralick::compute(mat);
 
-    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.0001);
-    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.0001);
+    EXPECT_NEAR(feature.at<float>(0, 0), result.at<float>(0, 0), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 1), result.at<float>(0, 1), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 2), result.at<float>(0, 2), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 3), result.at<float>(0, 3), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 4), result.at<float>(0, 4), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 5), result.at<float>(0, 5), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 6), result.at<float>(0, 6), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 7), result.at<float>(0, 7), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 8), result.at<float>(0, 8), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 9), result.at<float>(0, 9), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 10), result.at<float>(0, 10), 0.001);
+    EXPECT_NEAR(feature.at<float>(0, 11), result.at<float>(0, 14), 0.001);
   }
   fs.release();
 }
