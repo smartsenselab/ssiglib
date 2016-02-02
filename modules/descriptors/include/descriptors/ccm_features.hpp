@@ -39,40 +39,62 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
+#define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
 
-#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/objdetect.hpp>
 
 #include <vector>
 
-#include "descriptors/hog_uoccti_features.hpp"
+#include "descriptor_2d.hpp"
 
-TEST(HOGUOCCTI, Simple) {
-  cv::Mat img;
-  cv::Mat_<float> out;
 
-  img = cv::imread("hog1.png");
+namespace ssig {
+class ColorCoOccurrence : public Descriptor2D {
+ public:
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input,
+      const ColorCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(
+      const ColorCoOccurrence& descriptor);
 
-  ssig::HOGUOCCTI hog(img);
-  hog.setBlockConfiguration({16, 16});
-  hog.setBlockStride({8, 8});
-  hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
-  hog.extract(out);
+    DESCRIPTORS_EXPORT virtual ~ColorCoOccurrence(void) = default;
 
-  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
-  cv::Mat_<float> expected;
-  stg["expected_uoccti"] >> expected;
 
-  cv::Mat diff = cv::abs(out - expected);
-  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = static_cast<float>(1e-5);
-  cv::Mat cmpson;
-  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
-  int diffSum = cv::countNonZero(cmpson);
+    DESCRIPTORS_EXPORT std::vector<int> getLevels() const;
+    DESCRIPTORS_EXPORT void setLevels(const std::vector<int>& levels);
+    DESCRIPTORS_EXPORT std::vector<int> getBins() const;
+    DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
 
-  EXPECT_EQ(31, diffSum);
-}
+ protected:
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+      cv::Mat& output) override;
+
+ private:
+    // private members
+    // the number of levels in each channel
+    std::vector<int> mLevels;
+    std::vector<int> mBins;
+
+    int mDi = 0, mDj = 1;
+
+    std::vector<cv::Mat> mChannels;
+    static void extractFromPair(
+      const cv::Mat& m1,
+      const cv::Mat& m2,
+      const int levels1,
+      const int bins1,
+      const int levels2,
+      const int bins2,
+      const cv::Rect window,
+      cv::Mat& out);
+
+    static int isValidPixel(int i, int j, int rows, int cols);
+};
+}  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
+
 

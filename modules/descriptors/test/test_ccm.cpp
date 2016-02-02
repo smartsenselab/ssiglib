@@ -39,40 +39,33 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/objdetect.hpp>
+#include "descriptors/ccm_features.hpp"
 
-#include <vector>
+TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
+  cv::Mat img = cv::imread("glcm.png");
+  ASSERT_FALSE(img.empty());
+  ssig::ColorCoOccurrence ccm(img);
+  cv::Mat out;
 
-#include "descriptors/hog_uoccti_features.hpp"
+  ccm.setBins({ 4, 4, 4 });
+  ccm.setLevels({ 256, 256, 256 });
 
-TEST(HOGUOCCTI, Simple) {
-  cv::Mat img;
-  cv::Mat_<float> out;
+  ccm.extract(out);
 
-  img = cv::imread("hog1.png");
-
-  ssig::HOGUOCCTI hog(img);
-  hog.setBlockConfiguration({16, 16});
-  hog.setBlockStride({8, 8});
-  hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
-  hog.extract(out);
-
-  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
-  cv::Mat_<float> expected;
-  stg["expected_uoccti"] >> expected;
+  /*cv::Mat_<float> expected = (cv::Mat_<float>(1, 16) <<
+    235, 0, 0, 1,
+    2, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 2, 0, 0);
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = static_cast<float>(1e-5);
+  epsilon = 4 * FLT_EPSILON;
   cv::Mat cmpson;
   cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
   int diffSum = cv::countNonZero(cmpson);
-
-  EXPECT_EQ(31, diffSum);
+  EXPECT_EQ(16, diffSum);*/
 }
-

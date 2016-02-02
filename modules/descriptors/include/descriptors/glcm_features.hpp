@@ -39,40 +39,49 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
-#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/objdetect.hpp>
 
-#include <vector>
+#include "descriptor_2d.hpp"
 
-#include "descriptors/hog_uoccti_features.hpp"
+namespace ssig {
+class GrayLevelCoOccurrence : public Descriptor2D {
+ public:
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input,
+      const GrayLevelCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
+      const GrayLevelCoOccurrence& descriptor);
 
-TEST(HOGUOCCTI, Simple) {
-  cv::Mat img;
-  cv::Mat_<float> out;
+    DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
 
-  img = cv::imread("hog1.png");
+    DESCRIPTORS_EXPORT int getLevels() const;
+    DESCRIPTORS_EXPORT int getBins() const;
 
-  ssig::HOGUOCCTI hog(img);
-  hog.setBlockConfiguration({16, 16});
-  hog.setBlockStride({8, 8});
-  hog.setCellConfiguration({2, 2});
-  hog.setNumberOfBins(9);
-  hog.extract(out);
+    DESCRIPTORS_EXPORT void setLevels(const int levels);
+    DESCRIPTORS_EXPORT void setBins(const int bins);
 
-  cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
-  cv::Mat_<float> expected;
-  stg["expected_uoccti"] >> expected;
+ protected:
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+      cv::Mat& output) override;
 
-  cv::Mat diff = cv::abs(out - expected);
-  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = static_cast<float>(1e-5);
-  cv::Mat cmpson;
-  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
-  int diffSum = cv::countNonZero(cmpson);
+ private:
+    // private members
+    // the number of levels of intensity
+    int mLevels = 256;
+    int mBins = 8;
 
-  EXPECT_EQ(31, diffSum);
-}
+    int mDi = 0, mDj = 1;
+
+    cv::Mat mGreyImg;
+    static int isValidPixel(int i, int j, int rows, int cols);
+};
+}  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+
 

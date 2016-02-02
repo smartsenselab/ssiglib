@@ -42,67 +42,77 @@
 #include "descriptors/descriptor_2d.hpp"
 
 #include <vector>
+#include <string>
 
 namespace ssig {
 
-Descriptor2D::Descriptor2D(const cv::Mat& input) {
-  mImage = input.clone();
-}
+  Descriptor2D::Descriptor2D(const cv::Mat& input) {
+    mImage = input.clone();
+  }
 
-Descriptor2D::Descriptor2D(const cv::Mat& input, const Descriptor& descriptor) {
-  mImage = input.clone();
-}
+  Descriptor2D::Descriptor2D(const cv::Mat& input,
+    const Descriptor& descriptor) {
+    mImage = input.clone();
+  }
 
-Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
-  mImage = descriptor.mImage;
-}
+  Descriptor2D::Descriptor2D(const Descriptor2D& descriptor) {
+    mImage = descriptor.mImage;
+  }
 
-void Descriptor2D::extract(cv::Mat& output) {
-  if (!mIsPrepared) {
+  void Descriptor2D::extract(cv::Mat& output) {
+    if (!mIsPrepared) {
+      beforeProcess();
+      mIsPrepared = true;
+    }
+    extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
+  }
+
+  void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
+    cv::Mat& output) {
+    if (!mIsPrepared) {
+      beforeProcess();
+      mIsPrepared = true;
+    }
+    for (auto& window : windows) {
+      cv::Mat feat;
+
+      auto windowRoi = cv::Rect(0, 0, mImage.cols, mImage.rows);
+      auto intersection = windowRoi & window;
+
+      if (intersection != window) {
+        std::runtime_error(
+          "Invalid patch, its intersection with the image is" +
+          std::string("different than the patch itself"));
+      }
+      extractFeatures(window, feat);
+      output.push_back(feat);
+    }
+  }
+
+  void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
+    cv::Mat& output) {
+    if (!mIsPrepared) {
+      beforeProcess();
+      mIsPrepared = true;
+    }
+    const float SQROOT_TWO = 1.4142136237f;
+    for (auto& keypoint : keypoints) {
+      cv::Mat feat;
+      // diameter = l\|2
+      int length = static_cast<int>(keypoint.size * SQROOT_TWO);
+      const int x = static_cast<int>(keypoint.pt.x),
+          y = static_cast<int>(keypoint.pt.y),
+          width = length, height = length;
+      auto window = cv::Rect(x, y, width, height);
+      extractFeatures(window, feat);
+      output.push_back(feat);
+    }
+  }
+
+  void Descriptor2D::setData(const cv::Mat& img) {
+    mImage = img.clone();
     beforeProcess();
     mIsPrepared = true;
   }
-  extractFeatures(cv::Rect(0, 0, mImage.cols, mImage.rows), output);
-}
-
-void Descriptor2D::extract(const std::vector<cv::Rect>& windows,
-                           cv::Mat& output) {
-  if (!mIsPrepared) {
-    beforeProcess();
-    mIsPrepared = true;
-  }
-  for (auto& window : windows) {
-    cv::Mat feat;
-    extractFeatures(window, feat);
-    output.push_back(feat);
-  }
-}
-
-void Descriptor2D::extract(const std::vector<cv::KeyPoint>& keypoints,
-                           cv::Mat& output) {
-  if (!mIsPrepared) {
-    beforeProcess();
-    mIsPrepared = true;
-  }
-  const float SQROOT_TWO = 1.4142136237f;
-  for (auto& keypoint : keypoints) {
-    cv::Mat feat;
-    // diameter = l\|2
-    int length = static_cast<int>(keypoint.size * SQROOT_TWO);
-    const int x = static_cast<int>(keypoint.pt.x),
-      y = static_cast<int>(keypoint.pt.y),
-      width = length, height = length;
-    auto window = cv::Rect(x, y, width, height);
-    extractFeatures(window, feat);
-    output.push_back(feat);
-  }
-}
-
-void Descriptor2D::setData(const cv::Mat& img) {
-  mImage = img.clone();
-  beforeProcess();
-  mIsPrepared = true;
-}
 }  // namespace ssig
-
 
