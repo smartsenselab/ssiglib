@@ -15,29 +15,11 @@ configuration: Release
 
 environment:
   OpenCV_DIR: c:\opencv\build\
-  OpenCV_INCLUDE_DIR: c:\opencv\include\
   OPENCV_BIN: c:\opencv\build\bin\Release\
 
 before_build:
-  - echo ###Starting Before Build####
-  - cd c:\ssiglib
-  - mkdir build
-  - cd build
-  - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
-  - cmake -D BUILD_TESTS=ON -D ENABLE_COVERAGE=ON .. -G "Visual Studio 12 Win64"
-  - echo %OpenCV_DIR%
-
-build:
-  verbosity: minimal
-  parallel: true            
-  project: ALL_BUILD.vcxproj
-
-build_script:
-  - echo ###Starting Build####
-
-init:
-  - echo ###Starting Init####
-  - cd ..
+  - echo =====Starting OpenCV====
+  - cd c:\
   - git clone https://github.com/Itseez/opencv.git
   - cd opencv
   - mkdir build
@@ -45,7 +27,17 @@ init:
   - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
   - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
+  - echo =====Starting SSIGLib=====
   - cd c:\ssiglib
+  - mkdir build
+  - cd build
+  - cmake -D BUILD_TESTS=ON -D ENABLE_COVERAGE=ON .. -G "Visual Studio 12 Win64"
+  - echo %OpenCV_DIR%
+
+build:
+  verbosity: minimal
+  parallel: true            
+  project: ALL_BUILD.vcxproj
 
 notifications:
   # Email
