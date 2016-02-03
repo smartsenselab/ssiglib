@@ -6,6 +6,7 @@ branches:
   # whitelist
   only:
     - development
+    - appVeyor
 
 
 os: Visual Studio 2013
