@@ -20,13 +20,14 @@ environment:
   SSIGLib_BIN: c:\ssiglib\build\bin\Release\
 
 before_build:
+  - for /D %D in (c:\ssiglib\data\tests\*) do ( copy /y %D\* c:\ssiglib\build\bin\Release\ )
   - echo =====Starting OpenCV====
   - cd c:\
   - git clone https://github.com/Itseez/opencv.git
   - cd opencv
   - mkdir build
   - cd build
-  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=ON -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
   - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
   - echo =====Starting SSIGLib=====
