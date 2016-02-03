@@ -14,18 +14,23 @@ platform: x64
 configuration: Release
 
 before_build:
+  - echo ###Starting Before Build####
   - cd c:\ssiglib
   - mkdir build
   - cd build
-  - '"c:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat" amd64'
+  - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON .. -G "Visual Studio 12 Win64"
 
 build:
   verbosity: minimal
-  parallel: true             
-  project: ALL_BUILD.vcxproj 
+  parallel: true            
+  project: ALL_BUILD.vcxproj
+
+build_script:
+  - echo ###Starting Build####
 
 init:
+  - echo ###Starting Init####
   - cd ..
   - git clone https://github.com/Itseez/opencv.git
   - cd opencv
@@ -36,6 +41,7 @@ init:
   - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
   - setx -m OPENCV_BIN c:\opencv\build\bin\Release\
   - setx -m OPENCV_DIR c:\opencv\build\
+  - cd c:\ssiglib
 
 notifications:
   # Email
