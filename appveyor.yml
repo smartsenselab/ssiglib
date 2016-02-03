@@ -16,6 +16,8 @@ configuration: Release
 environment:
   OpenCV_DIR: c:\opencv\build\
   OPENCV_BIN: c:\opencv\build\bin\Release\
+  SSIGLib_DIR: c:\ssiglib\build\
+  SSIGLib_BIN: c:\ssiglib\build\Release\
 
 before_build:
   - echo =====Starting OpenCV====
@@ -41,6 +43,19 @@ build:
   verbosity: minimal
   parallel: true            
 #  project: c:\ssiglib\build\ALL_BUILD.vcxproj
+
+before_test:
+  - echo ==== Tests ====
+  - cd c:\ssiglib\build\
+  - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
+
+# scripts to run after tests
+after_test:
+
+# to run your custom scripts instead of automatic tests
+test_script:
+  - echo === Hakuna Matata ===
+  - msbuild RUN_TESTS.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
 
 notifications:
   # Email
