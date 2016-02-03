@@ -32,12 +32,15 @@ before_build:
   - mkdir build
   - cd build
   - cmake -D BUILD_TESTS=ON -D ENABLE_COVERAGE=ON .. -G "Visual Studio 12 Win64"
-  - echo %OpenCV_DIR%
+
+build_script:
+  - cd c:\ssiglib\build\
+  - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
 
 build:
   verbosity: minimal
   parallel: true            
-  project: ALL_BUILD.vcxproj
+#  project: c:\ssiglib\build\ALL_BUILD.vcxproj
 
 notifications:
   # Email
