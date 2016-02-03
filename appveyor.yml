@@ -20,7 +20,7 @@ environment:
   SSIGLib_BIN: c:\ssiglib\build\bin\Release\
 
 before_build:
-  - for /D %D in (c:\ssiglib\data\tests\*) do ( copy /y %D\* c:\ssiglib\build\bin\Release\ )
+  - for /D %%D in (c:\ssiglib\data\tests\*) do ( copy /y %%D\* c:\ssiglib\build\bin\Release\ )
   - echo =====Starting OpenCV====
   - cd c:\
   - git clone https://github.com/Itseez/opencv.git
@@ -67,5 +67,5 @@ notifications:
     to:
       - rbk@dcc.ufmg.br
     subject: 'Build {{status}}'                  
-    message: "{{message}}, {{commitId}}, ..."    
+#    message: "{{message}}, {{commitId}}, ..."    
     on_build_status_changed: true
