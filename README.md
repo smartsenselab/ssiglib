@@ -1,6 +1,6 @@
 # SSIGLib - Smart Surveillance Interest Group Library
 
-<a href="www.ssig.dcc.ufmg.br"><img src="http://www.ssig.dcc.ufmg.br/wp-content/uploads/2014/02/ssig_logo_bitmap_hd-300x205.png"></a>
+<a href="http://www.ssig.dcc.ufmg.br"><img src="http://www.ssig.dcc.ufmg.br/wp-content/uploads/2014/02/ssig_logo_bitmap_hd-300x205.png"></a>
 
 | License|Linux|Win|Code Coverage|
 | ----|----|----- | ---------|
