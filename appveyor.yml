@@ -55,7 +55,7 @@ after_test:
 # to run your custom scripts instead of automatic tests
 test_script:
   - echo === Hakuna Matata ===
-  - ctest -C Release -V --output-on-failure
+  - ctest -C Release -V --output-on-failure --test-timeout 1
 #  - msbuild RUN_TESTS.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
 #  - c:\ssiglib\build\bin\Release\test_core.exe
 
