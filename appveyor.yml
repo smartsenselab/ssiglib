@@ -15,7 +15,7 @@ configuration: Release
 
 environment:
   OpenCV_DIR: c:\opencv\build\
-  OpenCV_INCLUDE_DIR: c:\opencv\build\
+  OpenCV_INCLUDE_DIR: c:\opencv\build\include\
   OPENCV_BIN: c:\opencv\build\bin\Release\
 
 before_build:
