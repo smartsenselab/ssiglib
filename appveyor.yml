@@ -9,22 +9,23 @@ branches:
 
 skip_tags: true
 
-os: Visual Studio 2013
+os: Windows Server 2012
 platform: x64
 configuration: Release
 
 environment:
   OpenCV_DIR: c:\opencv\build\
   OPENCV_BIN: c:\opencv\build\bin\Release\
+  SSIGLib_DIR: c:\ssiglib\build\
+  SSIGLib_BIN: c:\ssiglib\build\bin\Release\
 
 before_build:
   - echo =====Starting OpenCV====
-  - cd c:\
-  - git clone https://github.com/Itseez/opencv.git
-  - cd opencv
+  - git clone https://github.com/Itseez/opencv.git c:\opencv\
+  - cd c:\opencv
   - mkdir build
   - cd build
-  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=ON -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
   - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
   - echo =====Starting SSIGLib=====
@@ -42,11 +43,23 @@ build:
   parallel: true            
 #  project: c:\ssiglib\build\ALL_BUILD.vcxproj
 
+before_test:
+  - echo ==== Tests ====
+  - cd c:\ssiglib\build\
+  - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
+  - set PATH=%PATH%;%OPENCV_BIN%;
+
+after_test:
+
+test_script:
+  - echo === Hakuna Matata ===
+  - ctest -C Release --output-on-failure --test-timeout 270 
+
 notifications:
   # Email
   - provider: Email
     to:
       - rbk@dcc.ufmg.br
     subject: 'Build {{status}}'                  
-    message: "{{message}}, {{commitId}}, ..."    
+#    message: "{{message}}, {{commitId}}, ..."    
     on_build_status_changed: true
