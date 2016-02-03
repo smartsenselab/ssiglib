@@ -20,6 +20,8 @@ before_build:
   - cd build
   - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON .. -G "Visual Studio 12 Win64"
+  - echo %OpenCV_DIR%
+  - set OpenCV_DIR
 
 build:
   verbosity: minimal
