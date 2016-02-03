@@ -1,0 +1,34 @@
+version: 1.0.{build}
+
+clone_folder: c:\ssiglib\
+
+branches:
+  # whitelist
+  only:
+    - development
+
+
+os: Visual Studio 2013
+platform: x64
+configuration: Release
+
+before_build:
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_TESTS=ON -DENABLE_COVERAGE=ON ..
+
+build:
+  verbosity: minimal
+  parallel: true                  # enable MSBuild parallel builds
+  project: SSIGLib.sln      # path to Visual Studio solution or project
+
+init:
+  - git clone https://github.com/Itseez/opencv.git
+  - cd opencv
+  - mkdir build
+  - cd build
+  - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..
+  - msbuild OpenCV.sln /p:configuration=release /t:x64 /p:platform=x64
+  - setx -m OPENCV_BIN c:\opencv\build\bin\Release\
+  - setx -m OPENCV_DIR c:\opencv\build\
+
