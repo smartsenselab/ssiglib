@@ -29,6 +29,7 @@ init:
   - mkdir build
   - cd build
   - cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=c:\ssiglib\opencv\build\ -D WITH_TBB=OFF -D WITH_FFMPEG=OFF -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF .. -G "Visual Studio 12 Win64"
+  - vcvarsall amd64
   - msbuild ALL_BUILD.vcxproj /p:configuration=release /p:platform=x64 /p:UseEnv=true /p:PreferredToolArchitecture=x64 /p:PlatformToolset=v120
   - setx -m OPENCV_BIN cc:\ssiglib\opencv\build\bin\Release\
   - setx -m OPENCV_DIR c:\ssiglib\opencv\build\
