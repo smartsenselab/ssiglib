@@ -72,6 +72,11 @@ struct CorrelationSimilarity : DistanceFunctor {
                                const cv::Mat& y) const override;
 };
 
+struct Chi2Similarity : DistanceFunctor {
+  CORE_EXPORT float operator()(const cv::Mat& x,
+    const cv::Mat& y) const override;
+};
+
 typedef DistanceFunctor SimilarityFunctor;
 
 class Math {
