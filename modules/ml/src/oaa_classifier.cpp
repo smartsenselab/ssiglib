@@ -83,16 +83,16 @@ void OAAClassifier::learn(
   mClassifiers.resize(mLabelOrderings.size());
 #ifdef _OPENMP
 const int maxThreadsN = omp_get_max_threads()/2;
-#pragma omp parallel for num_threads(maxThreadsN)
+#pragma omp parallel for
 #endif
   for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i) {
     const int label = labelOrdering[i];
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
-    for (int i = 0; i < labels.rows; ++i) {
-      if (labels[i][0] == label) {
-        localLabels[i][0] = 1;
+    for (int j = 0; j < labels.rows; ++j) {
+      if (labels[j][0] == label) {
+        localLabels[j][0] = 1;
       } else {
-        localLabels[i][0] = -1;
+        localLabels[j][0] = -1;
       }
     }
     mClassifiers[i] =
@@ -111,7 +111,7 @@ int OAAClassifier::predict(
   int bestLabel = 0;
 #ifdef _OPENMP
 const int maxThreadsN = omp_get_max_threads()/2;
-#pragma omp parallel for num_threads(maxThreadsN)
+#pragma omp parallel for
 #endif
   for (int r = 0; r < inp.rows; ++r) {
     int c = 0;

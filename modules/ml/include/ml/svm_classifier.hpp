@@ -119,6 +119,10 @@ class SVMClassifier : public Classifier {
 
   ML_EXPORT void setDegree(float degree);
 
+  ML_EXPORT size_t getCrossValidationState() const;
+
+  ML_EXPORT void setCrossValidationState(int kfolds);
+
  private:
   // private members
   cv::Ptr<cv::ml::SVM> mSvm;
@@ -131,6 +135,8 @@ class SVMClassifier : public Classifier {
   float mNu = 0.1f;
   float mCoef = 0.1f;
   float mDegree = 0.1f;
+  int mKfolds = 10;
+  bool mCvEnabled = false;
 
   cv::Mat mClassWeights;
 

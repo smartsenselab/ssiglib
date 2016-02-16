@@ -1,1 +1,1 @@
-usage: python ssf_class_generate.py -c component-name -n name -f filename
+usage: python ssf_class_generate.py -m module-name -n class-name -f file-name

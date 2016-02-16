@@ -39,39 +39,40 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
+#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#include <core/algorithm.hpp>
+#include <memory>
+#include <vector>
 
-#include "descriptors_defs.hpp"
-#include "descriptor_2d.hpp"
+
+#include "ml_defs.hpp"
+#include "clustering.hpp"
+
 
 namespace ssig {
-class BIC : public Descriptor2D {
+class SpatialPyramid : public ssig::Algorithm {
  public:
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);
-  DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
-  DESCRIPTORS_EXPORT BIC(const BIC& rhs);
+  SpatialPyramid(void);
+  virtual ~SpatialPyramid(void);
+  SpatialPyramid(const SpatialPyramid& rhs);
+  SpatialPyramid& operator=(const SpatialPyramid& rhs);
+
+  ML_EXPORT static void pool(
+    const cv::Size& imageSize,
+    const std::vector<ssig::Clustering*>& clusteringMethods,
+    const std::vector<cv::Vec2i>& pyramidConfigurations,
+    const std::vector<float>& poolingWeights,
+    const std::vector<cv::Mat_<float>>& partFeatures,
+    const std::vector<cv::Rect>& partWindows,
+    const std::vector<int>& scaledHeights,
+    cv::Mat_<float>& output);
 
  protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
-
- private:
-  static
-  DESCRIPTORS_EXPORT void compressHistogram(const cv::Mat_<float>& hist,
-                                            cv::Mat_<float>& ch);
-  static
-  DESCRIPTORS_EXPORT float computeLog(float value);
-  int nbins = 64;
-  cv::Mat mInteriorMask;
-  // private members
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 };
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
+#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
 

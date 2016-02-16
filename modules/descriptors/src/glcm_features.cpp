@@ -39,39 +39,81 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
+#include "descriptors/glcm_features.hpp"
 
-#include "descriptors_defs.hpp"
-#include "descriptor_2d.hpp"
+#include <opencv2/imgproc.hpp>
 
 namespace ssig {
-class BIC : public Descriptor2D {
- public:
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);
-  DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
-  DESCRIPTORS_EXPORT BIC(const BIC& rhs);
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
+    Descriptor2D(input) {}
 
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input,
+    const GrayLevelCoOccurrence& descriptor) :
+    Descriptor2D(input, descriptor) {}
 
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+  GrayLevelCoOccurrence::GrayLevelCoOccurrence(
+    const GrayLevelCoOccurrence& descriptor) : Descriptor2D(descriptor) {}
 
- private:
-  static
-  DESCRIPTORS_EXPORT void compressHistogram(const cv::Mat_<float>& hist,
-                                            cv::Mat_<float>& ch);
-  static
-  DESCRIPTORS_EXPORT float computeLog(float value);
-  int nbins = 64;
-  cv::Mat mInteriorMask;
-  // private members
-};
+  int GrayLevelCoOccurrence::getLevels() const {
+    return mLevels;
+  }
+
+  int GrayLevelCoOccurrence::getBins() const {
+    return mBins;
+  }
+
+  void GrayLevelCoOccurrence::setLevels(const int levels) {
+    mLevels = levels;
+  }
+
+  void GrayLevelCoOccurrence::setBins(const int bins) {
+    mBins = bins;
+  }
+
+  void GrayLevelCoOccurrence::read(const cv::FileNode& fn) { }
+
+  void GrayLevelCoOccurrence::write(cv::FileStorage& fs) const { }
+
+  void GrayLevelCoOccurrence::beforeProcess() {
+    if (mImage.channels() == 3 || mImage.channels() == 4)
+      cv::cvtColor(mImage, mGreyImg, CV_BGR2GRAY);
+    else
+      mImage.copyTo(mGreyImg);
+
+    mGreyImg.convertTo(mGreyImg, CV_32FC1);
+  }
+
+  void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
+    cv::Mat& output) {
+    output = cv::Mat::zeros(mBins, mBins, CV_32FC1);
+    int binWidth = mLevels / mBins;
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+    for (int i = patch.y; i < patch.height; i++) {
+      for (int j = patch.x; j < patch.width; j++) {
+        if (isValidPixel(i + mDi, j + mDj, mGreyImg.rows, mGreyImg.cols)) {
+          auto val1 = static_cast<int>(mGreyImg.at<float>(i, j) / binWidth);
+          auto val2 = static_cast<int>(
+            mGreyImg.at<float>(i + mDi, j + mDj) / binWidth);
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+          {
+            output.at<float>(val1, val2)++;
+          }
+        }
+      }
+    }
+    output = output.reshape(1, 1);
+  }
+
+  int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+    return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
+  }
+
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
 
 

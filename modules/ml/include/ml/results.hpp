@@ -77,6 +77,11 @@ class Results {
     ssig::Classifier& classifier,
     std::vector<Results>& out);
 
+  ML_EXPORT static void makeConfusionMatrixVisualization(
+    const int blockWidth,
+    const cv::Mat_<float>& confusionMatrix,
+    cv::Mat& visualization);
+
  private:
   std::unordered_map<int, int> compute(
     const cv::Mat_<int>& groundTruth,

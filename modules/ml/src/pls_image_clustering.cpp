@@ -42,10 +42,6 @@
 
 #include "ml/pls_image_clustering.hpp"
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 #include <core/math.hpp>
 
 #include <string>
@@ -107,7 +103,7 @@ PLSImageClustering::PLSImageClustering(
 
 void PLSImageClustering::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) {
+  cv::Mat_<float>& resp) const {
   resp.release();
   mClassifier->predict(inp, resp);
 }
@@ -143,6 +139,7 @@ void PLSImageClustering::setClusterRepresentationType(
 void PLSImageClustering::read(const cv::FileNode& fn) {
   auto node = fn["Classifier"];
   mClassifier->read(node);
+  mLength  = static_cast<int>(mClassifier->getLabelsOrdering().size());
 }
 
 void PLSImageClustering::write(cv::FileStorage& fs) const {

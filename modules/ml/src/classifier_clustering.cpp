@@ -102,6 +102,7 @@ bool ClassifierClustering::iterate() {
   if (termination) {
     mClusters = mNewClusters;
   }
+  mLength = mClusters.size();
   return termination;
 }
 
@@ -115,7 +116,11 @@ int ClassifierClustering::getInitialK() const {
   return mInitialK;
 }
 
-int ClassifierClustering::getClusterSize() const {
+  size_t ClassifierClustering::getSize() const {
+    return mLength;
+}
+
+  int ClassifierClustering::getClusterSize() const {
   return mClusterSize;
 }
 

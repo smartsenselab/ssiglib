@@ -39,39 +39,33 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
+#include <gtest/gtest.h>
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include "descriptors/ccm_features.hpp"
 
-#include "descriptors_defs.hpp"
-#include "descriptor_2d.hpp"
+TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
+  cv::Mat img = cv::imread("glcm.png");
+  ASSERT_FALSE(img.empty());
+  ssig::ColorCoOccurrence ccm(img);
+  cv::Mat out;
 
-namespace ssig {
-class BIC : public Descriptor2D {
- public:
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);
-  DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
-  DESCRIPTORS_EXPORT BIC(const BIC& rhs);
+  ccm.setBins({ 4, 4, 4 });
+  ccm.setLevels({ 256, 256, 256 });
 
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+  ccm.extract(out);
 
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+  /*cv::Mat_<float> expected = (cv::Mat_<float>(1, 16) <<
+    235, 0, 0, 1,
+    2, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 2, 0, 0);
 
- private:
-  static
-  DESCRIPTORS_EXPORT void compressHistogram(const cv::Mat_<float>& hist,
-                                            cv::Mat_<float>& ch);
-  static
-  DESCRIPTORS_EXPORT float computeLog(float value);
-  int nbins = 64;
-  cv::Mat mInteriorMask;
-  // private members
-};
-}  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
-
-
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = 4 * FLT_EPSILON;
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
+  EXPECT_EQ(16, diffSum);*/
+}

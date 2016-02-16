@@ -1,4 +1,4 @@
-/*L*************************************************************************
+/*L*****************************************************************************
 *
 *  Copyright (c) 2015, Smart Surveillance Interest Group, all rights reserved.
 *
@@ -237,6 +237,9 @@ std::vector<cv::Mat_<double>> HOGUOCCTI::computeIntegralGradientImages(
   cv::split(grad, gradients);
   cv::split(angleOfs, angles);
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < grad.rows; ++i) {
     for (int j = 0; j < grad.cols; ++j) {
       for (int k = 0; k < 2; ++k) {
@@ -244,10 +247,55 @@ std::vector<cv::Mat_<double>> HOGUOCCTI::computeIntegralGradientImages(
         auto bin = (angle.at<uint8_t>(i, j));
         auto bingrad = gradients[k];
         float mag = bingrad[i][j];
-        integralImages[bin][i][j] += static_cast<double>(mag);
+
+        int centerCol = static_cast<int>(j / 8) + 4;
+        int centerRow = static_cast<int>(i / 8) + 4;
+        cv::Mat_<int> centerRows = (cv::Mat_<int>(1, 5) <<
+          centerRow , centerRow - 8 , centerRow + 8 , centerRow , centerRow);
+        cv::Mat_<int> centerCols = (cv::Mat_<int>(1, 5) <<
+          centerCol , centerCol , centerCol , centerCol - 8 , centerCol + 8);
+
+
+        /* This mat stores the values of the distance of
+        the current pixel to each cell center
+        The order of the centers are center, top, bottom, left, right*/
+        cv::Mat_<float> centerDistances(1, 5, 0.f);
+        const int CENTER = 0, TOP = 1, BOTTOM = 2, LEFT = 3, RIGHT = 4;
+
+        for (int n = 1; n < 5; ++n) {
+          centerDistances.at<float>(n) = static_cast<float>(
+            (centerRows.at<int>(n) - centerRow) *
+            (centerRows.at<int>(n) - centerRow));
+          centerDistances.at<float>(n) += static_cast<float>(
+            (centerCols.at<int>(n) - centerCol) *
+            (centerCols.at<int>(n) - centerCol));
+          centerDistances.at<float>(n) = cv::sqrt(centerDistances.at<float>(n));
+        }
+        cv::normalize(centerDistances, centerDistances, 1, 0, cv::NORM_L1);
+        centerDistances = 1 - centerDistances;
+        cv::normalize(centerDistances, centerDistances, 1, 0, cv::NORM_L1);
+
+        integralImages[bin][i][j] += mag *
+          centerDistances.at<float>(CENTER);
+        if (i >= 0 && i < img.rows && j + 8 >= 0 && j + 8 < img.cols)
+          integralImages[bin][i][j + 8] += mag *
+            centerDistances.at<float>(TOP);
+        if (i >= 0 && i < img.rows && j - 8 >= 0 && j - 8 < img.cols)
+          integralImages[bin][i][j - 8] += mag *
+            centerDistances.at<float>(BOTTOM);
+        if (i + 8 >= 0 && i + 8 < img.rows && j >= 0 && j < img.cols)
+          integralImages[bin][i + 8][j] += mag *
+            centerDistances.at<float>(LEFT);
+        if (i - 8 >= 0 && i - 8 < img.rows && j >= 0 && j < img.cols)
+          integralImages[bin][i - 8][j] += mag *
+            centerDistances.at<float>(RIGHT);
       }
     }
   }
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int bin = 0; bin < nbins; ++bin) {
     cv::Mat intImage;
     auto bingrad = integralImages[bin];

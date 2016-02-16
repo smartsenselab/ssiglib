@@ -39,39 +39,49 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_BIC_FEATURES_HPP_
+#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
-#include "descriptors_defs.hpp"
+#include <opencv2/core.hpp>
+
 #include "descriptor_2d.hpp"
 
 namespace ssig {
-class BIC : public Descriptor2D {
+class GrayLevelCoOccurrence : public Descriptor2D {
  public:
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input);
-  DESCRIPTORS_EXPORT BIC(const cv::Mat& input, const BIC& descriptor);
-  DESCRIPTORS_EXPORT virtual ~BIC(void) = default;
-  DESCRIPTORS_EXPORT BIC(const BIC& rhs);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input,
+      const GrayLevelCoOccurrence& descriptor);
+    DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
+      const GrayLevelCoOccurrence& descriptor);
+
+    DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
+
+    DESCRIPTORS_EXPORT int getLevels() const;
+    DESCRIPTORS_EXPORT int getBins() const;
+
+    DESCRIPTORS_EXPORT void setLevels(const int levels);
+    DESCRIPTORS_EXPORT void setBins(const int bins);
 
  protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+    DESCRIPTORS_EXPORT void beforeProcess() override;
+    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+      cv::Mat& output) override;
 
  private:
-  static
-  DESCRIPTORS_EXPORT void compressHistogram(const cv::Mat_<float>& hist,
-                                            cv::Mat_<float>& ch);
-  static
-  DESCRIPTORS_EXPORT float computeLog(float value);
-  int nbins = 64;
-  cv::Mat mInteriorMask;
-  // private members
+    // private members
+    // the number of levels of intensity
+    int mLevels = 256;
+    int mBins = 8;
+
+    int mDi = 0, mDj = 1;
+
+    cv::Mat mGreyImg;
+    static int isValidPixel(int i, int j, int rows, int cols);
 };
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_BIC_FEATURES_HPP_
+#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
 
 

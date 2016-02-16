@@ -42,9 +42,14 @@
 #include "ml/results.hpp"
 #include <limits.h>
 
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+
 #include <ml/classification.hpp>
 
 #include <algorithm>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <ctime>
@@ -71,9 +76,6 @@ std::unordered_map<int, int> Results::compute(
 
   auto len = static_cast<int>(labelsMap.size());
   confusionMatrix = cv::Mat_<int>::zeros(len, len);
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
   for (int i = 0; i < groundTruth.rows; ++i) {
     auto value = labels.at<int>(i);
     auto gt = groundTruth.at<int>(i);
@@ -171,6 +173,64 @@ std::pair<float, float> Results::crossValidation(
 
   return std::make_pair(static_cast<float>(mean[0]),
                         static_cast<float>(stdev[0]));
+}
+
+void Results::makeConfusionMatrixVisualization(
+  const int blockWidth,
+  const cv::Mat_<float>& confusionMatrix,
+  cv::Mat& visualization) {
+  if (confusionMatrix.rows != confusionMatrix.cols) {
+    std::string warningMessage = "A confusion matrix must have same";
+    warningMessage = warningMessage + "number of rows and cols";
+    std::runtime_error(warningMessage.c_str());
+  }
+  const int nclasses = confusionMatrix.rows;
+  cv::Mat aux = confusionMatrix.clone();
+
+  cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
+    (blockWidth * nclasses, blockWidth * nclasses);
+  for (int r = 0; r < confusionMatrix.rows; ++r) {
+    cv::normalize(confusionMatrix.row(r), aux.row(r), 1, 0, cv::NORM_L1);
+  }
+  for (int i = 0; i < nclasses; ++i) {
+    for (int j = 0; j < nclasses; ++j) {
+      cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
+                                      blockWidth, blockWidth));
+      roi = aux.at<float>(i, j);
+    }
+  }
+
+  visFloat.convertTo(aux, CV_8UC1, 255);
+
+  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+
+  for (int i = 0; i < nclasses; ++i) {
+    cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
+                                          blockWidth, blockWidth));
+    const int x = i * blockWidth;
+    const int y = i * blockWidth;
+    auto color = CV_RGB(255, 255, 255);
+    const int len = blockWidth - 1;
+    cv::line(visualization,
+             cv::Point(x, y),
+             cv::Point(x + len, y),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x, y),
+             cv::Point(x, y + len),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x + len, y),
+             cv::Point(x + len, y + len),
+             color, 1);
+
+    cv::line(visualization,
+             cv::Point(x, y + len),
+             cv::Point(x + len, y + len),
+             color, 1);
+  }
 }
 }  // namespace ssig
 

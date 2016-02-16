@@ -38,6 +38,10 @@ option(BUILD_DOCS "Create and install the HTML based API documentation (requires
 
 option(ENABLE_COVERAGE "Enable coverage collection with  GCov." OFF)
 
+option(WITH_OPENMP "Enable OpenMP." ON)
+
+option(WITH_CUDA "Enable Cuda." OFF)
+
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH ENABLE_COVERAGE)
 mark_as_advanced(CMAKE_CONFIGURATION_TYPES CMAKE_INSTALL_PREFIX)
 
@@ -81,27 +85,33 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}")
 set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
 
-find_package(OpenMP)
+if(WITH_OPENMP)
+	find_package(OpenMP)
+	if (OPENMP_FOUND)
+		  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+	endif()
+endif()
 
 
 if (("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") OR ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang"))
-if (OPENMP_FOUND)
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -std=c++11 -std=gnu++11")
-elseif()
+#if (OPENMP_FOUND)
+#  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -Wall -std=c++11 -std=gnu++11")
+#elseif()
 	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -std=gnu++11")#
-endif()
+#endif()
 	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE} -O4 -DNDEBUG")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O2 -g")
 	#Solve plugin problem for some linux versions
 	set (CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_CXX_LINK_EXECUTABLE} -ldl")
+
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-if (OPENMP_FOUND)
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} /W3 /WX")
-elseif()
+#if (OPENMP_FOUND)
+  #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} /W3 /WX")
+#elseif()
 	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} /W3 /WX")
-endif()
+#endif()
 	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}")
 	set(CMAKE_CXX_FLAGS_RELEASE        "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -139,6 +149,7 @@ endif()
 # CMake Auxiliary Files
 ###############################################################################
 include(cmake/SSIGOpenCVUtil.cmake)
+include(cmake/SSIGCudaUtil.cmake)
 include(cmake/SSIGModules.cmake)
 include(cmake/SSIGUtil.cmake)
 

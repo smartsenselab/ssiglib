@@ -65,9 +65,14 @@ TEST(HOGUOCCTI, Simple) {
   cv::FileStorage stg("hog1_expected.yml", cv::FileStorage::READ);
   cv::Mat_<float> expected;
   stg["expected_uoccti"] >> expected;
-  cv::Mat diff;
-  cv::compare(out, expected, diff, cv::CMP_EQ);
-  int diffSum = cv::countNonZero(diff);
-  EXPECT_EQ(out.cols, diffSum);
+
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = static_cast<float>(1e-5);
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
+
+  EXPECT_EQ(31, diffSum);
 }
 

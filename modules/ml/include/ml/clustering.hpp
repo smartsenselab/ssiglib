@@ -69,11 +69,13 @@ class Clustering : public Algorithm {
 
   ML_EXPORT virtual void predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) = 0;
+    cv::Mat_<float>& resp) const = 0;
 
   ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
 
   virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
+
+  ML_EXPORT virtual size_t getSize() const;
 
   ML_EXPORT virtual bool empty() const = 0;
   ML_EXPORT virtual bool isTrained() const = 0;

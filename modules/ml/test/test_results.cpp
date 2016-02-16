@@ -81,6 +81,9 @@ TEST(Results, simpleConfMat) {
   cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
   auto zeroes = cv::countNonZero(out);
 
+  // cv::Mat vis;
+  // ssig::Results::makeConfusionMatrixVisualization(10, confMat, vis);
+
   ASSERT_EQ(zeroes, 9);
 
   ASSERT_FLOAT_EQ(0.5f, results.getAccuracy());

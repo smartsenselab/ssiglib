@@ -62,7 +62,7 @@ class ClassifierClustering : public Clustering {
 
   ML_EXPORT void predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) override = 0;
+    cv::Mat_<float>& resp) const override = 0;
 
   ML_EXPORT std::vector<Cluster> getClustering() const override;
   ML_EXPORT bool empty() const override = 0;
@@ -87,6 +87,8 @@ class ClassifierClustering : public Clustering {
                                  std::vector<std::vector<int>>& distribution);
 
   ML_EXPORT int getInitialK() const;
+
+  ML_EXPORT size_t getSize() const override;
 
   ML_EXPORT int getClusterSize() const;
 
@@ -135,6 +137,7 @@ class ClassifierClustering : public Clustering {
   // A.K.A the M value in Singh et al.(2012)
   int mClusterSize = 5;
   int mIt = 0;
+  size_t mLength = 0;
 
   std::vector<std::vector<int>> mDiscovery;
   std::vector<std::vector<int>> mNatural;
@@ -142,9 +145,6 @@ class ClassifierClustering : public Clustering {
   std::vector<Cluster> mClustersOld, mNewClusters;
   std::vector<std::vector<float>> mClustersResponses;
   std::vector<int> mClustersIds;
-
- private:
-  // private members
 };
 
 }  // namespace ssig
