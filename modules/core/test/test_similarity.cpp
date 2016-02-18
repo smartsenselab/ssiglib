@@ -140,7 +140,7 @@ TEST(Correlation, UncorrelatedOddSized) {
 }
 
 TEST(Chi2, Chi2Simple) {
-  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) << 
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) <<
     3, 5, 7,
     1, 5, 2);
   // [(3 - 1)^2,(5 - 5)^2,(7 - 2)^2]
