@@ -70,10 +70,11 @@ macro(ssig_add_module _name)
 
 		# Standard linking to gtest stuff.
 		target_link_libraries(${TEST_NAME} gtest gtest_main)
+		target_link_libraries(${TEST_NAME} ${MODULE_NAME})
 		target_include_directories(${TEST_NAME} PUBLIC ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 		target_include_directories(${TEST_NAME} PUBLIC ${MODULE_PATH}/include/)
+		target_include_directories(${TEST_NAME} PUBLIC ${MODULE_PATH}/test/)
 
-		target_link_libraries(${TEST_NAME} ${MODULE_NAME})
 
 		# create test directory if it does not exists
 		set(DATA_TEST_PATH "${PROJECT_SOURCE_DIR}/data/tests/${MODULE_NAME}")
@@ -83,8 +84,8 @@ macro(ssig_add_module _name)
 		# manually running the executable test to see those specific tests.
 		add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} WORKING_DIRECTORY ${DATA_TEST_PATH})
 
-		file(GLOB MODULE_TEST_FILES "${DATA_TEST_PATH}/*")
-		file(COPY ${MODULE_TEST_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+		file(GLOB MODULE_DATA_FILES "${DATA_TEST_PATH}/*")
+		file(COPY ${MODULE_DATA_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 		# Configure folder to core library
 		set_target_properties(${TEST_NAME} PROPERTIES FOLDER TESTS)
@@ -92,6 +93,33 @@ macro(ssig_add_module _name)
 		unset(DATA_TEST_PATH)
 
 	endif()
+
+	if(BUILD_PERF_TESTS)
+		# Create set of core tests files
+		file(GLOB MODULE_PERF_FILES "${MODULE_PATH}/perf/perf*.cpp")
+
+		list(LENGTH MODULE_PERF_FILES perf_files_size)
+		if(NOT ${perf_files_size} STREQUAL "0")
+
+			set(PERF_NAME perf_${MODULE_NAME})
+			add_executable(${PERF_NAME} ${MODULE_PERF_FILES})
+
+			target_link_libraries(${PERF_NAME} hayai)
+			target_link_libraries(${PERF_NAME} ${MODULE_NAME})
+
+			target_include_directories(${PERF_NAME} PUBLIC ${hayai_SOURCE_DIR}/include)
+			target_include_directories(${PERF_NAME} PUBLIC ${MODULE_PATH}/include/)
+			target_include_directories(${PERF_NAME} PUBLIC ${MODULE_PATH}/perf/)
+
+			# Configure folder to core library
+			set_target_properties(${PERF_NAME} PROPERTIES FOLDER PERF_TESTS)
+			unset(TEST_NAME)
+			unset(DATA_TEST_PATH)
+
+		endif()
+
+	endif()
+
 	unset(MODULE_NAME)
 	unset(MODULE_PATH)
 	message(STATUS " ")
