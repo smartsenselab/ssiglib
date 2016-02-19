@@ -80,27 +80,28 @@ float CorrelationSimilarity::operator()(const cv::Mat& x,
   correlation = static_cast<float>(centeredX.dot(centeredY) / (
     (cv::norm(centeredX, cv::NORM_L2) * cv::norm(centeredY, cv::NORM_L2))));
 
-  /*
-  cv::Mat_<float> floatX, floatY;
-  x.convertTo(floatX, CV_32FC1);
-  y.convertTo(floatY, CV_32FC1);
-  const auto n = x.cols;
-  float i = 0, j = 0, ij = 0, ii = 0, jj = 0;
-  for (int s = 0; s < n; ++s) {
-    i += floatX[0][s];
-    ii += floatX[0][s] * floatX[0][s];
-
-    j += floatY[0][s];
-    jj += floatY[0][s] * floatY[0][s];
-
-    ij += floatX[0][s] * floatY[0][s];
-  }
-  correlation =
-    (n * ij - i * j) / (cv::sqrt(n * ii - i * i) * cv::sqrt(n * jj - j * j));*/
   return correlation;
 }
 
-cv::Mat_<float> Math::buildSimilarity(
+  float Chi2Similarity::operator()(const cv::Mat& x, const cv::Mat& y) const {
+    // The advantage of this distance is that it is weighted by the bin scale
+    // That is, if the bin tends to have large values, a large distance in the
+    // bin has less weight than in a bin that tend to have smaller values
+
+    float sim = 0;
+
+    cv::Mat squareDiff = x - y;
+    squareDiff = squareDiff.mul(squareDiff);
+    cv::Mat sum = x + y;
+    sum = 1 / sum;
+    cv::Mat z = squareDiff.mul(sum);
+    sim = static_cast<float>(cv::sum(z)[0]);
+    sim = sim * 0.5f;
+    sim = cv::sqrt(sim);
+    return -sim;
+  }
+
+  cv::Mat_<float> Math::buildSimilarity(
   const cv::Mat_<float>& input,
   SimilarityFunctor
   & similarityFunction) {

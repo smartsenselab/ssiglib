@@ -5,9 +5,8 @@ clone_folder: c:\ssiglib\
 branches:
   # whitelist
   only:
-    - development
-
-skip_tags: true
+    - develop
+    - master
 
 os: Windows Server 2012
 platform: x64
@@ -49,7 +48,7 @@ before_test:
   - '"c:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64'
   - set PATH=%PATH%;%OPENCV_BIN%;
 
-after_test:
+#after_test:
 
 test_script:
   - echo === Hakuna Matata ===

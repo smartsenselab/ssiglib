@@ -139,3 +139,21 @@ TEST(Correlation, UncorrelatedOddSized) {
   EXPECT_LT(abs(simMat[0][1]), 0.5);
 }
 
+TEST(Chi2, Chi2Simple) {
+  cv::Mat_<float> samples = (cv::Mat_<float>(2, 3) <<
+    3, 5, 7,
+    1, 5, 2);
+  // [(3 - 1)^2,(5 - 5)^2,(7 - 2)^2]
+  // [4,0,25]
+  // [4, 10, 9]
+  // sim = 1 + 0 + 25/9
+  // sim = 3.77777777 * 0.5
+  // sim = sqrt 1.8888885
+  // sim = 1.37436854046
+  ssig::Chi2Similarity chi2;
+  cv::Mat_<float> simMat = ssig::Math::buildSimilarity(
+    samples, chi2);
+
+  EXPECT_FLOAT_EQ(-1.37436854046f, simMat[0][1]);
+}
+
