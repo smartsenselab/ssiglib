@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #ifndef _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_LBP_FEATURES_HPP_
 
@@ -48,13 +47,12 @@
 
 namespace ssig {
 
-class LBP : public Descriptor2D{
+class LBP : public Descriptor2D {
  public:
   DESCRIPTORS_EXPORT LBP(const cv::Mat& input);
   DESCRIPTORS_EXPORT LBP(const cv::Mat& input, const LBP& descriptor);
   DESCRIPTORS_EXPORT LBP(const LBP& descriptor);
   DESCRIPTORS_EXPORT virtual ~LBP(void) = default;
-
 
   DESCRIPTORS_EXPORT cv::Mat_<int> getKernel() const;
 
@@ -66,17 +64,16 @@ class LBP : public Descriptor2D{
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
   DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(
-    const cv::Rect& patch,
-    cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+                                          cv::Mat& output) override;
 
   DESCRIPTORS_EXPORT bool inValidRange(const int i, const int j) const;
 
  private:
   DESCRIPTORS_EXPORT void setDefaultKernel();
   // private members
-cv::Mat_<uchar> mBinaryPattern;
-cv::Mat_<int> mKernel;
+  cv::Mat_<uchar> mBinaryPattern;
+  cv::Mat_<int> mKernel;
 };
 
 }  // namespace ssig
