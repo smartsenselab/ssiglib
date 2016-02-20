@@ -9,4 +9,4 @@ add_library(libsvm STATIC "src/libsvm.cpp")
 
 target_include_directories(libsvm PUBLIC ${libsvm_SOURCE_DIR}/include)
 
-set_target_properties(libsvm PROPERTIES FOLDER 3RDPARTY)
+set_target_properties(libsvm PROPERTIES COMPILE_FLAGS "-fPIC" FOLDER 3RDPARTY)
