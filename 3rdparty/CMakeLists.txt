@@ -13,5 +13,7 @@ endif()
 #Hayai
 #Include Hayai Performance Tests if only BUILD_PERF_TESTS was checked by user
 if(BUILD_PERF_TESTS)
-	add_subdirectory (hayai-1.1.0)	
+	add_subdirectory (hayai-1.1.0)
 endif()
+
+add_subdirectory (libsvm-3.21)

@@ -45,7 +45,7 @@
 
 #include <opencv2/core.hpp>
 
-#include <ml/libsvm.hpp>
+#include <libsvm.hpp>
 
 #include <unordered_map>
 #include <string>
