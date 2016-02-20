@@ -89,7 +89,18 @@ namespace ssig {
   }
 
   Classifier* SVMClassifier::clone() const {
-    return nullptr;
+    SVMClassifier* ans = new SVMClassifier();
+    ans->mParams = mParams;
+    ans->mModel = nullptr;
+    return ans;
+  }
+
+  float SVMClassifier::getEpsilon() const {
+    return static_cast<float>(mParams.eps);
+  }
+
+  void SVMClassifier::setEpsilon(float epsilon) {
+    mParams.eps = static_cast<double>(epsilon);
   }
 
   int SVMClassifier::getKernelType() const {
@@ -173,6 +184,7 @@ namespace ssig {
     double* y = new double[nSamples];
     ans->l = nSamples;
     ans->y = y;
+#pragma omp parallel for
     for (int i = 0; i < nSamples; ++i) {
       y[i] = labels.at<int>(i);
     }
@@ -188,6 +200,8 @@ namespace ssig {
     const int nSamples = features.rows;
     const int ncols = features.cols;
     svm_node** featNode = new svm_node*[nSamples];
+
+    #pragma omp parallel for
     for (int i = 0; i < nSamples; ++i) {
       std::vector<svm_node> row_nodes;
       for (int j = 0; j < ncols; ++j) {
@@ -209,9 +223,6 @@ namespace ssig {
   void SVMClassifier::learn(
     const cv::Mat_<float>& input,
     const cv::Mat_<int>& labels) {
-
-    if (mParams.eps < 0.0001)
-      mParams.shrinking = 1;
 
     svm_problem* problem = convertToLibSVM(labels, input);
 

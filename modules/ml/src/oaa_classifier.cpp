@@ -82,7 +82,6 @@ void OAAClassifier::learn(
 
   mClassifiers.resize(mLabelOrderings.size());
 #ifdef _OPENMP
-const int maxThreadsN = omp_get_max_threads()/2;
 #pragma omp parallel for
 #endif
   for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i) {
@@ -110,7 +109,6 @@ int OAAClassifier::predict(
   float maxResp = -FLT_MAX;
   int bestLabel = 0;
 #ifdef _OPENMP
-const int maxThreadsN = omp_get_max_threads()/2;
 #pragma omp parallel for
 #endif
   for (int r = 0; r < inp.rows; ++r) {

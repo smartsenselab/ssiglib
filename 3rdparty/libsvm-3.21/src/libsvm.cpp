@@ -724,7 +724,7 @@ void Solver::Solve(int l, const QMatrix& Q, const double* p_, const schar* y_,
       active_size = l;
       info("*");
     }
-    fprintf(stderr, "\nWARNING: reaching max number of iterations\n");
+    // fprintf(stderr, "\nWARNING: reaching max number of iterations\n");
   }
 
   // calculate rho

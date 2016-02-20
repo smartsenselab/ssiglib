@@ -104,6 +104,10 @@ namespace ssig {
 
     ML_EXPORT Classifier* clone() const override;
 
+    ML_EXPORT float getEpsilon() const override;
+
+    ML_EXPORT void setEpsilon(float epsilon) override;
+
     ML_EXPORT int getKernelType() const;
 
     ML_EXPORT void setKernelType(KernelType kernelType);
