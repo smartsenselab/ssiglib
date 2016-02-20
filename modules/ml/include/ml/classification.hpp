@@ -90,8 +90,10 @@ class Classifier : public Algorithm {
 
   ML_EXPORT void setTermType(int termType);
 
+  virtual
   ML_EXPORT float getEpsilon() const;
 
+  virtual
   ML_EXPORT void setEpsilon(float epsilon);
 
   ML_EXPORT int getMaxIterations() const;
