@@ -81,7 +81,7 @@ TEST(SVMClassifier, BinaryClassification) {
   EXPECT_GE(resp[0][idx], 0);
 }
 
-//TEST(SVMClassifier, BinaryChi2Classification) {
+// TEST(SVMClassifier, BinaryChi2Classification) {
 //  cv::Mat_<float> inp;
 //  cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
 //  inp = cv::Mat_<float>::zeros(6, 2);
@@ -122,7 +122,7 @@ TEST(SVMClassifier, BinaryClassification) {
 //  idx = ordering[-1];
 //  svm.predict(query2, resp);
 //  EXPECT_GE(resp[0][idx], 0);
-//}
+// }
 //
 TEST(SVMClassifier, Persistence) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
