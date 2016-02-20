@@ -143,20 +143,19 @@ class SVMClassifier : public Classifier {
   ML_EXPORT void setProbabilisticModel(bool b);
   ML_EXPORT bool getProbabilisticModel() const;
 
-  //ML_EXPORT size_t getCrossValidationState() const;
+  // ML_EXPORT size_t getCrossValidationState() const;
 
-  //ML_EXPORT void setCrossValidationState(int kfolds);
+  // ML_EXPORT void setCrossValidationState(int kfolds);
 
  private:
   // private members
   svm_model* mModel = nullptr;
 
   svm_parameter mParams;
-
 };
 
-} // namespace ssig
+}  // namespace ssig
 
-#endif // !_SSIG_ML_SVMCLASSIFIER_HPP_
+#endif  // !_SSIG_ML_SVMCLASSIFIER_HPP_
 
 
