@@ -42,9 +42,7 @@
 
 #include <ml/svm_classifier.hpp>
 
-#include <opencv2/ml.hpp>
-
-#include <cassert>
+#include <vector>
 #include <string>
 #include <unordered_set>
 
@@ -71,11 +69,12 @@ namespace ssig {
   }
 
   std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
-    std::unordered_map<int, int> ordering = { { 1, 0 }, { -1, 1 } };
+    std::unordered_map<int, int> ordering = {{1, 0}, {-1, 1}};
     return ordering;
   }
 
-  void SVMClassifier::setClassWeights(const int classLabel, const float weight) { }
+  void SVMClassifier::setClassWeights(const int classLabel,
+    const float weight) { }
 
   bool SVMClassifier::empty() const {
     return mModel == nullptr ? true : false;
@@ -162,7 +161,7 @@ namespace ssig {
   }
 
   bool SVMClassifier::getProbabilisticModel() const {
-    return (mParams.probability)?true:false;
+    return (mParams.probability) ? true : false;
   }
 
   svm_problem* SVMClassifier::convertToLibSVM(
@@ -184,7 +183,8 @@ namespace ssig {
     return ans;
   }
 
-  svm_node** SVMClassifier::convertToLibSVM(const cv::Mat_<float>& features) const {
+  svm_node** SVMClassifier::convertToLibSVM(
+    const cv::Mat_<float>& features) const {
     const int nSamples = features.rows;
     const int ncols = features.cols;
     svm_node** featNode = new svm_node*[nSamples];
@@ -193,7 +193,7 @@ namespace ssig {
       for (int j = 0; j < ncols; ++j) {
         float feat = features.at<float>(i, j);
         if (cv::abs(feat) > FLT_EPSILON) {
-          row_nodes.push_back(svm_node{ j, feat });
+          row_nodes.push_back(svm_node {j, feat});
         }
       }
       row_nodes.push_back(svm_node {-1, 0.0});
@@ -210,7 +210,7 @@ namespace ssig {
     const cv::Mat_<float>& input,
     const cv::Mat_<int>& labels) {
 
-    if(mParams.eps < 0.0001)
+    if (mParams.eps < 0.0001)
       mParams.shrinking = 1;
 
     svm_problem* problem = convertToLibSVM(labels, input);
@@ -233,16 +233,18 @@ namespace ssig {
     const int len = inp.rows;
     double dec_value = 0;
     for (int i = 0; i < len; ++i) {
-      if(getProbabilisticModel()) {
+      if (getProbabilisticModel()) {
         if (svm_check_probability_model(mModel)) {
-          label = static_cast<int>(svm_predict_probability(mModel, featNode[i], &dec_value));
-        }else {
+          label = static_cast<int>(
+            svm_predict_probability(mModel, featNode[i], &dec_value));
+        } else {
           std::runtime_error("Model not fit for probability estimates");
         }
       } else {
-        label = static_cast<int>(svm_predict_values(mModel, featNode[i], &dec_value));
+        label = static_cast<int>(
+          svm_predict_values(mModel, featNode[i], &dec_value));
       }
-       resp[i][0] = static_cast<float>(dec_value);
+      resp[i][0] = static_cast<float>(dec_value);
     }
     if (getProbabilisticModel()) {
       resp.col(1) = 1 - resp.col(0);
@@ -270,22 +272,22 @@ namespace ssig {
 
   void SVMClassifier::write(cv::FileStorage& fs) const {
     FILE* tmpf = tmpfile();
-    if(svm_save_model(tmpf, mModel)) {
-      perror("hi");
-    };
+    if (svm_save_model(tmpf, mModel)) {
+      std::runtime_error("Failed at loading the svm model");
+    }
     std::string model;
 
     // obtain file size:
     fseek(tmpf, 0, SEEK_END);
     auto lSize = static_cast<size_t>(ftell(tmpf));
     rewind(tmpf);
-    
-    char *buffer = new char[lSize+1];
+
+    char* buffer = new char[lSize + 1];
     auto nread = fread(buffer, 1, lSize, tmpf);
     buffer[nread] = 0;
     model = buffer;
 
-    fs<<"model" << model;
+    fs << "model" << model;
 
     delete[] buffer;
     fclose(tmpf);
@@ -294,6 +296,6 @@ namespace ssig {
   cv::Mat_<int> SVMClassifier::getLabels() const {
     return mLabels;
   }
-} // namespace ssig
+}  // namespace ssig
 
 

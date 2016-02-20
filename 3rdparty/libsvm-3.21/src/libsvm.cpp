@@ -39,7 +39,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 #include <stdarg.h>
 #include <limits.h>
 #include <locale.h>
-#include <ml/libsvm.hpp>
+#include <algorithm>
+#include <libsvm.hpp>
 
 int libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
@@ -66,7 +67,7 @@ static inline void swap(T& x, T& y) {
 template <class S, class T>
 static inline void clone(T*& dst, S* src, int n) {
   dst = new T[n];
-  memcpy((void *)dst, (void *)src, sizeof(T) * n);
+  memcpy((void *)(dst), (void *)(src), sizeof(T) * n);
 }
 
 static inline double powi(double base, int times) {
@@ -81,15 +82,16 @@ static inline double powi(double base, int times) {
 
 #define INF HUGE_VAL
 #define TAU 1e-12
-#define Malloc(type,n) (type *)malloc((n)*sizeof(type))
+#define Malloc(type, n) (type*) malloc((n)*sizeof(type))
 
 static void print_string_stdout(const char* s) {
-  fputs(s,stdout);
+  fputs(s, stdout);
   fflush(stdout);
 }
 
 static void (*svm_print_string)(const char*) = &print_string_stdout;
-#if 0 // toggle this for printing info
+#if 0  // toggle this for printing info
+
 
 static void info(const char *fmt,...)
 {
@@ -125,22 +127,22 @@ private:
   long int size;
 
   struct head_t {
-    head_t *prev, *next; // a circular list
+    head_t *prev, *next;  // a circular list
     Qfloat* data;
-    int len; // data[0,len) is cached in this entry
+    int len;  // data[0,len) is cached in this entry
   };
 
   head_t* head;
   head_t lru_head;
-  void lru_delete(head_t* h);
+  void lru_delete(head_t* h) const;
   void lru_insert(head_t* h);
 };
 
 Cache::Cache(int l_, long int size_): l(l_), size(size_) {
-  head = (head_t *)calloc(l, sizeof(head_t)); // initialized to 0
+  head = static_cast<head_t *>(calloc(l, sizeof(head_t)));  // initialized to 0
   size /= sizeof(Qfloat);
   size -= l * sizeof(head_t) / sizeof(Qfloat);
-  size = max(size, 2 * (long int) l); // cache must be large enough for two columns
+  size = max(size, 2 * static_cast<long int>(l));  // cache must be large enough for two columns
   lru_head.next = lru_head.prev = &lru_head;
 }
 
@@ -150,7 +152,7 @@ Cache::~Cache() {
   free(head);
 }
 
-void Cache::lru_delete(head_t* h) {
+void Cache::lru_delete(head_t* h) const {
   // delete from current location
   h->prev->next = h->next;
   h->next->prev = h->prev;
@@ -1518,7 +1520,7 @@ struct decision_function {
 static decision_function svm_train_one(
   const svm_problem* prob, const svm_parameter* param,
   double Cp, double Cn) {
-  double* alpha = Malloc(double,prob->l);
+  double* alpha = Malloc(double, prob->l);
   Solver::SolutionInfo si;
   switch (param->svm_type) {
   case C_SVC:
@@ -1977,7 +1979,7 @@ svm_model* svm_train(const svm_problem* prob, const svm_parameter* param) {
     if (nr_class == 1)
       info("WARNING: training data in only one class. See README for details.\n");
 
-    svm_node** x = Malloc(svm_node *,l);
+    svm_node** x = Malloc(svm_node*,l);
     int i;
     for (i = 0; i < l; i++)
       x[i] = prob->x[perm[i]];
@@ -2696,7 +2698,7 @@ svm_model* svm_load_model(FILE* fp) {
 
       if (val == NULL)
         break;
-      x_space[j].index = (int) strtol(idx, &endptr, 10);
+      x_space[j].index = static_cast<int>(strtol(idx, &endptr, 10));
       x_space[j].value = strtod(val, &endptr);
 
       ++j;
@@ -2711,13 +2713,13 @@ svm_model* svm_load_model(FILE* fp) {
   if (ferror(fp) != 0 || fclose(fp) != 0)
     return NULL;
 
-  model->free_sv = 1; // XXX
+  model->free_sv = 1;  // XXX
   return model;
 }
 
 void svm_free_model_content(svm_model* model_ptr) {
   if (model_ptr->free_sv && model_ptr->l > 0 && model_ptr->SV != NULL)
-    free((void *)(model_ptr->SV[0]));
+    free(static_cast<void *>(model_ptr->SV[0]));
   if (model_ptr->sv_coef) {
     for (int i = 0; i < model_ptr->nr_class - 1; i++)
       free(model_ptr->sv_coef[i]);
@@ -2761,7 +2763,8 @@ void svm_destroy_param(svm_parameter* param) {
   free(param->weight);
 }
 
-const char* svm_check_parameter(const svm_problem* prob, const svm_parameter* param) {
+const char* svm_check_parameter(const svm_problem* prob,
+  const svm_parameter* param) {
   // svm_type
 
   int svm_type = param->svm_type;
@@ -2831,12 +2834,12 @@ const char* svm_check_parameter(const svm_problem* prob, const svm_parameter* pa
     int l = prob->l;
     int max_nr_class = 16;
     int nr_class = 0;
-    int* label = Malloc(int,max_nr_class);
-    int* count = Malloc(int,max_nr_class);
+    int* label = Malloc(int, max_nr_class);
+    int* count = Malloc(int, max_nr_class);
 
     int i;
     for (i = 0; i < l; i++) {
-      int this_label = (int)prob->y[i];
+      int this_label = static_cast<int>(prob->y[i]);
       int j;
       for (j = 0; j < nr_class; j++)
         if (this_label == label[j]) {
@@ -2846,8 +2849,10 @@ const char* svm_check_parameter(const svm_problem* prob, const svm_parameter* pa
       if (j == nr_class) {
         if (nr_class == max_nr_class) {
           max_nr_class *= 2;
-          label = (int *)realloc(label, max_nr_class * sizeof(int));
-          count = (int *)realloc(count, max_nr_class * sizeof(int));
+          label = static_cast<int *>(
+            realloc(label, max_nr_class * sizeof(int)));
+          count = static_cast<int *>(
+            realloc(count, max_nr_class * sizeof(int)));
         }
         label[nr_class] = this_label;
         count[nr_class] = 1;
@@ -2874,9 +2879,11 @@ const char* svm_check_parameter(const svm_problem* prob, const svm_parameter* pa
 }
 
 int svm_check_probability_model(const svm_model* model) {
-  return ((model->param.svm_type == C_SVC || model->param.svm_type == NU_SVC) &&
+  return ((model->param.svm_type == C_SVC ||
+    model->param.svm_type == NU_SVC) &&
         model->probA != NULL && model->probB != NULL) ||
-      ((model->param.svm_type == EPSILON_SVR || model->param.svm_type == NU_SVR) &&
+      ((model->param.svm_type == EPSILON_SVR ||
+      model->param.svm_type == NU_SVR) &&
         model->probA != NULL);
 }
 
