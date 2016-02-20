@@ -274,7 +274,7 @@ namespace ssig {
     FILE* tmpf = tmpfile();
     auto buffer = reinterpret_cast<const uchar*>(model.c_str());
     auto size = model.size();
-    auto nsymbols = fwrite(buffer, 1, size, tmpf);
+    fwrite(buffer, 1, size, tmpf);
     rewind(tmpf);
 
     mModel = svm_load_model(tmpf);
