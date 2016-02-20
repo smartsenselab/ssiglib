@@ -42,6 +42,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.*/
 #include <algorithm>
 #include <libsvm.hpp>
 
+#ifndef __linux__
+#define strdup _strdup
+#endif
+
 int libsvm_version = LIBSVM_VERSION;
 typedef float Qfloat;
 typedef signed char schar;
@@ -2422,7 +2426,7 @@ static const char* kernel_type_table[] =
 int svm_save_model(FILE* fp, const svm_model* model) {
   char* old_locale = setlocale(LC_ALL, NULL);
   if (old_locale) {
-    old_locale = _strdup(old_locale);
+    old_locale = strdup(old_locale);
   }
   setlocale(LC_ALL, "C");
 
@@ -2622,7 +2626,7 @@ svm_model* svm_load_model(FILE* fp) {
 
   char* old_locale = setlocale(LC_ALL, nullptr);
   if (old_locale) {
-    old_locale = _strdup(old_locale);
+    old_locale = strdup(old_locale);
   }
   setlocale(LC_ALL, "C");
 
