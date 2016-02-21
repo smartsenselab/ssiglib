@@ -42,6 +42,7 @@
 #include "descriptors/descriptor_2d.hpp"
 
 #include <vector>
+#include <stdexcept>
 #include <string>
 
 namespace ssig {
