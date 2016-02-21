@@ -66,7 +66,7 @@ void OAAClassifier::learn(
   }
   mSamples.release();
   mLabels.release();
-  mLabelOrderings.clear();
+  mLabel2Index.clear();
 
   mSamples = input;
   addLabels(labels);
@@ -74,31 +74,41 @@ void OAAClassifier::learn(
   std::vector<int> labelOrdering;
   for (int i = 0; i < labels.rows; ++i) {
     auto label = labels[0][i];
-    if (mLabelOrderings.find(label) == mLabelOrderings.end()) {
-      mLabelOrderings[label] = ++c;
+    if (mLabel2Index.find(label) == mLabel2Index.end()) {
+      mLabel2Index[label] = ++c;
       labelOrdering.push_back(label);
     }
   }
 
-  mClassifiers.resize(mLabelOrderings.size());
+  mClassifiers.resize(mLabel2Index.size());
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
   for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i) {
     const int label = labelOrdering[i];
+    float nPos = 0;
+    float nNeg = 0;
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
     for (int j = 0; j < labels.rows; ++j) {
       if (labels[j][0] == label) {
         localLabels[j][0] = 1;
+        ++nPos;
       } else {
         localLabels[j][0] = -1;
+        ++nNeg;
       }
     }
+    nPos = nPos / (nPos + nNeg);
+
     mClassifiers[i] =
       std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
+
+    mClassifiers[i]->setClassWeights(1, nPos);
+    mClassifiers[i]->setClassWeights(-1, 1 - nPos);
     mClassifiers[i]->learn(mSamples, localLabels);
   }
   mTrained = true;
+  mIndex2Label = labelOrdering;
 }
 
 int OAAClassifier::predict(
@@ -136,7 +146,7 @@ cv::Mat_<int> OAAClassifier::getLabels() const {
 }
 
 std::unordered_map<int, int> OAAClassifier::getLabelsOrdering() const {
-  return mLabelOrderings;
+  return mLabel2Index;
 }
 
 bool OAAClassifier::empty() const {
@@ -168,7 +178,7 @@ void OAAClassifier::save(const std::string& filename,
 
 void OAAClassifier::read(const cv::FileNode& fn) {
   auto labelOrderingNode = fn["labelOrdering"];
-  ssig::Util::read<int, int>(mLabelOrderings, labelOrderingNode);
+  ssig::Util::read<int, int>(mLabel2Index, labelOrderingNode);
   auto classifiersNode = fn["classifiers"];
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
@@ -181,7 +191,7 @@ void OAAClassifier::read(const cv::FileNode& fn) {
 void OAAClassifier::write(cv::FileStorage& fs) const {
   fs << "labelOrdering"
     << "{";
-  ssig::Util::write<int, int>(mLabelOrderings, fs);
+  ssig::Util::write<int, int>(mLabel2Index, fs);
   fs << "}";
 
   fs << "classifiers"

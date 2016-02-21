@@ -60,6 +60,8 @@ class SVMClassifier : public Classifier {
   svm_node** convertToLibSVM(
     const cv::Mat_<float>& features) const;
 
+  void convertToLibSVM(const std::unordered_map <int, float>&weights);
+
  public:
   enum ModelType {
     C_SVC,
@@ -152,6 +154,9 @@ class SVMClassifier : public Classifier {
   svm_model* mModel = nullptr;
 
   svm_parameter mParams;
+
+  std::unordered_map <int, float> mMapLabel2Weight;
+
 };
 
 }  // namespace ssig
