@@ -45,6 +45,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 namespace ssig {
 

@@ -50,6 +50,7 @@
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
 #include "descriptors/hog_features.hpp"
 #include "core/exception.hpp"
