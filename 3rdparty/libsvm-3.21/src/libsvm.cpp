@@ -2633,7 +2633,7 @@ svm_model* svm_load_model(FILE* fp) {
   // read parameters
 
   svm_model* model = Malloc(svm_model,1);
-  model->rho = nullptr;
+  model->rho = NULL;
   model->probA = NULL;
   model->probB = NULL;
   model->sv_indices = NULL;
@@ -2676,10 +2676,10 @@ svm_model* svm_load_model(FILE* fp) {
 
   int m = model->nr_class - 1;
   int l = model->l;
-  model->sv_coef = Malloc(double *,m);
+  model->sv_coef = Malloc(double *, m);
   int i;
   for (i = 0; i < m; i++)
-    model->sv_coef[i] = Malloc(double,l);
+    model->sv_coef[i] = Malloc(double, l);
   model->SV = Malloc(svm_node*,l);
   svm_node* x_space = NULL;
   if (l > 0) x_space = Malloc(svm_node,elements);
@@ -2714,7 +2714,7 @@ svm_model* svm_load_model(FILE* fp) {
   setlocale(LC_ALL, old_locale);
   free(old_locale);
 
-  if (ferror(fp) != 0 || fclose(fp) != 0)
+  if (ferror(fp) != 0)
     return NULL;
 
   model->free_sv = 1;  // XXX
