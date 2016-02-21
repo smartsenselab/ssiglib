@@ -179,6 +179,10 @@ void OAAClassifier::save(const std::string& filename,
 void OAAClassifier::read(const cv::FileNode& fn) {
   auto labelOrderingNode = fn["labelOrdering"];
   ssig::Util::read<int, int>(mLabel2Index, labelOrderingNode);
+  mIndex2Label.resize(mLabel2Index.size());
+  for(const auto& p : mLabel2Index) {
+    mIndex2Label[p.second] = p.first;
+  }
   auto classifiersNode = fn["classifiers"];
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
