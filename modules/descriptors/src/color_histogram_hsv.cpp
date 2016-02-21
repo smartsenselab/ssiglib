@@ -42,6 +42,7 @@
 #include "descriptors/color_histogram_hsv.hpp"
 
 #include <opencv2/imgproc.hpp>
+#include <stdexcept>
 
 namespace ssig {
 

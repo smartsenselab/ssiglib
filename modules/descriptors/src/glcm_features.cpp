@@ -42,6 +42,7 @@
 #include "descriptors/glcm_features.hpp"
 
 #include <opencv2/imgproc.hpp>
+#include <stdexcept>
 
 namespace ssig {
   GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
