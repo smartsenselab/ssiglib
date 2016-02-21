@@ -79,21 +79,23 @@ TEST(OAAClassifier, PLSBinaryClassification) {
 }
 
 TEST(OAAClassifier, PLSTernaryClassification) {
-  cv::Mat_<float> inp;
-  cv::Mat_<int> labels;
-  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
-  ASSERT_TRUE(stg.isOpened());
-  stg["inp"] >> inp;
-  stg["labels"] >> labels;
+  cv::Mat_<float> inp = (cv::Mat_<float>(9, 2) <<
+    3., 4., 0., 0., 2., 1.,
+    1003., 1002., 1000., 1002., 1002., 1001.,
+    10000., 10002., 10003., 10000., 10000., 10000.);
+
+  cv::Mat_<int> labels = (cv::Mat_<int>(9, 1) << 1, 1, 1,
+    2, 2, 2,
+    3, 3, 3);
 
   ssig::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
   ssig::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
-  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1030);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000, 10000);
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
@@ -136,17 +138,17 @@ TEST(OAAClassifier, SVMTernaryClassification) {
   underlying.setKernelType(ssig::SVMClassifier::LINEAR);
   underlying.setModelType(ssig::SVMClassifier::C_SVC);
   underlying.setC(10.f);
-  underlying.setEpsilon(1e-4f);
+  underlying.setEpsilon(1e-6f);
 
   ssig::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
-  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -.1f , -.1f);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << .8f , .7f);
 
   cv::Mat_<float> resp;
-  auto label = classifier.predict(query1, resp);
+  classifier.predict(query1, resp);
   auto ordering = classifier.getLabelsOrdering();
 
   int label1 = ordering[1];
@@ -159,14 +161,14 @@ TEST(OAAClassifier, SVMTernaryClassification) {
   EXPECT_GE(resp[0][label1], maxResp);
 
 
-  label = classifier.predict(query2, resp);
+  classifier.predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  label = classifier.predict(query3, resp);
+  classifier.predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
@@ -192,9 +194,9 @@ TEST(OAAClassifier, SVMPersistence) {
   ssig::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
-  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -.1f , -.1f);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << .8f , .7f);
 
   cv::Mat_<float> resp;
   auto ordering = classifier.getLabelsOrdering();
@@ -254,24 +256,23 @@ TEST(OAAClassifier, SVMPersistence) {
 }
 
 TEST(OAAClassifier, PLSPersistence) {
-  cv::Mat_<float> inp;
-  cv::Mat_<int> labels;
+  cv::Mat_<float> inp = (cv::Mat_<float>(9, 2) <<
+    3., 4., 0., 0., 2., 1.,
+    1003., 1002., 1000., 1002., 1002., 1001.,
+    10000., 10002., 10003., 10000., 10000., 10000.);
 
-  cv::FileStorage stg("oaaData.yml", cv::FileStorage::READ);
-  ASSERT_TRUE(stg.isOpened());
-  stg["inp"] >> inp;
-  stg["labels"] >> labels;
-
+  cv::Mat_<int> labels = (cv::Mat_<int>(9, 1) << 1, 1, 1,
+    2, 2, 2,
+    3, 3, 3);
 
   ssig::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-
   ssig::OAAClassifier classifier(underlying);
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000 , 1030);
-  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000 , 10000);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1030);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000, 10000);
   cv::Mat_<float> resp;
   auto ordering = classifier.getLabelsOrdering();
 
@@ -329,3 +330,4 @@ TEST(OAAClassifier, PLSPersistence) {
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
 }
+
