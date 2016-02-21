@@ -154,18 +154,17 @@ void SVMClassifier::convertToLibSVM(
     mParams.weight = new double[nr];
   }
   int i = 0;
-  for(const auto& p: weights) {
+  for (const auto& p : weights) {
     mParams.weight[i] = static_cast<double>(p.second);
     mParams.weight_label[i] = p.first;
     ++i;
   }
-  mParams.nr_weight = nr;  
+  mParams.nr_weight = nr;
 }
 
 void SVMClassifier::learn(
   const cv::Mat_<float>& input,
   const cv::Mat_<int>& labels) {
-
   convertToLibSVM(mMapLabel2Weight);
   svm_problem* problem = convertToLibSVM(labels, input);
 
@@ -330,6 +329,6 @@ bool SVMClassifier::getProbabilisticModel() const {
 cv::Mat_<int> SVMClassifier::getLabels() const {
   return mLabels;
 }
-} // namespace ssig
+}  // namespace ssig
 
 

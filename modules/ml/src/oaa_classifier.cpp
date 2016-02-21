@@ -138,7 +138,7 @@ int OAAClassifier::predict(
       ++c;
     }
   }
-  return inp.rows > 1?0 : bestLabel;
+  return inp.rows > 1?0 : mIndex2Label[bestLabel];
 }
 
 cv::Mat_<int> OAAClassifier::getLabels() const {

@@ -156,7 +156,6 @@ class SVMClassifier : public Classifier {
   svm_parameter mParams;
 
   std::unordered_map <int, float> mMapLabel2Weight;
-
 };
 
 }  // namespace ssig
