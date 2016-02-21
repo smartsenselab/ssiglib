@@ -45,6 +45,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <stdexcept>
 
 namespace ssig {
 

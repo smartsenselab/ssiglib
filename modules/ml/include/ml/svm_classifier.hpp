@@ -43,7 +43,9 @@
 #ifndef _SSIG_ML_SVMCLASSIFIER_HPP_
 #define _SSIG_ML_SVMCLASSIFIER_HPP_
 
-#include <opencv2/ml/ml.hpp>
+#include <opencv2/core.hpp>
+
+#include <libsvm.hpp>
 
 #include <unordered_map>
 #include <string>
@@ -51,12 +53,32 @@
 #include "classification.hpp"
 
 namespace ssig {
-
 class SVMClassifier : public Classifier {
-  ML_EXPORT virtual void setup(const cv::Mat_<float>& input);
-  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
+  svm_problem* convertToLibSVM(
+    const cv::Mat_<int>& labels,
+    const cv::Mat_<float>& features) const;
+  svm_node** convertToLibSVM(
+    const cv::Mat_<float>& features) const;
+
+  void convertToLibSVM(const std::unordered_map <int, float>&weights);
 
  public:
+  enum ModelType {
+    C_SVC,
+    NU_SVC,
+    ONE_CLASS,
+    EPSILON_SVR,
+    NU_SVR
+  };
+
+  enum KernelType {
+    LINEAR,
+    POLY,
+    RBF,
+    SIGMOID,
+    PRECOMPUTED
+  };
+
   ML_EXPORT SVMClassifier(void);
   ML_EXPORT virtual ~SVMClassifier(void);
 
@@ -72,75 +94,68 @@ class SVMClassifier : public Classifier {
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
 
   ML_EXPORT void setClassWeights(const int classLabel,
-                                 const float weight) override;
+    const float weight) override;
 
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
   ML_EXPORT bool isClassifier() const override;
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override;
 
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
   ML_EXPORT Classifier* clone() const override;
 
+  ML_EXPORT float getEpsilon() const override;
+
+  ML_EXPORT void setEpsilon(float epsilon) override;
+
   ML_EXPORT int getKernelType() const;
 
-  ML_EXPORT void setKernelType(int kernelType);
+  ML_EXPORT void setKernelType(KernelType kernelType);
 
   ML_EXPORT int getModelType() const;
 
-  ML_EXPORT void setModelType(int modelType);
+  ML_EXPORT void setModelType(ModelType modelType);
 
-  ML_EXPORT float getC() const;
+  ML_EXPORT double getC() const;
 
-  ML_EXPORT void setC(float c);
+  ML_EXPORT void setC(double c);
 
-  ML_EXPORT float getGamma() const;
+  ML_EXPORT double getGamma() const;
 
-  ML_EXPORT void setGamma(float gamma);
+  ML_EXPORT void setGamma(double gamma);
 
-  ML_EXPORT float getP() const;
+  ML_EXPORT double getP() const;
 
-  ML_EXPORT void setP(float p);
+  ML_EXPORT void setP(double p);
 
-  ML_EXPORT float getNu() const;
+  ML_EXPORT double getNu() const;
 
-  ML_EXPORT void setNu(float nu);
+  ML_EXPORT void setNu(double nu);
 
-  ML_EXPORT float getCoef() const;
+  ML_EXPORT double getCoef() const;
 
-  ML_EXPORT void setCoef(float coef);
+  ML_EXPORT void setCoef(double coef);
 
-  ML_EXPORT float getDegree() const;
+  ML_EXPORT int getDegree() const;
 
-  ML_EXPORT void setDegree(float degree);
+  ML_EXPORT void setDegree(int degree);
 
-  ML_EXPORT size_t getCrossValidationState() const;
+  // Only use probabilistical predict with data big enough
+  ML_EXPORT void setProbabilisticModel(bool b);
+  ML_EXPORT bool getProbabilisticModel() const;
 
-  ML_EXPORT void setCrossValidationState(int kfolds);
+  // ML_EXPORT size_t getCrossValidationState() const;
+
+  // ML_EXPORT void setCrossValidationState(int kfolds);
 
  private:
   // private members
-  cv::Ptr<cv::ml::SVM> mSvm;
+  svm_model* mModel = nullptr;
 
-  int mKernelType = cv::ml::SVM::LINEAR;
-  int mModelType = cv::ml::SVM::C_SVC;
-  float mC = 0.1f;
-  float mGamma = 0.1f;
-  float mP = 0.1f;
-  float mNu = 0.1f;
-  float mCoef = 0.1f;
-  float mDegree = 0.1f;
-  int mKfolds = 10;
-  bool mCvEnabled = false;
+  svm_parameter mParams;
 
-  cv::Mat mClassWeights;
-
-  std::unordered_map<int, float> mWeights;
+  std::unordered_map <int, float> mMapLabel2Weight;
 };
 
 }  // namespace ssig

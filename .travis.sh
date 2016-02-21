@@ -13,12 +13,12 @@ function test-gcc()
 {
   mkdir opencv
   cd opencv
-  wget https://github.com/Itseez/opencv/archive/3.0.0.zip
-  unzip -qq 3.0.0.zip
-  cd opencv-3.0.0
+  wget https://github.com/Itseez/opencv/archive/3.1.0.zip
+  unzip -qq 3.1.0.zip
+  cd opencv-3.1.0
   mkdir build
   cd build
-  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=OFF -D WITH_FFMPEG=ON -D WITH_V4L=OFF -D WITH_OPENMP=OFF -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..
+  cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=OFF -D WITH_FFMPEG=ON -D WITH_V4L=OFF -D WITH_OPENMP=ON -D BUILD_opencv_apps=OFF -D BUILD_DOCS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_TESTS=OFF -D BUILD_WITH_DEBUG_INFO=OFF -D BUILD_ANDROID_SERVICE=OFF ..
   make -j2
   sudo make install
   sudo /bin/bash -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'

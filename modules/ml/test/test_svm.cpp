@@ -47,33 +47,21 @@
 #include <random>
 
 
-
 TEST(SVMClassifier, BinaryClassification) {
-  cv::Mat_<float> inp;
-  cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
-  inp = cv::Mat_<float>::zeros(6, 2);
-  auto rnd = std::default_random_engine();
-  for (int i = 0; i < 3; ++i) {
-    inp[i][0] = static_cast<float>(rnd() % 5);
-    inp[i][1] = static_cast<float>(rnd() % 5);
-    labels[i][0] = 1;
-    inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
-    labels[3 + i][0] = -1;
-  }
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<float> inp =
+    (cv::Mat_<float>(6, 2) << 0.8f, 0.8f, 0.7f, 0.7f, 0.9f, 0.8f,
+    -0.8f, -0.9f, -0.8f, -0.7f, -0.7f, -0.7f);
 
   ssig::SVMClassifier classifier;
-  classifier.setC(0.1f);
-  classifier.setKernelType(cv::ml::SVM::LINEAR);
-  classifier.setModelType(cv::ml::SVM::C_SVC);
 
   classifier.setTermType(cv::TermCriteria::MAX_ITER);
   classifier.setEpsilon(0.01f);
 
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.6f, 0.7f);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -0.7f, -0.6f);
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
@@ -85,67 +73,67 @@ TEST(SVMClassifier, BinaryClassification) {
   EXPECT_GE(resp[0][idx], 0);
 }
 
-TEST(SVMClassifier, BinaryChi2Classification) {
-  cv::Mat_<float> inp;
-  cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
-  inp = cv::Mat_<float>::zeros(6, 2);
-  auto rnd = std::default_random_engine();
-  for (int i = 0; i < 3; ++i) {
-    inp[i][0] = static_cast<float>(rnd() % 5);
-    inp[i][1] = static_cast<float>(rnd() % 5);
-    labels[i][0] = 1;
-    inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
-    inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
-    labels[3 + i][0] = -1;
-  }
-
-  ssig::SVMClassifier svm;
-  const int mtype = static_cast<int>(cv::ml::SVM::C_SVC);
-  svm.setModelType(mtype);
-  svm.setC(0.1f);
-  svm.setGamma(1);
-  svm.setNu(0);
-  svm.setP(0);
-  svm.setDegree(0);
-  const int ktype = static_cast<int>(cv::ml::SVM::CHI2);
-  svm.setKernelType(ktype);
-  svm.setTermType(cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS);
-  svm.setEpsilon(FLT_EPSILON);
-  svm.setMaxIterations(static_cast<int>(1e8));
-
-  svm.learn(inp, labels);
-
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
-
-  cv::Mat_<float> resp;
-  svm.predict(query1, resp);
-  auto ordering = svm.getLabelsOrdering();
-  int idx = ordering[1];
-  EXPECT_GE(resp[0][idx], 0);
-  idx = ordering[-1];
-  svm.predict(query2, resp);
-  EXPECT_GE(resp[0][idx], 0);
-}
-
+// TEST(SVMClassifier, BinaryChi2Classification) {
+//  cv::Mat_<float> inp;
+//  cv::Mat_<int> labels = cv::Mat_<int>::zeros(6, 1);
+//  inp = cv::Mat_<float>::zeros(6, 2);
+//  auto rnd = std::default_random_engine();
+//  for (int i = 0; i < 3; ++i) {
+//    inp[i][0] = static_cast<float>(rnd() % 5);
+//    inp[i][1] = static_cast<float>(rnd() % 5);
+//    labels[i][0] = 1;
+//    inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
+//    inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+//    labels[3 + i][0] = -1;
+//  }
+//
+//  ssig::SVMClassifier svm;
+//  const int mtype = static_cast<int>(cv::ml::SVM::C_SVC);
+//  svm.setModelType(mtype);
+//  svm.setC(0.1f);
+//  svm.setGamma(1);
+//  svm.setNu(0);
+//  svm.setP(0);
+//  svm.setDegree(0);
+//  const int ktype = static_cast<int>(cv::ml::SVM::CHI2);
+//  svm.setKernelType(ktype);
+//  svm.setTermType(cv::TermCriteria::MAX_ITER + cv::TermCriteria::EPS);
+//  svm.setEpsilon(FLT_EPSILON);
+//  svm.setMaxIterations(static_cast<int>(1e8));
+//
+//  svm.learn(inp, labels);
+//
+//  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+//  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
+//
+//  cv::Mat_<float> resp;
+//  svm.predict(query1, resp);
+//  auto ordering = svm.getLabelsOrdering();
+//  int idx = ordering[1];
+//  EXPECT_GE(resp[0][idx], 0);
+//  idx = ordering[-1];
+//  svm.predict(query2, resp);
+//  EXPECT_GE(resp[0][idx], 0);
+// }
+//
 TEST(SVMClassifier, Persistence) {
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
   cv::Mat_<float> inp =
-    (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 ,
-    6 , 102 , 100 , 104 , 105 , 99 , 101);
+    (cv::Mat_<float>(6, 2) << 0.8f, 0.8f, 0.7f, 0.7f, 0.9f, 0.8f,
+    -0.8f, -0.9f, -0.8f, -0.7f, -0.7f, -0.7f);
 
   ssig::SVMClassifier classifier;
   classifier.setC(0.1f);
-  classifier.setKernelType(cv::ml::SVM::LINEAR);
-  classifier.setModelType(cv::ml::SVM::C_SVC);
+  classifier.setKernelType(ssig::SVMClassifier::LINEAR);
+  classifier.setModelType(ssig::SVMClassifier::C_SVC);
 
   classifier.setTermType(cv::TermCriteria::MAX_ITER);
   classifier.setEpsilon(0.01f);
 
   classifier.learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.6f, 0.7f);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -0.7f, -0.6f);
 
   cv::Mat_<float> resp;
   classifier.predict(query1, resp);
@@ -163,9 +151,9 @@ TEST(SVMClassifier, Persistence) {
 
   ordering = loaded.getLabelsOrdering();
   idx = ordering[1];
-  classifier.predict(query1, resp);
+  loaded.predict(query1, resp);
   EXPECT_GE(resp[0][idx], 0);
-  classifier.predict(query2, resp);
+  loaded.predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
 }

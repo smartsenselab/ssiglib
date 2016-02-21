@@ -42,6 +42,7 @@
 #include "descriptors/ccm_features.hpp"
 
 #include <vector>
+#include <stdexcept>
 
 namespace ssig {
 
