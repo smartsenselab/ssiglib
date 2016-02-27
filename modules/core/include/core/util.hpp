@@ -136,7 +136,7 @@ class Util {
 
     fn["values"] >> values;
 
-    for (int i = 0; i < keys.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(keys.size()); ++i) {
       map[keys[i]] = values[i];
     }
   }
