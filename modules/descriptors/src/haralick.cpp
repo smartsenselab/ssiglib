@@ -70,6 +70,32 @@ cv::Mat Haralick::compute(const cv::Mat& mat) {
   return output;
 }
 
+cv::Mat Haralick::computeOld(const cv::Mat& mat) {
+	//Compute just 12 features (old implementaion from William Schwartz)
+	cv::Mat output = cv::Mat::zeros(1, 12, CV_32F);
+
+	output.at<float>(0, 0) = Haralick::f1ASM(mat);
+	output.at<float>(0, 1) = Haralick::f2Contrast(mat);
+	output.at<float>(0, 2) = Haralick::f3Correlation(mat);
+	output.at<float>(0, 3) = Haralick::f4Variance(mat);
+	output.at<float>(0, 4) = Haralick::f5IDM(mat);
+	output.at<float>(0, 5) = Haralick::f6SumAverage(mat);
+	output.at<float>(0, 6) = Haralick::f7SumVariance(mat);
+	output.at<float>(0, 7) = Haralick::f8SumEntropy(mat);
+	output.at<float>(0, 8) = Haralick::f9Entropy(mat);
+	output.at<float>(0, 9) = Haralick::f10DifferenceVariance(mat);
+	output.at<float>(0, 10) = Haralick::f11DifferenceEntropy(mat);
+	//output.at<float>(0, 11) = Haralick::f12InformationCorrelation01(mat);
+	//output.at<float>(0, 12) = Haralick::f13InformationCorrelation02(mat);
+	//output.at<float>(0, 13) = 0.0f;
+	output.at<float>(0, 11) = Haralick::f15_Dierctionality(mat);
+
+	for (int i = 0; i < 12; i++)
+		if (isnan(output.at<float>(0, i))) output.at<float>(0, i) = 0.0f;
+
+	return output;
+}
+
 float Haralick::f1ASM(const cv::Mat& mat) {
   float sum = 0.0;
 

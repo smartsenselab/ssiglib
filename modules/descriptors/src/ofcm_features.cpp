@@ -46,7 +46,51 @@ std::vector<int> splitTemporalScales(std::string str, char delimiter);
 namespace ssig {
 
 OFCM::OFCM() {
-  // Constructor
+  // Default values
+	this->nBinsMagnitude = 8;
+	this->nBinsAngle = 8;
+	this->distanceMagnitude = 1;
+	this->distanceAngle = 1;
+	this->cuboidLength = 10;
+	this->maxMagnitude = 15;
+	this->maxAngle = 361.0; //max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
+	this->logQuantization = 1;
+	this->movementFilter = 1;
+	this->temporalScales.push_back(1);
+	//extractionType = 0;
+
+	this->coocMagnitude = NULL;
+	this->coocAngles = NULL;
+	this->mapToOpticalFlows = NULL;
+}
+
+OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle, int cuboidLength,
+						float maxMagnitude, int logQuantization, bool movementFilter, std::vector<int> temporalScales) {
+	
+	this->nBinsMagnitude = nBinsMagnitude;
+	this->nBinsAngle = nBinsAngle;
+	this->distanceMagnitude = distanceMagnitude;
+	this->distanceAngle = distanceAngle;
+	this->cuboidLength = cuboidLength;
+	this->movementFilter = movementFilter;
+
+	if (logQuantization == 1)
+	{
+		this->logQuantization = logQuantization;
+		this->maxMagnitude = 15; //default
+	}
+	else
+		this->maxMagnitude = maxMagnitude;
+	
+	for (auto v : temporalScales)
+		this->temporalScales.push_back(v);
+	
+	this->maxAngle = 361.0; //max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
+	//extractionType = 0;
+
+	this->coocMagnitude = NULL;
+	this->coocAngles = NULL;
+	this->mapToOpticalFlows = NULL;
 }
 
 OFCM::~OFCM() {
@@ -59,14 +103,22 @@ OFCM::~OFCM() {
 	this->data.clear();
 
 	if (this->coocMagnitude != NULL)
+	{
 		delete this->coocMagnitude;
-
+		this->coocMagnitude = NULL;
+	}
 	if (this->coocAngles != NULL)
+	{
 		delete this->coocAngles;
-
-	for (int i = 0; i < numImgs; i++)
-		delete[] this->mapToOpticalFlows[i];
-	delete[] this->mapToOpticalFlows;
+		this->coocAngles = NULL;
+	}
+	if (this->mapToOpticalFlows != NULL)
+	{
+		for (int i = 0; i < numImgs; i++)
+			delete[] this->mapToOpticalFlows[i];
+		delete[] this->mapToOpticalFlows;
+		this->mapToOpticalFlows = NULL;
+	}
 
 }
 
@@ -90,7 +142,6 @@ void OFCM::beforeProcess() {
 }
 
 void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
-	bool is_verbose = false;
 	bool hasMovement = !movementFilter; //false to eliminate pacthes without movement
 	std::deque<ParMat> patches;
 	patches = CreatePatch(cuboid, hasMovement);
@@ -98,35 +149,55 @@ void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
 
 	if (hasMovement) //verificar se tem movimento
 	{
-		output.create(1, this->descriptorLength, CV_32FC1);
-
 		for (int i = 0, k = 0; i < patches.size(); i++)
 		{
 			std::vector<cv::Mat> mMagnitude, mAngles;
 
 			coocMagnitude->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].second, mMagnitude);
 			coocAngles->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].first, mAngles);
-
-			//TODO: implementar chamada das Haralicks
-
-
-			//TODO: implementar a combinação das deatures.
-			/*
-			for (int j = 0; j < coocMagnitude->getNFeatures(); j++, k++)
-			{
-				float feat = mMagnitude.at<float>(0, j);
-				output.at<float>(0, k) = static_cast<float>(feat);
-			}
-			for (int j = 0; j < coocAngles->getNFeatures(); j++, k++)
-			{
-				float feat = mAngles.at<float>(0, j);
-				output.at<float>(0, k) = static_cast<float>(feat);
-			}
-			*/
+			
+			for (cv::Mat &degreeMat : mMagnitude)
+				output.push_back(Haralick::computeOld(degreeMat));
+			
+			for (cv::Mat &degreeMat : mAngles)
+				output.push_back(Haralick::computeOld(degreeMat));
+			
 		}
+		output = output.reshape(0, 1);
 	}
 	patches.clear();
 
+}
+
+void OFCM::release()
+{
+	mImages.clear();
+	mIsPrepared = false;
+
+	for (int i = 0; i < (int)data.size(); i++)
+	{
+		this->data[i].first.release();
+		this->data[i].second.release();
+	}
+	this->data.clear();
+
+	if (this->coocMagnitude != NULL)
+	{
+		delete this->coocMagnitude;
+		this->coocMagnitude = NULL;
+	}
+	if (this->coocAngles != NULL)
+	{
+		delete this->coocAngles;
+		this->coocAngles = NULL;
+	}
+	if (this->mapToOpticalFlows != NULL)
+	{
+		for (int i = 0; i < numImgs; i++)
+			delete[] this->mapToOpticalFlows[i];
+		delete[] this->mapToOpticalFlows;
+		this->mapToOpticalFlows = NULL;
+	}
 }
 
 /////////////////////////////////Aditional Auxiliary Functions//////////////////////////////////////
@@ -178,8 +249,6 @@ void OFCM::setParameters() {
 
 	int tamVecMagniMatrices = 4 * (this->nBinsMagnitude * this->nBinsMagnitude); // 4 co-occurrence matrices (0, 45, 90, 135)
 	int tamVecAngleMatrices = 4 * (this->nBinsAngle * this->nBinsAngle); // 4 co-occurrence matrices (0, 45, 90, 135)
-
-	this->temporalScales = splitTemporalScales(strTempScales, ',');
 
 	coocMagnitude = new CoOccurrenceGeneral(this->nBinsMagnitude, this->distanceMagnitude);
 	coocAngles = new CoOccurrenceGeneral(this->nBinsAngle, this->distanceAngle);
@@ -270,20 +339,6 @@ inline void OFCM::allocateMapToOpticalFlowsMatrix()
 	}
 }
 
-std::vector<int> OFCM::splitTemporalScales(std::string str, char delimiter)
-{
-	std::vector<int> internal;
-	std::stringstream ss(str);
-	std::string tok;
-
-	while (getline(ss, tok, delimiter)) {
-		int ts = atoi(tok.c_str());
-		internal.push_back(ts);
-	}
-
-	return internal;
-}
-
 inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool & hasMovement)
 {
 	std::deque<ParMat> patches;
@@ -327,6 +382,36 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool
 	}
 
 	return patches;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////// Getters and Setters ////////////////////////////////////////
+bool OFCM::getMovementFilter() { return movementFilter; }
+int OFCM::getnBinsMagnitude() {	return nBinsMagnitude; }
+int OFCM::getnBinsAngle() {	return nBinsAngle; }
+int OFCM::getDistanceMagnitude() { return distanceMagnitude; }
+int OFCM::getDistanceAngle() { return distanceAngle; }
+int OFCM::getCuboidLength() { return cuboidLength; }
+int OFCM::getLogQuantization() { return logQuantization; }
+float OFCM::getMaxMagnitude() { return maxMagnitude; }
+float OFCM::getMaxAngle() { return maxAngle; }
+int OFCM::getDescriptorLength() { return descriptorLength; }
+int OFCM::getNumOpticalFlow() { return numOpticalFlow; }
+std::vector<int> OFCM::getTemporalScales() { return temporalScales; }
+int OFCM::getDescriptorDataType() { return CV_32F; }
+
+void OFCM::setMovementFilter(bool movementFilter) { this->movementFilter = movementFilter; }
+void OFCM::setnBinsMagnitude(int nBinsMagnitude) { this->nBinsMagnitude = nBinsMagnitude; }
+void OFCM::setnBinsAngle(int nBinsAngle) { this->nBinsAngle = nBinsAngle;}
+void OFCM::setDistanceMagnitude(int distanceMagnitude) { this->distanceMagnitude = distanceMagnitude; }
+void OFCM::setDistanceAngle(int distanceAngle) { this->distanceAngle = distanceAngle; }
+void OFCM::setCuboidLength(int cuboidLength) { this->cuboidLength = cuboidLength; }
+void OFCM::setLogQuantization(int logQuantization) { this->logQuantization = logQuantization; }
+void OFCM::setMaxMagnitude(float maxMagnitude) { this->maxMagnitude = maxMagnitude; }
+void OFCM::setTemporalScales(std::vector<int> temporalScales) {
+	this->temporalScales.clear();
+	for (auto v : temporalScales)
+		this->temporalScales.push_back(v);
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 

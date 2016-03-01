@@ -47,6 +47,7 @@
 
 #include "core\exception.hpp"
 #include "descriptor_temporal.hpp"
+#include "descriptors/haralick.hpp"
 #include "descriptors\co_occurrence_general.hpp"
 
 namespace ssig {
@@ -57,9 +58,38 @@ class OFCM : public DescriptorTemporal {
 
  public:
 	DESCRIPTORS_EXPORT OFCM(void);
+	DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle, int cuboidLength,
+													float maxMagnitude,	int logQuantization, bool movementFilter, std::vector<int> temporalScales);
 	DESCRIPTORS_EXPORT virtual ~OFCM(void);
 	DESCRIPTORS_EXPORT OFCM(const OFCM& rhs);
 	DESCRIPTORS_EXPORT OFCM& operator=(const OFCM& rhs);
+
+	//getters and setters
+	DESCRIPTORS_EXPORT bool getMovementFilter();
+	DESCRIPTORS_EXPORT int getnBinsMagnitude();
+	DESCRIPTORS_EXPORT int getnBinsAngle();
+	DESCRIPTORS_EXPORT int getDistanceMagnitude();
+	DESCRIPTORS_EXPORT int getDistanceAngle();
+	DESCRIPTORS_EXPORT int getCuboidLength();
+	DESCRIPTORS_EXPORT int getLogQuantization();
+	DESCRIPTORS_EXPORT float getMaxMagnitude();
+	DESCRIPTORS_EXPORT float getMaxAngle();
+	DESCRIPTORS_EXPORT int getDescriptorLength() override;
+	DESCRIPTORS_EXPORT int getNumOpticalFlow();
+	DESCRIPTORS_EXPORT std::vector<int> getTemporalScales(); 
+	DESCRIPTORS_EXPORT int getDescriptorDataType() override;
+	
+	DESCRIPTORS_EXPORT void setMovementFilter(bool movementFilter);
+	DESCRIPTORS_EXPORT void setnBinsMagnitude(int nBinsMagnitude);
+	DESCRIPTORS_EXPORT void setnBinsAngle(int nBinsAngle);
+	DESCRIPTORS_EXPORT void setDistanceMagnitude(int distanceMagnitude);
+	DESCRIPTORS_EXPORT void setDistanceAngle(int distanceAngle);
+	DESCRIPTORS_EXPORT void setCuboidLength(int cuboidLength);
+	DESCRIPTORS_EXPORT void setLogQuantization(int logQuantization);
+	DESCRIPTORS_EXPORT void setMaxMagnitude(float maxMagnitude);
+	DESCRIPTORS_EXPORT void setTemporalScales(std::vector<int> temporalScales);
+
+	DESCRIPTORS_EXPORT void release() override;
 
 protected:
 	CORE_EXPORT void read(const cv::FileNode& fn) override {}
@@ -76,11 +106,12 @@ private:
 	int nBinsAngle;
 	int distanceMagnitude;
 	int distanceAngle;
-	int descriptorLength;
 	int cuboidLength;
-	int **mapToOpticalFlows;
-	int numOpticalFlow = 0; //number of computed optical flows
+
 	int logQuantization = 0;
+	int descriptorLength;
+	int numOpticalFlow = 0; //number of computed optical flows
+	int **mapToOpticalFlows;
 
 	float maxAngle;
 	float maxMagnitude;
@@ -91,12 +122,9 @@ private:
 	std::vector<ParMat> data;
 	std::vector<int> temporalScales;
 
-	std::string strTempScales;
-
 	void setParameters();
 	void setOpticalFlowData();
 	int calcNumOptcialFlowPerCuboid();
-	std::vector<int> splitTemporalScales(std::string str, char delimiter);
 
 	inline std::deque<ParMat> CreatePatch(const ssig::Cube& cuboid, bool & hasMovement);
 	inline void FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr = 30);

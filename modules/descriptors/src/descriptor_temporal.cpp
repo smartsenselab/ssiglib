@@ -66,6 +66,10 @@ void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat
 		beforeProcess();
 		mIsPrepared = true;
 	}
+
+	output.create(static_cast<int>(cuboids.size()), getDescriptorLength(), getDescriptorDataType());
+
+	int i = 0;
 	for (auto& cuboid : cuboids) {
 		cv::Mat feat;
 
@@ -78,8 +82,11 @@ void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat
 				std::string("different than the cuboid itself"));
 		}
 		extractFeatures(cuboid, feat);
-		output.push_back(feat);
+		if (feat.cols > 0)
+			feat.row(0).copyTo(output.row(i++));
+		//output.push_back(feat);
 	}
+	output.resize(i);
 }
 
 /*
