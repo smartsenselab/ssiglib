@@ -39,8 +39,8 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
+
 #include <opencv2/core.hpp>
 #include <descriptors/lbp_features.hpp>
 
