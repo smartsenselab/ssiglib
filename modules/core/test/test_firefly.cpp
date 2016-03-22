@@ -38,6 +38,8 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+#include <gtest/gtest.h>
+
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
@@ -46,8 +48,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <core/util.hpp>
-
-#include <gtest/gtest.h>
 
 #include "core/firefly.hpp"
 
