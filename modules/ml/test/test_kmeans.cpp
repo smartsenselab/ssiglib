@@ -38,14 +38,14 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+#include <gtest/gtest.h>
+
 #include <vector>
 #include <random>
 
 #include <ml/kmeans.hpp>
 #include <ml/pls_classifier.hpp>
 
-
-#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
 class KmeansClusteringTest : public ::testing::Test {

@@ -39,9 +39,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <gtest/gtest.h>
+
 #include <vector>
 
-#include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <core/math.hpp>
 

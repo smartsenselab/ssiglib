@@ -39,8 +39,8 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <descriptors/color_histogram_hsv.hpp>
