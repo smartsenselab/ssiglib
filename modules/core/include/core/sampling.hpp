@@ -43,9 +43,9 @@
 #ifndef _SSIG_CORE_SAMPLING_METHOD_HPP_
 #define _SSIG_CORE_SAMPLING_METHOD_HPP_
 
-#include <opencv2/core.hpp>
-
 #include <vector>
+
+#include <opencv2/core.hpp>
 
 #include "core_defs.hpp"
 

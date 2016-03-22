@@ -39,11 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <string>
+
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <descriptors/haralick.hpp>
-
-#include <string>
 
 TEST(Haralick, compute_size8) {
   cv::FileStorage fs("haralick/haralick8.yml", cv::FileStorage::READ);

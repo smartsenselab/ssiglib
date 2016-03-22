@@ -43,12 +43,12 @@
 #ifndef _SSIG_ML_SVMCLASSIFIER_HPP_
 #define _SSIG_ML_SVMCLASSIFIER_HPP_
 
+#include <unordered_map>
+#include <string>
+
 #include <opencv2/core.hpp>
 
 #include <libsvm.hpp>
-
-#include <unordered_map>
-#include <string>
 
 #include "classification.hpp"
 

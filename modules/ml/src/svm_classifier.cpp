@@ -39,12 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#include <ml/svm_classifier.hpp>
-
 #include <vector>
 #include <string>
 #include <unordered_set>
+
+#include <ml/svm_classifier.hpp>
 
 namespace ssig {
 

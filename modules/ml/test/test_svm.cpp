@@ -39,13 +39,12 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <random>
+
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
 #include <ml/svm_classifier.hpp>
-
-#include <random>
-
 
 TEST(SVMClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);

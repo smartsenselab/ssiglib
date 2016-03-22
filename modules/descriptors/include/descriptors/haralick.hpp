@@ -69,7 +69,7 @@ class Haralick {
   static float f11DifferenceEntropy(const cv::Mat& mat);
   static float f12InformationCorrelation01(const cv::Mat& mat);
   static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Dierctionality(const cv::Mat& mat);
+  static float f15_Directionality(const cv::Mat& mat);
 };
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
