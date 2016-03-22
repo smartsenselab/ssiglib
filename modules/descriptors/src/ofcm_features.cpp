@@ -344,7 +344,7 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool
 	std::deque<ParMat> patches;
 	cv::Mat patchAngles, patchMagni;
 
-	int thr = 1;
+	int thr = 1; //it's already quantized so zero is a movement from "bin 0"
 	int t1 = cuboid.l + cuboid.t0 - 1;
 
 	for (size_t ts : this->temporalScales) //for (int ts = 1; ts <= this->temporalScale; ts++)
