@@ -42,8 +42,9 @@
 #ifndef _SSIG_CORE_ALGORITHM_HPP_
 #define _SSIG_CORE_ALGORITHM_HPP_
 
-#include <opencv2/core.hpp>
 #include <string>
+
+#include <opencv2/core.hpp>
 
 #include "core/core_defs.hpp"
 #include "core/resource.hpp"

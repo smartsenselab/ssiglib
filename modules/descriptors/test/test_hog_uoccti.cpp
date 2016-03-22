@@ -39,13 +39,12 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <vector>
 
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
-
-#include <vector>
 
 #include "descriptors/hog_uoccti_features.hpp"
 

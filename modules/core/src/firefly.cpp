@@ -43,10 +43,11 @@
 #include <omp.h>
 #endif
 
+#include <string>
+
 #include <opencv2/core.hpp>
 #include <core/util.hpp>
 #include <core/firefly.hpp>
-#include <string>
 
 
 cv::Mat_<float> ssig::Firefly::

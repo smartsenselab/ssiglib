@@ -42,12 +42,12 @@
 #ifndef _SSIG_CORE_RESULTS_HPP_
 #define _SSIG_CORE_RESULTS_HPP_
 
-#include <opencv2/core.hpp>
-#include <ml/ml_defs.hpp>
-
 #include <utility>
 #include <vector>
 #include <unordered_map>
+
+#include <opencv2/core.hpp>
+#include <ml/ml_defs.hpp>
 
 namespace ssig {
 class Classifier;

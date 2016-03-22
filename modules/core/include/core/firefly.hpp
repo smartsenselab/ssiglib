@@ -41,11 +41,11 @@
 
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#include <string>
+
 #include <opencv2/core.hpp>
 #include <core/math.hpp>
 #include <core/algorithm.hpp>
-
-#include <string>
 
 #include "core_defs.hpp"
 

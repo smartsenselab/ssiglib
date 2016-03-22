@@ -43,8 +43,6 @@
 #ifndef _SSIG_CORE_UTIL_HPP_
 #define _SSIG_CORE_UTIL_HPP_
 
-#include <opencv2/core.hpp>
-
 #include <algorithm>
 #include <functional>
 #include <cctype>
@@ -52,6 +50,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include <opencv2/core.hpp>
 
 #include "core_defs.hpp"
 

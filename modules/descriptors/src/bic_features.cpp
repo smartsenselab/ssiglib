@@ -41,9 +41,10 @@
 
 #include "descriptors/bic_features.hpp"
 
-#include <opencv2/imgproc.hpp>
 #include <stdexcept>
 #include <vector>
+
+#include <opencv2/imgproc.hpp>
 
 namespace ssig {
 
