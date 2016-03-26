@@ -43,10 +43,10 @@
 #ifndef _SSIG_ML_CLASSIFICATION_HPP_
 #define _SSIG_ML_CLASSIFICATION_HPP_
 
-#include <opencv2/core.hpp>
-
 #include <unordered_map>
 #include <string>
+
+#include <opencv2/core.hpp>
 
 #include "ml/ml_defs.hpp"
 #include "core/algorithm.hpp"

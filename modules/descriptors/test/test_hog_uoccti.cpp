@@ -38,14 +38,13 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-
 #include <gtest/gtest.h>
+
+#include <vector>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
-
-#include <vector>
 
 #include "descriptors/hog_uoccti_features.hpp"
 

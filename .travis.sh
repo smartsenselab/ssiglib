@@ -6,7 +6,7 @@ BUILD_DIR=$SSIG_DIR/build
 function lint()
 {
   FILES_LINT=`( find . -name *.hpp -or -name *.cpp | grep "^./modules/" )`
-  cpplint --counting=detailed --filter=-runtime/references $FILES_LINT
+  cpplint --counting=detailed --filter=-runtime/references,-build/header_guard $FILES_LINT
 }
 
 function test-gcc()

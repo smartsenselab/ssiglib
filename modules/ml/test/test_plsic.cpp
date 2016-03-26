@@ -40,10 +40,11 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include <opencv2/core.hpp>
-#include <core/math.hpp>
 
 #include <vector>
+
+#include <opencv2/core.hpp>
+#include <core/math.hpp>
 
 #include "ml/kmeans.hpp"
 #include "ml/pls_classifier.hpp"

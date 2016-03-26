@@ -41,10 +41,11 @@
 
 #ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
 #define _SSIG_ML_SPATIAL_PYRAMID_HPP_
-#include <core/algorithm.hpp>
+
 #include <memory>
 #include <vector>
 
+#include <core/algorithm.hpp>
 
 #include "ml_defs.hpp"
 #include "clustering.hpp"

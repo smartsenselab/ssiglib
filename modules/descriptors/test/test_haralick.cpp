@@ -38,12 +38,12 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
 #include <gtest/gtest.h>
-#include <opencv2/core.hpp>
-#include <descriptors/haralick.hpp>
 
 #include <string>
+
+#include <opencv2/core.hpp>
+#include <descriptors/haralick.hpp>
 
 TEST(Haralick, compute_size8) {
   cv::FileStorage fs("haralick/haralick8.yml", cv::FileStorage::READ);

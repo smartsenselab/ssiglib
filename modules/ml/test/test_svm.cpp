@@ -38,14 +38,13 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
 #include <gtest/gtest.h>
-#include <opencv2/core.hpp>
-
-#include <ml/svm_classifier.hpp>
 
 #include <random>
 
+#include <opencv2/core.hpp>
+
+#include <ml/svm_classifier.hpp>
 
 TEST(SVMClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);

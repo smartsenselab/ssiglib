@@ -50,7 +50,7 @@ TEST(ImageSampling, execution) {
   auto samples = ssig::Sampling::sampleImage(10, 10, 2, 2, 1.0f, 1.0f, 1,
                                                    1.0f, 1.0f);
 
-  EXPECT_EQ(25, samples.size());
+  EXPECT_EQ(25, static_cast<int>(samples.size()));
   EXPECT_EQ(cv::Rect(0, 0, 2, 2), samples[0]);
   EXPECT_EQ(cv::Rect(8, 8, 2, 2), samples.back());
 }
