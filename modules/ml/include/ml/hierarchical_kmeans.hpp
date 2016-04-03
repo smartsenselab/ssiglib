@@ -42,8 +42,9 @@
 #ifndef _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 #define _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 
-#include "clustering.hpp"
+#include <vector>
 
+#include "clustering.hpp"
 #include "ml_defs.hpp"
 
 #include <core/math.hpp>
@@ -62,7 +63,7 @@ enum ClusteringDistance {
 };
 
 class HierarchicalKmeans : public Clustering {
-public:
+ public:
   ML_EXPORT HierarchicalKmeans(void);
   ML_EXPORT virtual ~HierarchicalKmeans(void);
   ML_EXPORT HierarchicalKmeans(const HierarchicalKmeans& rhs);
@@ -70,7 +71,9 @@ public:
 
   ML_EXPORT void setup(const cv::Mat_<float>& input) override;
   ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-  ML_EXPORT void predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  ML_EXPORT void predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const override;
   ML_EXPORT std::vector<Cluster> getClustering() const override;
   ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
   ML_EXPORT bool empty() const override;
@@ -79,19 +82,22 @@ public:
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT void setDistance(const ClusteringDistance& distType, const int minkowski = 1);
+  ML_EXPORT void setDistance(
+    const ClusteringDistance& distType,
+    const int minkowski = 1);
   ML_EXPORT ClusteringDistance getDistance() const;
 
   ML_EXPORT int getMinkowskiParameter() const;
 
-  ML_EXPORT void setInitialization(const cvflann::flann_centers_init_t& initType);
+  ML_EXPORT void setInitialization(
+    const cvflann::flann_centers_init_t& initType);
   ML_EXPORT cvflann::flann_centers_init_t getInitialization() const;
   ML_EXPORT void setBranchingFactor(const int branchingFactor);
   ML_EXPORT int getBranchingFactor() const;
   ML_EXPORT void setCBIndex(const float cbIndex);
   ML_EXPORT float getCBIndex() const;
 
-private:
+ private:
   // private members
 
   ClusteringDistance mDistType;
@@ -101,7 +107,7 @@ private:
   float mCBIndex = 0.2f;
   cv::Mat_<float> mCenters;
 };
-} // namespace ssig
-#endif // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 
 

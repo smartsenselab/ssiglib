@@ -41,6 +41,8 @@
 
 #include "ml/hierarchical_kmeans.hpp"
 
+#include <vector>
+
 #include <opencv2/core.hpp>
 #include <opencv2/flann.hpp>
 
@@ -174,7 +176,7 @@ std::vector<Cluster> HierarchicalKmeans::getClustering() const {
     for (int rc = 0; rc < nCenters; ++rc) {
       cv::Mat sample = mCenters.row(rc);
       float dist = cv::norm(sample - query);
-      if(dist < minDist) {
+      if (dist < minDist) {
         minDist = dist;
         chosenCenter = rc;
       }
@@ -183,7 +185,6 @@ std::vector<Cluster> HierarchicalKmeans::getClustering() const {
   }
 
   return ans;
-
 }
 
 void HierarchicalKmeans::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
@@ -245,6 +246,6 @@ void HierarchicalKmeans::setCBIndex(const float cbIndex) {
 float HierarchicalKmeans::getCBIndex() const {
   return mCBIndex;
 }
-} // namespace ssig
+}  // namespace ssig
 
 
