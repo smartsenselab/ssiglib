@@ -40,11 +40,14 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include "ml/hierarchical_kmeans.hpp"
 #include <random>
+#include <vector>
+
+#include "ml/hierarchical_kmeans.hpp"
+
 
 class HierarchicalKmeansClusteringTest : public ::testing::Test {
-  protected:
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
