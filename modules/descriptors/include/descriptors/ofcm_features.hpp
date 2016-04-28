@@ -52,14 +52,22 @@
 
 namespace ssig {
 
+	enum ExtractionType
+	{
+		HaralickFeatures,
+		VectorizedMatrices,
+		ConcatVectorizedHaralick
+	};
+
 class OFCM : public DescriptorTemporal {
 
  typedef	std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
 
  public:
 	DESCRIPTORS_EXPORT OFCM(void);
-	DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle, int cuboidLength,
-													float maxMagnitude,	int logQuantization, bool movementFilter, std::vector<int> temporalScales);
+	DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle,
+													int cuboidLength, float maxMagnitude,	int logQuantization, bool movementFilter,
+													std::vector<int> temporalScales, ExtractionType extractionType = ExtractionType::HaralickFeatures);
 	DESCRIPTORS_EXPORT virtual ~OFCM(void);
 	DESCRIPTORS_EXPORT OFCM(const OFCM& rhs);
 	DESCRIPTORS_EXPORT OFCM& operator=(const OFCM& rhs);
@@ -116,6 +124,8 @@ private:
 	float maxAngle;
 	float maxMagnitude;
 
+	ExtractionType extractionType;
+
 	CoOccurrenceGeneral *coocMagnitude;
 	CoOccurrenceGeneral *coocAngles;
 	
@@ -125,6 +135,9 @@ private:
 	void setParameters();
 	void setOpticalFlowData();
 	int calcNumOptcialFlowPerCuboid();
+	void extractHaralickFeatures(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
+	void extractVectorizedMatrices(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
+	void extractConcatVectorizedHaralick(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
 
 	inline std::deque<ParMat> CreatePatch(const ssig::Cube& cuboid, bool & hasMovement);
 	inline void FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr = 30);

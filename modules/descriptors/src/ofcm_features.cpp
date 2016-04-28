@@ -57,15 +57,16 @@ OFCM::OFCM() {
 	this->logQuantization = 1;
 	this->movementFilter = 1;
 	this->temporalScales.push_back(1);
-	//extractionType = 0;
+	this->extractionType = ExtractionType::HaralickFeatures; //default
 
 	this->coocMagnitude = NULL;
 	this->coocAngles = NULL;
 	this->mapToOpticalFlows = NULL;
 }
 
-OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle, int cuboidLength,
-						float maxMagnitude, int logQuantization, bool movementFilter, std::vector<int> temporalScales) {
+OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle,
+						int cuboidLength, float maxMagnitude, int logQuantization, bool movementFilter,
+						std::vector<int> temporalScales, ExtractionType extractionType) {
 	
 	this->nBinsMagnitude = nBinsMagnitude;
 	this->nBinsAngle = nBinsAngle;
@@ -73,6 +74,7 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distan
 	this->distanceAngle = distanceAngle;
 	this->cuboidLength = cuboidLength;
 	this->movementFilter = movementFilter;
+	this->extractionType = extractionType;
 
 	if (logQuantization == 1)
 	{
@@ -155,17 +157,67 @@ void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
 
 			coocMagnitude->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].second, mMagnitude);
 			coocAngles->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].first, mAngles);
-			
-			for (cv::Mat &degreeMat : mMagnitude)
-				output.push_back(Haralick::computeOld(degreeMat));
-			
-			for (cv::Mat &degreeMat : mAngles)
-				output.push_back(Haralick::computeOld(degreeMat));
+
+			switch (this->extractionType)
+			{
+			case ExtractionType::HaralickFeatures:
+				extractHaralickFeatures(mMagnitude, mAngles, output);
+				break;
+			case ExtractionType::VectorizedMatrices:
+				extractVectorizedMatrices(mMagnitude, mAngles, output);
+				break;
+			case ExtractionType::ConcatVectorizedHaralick:
+				extractConcatVectorizedHaralick(mMagnitude, mAngles, output);
+				break;
+			default:
+				extractHaralickFeatures(mMagnitude, mAngles, output);
+			}
 			
 		}
 		output = output.reshape(0, 1);
 	}
 	patches.clear();
+
+}
+
+void OFCM::extractHaralickFeatures(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output) {
+	
+	for (cv::Mat &degreeMat : mMagnitude)
+		output.push_back(Haralick::computeOld(degreeMat));
+
+	for (cv::Mat &degreeMat : mAngles)
+		output.push_back(Haralick::computeOld(degreeMat));
+
+}
+
+void OFCM::extractVectorizedMatrices(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output) {
+
+	cv::Mat outputMag, outputAng, outputConcat;
+
+	for (cv::Mat &degreeMat : mMagnitude)
+		outputMag.push_back(degreeMat);
+
+	for (cv::Mat &degreeMat : mAngles)
+		outputAng.push_back(degreeMat);
+
+	outputMag = outputMag.reshape(0, 1);
+	outputAng = outputAng.reshape(0, 1);
+
+	cv::hconcat(outputMag, outputAng, outputConcat);
+	output.push_back(outputConcat.clone());
+
+}
+
+void OFCM::extractConcatVectorizedHaralick(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output) {
+	
+	cv::Mat outputHarFeat, outputVecMat, outputConcat;
+
+	extractHaralickFeatures(mMagnitude, mAngles, outputHarFeat);
+	extractVectorizedMatrices(mMagnitude, mAngles, outputVecMat);
+
+	outputHarFeat = outputHarFeat.reshape(0, 1);
+	cv::hconcat(outputHarFeat, outputVecMat, outputConcat);
+	output.push_back(outputConcat.clone());
 
 }
 
@@ -256,7 +308,22 @@ void OFCM::setParameters() {
 	this->numOpticalFlow = calcNumOptcialFlowPerCuboid();
 
 	// It is(4 direction matrices * 12 Haralick texture features) * 2, because we have one magnitude matrix and one angle matrix, *numOpticalFlow, the number of optical flow will depend on temporal scale.
-	this->descriptorLength = ((4 * 12) + (4 * 12)) * this->numOpticalFlow;
+	switch (this->extractionType)
+	{
+	case ExtractionType::HaralickFeatures:
+		this->descriptorLength = ((4 * 12) + (4 * 12)) * this->numOpticalFlow;
+		break;
+	case ExtractionType::VectorizedMatrices:
+		this->descriptorLength = (tamVecMagniMatrices + tamVecAngleMatrices) * this->numOpticalFlow;
+		break;
+	case ExtractionType::ConcatVectorizedHaralick:
+		this->descriptorLength = (tamVecMagniMatrices + tamVecAngleMatrices + (4 * 12) + (4 * 12)) * this->numOpticalFlow;
+		break;
+	default:
+		this->extractionType = ExtractionType::HaralickFeatures;
+		this->descriptorLength = ((4 * 12) + (4 * 12)) * this->numOpticalFlow;
+	}
+	
 }
 
 inline void OFCM::FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr)
@@ -344,7 +411,7 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool
 	std::deque<ParMat> patches;
 	cv::Mat patchAngles, patchMagni;
 
-	int thr = 1; //it's already quantized so zero is a movement from "bin 0"
+	int thr = 0; //it's already quantized so zero is a movement from "bin 0"
 	int t1 = cuboid.l + cuboid.t0 - 1;
 
 	for (size_t ts : this->temporalScales) //for (int ts = 1; ts <= this->temporalScale; ts++)
