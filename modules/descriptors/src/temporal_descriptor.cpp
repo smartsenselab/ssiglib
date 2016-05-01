@@ -60,4 +60,77 @@ TemporalDescriptors& TemporalDescriptors::operator=(const TemporalDescriptors& r
   }
   return *this;
 }
-}  // namespace ssig
+
+void TemporalDescriptors::extract(cv::Mat& out) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  auto window = cv::Rect(0, 0, mWidth, mHeight);
+  auto depth = mData.size();
+  extractFeatures(window, depth, out);
+}
+
+void TemporalDescriptors::extract(const std::vector<cv::Rect>& windows,
+  cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  for (int i = 0; i < static_cast<int>(windows.size()); ++i) {
+    auto window = cv::Rect(0, 0, mWidth, mHeight);
+    auto depth = mData.size();
+    cv::Mat out;
+    extractFeatures(window, depth, out);
+    output.push_back(out);
+  }
+}
+
+void TemporalDescriptors::extract(const std::vector<int>& depths,
+  cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  for (int i = 0; i < static_cast<int>(depths.size()); ++i) {
+    auto window = cv::Rect(0, 0, mWidth, mHeight);
+    auto& depth = depths[i];
+    cv::Mat out;
+    extractFeatures(window, depth, out);
+    output.push_back(out);
+  }
+}
+
+void TemporalDescriptors::extract(
+  const std::vector<cv::Rect>& windows,
+  const std::vector<int>& depths,
+  cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  for (int i = 0; i < static_cast<int>(windows.size()); ++i) {
+    auto& window = windows[i];
+    auto& depth = depths[i];
+    cv::Mat out;
+    extractFeatures(window, depth, out);
+    output.push_back(out);
+  }
+}
+
+void TemporalDescriptors::setData(const std::vector<cv::Mat>& data) {
+  mData = data;
+  mWidth = mData[0].cols;
+  mHeight = mData[0].rows;
+}
+
+void TemporalDescriptors::load(
+  const std::string& filename,
+  const std::string& nodename) {}
+
+void TemporalDescriptors::save(
+  const std::string& filename,
+  const std::string& nodename) const {}
+} // namespace ssig
+
+

@@ -42,18 +42,21 @@
 #ifndef _SSIG_DESCRIPTORS_HOF_HPP_
 #define _SSIG_DESCRIPTORS_HOF_HPP_
 
-#include <descriptors/descriptor.hpp>
+#include <descriptors/temporal_descriptor.hpp>
 
 namespace ssig {
-class HOF : Descriptor{
- public:
+class HOF : TemporalDescriptors {
+public:
   HOF(void);
   virtual ~HOF(void);
   HOF(const HOF& rhs);
   HOF& operator=(const HOF& rhs);
 
- private:
+
+private:
   // private members
 };
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HOF_HPP_
+} // namespace ssig
+#endif // !_SSIG_DESCRIPTORS_HOF_HPP_
+
+
