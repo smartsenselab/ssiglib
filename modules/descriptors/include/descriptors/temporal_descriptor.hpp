@@ -42,16 +42,56 @@
 #ifndef _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
 #define _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
 
+#include <descriptors/descriptor.hpp>
+
 namespace ssig {
-class TemporalDescriptors {
- public:
+class TemporalDescriptors : Descriptor {
+public:
   TemporalDescriptors(void);
   virtual ~TemporalDescriptors(void);
   TemporalDescriptors(const TemporalDescriptors& rhs);
   TemporalDescriptors& operator=(const TemporalDescriptors& rhs);
 
- private:
+  /**
+  On the first call to this function it returns the feature vector
+  of the mat set up in the constructor call.
+
+  @param out The matrix that will contain the feature vector for the current
+  patch.
+  */
+  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
+    cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<int>& depths,
+    cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
+    const std::vector<int>& depths,
+    cv::Mat& output);
+
+  DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& data);
+
+
+protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+
+  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(
+    const cv::Rect& patch,
+    const int depth,
+    cv::Mat& output) = 0;
+
+  void load(const std::string& filename, const std::string& nodename) override;
+  void save(const std::string& filename, const std::string& nodename) const override;
+private:
   // private members
+  std::vector<cv::Rect> mWindows;
+  std::vector<int> mdepths;
+  std::vector<cv::Mat> mData;
+  bool mIsPrepared = false;
+  int mWidth, mHeight;
 };
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
+} // namespace ssig
+#endif // !_SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
+
+
