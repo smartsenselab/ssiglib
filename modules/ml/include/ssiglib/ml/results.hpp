@@ -39,76 +39,57 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_CORE_RESULTS_HPP_
+#define _SSIG_CORE_RESULTS_HPP_
 
-#ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
-#define _SSIG_ALGORITHMS_CLUSTERING_HPP_
-
+#include <utility>
 #include <vector>
-#include <string>
+#include <unordered_map>
 
 #include <opencv2/core.hpp>
-
-#include "ml/ml_defs.hpp"
-#include "core/algorithm.hpp"
+#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
-typedef std::vector<int> Cluster;
+class Classifier;
 
-class Clustering : public Algorithm {
+class Results {
+  cv::Mat_<int> mConfusionMatrix;
+  cv::Mat_<int> mGroundTruth;
+  cv::Mat_<int> mLabels;
+
  public:
-  ML_EXPORT Clustering(void) = default;
-  ML_EXPORT virtual ~Clustering(void) = default;
+  ML_EXPORT Results() = default;
+  ML_EXPORT Results(
+    const cv::Mat_<int>& actualLabels,
+    const cv::Mat_<int>& expectedLabels);
+  ML_EXPORT virtual ~Results(void) = default;
 
-  ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
+  int getClassesLen() const;
 
-  ML_EXPORT virtual void setup(
-    const cv::Mat_<float>& input) = 0;
+  ML_EXPORT float getAccuracy();
 
-  ML_EXPORT virtual void learn(
-    const cv::Mat_<float>& input) = 0;
+  ML_EXPORT cv::Mat getConfusionMatrix();
 
-  ML_EXPORT virtual void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const = 0;
+  ML_EXPORT static std::pair<float, float> crossValidation(
+    const cv::Mat_<float>& features,
+    const cv::Mat_<int>& labels,
+    const int nfolds,
+    ssig::Classifier& classifier,
+    std::vector<Results>& out);
 
-  ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
+  ML_EXPORT static void makeConfusionMatrixVisualization(
+    const int blockWidth,
+    const cv::Mat_<float>& confusionMatrix,
+    cv::Mat& visualization);
 
-  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
-
-  ML_EXPORT virtual size_t getSize() const;
-
-  ML_EXPORT virtual bool empty() const = 0;
-  ML_EXPORT virtual bool isTrained() const = 0;
-  ML_EXPORT virtual bool isClassifier() const = 0;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
-  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  ML_EXPORT int getK() const {
-    return mK;
-  }
-
-  ML_EXPORT void setK(int k) {
-    mK = k;
-  }
-
-  ML_EXPORT int getMaxIterations() const {
-    return mMaxIterations;
-  }
-
-  ML_EXPORT void setMaxIterations(int maxIterations) {
-    mMaxIterations = maxIterations;
-  }
-
- protected:
-  cv::Mat_<float> mSamples;
-  std::vector<Cluster> mClusters;
-  int mK;
-  int mMaxIterations;
-  bool mReady;
+ private:
+  std::unordered_map<int, int> compute(
+    const cv::Mat_<int>& groundTruth,
+    const cv::Mat_<int>& labels,
+    cv::Mat_<int>& confusionMatrix) const;
+  // private members
 };
-
 }  // namespace ssig
-#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
+#endif  // !_SSF_CORE_RESULTS_HPP_
 
 

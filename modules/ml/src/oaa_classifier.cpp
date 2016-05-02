@@ -39,9 +39,9 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/oaa_classifier.hpp"
+#include "ssiglib/ml/oaa_classifier.hpp"
 
-#include <core/util.hpp>
+#include <ssiglib/core/util.hpp>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

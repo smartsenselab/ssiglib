@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/hog_uoccti_features.hpp"
+#include "ssiglib/descriptors/hog_uoccti_features.hpp"
 
 #include <vector>
 #include <algorithm>

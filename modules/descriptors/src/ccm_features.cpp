@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/ccm_features.hpp"
+#include "ssiglib/descriptors/ccm_features.hpp"
 
 #include <vector>
 #include <stdexcept>

@@ -43,7 +43,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <descriptors/color_histogram_hsv.hpp>
+#include <ssiglib/descriptors/color_histogram_hsv.hpp>
 
 TEST(HSV_Histogram, HSV_Simple) {
   cv::Mat img(1, 4, CV_8UC3);

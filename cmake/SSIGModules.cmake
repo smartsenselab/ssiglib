@@ -22,7 +22,7 @@ macro(ssig_add_module _name)
 	endif()
 
 	# files glob
-	file(GLOB MODULE_INCLUDE_FILES	"${MODULE_PATH}/include/${MODULE_NAME}/*.hpp")
+	file(GLOB MODULE_INCLUDE_FILES	"${MODULE_PATH}/include/ssiglib/${MODULE_NAME}/*.hpp")
 	file(GLOB MODULE_SOURCE_FILES	"${MODULE_PATH}/src/*.cpp")
 
 	# add library

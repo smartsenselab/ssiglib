@@ -44,7 +44,7 @@
 
 #include <opencv2/core.hpp>
 
-#include <ml/svm_classifier.hpp>
+#include <ssiglib/ml/svm_classifier.hpp>
 
 TEST(SVMClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);

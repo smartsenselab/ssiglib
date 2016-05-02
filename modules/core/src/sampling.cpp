@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/sampling.hpp"
+#include "ssiglib/core/sampling.hpp"
 
 #include <stdexcept>
 #include <vector>

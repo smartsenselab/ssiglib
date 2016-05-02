@@ -45,7 +45,7 @@
 #include <string>
 #include <vector>
 
-#include "descriptor_2d.hpp"
+#include "ssiglib/descriptors/descriptor_2d.hpp"
 
 namespace ssig {
 
@@ -114,9 +114,9 @@ class HOG : public Descriptor2D {
   DESCRIPTORS_EXPORT void beforeProcess() override;
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
                                           cv::Mat& output) override;
-  CORE_EXPORT void read(const cv::FileNode& fn) override {}
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override {}
 
-  CORE_EXPORT void write(cv::FileStorage& fs) const override {}
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override {}
 
   DESCRIPTORS_EXPORT virtual void computeBlockDescriptor(
     int rowOffset,

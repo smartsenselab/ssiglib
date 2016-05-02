@@ -43,7 +43,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <descriptors/glcm_features.hpp>
+#include <ssiglib/descriptors/glcm_features.hpp>
 
 TEST(GLCM, GLCM_Simple) {
   cv::Mat img = cv::imread("glcm.png");

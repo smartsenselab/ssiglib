@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/color_histogram_hsv.hpp"
+#include "ssiglib/descriptors/color_histogram_hsv.hpp"
 
 
 #include <stdexcept>

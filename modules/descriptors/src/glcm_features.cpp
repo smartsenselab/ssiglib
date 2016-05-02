@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/glcm_features.hpp"
+#include "ssiglib/descriptors/glcm_features.hpp"
 
 #include <stdexcept>
 

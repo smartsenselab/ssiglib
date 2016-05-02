@@ -40,25 +40,67 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_CORE_RESOURCE_HPP_
-#define _SSIG_CORE_RESOURCE_HPP_
+#ifndef _SSIG_ML_SINGH_HPP_
+#define _SSIG_ML_SINGH_HPP_
 
-#include "core/core_defs.hpp"
-#include "core/base_object.hpp"
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "ssiglib/ml/classifier_clustering.hpp"
+#include "ssiglib/ml/hard_mining_classifier.hpp"
+#include "ssiglib/ml/kmeans.hpp"
 
 namespace ssig {
 
-class Resource : public BaseObject {
+class Singh : public ClassifierClustering {
  public:
-  CORE_EXPORT Resource(void);
+  ML_EXPORT Singh(void) = default;
+  ML_EXPORT virtual ~Singh(void);
 
-  CORE_EXPORT virtual ~Resource(void);
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  CORE_EXPORT Resource(const Resource& rhs);
+  ML_EXPORT void setClassifier(Classifier& classifier) override;
 
-  CORE_EXPORT Resource& operator=(const Resource& rhs);
+  ML_EXPORT float getLambda() const;
+
+  ML_EXPORT void setLambda(float lambda);
+
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+
+ protected:
+  ML_EXPORT void precondition() override;
+  ML_EXPORT void initializeClusterings(
+      const std::vector<int>& assignmentSet) override;
+  ML_EXPORT void initializeClassifiers() override;
+  ML_EXPORT void trainClassifiers(
+    const cv::Mat_<float>& samples,
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet,
+    const std::vector<int>& negativeExtras) override;
+  ML_EXPORT bool isFinished() override;
+  ML_EXPORT void postCondition() override;
+  ML_EXPORT void assignment(const cv::Mat_<float>& samples,
+                            const int clusterSize, const int nClusters,
+                            const std::vector<int>& assignmentSet,
+                            std::vector<std::vector<float>>& clustersResponses,
+                            std::vector<int>& clustersIds,
+                            std::vector<Cluster>& out) override;
+
+ private:
+  // private members
+  float mLambda;
+  bool mTrained;
+  std::vector<HardMiningClassifier*> mClassifiers;
+  std::unique_ptr<Classifier> mUnderlyingClassifier;
 };
 
 }  // namespace ssig
 
-#endif  // !_SSIG_CORE_RESOURCE_HPP_
+#endif  // !_SSIG_ML_SINGH_HPP_

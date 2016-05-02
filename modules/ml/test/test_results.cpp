@@ -43,7 +43,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <ml/results.hpp>
+#include <ssiglib/ml/results.hpp>
 
 TEST(Results, binaryConfMat) {
   cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0, 1, 0, 1);

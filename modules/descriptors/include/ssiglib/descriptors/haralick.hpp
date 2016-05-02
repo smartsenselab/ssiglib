@@ -39,79 +39,34 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
+#define _SSIG_DESCRIPTORS_HARALICK_HPP_
 
 #include <opencv2/core.hpp>
-#include <core/math.hpp>
-#include <core/algorithm.hpp>
+#include "ssiglib/descriptors/descriptors_defs.hpp"
 
-#include "core_defs.hpp"
+#define HARALICK_EPSILON 0.00001
 
 namespace ssig {
-class Firefly : public Algorithm {
-  cv::Mat_<float> randomVector() const;
-
+class Haralick {
  public:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-                      DistanceFunctor& distanceFunction);
-  CORE_EXPORT Firefly(DistanceFunctor& distanceFunction,
-                      UtilityFunctor& utilityFunction);
-
-  CORE_EXPORT void setup(cv::Mat_<float>& input);
-
-  CORE_EXPORT bool iterate();
-
-  CORE_EXPORT cv::Mat_<float> learn
-  (cv::Mat_<float>& input);
-
-  CORE_EXPORT cv::Mat_<float> getResults() const;
-
-  CORE_EXPORT cv::Mat_<float> getState() const;
-
-  CORE_EXPORT void setState(const cv::Mat_<float>& state);
-
-  CORE_EXPORT void save(const std::string& filename,
-                                const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-                                const std::string& nodename) override;
-
-  CORE_EXPORT float getAbsorption() const;
-
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
-
-  CORE_EXPORT int getMaxIterations() const;
-
-  CORE_EXPORT void setMaxIterations(int maxIterations);
-
-  CORE_EXPORT float getAnnealling() const;
-
-  CORE_EXPORT void setAnnealling(float annealling);
-
-  CORE_EXPORT float getStep() const;
-
-  CORE_EXPORT void setStep(float step);
-
- protected:
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
+  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
 
  private:
-  UtilityFunctor& utility;
-  DistanceFunctor& distance;
-  cv::Mat_<float> mPopulation;
-  cv::Mat_<float> mUtilities;
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  int mMaxIterations = 10;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
+  static float f1ASM(const cv::Mat& mat);
+  static float f2Contrast(const cv::Mat& mat);
+  static float f3Correlation(const cv::Mat& mat);
+  static float f4Variance(const cv::Mat& mat);
+  static float f5IDM(const cv::Mat& mat);
+  static float f6SumAverage(const cv::Mat& mat);
+  static float f7SumVariance(const cv::Mat& mat);
+  static float f8SumEntropy(const cv::Mat& mat);
+  static float f9Entropy(const cv::Mat& mat);
+  static float f10DifferenceVariance(const cv::Mat& mat);
+  static float f11DifferenceEntropy(const cv::Mat& mat);
+  static float f12InformationCorrelation01(const cv::Mat& mat);
+  static float f13InformationCorrelation02(const cv::Mat& mat);
+  static float f15_Directionality(const cv::Mat& mat);
 };
 }  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_

@@ -46,7 +46,7 @@
 #include <vector>
 #include <string>
 
-#include "ml/ml_defs.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
 #include "clustering.hpp"
 #include "classification.hpp"
 

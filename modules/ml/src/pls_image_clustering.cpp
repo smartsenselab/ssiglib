@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "ml/pls_image_clustering.hpp"
+#include "ssiglib/ml/pls_image_clustering.hpp"
 
 #include <string>
 #include <random>
@@ -49,7 +49,7 @@
 #include <utility>
 #include <vector>
 
-#include <core/math.hpp>
+#include <ssiglib/core/math.hpp>
 
 namespace ssig {
 
