@@ -39,25 +39,32 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/hof.hpp"
+#ifndef _SSIG_DESCRIPTORS_HOF_HPP_
+#define _SSIG_DESCRIPTORS_HOF_HPP_
+
+#include <descriptors/temporal_descriptor.hpp>
 
 namespace ssig {
-HOF::HOF() {
-  // Constructor
-}
+class DalalMBH : public TemporalDescriptors {
+public:
+  DESCRIPTORS_EXPORT DalalMBH(const std::vector<cv::Mat>& data);
+  DESCRIPTORS_EXPORT virtual ~DalalMBH(void) = default;
+  DESCRIPTORS_EXPORT DalalMBH(const DalalMBH& rhs);
+  //DalalMBH& operator=(const DalalMBH& rhs);
 
-HOF::~HOF() {
-  // Destructor
-}
+protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+  DESCRIPTORS_EXPORT void beforeProcess() override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+    const cv::Point2i depth,
+    cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractStatistics(const cv::Mat& roi, cv::Mat& out) const;
+private:
+  // private members
+  std::vector<cv::Mat> mFlows;
+};
+} // namespace ssig
+#endif // !_SSIG_DESCRIPTORS_HOF_HPP_
 
-HOF::HOF(const HOF& rhs) {
-  // Constructor Copy
-}
 
-HOF& HOF::operator=(const HOF& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
-}  // namespace ssig

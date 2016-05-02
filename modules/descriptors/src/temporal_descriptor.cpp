@@ -41,17 +41,30 @@
 
 #include "descriptors/temporal_descriptor.hpp"
 
+#include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
+#include <iostream>
+
 namespace ssig {
-TemporalDescriptors::TemporalDescriptors() {
-  // Constructor
+
+TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data)
+  : Descriptor() {
+  mData.resize(data.size());
+  for (int i = 0; i < static_cast<int>(mData.size()); ++i)
+    mData[i] = data[i].clone();
 }
 
-TemporalDescriptors::~TemporalDescriptors() {
-  // Destructor
+TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data,
+  const Descriptor& descriptor) {
+  mData.resize(data.size());
+  for (int i = 0; i < static_cast<int>(mData.size()); ++i)
+    mData[i] = data[i].clone();
 }
 
-TemporalDescriptors::TemporalDescriptors(const TemporalDescriptors& rhs) {
-  // Constructor Copy
+TemporalDescriptors::TemporalDescriptors(const TemporalDescriptors& descriptor) {
+  mData.resize(descriptor.mData.size());
+  for (int i = 0; i < static_cast<int>(mData.size()); ++i)
+    mData[i] = descriptor.mData[i].clone();
 }
 
 TemporalDescriptors& TemporalDescriptors::operator=(const TemporalDescriptors& rhs) {
@@ -61,13 +74,38 @@ TemporalDescriptors& TemporalDescriptors::operator=(const TemporalDescriptors& r
   return *this;
 }
 
+void TemporalDescriptors::readVideo(const std::string& videoname,
+  std::vector<cv::Mat>& frames,
+  const bool convert2BW) {
+  cv::VideoCapture capture;
+
+  capture.open(videoname);
+  if (!capture.isOpened()) {
+    std::cout << "Error opening video!" << std::endl;
+    exit(1);
+  }
+
+  int totalFrames = static_cast<int>(capture.get(cv::CAP_PROP_FRAME_COUNT));
+  capture.set(cv::CAP_PROP_CONVERT_RGB, 1);
+
+  frames.resize(totalFrames);
+  cv::Mat frame;
+  for (int i = 0; i < totalFrames; ++i) {
+    int errorCode = capture.read(frame);
+    if(convert2BW) {
+      cv::cvtColor(frame, frame, cv::COLOR_RGB2GRAY);
+    }
+    frame.copyTo(frames[i]);
+  }
+}
+
 void TemporalDescriptors::extract(cv::Mat& out) {
   if (!mIsPrepared) {
     beforeProcess();
     mIsPrepared = true;
   }
   auto window = cv::Rect(0, 0, mWidth, mHeight);
-  auto depth = mData.size();
+  cv::Point2i depth(0, mData.size());
   extractFeatures(window, depth, out);
 }
 
@@ -79,14 +117,14 @@ void TemporalDescriptors::extract(const std::vector<cv::Rect>& windows,
   }
   for (int i = 0; i < static_cast<int>(windows.size()); ++i) {
     auto window = cv::Rect(0, 0, mWidth, mHeight);
-    auto depth = mData.size();
+    cv::Point2i depth(0, mData.size());
     cv::Mat out;
     extractFeatures(window, depth, out);
     output.push_back(out);
   }
 }
 
-void TemporalDescriptors::extract(const std::vector<int>& depths,
+void TemporalDescriptors::extract(const std::vector<cv::Point2i>& depths,
   cv::Mat& output) {
   if (!mIsPrepared) {
     beforeProcess();
@@ -103,7 +141,7 @@ void TemporalDescriptors::extract(const std::vector<int>& depths,
 
 void TemporalDescriptors::extract(
   const std::vector<cv::Rect>& windows,
-  const std::vector<int>& depths,
+  const std::vector<cv::Point2i>& depths,
   cv::Mat& output) {
   if (!mIsPrepared) {
     beforeProcess();
@@ -124,13 +162,13 @@ void TemporalDescriptors::setData(const std::vector<cv::Mat>& data) {
   mHeight = mData[0].rows;
 }
 
-void TemporalDescriptors::load(
-  const std::string& filename,
-  const std::string& nodename) {}
+int TemporalDescriptors::getNFrames() const {
+  return mData.size();
+}
 
-void TemporalDescriptors::save(
-  const std::string& filename,
-  const std::string& nodename) const {}
+std::vector<cv::Mat> TemporalDescriptors::getData() const {
+  return mData;
+}
 } // namespace ssig
 
 

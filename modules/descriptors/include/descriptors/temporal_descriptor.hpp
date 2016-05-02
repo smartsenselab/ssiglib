@@ -47,10 +47,16 @@
 namespace ssig {
 class TemporalDescriptors : Descriptor {
 public:
-  TemporalDescriptors(void);
-  virtual ~TemporalDescriptors(void);
-  TemporalDescriptors(const TemporalDescriptors& rhs);
-  TemporalDescriptors& operator=(const TemporalDescriptors& rhs);
+  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data);
+  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data,
+    const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT TemporalDescriptors(const TemporalDescriptors& rhs);
+  DESCRIPTORS_EXPORT virtual ~TemporalDescriptors(void) = default;
+
+  DESCRIPTORS_EXPORT TemporalDescriptors& operator=(const TemporalDescriptors& rhs);
+
+  DESCRIPTORS_EXPORT static void readVideo(const std::string& videoname, std::vector<cv::Mat>& frames,
+    const bool convert2BW);
 
   /**
   On the first call to this function it returns the feature vector
@@ -62,14 +68,14 @@ public:
   DESCRIPTORS_EXPORT void extract(cv::Mat& out);
   DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
     cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<int>& depths,
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Point2i>& depths,
     cv::Mat& output);
   DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    const std::vector<int>& depths,
+    const std::vector<cv::Point2i>& depths,
     cv::Mat& output);
 
   DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& data);
-
+  DESCRIPTORS_EXPORT int getNFrames() const;
 
 protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
@@ -78,18 +84,17 @@ protected:
   DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
   DESCRIPTORS_EXPORT virtual void extractFeatures(
     const cv::Rect& patch,
-    const int depth,
+    const cv::Point2i depth,
     cv::Mat& output) = 0;
 
-  void load(const std::string& filename, const std::string& nodename) override;
-  void save(const std::string& filename, const std::string& nodename) const override;
+  std::vector<cv::Mat> getData() const;
 private:
   // private members
   std::vector<cv::Rect> mWindows;
-  std::vector<int> mdepths;
+  std::vector<cv::Point2i> mdepths;
   std::vector<cv::Mat> mData;
   bool mIsPrepared = false;
-  int mWidth, mHeight;
+  int mWidth = 0, mHeight = 0;
 };
 } // namespace ssig
 #endif // !_SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
