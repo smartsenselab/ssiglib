@@ -39,75 +39,39 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
-#define _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
+#ifndef _SSF_HASHING_PLSH_HPP_
+#define _SSF_HASHING_PLSH_HPP_
 
 #include <vector>
+#include <random>
+#include <utility>
 
-#include "clustering.hpp"
-#include "ml_defs.hpp"
-
-#include <core/math.hpp>
-#include <opencv2/flann.hpp>
+#include "ssiglib/ml/pls.hpp"
+#include "hashing_defs.hpp"
 
 namespace ssig {
-enum ClusteringDistance {
-  L2,
-  L1,
-  MinkowskiDistance,
-  MaxDistance,
-  HistIntersectionDistance,
-  HellingerDistance,
-  ChiSquareDistance,
-  KL_Divergence,
-};
-
-class HierarchicalKmeans : public Clustering {
+class PLSH {
  public:
-  ML_EXPORT HierarchicalKmeans(void);
-  ML_EXPORT virtual ~HierarchicalKmeans(void);
-  ML_EXPORT HierarchicalKmeans(const HierarchicalKmeans& rhs);
-  ML_EXPORT HierarchicalKmeans& operator=(const HierarchicalKmeans& rhs);
+  typedef std::vector<std::pair<int, float>> CandListType;
 
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-  ML_EXPORT void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
-  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
+  HASHING_EXPORT PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+                      const int models, const int factors = 10);
 
-  ML_EXPORT void setDistance(
-    const ClusteringDistance& distType,
-    const int minkowski = 1);
-  ML_EXPORT ClusteringDistance getDistance() const;
-
-  ML_EXPORT int getMinkowskiParameter() const;
-
-  ML_EXPORT void setInitialization(
-    const cvflann::flann_centers_init_t& initType);
-  ML_EXPORT cvflann::flann_centers_init_t getInitialization() const;
-  ML_EXPORT void setBranchingFactor(const int branchingFactor);
-  ML_EXPORT int getBranchingFactor() const;
-  ML_EXPORT void setCBIndex(const float cbIndex);
-  ML_EXPORT float getCBIndex() const;
+  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
+                                     CandListType& candidates);
 
  private:
-  // private members
+  struct HashModel {
+    PLS mHashFunc;
+    std::vector<int> mSubjects;
+  };
 
-  ClusteringDistance mDistType;
-  cvflann::flann_centers_init_t mInitType;
-  int mBranchingFactor = 4;
-  int mMinkowski = 3;
-  float mCBIndex = 0.2f;
-  cv::Mat_<float> mCenters;
+  std::vector<HashModel> mHashModels;
+  std::vector<int> mSubjects;
+
+  int mFactors;
 };
+
 }  // namespace ssig
-#endif  // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 
-
+#endif  // !_SSF_HASHING_PLSH_HPP_

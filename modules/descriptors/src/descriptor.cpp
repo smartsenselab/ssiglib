@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor.hpp"
+#include "ssiglib/descriptors/descriptor.hpp"
 
 namespace ssig {
 Descriptor::Descriptor() {

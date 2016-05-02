@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "ml/singh.hpp"
+#include "ssiglib/ml/singh.hpp"
 
 #include <utility>
 #include <algorithm>

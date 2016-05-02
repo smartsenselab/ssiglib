@@ -40,56 +40,24 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
-#define _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+#ifndef _SSIG_CORE_BASE_OBJECT_HPP_
+#define _SSIG_CORE_BASE_OBJECT_HPP_
 
-#include <vector>
-
-#include <core/algorithm.hpp>
-#include <opencv2/core.hpp>
-
-#include "descriptors_defs.hpp"
-#include "descriptor.hpp"
+#include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {
 
-class Descriptor2D : public Descriptor {
+class BaseObject {
  public:
-  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input,
-                                           const Descriptor& descriptor);
-  DESCRIPTORS_EXPORT explicit Descriptor2D(const Descriptor2D& descriptor);
+  CORE_EXPORT BaseObject(void);
 
-  DESCRIPTORS_EXPORT virtual ~Descriptor2D(void) = default;
+  CORE_EXPORT virtual ~BaseObject(void);
 
-  /**
-  On the first call to this function it returns the feature vector
-  of the mat set up in the constructor call.
+  CORE_EXPORT BaseObject(const BaseObject& rhs);
 
-  @param out The matrix that will contain the feature vector for the current
-  patch.
-  */
-  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-                                  cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,
-                                  cv::Mat& output);
-
-  DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
-
-
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch,
-                                                  cv::Mat& output) = 0;
-  std::vector<cv::Rect> mPatches;
-  cv::Mat mImage;
-  bool mIsPrepared = false;
+  CORE_EXPORT BaseObject& operator=(const BaseObject& rhs);
 };
 
 }  // namespace ssig
 
-#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+#endif  // !_SSIG_CORE_BASE_OBJECT_HPP_PP_

@@ -39,20 +39,35 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
-#define _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
-#include <core/algorithm.hpp>
-#include "descriptors_defs.hpp"
+#ifndef _SSIG_CORE_ALGORITHM_HPP_
+#define _SSIG_CORE_ALGORITHM_HPP_
+
+#include <string>
+
+#include <opencv2/core.hpp>
+
+#include "ssiglib/core/core_defs.hpp"
+#include "ssiglib/core/resource.hpp"
 
 namespace ssig {
-class Descriptor : public ssig::Algorithm {
+
+class Algorithm : public Resource {
  public:
-  DESCRIPTORS_EXPORT Descriptor(void);
-  DESCRIPTORS_EXPORT virtual ~Descriptor(void);
-  DESCRIPTORS_EXPORT Descriptor(const Descriptor& rhs);
-  DESCRIPTORS_EXPORT Descriptor& operator=(const Descriptor& rhs);
+  CORE_EXPORT Algorithm(void);
+  CORE_EXPORT virtual ~Algorithm(void) = 0;
+  CORE_EXPORT Algorithm(const Algorithm& rhs);
+  CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
+
+  CORE_EXPORT virtual void load(const std::string& filename,
+                                const std::string& nodename);
+
+  CORE_EXPORT virtual void save(const std::string& filename,
+                                const std::string& nodename) const;
+
+ protected:
+  CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
+  CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
 };
+
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_DESRIPTOR_HPP_
-
-
+#endif  // !_SSIG_CORE_ALGORITHM_HPP_

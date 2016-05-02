@@ -43,7 +43,7 @@
 #include <string>
 #include <unordered_set>
 
-#include <ml/svm_classifier.hpp>
+#include <ssiglib/ml/svm_classifier.hpp>
 
 namespace ssig {
 

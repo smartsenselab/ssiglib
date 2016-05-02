@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "ml/kmeans.hpp"
+#include "ssiglib/ml/kmeans.hpp"
 
 #include <unordered_map>
 #include <vector>

@@ -39,35 +39,20 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_CORE_EXCEPTION_HPP_
-#define _SSIG_CORE_EXCEPTION_HPP_
-
-#include <string>
-#include <exception>
-
-#include "core/core_defs.hpp"
+#ifndef _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
+#define _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
+#include <ssiglib/core/algorithm.hpp>
+#include "descriptors_defs.hpp"
 
 namespace ssig {
-
-class Exception : public std::exception {
+class Descriptor : public ssig::Algorithm {
  public:
-  CORE_EXPORT explicit Exception(const char* message = "");
-
-  CORE_EXPORT explicit Exception(const std::string& message);
-
-  CORE_EXPORT virtual ~Exception() throw();
-
-  CORE_EXPORT Exception(const Exception& rhs);
-
-  CORE_EXPORT Exception& operator=(const Exception& rhs);
-
-  CORE_EXPORT const char* what() const throw() override;
-
- protected:
-  std::string mMessage;
+  DESCRIPTORS_EXPORT Descriptor(void);
+  DESCRIPTORS_EXPORT virtual ~Descriptor(void);
+  DESCRIPTORS_EXPORT Descriptor(const Descriptor& rhs);
+  DESCRIPTORS_EXPORT Descriptor& operator=(const Descriptor& rhs);
 };
-
 }  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_DESRIPTOR_HPP_
 
-#endif
+

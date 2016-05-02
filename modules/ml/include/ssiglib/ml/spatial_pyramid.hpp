@@ -39,86 +39,41 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
 
-#ifndef _SSIG_ML_KMEANS_HPP_
-#define _SSIG_ML_KMEANS_HPP_
-
-#include <vector>
-#include <string>
 #include <memory>
+#include <vector>
 
-#include "ml/clustering.hpp"
-#include "classification.hpp"
-#include "oaa_classifier.hpp"
+#include <ssiglib/core/algorithm.hpp>
+
+#include "ml_defs.hpp"
+#include "clustering.hpp"
+
 
 namespace ssig {
-
-class Kmeans : public Clustering {
+class SpatialPyramid : public ssig::Algorithm {
  public:
-    enum PredictionType {
-      NORM_L1 = cv::NormTypes::NORM_L1,
-      NORM_L2 = cv::NormTypes::NORM_L2,
-      CLASSIFIER_PREDICTION
-    };
+  SpatialPyramid(void);
+  virtual ~SpatialPyramid(void);
+  SpatialPyramid(const SpatialPyramid& rhs);
+  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-    ML_EXPORT Kmeans(void) = default;
-    ML_EXPORT virtual ~Kmeans(void) = default;
-    Kmeans(const Kmeans& rhs);
-    Kmeans& operator=(const Kmeans& rhs);
+  ML_EXPORT static void pool(
+    const cv::Size& imageSize,
+    const std::vector<ssig::Clustering*>& clusteringMethods,
+    const std::vector<cv::Vec2i>& pyramidConfigurations,
+    const std::vector<float>& poolingWeights,
+    const std::vector<cv::Mat_<float>>& partFeatures,
+    const std::vector<cv::Rect>& partWindows,
+    const std::vector<int>& scaledHeights,
+    cv::Mat_<float>& output);
 
-    ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-
-    ML_EXPORT void predict(const cv::Mat_<float>& inp,
-      cv::Mat_<float>& resp) const override;
-
-    ML_EXPORT std::vector<Cluster> getClustering() const override;
-
-    ML_EXPORT void getCentroids(
-      cv::Mat_<float>& centroidsMatrix) const override;
-
-    ML_EXPORT bool empty() const override;
-    ML_EXPORT bool isTrained() const override;
-    ML_EXPORT bool isClassifier() const override;
-
-    ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-
-    ML_EXPORT void read(const cv::FileNode& fn) override;
-    ML_EXPORT void write(cv::FileStorage& fs) const override;
-
-    ML_EXPORT int getFlags() const;
-
-    ML_EXPORT void setFlags(int flags);
-
-    ML_EXPORT int getNAttempts() const;
-
-    ML_EXPORT void setNAttempts(int nAttempts);
-
-    ML_EXPORT int getPredictionDistanceType() const;
-
-
-    ML_EXPORT size_t getSize() const override;
-    /**
-      Use this method for simple distance metrics against the centroid of each
-       cluster
-      */
-    ML_EXPORT void setPredictionDistanceType(
-      ssig::Kmeans::PredictionType predicitonDistanceType);
-
-    ML_EXPORT void setPredictionDistanceType(
-      ssig::Classifier& predictionClassifier);
-
- private:
-    // private members
-    cv::Mat_<float> mCentroids;
-    int mFlags;
-    int mNumberOfAttempts;
-    int mPredictionDistanceType;
-    std::unique_ptr<ssig::OAAClassifier> mPredictionClassifier;
-
-    void setupLabelMatFromInitialization(cv::Mat& labels);
+ protected:
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 };
 }  // namespace ssig
-
-#endif  // !_SSIG_ALGORITHMS_KMEANS_HPP_
+#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
 

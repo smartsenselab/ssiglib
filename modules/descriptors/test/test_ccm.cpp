@@ -42,7 +42,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include "descriptors/ccm_features.hpp"
+#include "ssiglib/descriptors/ccm_features.hpp"
 
 TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
   cv::Mat img = cv::imread("glcm.png");

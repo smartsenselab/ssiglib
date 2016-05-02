@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor_2d.hpp"
+#include "ssiglib/descriptors/descriptor_2d.hpp"
 
 #include <vector>
 #include <stdexcept>

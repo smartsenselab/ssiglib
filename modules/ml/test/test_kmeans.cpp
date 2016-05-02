@@ -43,8 +43,8 @@
 #include <vector>
 #include <random>
 
-#include <ml/kmeans.hpp>
-#include <ml/pls_classifier.hpp>
+#include <ssiglib/ml/kmeans.hpp>
+#include <ssiglib/ml/pls_classifier.hpp>
 
 #include <opencv2/core.hpp>
 

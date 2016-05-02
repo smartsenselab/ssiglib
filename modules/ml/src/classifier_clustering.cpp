@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include <ml/classifier_clustering.hpp>
+#include <ssiglib/ml/classifier_clustering.hpp>
 
 #include <algorithm>
 #include <vector>

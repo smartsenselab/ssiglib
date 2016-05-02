@@ -48,7 +48,7 @@
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include "descriptors/hog_features.hpp"
+#include "ssiglib/descriptors/hog_features.hpp"
 
 TEST(HOG, Simple) {
   cv::Mat img;

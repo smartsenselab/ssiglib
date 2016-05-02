@@ -39,57 +39,81 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_CORE_RESULTS_HPP_
-#define _SSIG_CORE_RESULTS_HPP_
 
-#include <utility>
+#ifndef _SSIG_ML_PLS_HPP_
+#define _SSIG_ML_PLS_HPP_
+
+#include <stdexcept>
 #include <vector>
-#include <unordered_map>
+#include <string>
+
 
 #include <opencv2/core.hpp>
-#include <ml/ml_defs.hpp>
+#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
-class Classifier;
 
-class Results {
-  cv::Mat_<int> mConfusionMatrix;
-  cv::Mat_<int> mGroundTruth;
-  cv::Mat_<int> mLabels;
+class PLS {
+  // set output matrix according to indices
+  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+                 std::vector<size_t>& indices);
+
+  // compute regression error
+  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
+
+  // function to computer the Bstar (nfactors must be the maximum the number of
+  // factors of the PLS model)
+  void computeBstar(int nfactors);
 
  public:
-  ML_EXPORT Results() = default;
-  ML_EXPORT Results(
-    const cv::Mat_<int>& actualLabels,
-    const cv::Mat_<int>& expectedLabels);
-  ML_EXPORT virtual ~Results(void) = default;
+  PLS() = default;
+  virtual ~PLS() = default;
+  // compute PLS model
+  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
-  int getClassesLen() const;
+  // return projection considering n factors
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
+                         int nfactors);
 
-  ML_EXPORT float getAccuracy();
+  // retrieve the number of factors
+  ML_EXPORT int getNFactors() const;
 
-  ML_EXPORT cv::Mat getConfusionMatrix();
+  // projection Bstar considering a number of factors (must be smaller than the
+  // maximum)
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
-  ML_EXPORT static std::pair<float, float> crossValidation(
-    const cv::Mat_<float>& features,
-    const cv::Mat_<int>& labels,
-    const int nfolds,
-    ssig::Classifier& classifier,
-    std::vector<Results>& out);
+  // save PLS model
+  ML_EXPORT void save(std::string filename) const;
+  ML_EXPORT void save(cv::FileStorage& storage) const;
 
-  ML_EXPORT static void makeConfusionMatrixVisualization(
-    const int blockWidth,
-    const cv::Mat_<float>& confusionMatrix,
-    cv::Mat& visualization);
+  // load PLS model
+  ML_EXPORT void load(std::string filename);
+  ML_EXPORT void load(const cv::FileNode& node);
 
- private:
-  std::unordered_map<int, int> compute(
-    const cv::Mat_<int>& groundTruth,
-    const cv::Mat_<int>& labels,
-    cv::Mat_<int>& confusionMatrix) const;
-  // private members
+  // compute PLS using cross-validation to define the number of factors
+  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
+                                          cv::Mat_<float>& Y, int minDims,
+                                          int maxDims, int step);
+
+ protected:
+  cv::Mat_<float> mXmean;
+  cv::Mat_<float> mXstd;
+  cv::Mat_<float> mYmean;
+  cv::Mat_<float> mYstd;
+
+  cv::Mat_<float> mB;
+  cv::Mat_<float> mT;
+  cv::Mat_<float> mP;
+  cv::Mat_<float> mW;
+
+  cv::Mat_<float> mWstar;
+  cv::Mat_<float> mBstar;
+
+  cv::Mat_<float> mZDataV;
+  cv::Mat_<float> mYscaled;
+  int mNFactors;
 };
+
 }  // namespace ssig
-#endif  // !_SSF_CORE_RESULTS_HPP_
 
-
+#endif  // !_SSIG_ML_PLS_HPP_

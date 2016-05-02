@@ -46,7 +46,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
 
-#include "descriptors/hog_uoccti_features.hpp"
+#include "ssiglib/descriptors/hog_uoccti_features.hpp"
 
 TEST(HOGUOCCTI, Simple) {
   cv::Mat img;
