@@ -39,24 +39,18 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HOF_HPP_
-#define _SSIG_DESCRIPTORS_HOF_HPP_
+#include <gtest/gtest.h>
+#include <opencv2/highgui.hpp>
+#include "descriptors/dalal_mbh.hpp"
 
-#include <descriptors/temporal_descriptor.hpp>
-
-namespace ssig {
-class HOF : TemporalDescriptors {
-public:
-  HOF(void);
-  virtual ~HOF(void);
-  HOF(const HOF& rhs);
-  HOF& operator=(const HOF& rhs);
-
-
-private:
-  // private members
-};
-} // namespace ssig
-#endif // !_SSIG_DESCRIPTORS_HOF_HPP_
-
-
+TEST(HOF, SampleHOF) {
+  // Automatically generated stub
+  
+  std::vector<cv::Mat> frames;
+  ssig::TemporalDescriptors::readVideo("d:/Downloads/aw7z4Wx_460sv.mp4",
+    frames, true);
+  ssig::DalalMBH hof(frames);
+  cv::Mat out;
+  hof.extract(out);
+  EXPECT_EQ(2, 2 + 2);
+}

@@ -39,11 +39,78 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <gtest/gtest.h>
-#include "descriptors/hof.hpp"
+#include "descriptors/dalal_mbh.hpp"
 
-TEST(HOF, SampleHOF) {
-  // Automatically generated stub
+#include <descriptors/hog_uoccti_features.hpp>
+#include <opencv2/video.hpp>
 
-  EXPECT_EQ(2, 2 + 2);
+//#include <opencv2/video/tracking.hpp>
+
+namespace ssig {
+
+DalalMBH::DalalMBH(const std::vector<cv::Mat>& data) :
+  TemporalDescriptors(data) { }
+
+DalalMBH::DalalMBH(const DalalMBH& rhs) : TemporalDescriptors(rhs) {
+  // Constructor Copy
 }
+
+void DalalMBH::read(const cv::FileNode& fn) {}
+
+void DalalMBH::write(cv::FileStorage& fs) const {}
+
+void DalalMBH::beforeProcess() {
+  auto data = getData();
+  mFlows.resize(static_cast<int>(data.size()) - 1);
+  double pyrscale = 0.5,
+      poly_sigma = 1.1;
+  int levels = 4,
+      winsize = 5,
+      iterations = 20,
+      poly_n = 5;
+  for (int i = 0; i < static_cast<int>(data.size()) - 1; ++i) {
+    cv::Mat& frame0 = data[i];
+    cv::Mat& framef = data[i + 1];
+
+    cv::calcOpticalFlowFarneback(frame0, framef,
+                                 mFlows[i],
+                                 pyrscale,
+                                 levels,
+                                 winsize,
+                                 iterations,
+                                 poly_n,
+                                 poly_sigma,
+                                 cv::OPTFLOW_FARNEBACK_GAUSSIAN);
+  }
+
+}
+
+void DalalMBH::extractFeatures(const cv::Rect& patch,
+  const cv::Point2i depth,
+  cv::Mat& output) {
+  cv::Mat roi;
+  assert(depth.x >= 0 &&
+    depth.y < static_cast<int>(getNFrames()) &&
+    depth.y > depth.x);
+  auto data = getData();
+  std::vector<cv::Mat> flowFeats(depth.y - depth.x);
+  for (int i = depth.x; i < depth.y; ++i) {
+    roi = data[i](patch);
+    extractStatistics(roi, flowFeats[i]);
+  }
+}
+
+void DalalMBH::extractStatistics(const cv::Mat& roi,
+  cv::Mat& out) const {
+  
+}
+
+//DalalMBH& DalalMBH::operator=(const DalalMBH& rhs) {
+//  if (this != &rhs) {
+//    // code here
+//  }
+//  return *this;
+//}
+} // namespace ssig
+
+
