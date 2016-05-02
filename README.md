@@ -10,6 +10,9 @@ The Smart Surveillance Interest Group Library (SSIGLib) is a C/C++ library built
 
 The SSIGLib was designed to provide features for a good scene understanding, scalability, real-time operation, multi-sensor environment, usage of low cost standard components, and communication control.
 
+###Warning
+Be noted that there is no stable version yet, which means that some interfaces may change with each update and the library has most of its features in an experimental fashion.
+
 ## Contributing
 
 Simple way:
