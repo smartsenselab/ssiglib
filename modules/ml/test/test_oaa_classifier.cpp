@@ -42,9 +42,9 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <ml/oaa_classifier.hpp>
-#include <ml/pls_classifier.hpp>
-#include <ml/svm_classifier.hpp>
+#include <ssiglib/ml/oaa_classifier.hpp>
+#include <ssiglib/ml/pls_classifier.hpp>
+#include <ssiglib/ml/svm_classifier.hpp>
 
 TEST(OAAClassifier, PLSBinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) <<

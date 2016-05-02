@@ -41,7 +41,7 @@
 
 #include <gtest/gtest.h>
 
-#include "hashing/plsh.hpp"
+#include "ssiglib/hashing/plsh.hpp"
 
 TEST(PLSH, Retrieval) {
   cv::Mat_<int> labels = (cv::Mat_<int>(5, 1) << 1, 1, 2, 2, 3);

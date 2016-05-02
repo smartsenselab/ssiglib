@@ -39,25 +39,79 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#include <string>
 
-#ifndef _SSIG_CORE_BASE_OBJECT_HPP_
-#define _SSIG_CORE_BASE_OBJECT_HPP_
+#include <opencv2/core.hpp>
+#include <ssiglib/core/math.hpp>
+#include <ssiglib/core/algorithm.hpp>
 
-#include "core/core_defs.hpp"
+#include "core_defs.hpp"
 
 namespace ssig {
+class Firefly : public Algorithm {
+  cv::Mat_<float> randomVector() const;
 
-class BaseObject {
  public:
-  CORE_EXPORT BaseObject(void);
+  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
+                      DistanceFunctor& distanceFunction);
+  CORE_EXPORT Firefly(DistanceFunctor& distanceFunction,
+                      UtilityFunctor& utilityFunction);
 
-  CORE_EXPORT virtual ~BaseObject(void);
+  CORE_EXPORT void setup(cv::Mat_<float>& input);
 
-  CORE_EXPORT BaseObject(const BaseObject& rhs);
+  CORE_EXPORT bool iterate();
 
-  CORE_EXPORT BaseObject& operator=(const BaseObject& rhs);
+  CORE_EXPORT cv::Mat_<float> learn
+  (cv::Mat_<float>& input);
+
+  CORE_EXPORT cv::Mat_<float> getResults() const;
+
+  CORE_EXPORT cv::Mat_<float> getState() const;
+
+  CORE_EXPORT void setState(const cv::Mat_<float>& state);
+
+  CORE_EXPORT void save(const std::string& filename,
+                                const std::string& nodename) const override;
+  CORE_EXPORT void load(const std::string& filename,
+                                const std::string& nodename) override;
+
+  CORE_EXPORT float getAbsorption() const;
+
+  /**
+  @brief: This parameter controls how much one particle perceives another
+   particle attractiveness
+  */
+  CORE_EXPORT void setAbsorption(float absorption);
+
+  CORE_EXPORT int getMaxIterations() const;
+
+  CORE_EXPORT void setMaxIterations(int maxIterations);
+
+  CORE_EXPORT float getAnnealling() const;
+
+  CORE_EXPORT void setAnnealling(float annealling);
+
+  CORE_EXPORT float getStep() const;
+
+  CORE_EXPORT void setStep(float step);
+
+ protected:
+  CORE_EXPORT void read(const cv::FileNode& fn) override;
+  CORE_EXPORT void write(cv::FileStorage& fs) const override;
+
+ private:
+  UtilityFunctor& utility;
+  DistanceFunctor& distance;
+  cv::Mat_<float> mPopulation;
+  cv::Mat_<float> mUtilities;
+  float mAbsorption = 1.5f;
+  int mIterations = 0;
+  int mMaxIterations = 10;
+  float mAnnealling = 0.97f;
+  float mStep = 0.9f;
+  cv::RNG mRng;
 };
-
 }  // namespace ssig
-
-#endif  // !_SSIG_CORE_BASE_OBJECT_HPP_PP_
+#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_

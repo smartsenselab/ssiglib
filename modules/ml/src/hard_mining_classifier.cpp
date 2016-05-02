@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/hard_mining_classifier.hpp"
+#include "ssiglib/ml/hard_mining_classifier.hpp"
 
 namespace ssig {
 

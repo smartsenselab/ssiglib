@@ -43,7 +43,7 @@
 #include <random>
 #include <vector>
 
-#include "ml/hierarchical_kmeans.hpp"
+#include "ssiglib/ml/hierarchical_kmeans.hpp"
 
 
 class HierarchicalKmeansClusteringTest : public ::testing::Test {

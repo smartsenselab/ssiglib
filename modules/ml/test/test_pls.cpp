@@ -42,7 +42,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <ml/pls_classifier.hpp>
+#include <ssiglib/ml/pls_classifier.hpp>
 
 TEST(PLSClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);

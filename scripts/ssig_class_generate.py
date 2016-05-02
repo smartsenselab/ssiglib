@@ -76,7 +76,7 @@ def generate(argv):
     with open('data/ssiglib_template_source.tcpp', 'r') as f_template_source:
         str_template_source = f_template_source.read()
 
-    header_path = "../modules/%s/include/%s/%s.hpp" % (
+    header_path = "../modules/%s/include/ssiglib/%s/%s.hpp" % (
         values['module'], values['module'], values["file_name"])
     
     t_source_path = ""

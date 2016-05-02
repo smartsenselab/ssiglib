@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/results.hpp"
+#include "ssiglib/ml/results.hpp"
 #include <limits.h>
 
 #include <algorithm>
@@ -53,7 +53,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/core.hpp>
 
-#include <ml/classification.hpp>
+#include <ssiglib/ml/classification.hpp>
 
 namespace ssig {
 Results::Results(const cv::Mat_<int>& actualLabels,

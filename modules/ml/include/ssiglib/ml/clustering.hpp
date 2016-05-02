@@ -40,80 +40,75 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
+#ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
+#define _SSIG_ALGORITHMS_CLUSTERING_HPP_
 
-#include <stdexcept>
 #include <vector>
 #include <string>
 
-
 #include <opencv2/core.hpp>
-#include <ml/ml_defs.hpp>
+
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/core/algorithm.hpp"
 
 namespace ssig {
+typedef std::vector<int> Cluster;
 
-class PLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
-
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
-
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
-
+class Clustering : public Algorithm {
  public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  ML_EXPORT Clustering(void) = default;
+  ML_EXPORT virtual ~Clustering(void) = default;
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors);
+  ML_EXPORT virtual void setInitialClustering(const std::vector<Cluster>& init);
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors() const;
+  ML_EXPORT virtual void setup(
+    const cv::Mat_<float>& input) = 0;
 
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ML_EXPORT virtual void learn(
+    const cv::Mat_<float>& input) = 0;
 
-  // save PLS model
-  ML_EXPORT void save(std::string filename) const;
-  ML_EXPORT void save(cv::FileStorage& storage) const;
+  ML_EXPORT virtual void predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const = 0;
 
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
+  ML_EXPORT virtual std::vector<Cluster> getClustering() const = 0;
 
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
+  virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
+
+  ML_EXPORT virtual size_t getSize() const;
+
+  ML_EXPORT virtual bool empty() const = 0;
+  ML_EXPORT virtual bool isTrained() const = 0;
+  ML_EXPORT virtual bool isClassifier() const = 0;
+
+  ML_EXPORT void read(const cv::FileNode& fn) override = 0;
+  ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
+
+  ML_EXPORT int getK() const {
+    return mK;
+  }
+
+  ML_EXPORT void setK(int k) {
+    mK = k;
+  }
+
+  ML_EXPORT int getMaxIterations() const {
+    return mMaxIterations;
+  }
+
+  ML_EXPORT void setMaxIterations(int maxIterations) {
+    mMaxIterations = maxIterations;
+  }
 
  protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
-
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
-
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
-
-  cv::Mat_<float> mZDataV;
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
+  cv::Mat_<float> mSamples;
+  std::vector<Cluster> mClusters;
+  int mK;
+  int mMaxIterations;
+  bool mReady;
 };
 
 }  // namespace ssig
+#endif  // !_SSIG_ALGORITHMS_CLUSTERING_HPP_
 
-#endif  // !_SSIG_ML_PLS_HPP_
+

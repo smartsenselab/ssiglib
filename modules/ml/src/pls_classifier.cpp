@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <ml/pls_classifier.hpp>
+#include <ssiglib/ml/pls_classifier.hpp>
 
 #include <cassert>
 #include <string>

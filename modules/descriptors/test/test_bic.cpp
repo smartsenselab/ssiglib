@@ -43,7 +43,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <descriptors/bic_features.hpp>
+#include <ssiglib/descriptors/bic_features.hpp>
 
 TEST(BIC, BIC_Simple) {
   cv::Mat img = cv::imread("bic.png");

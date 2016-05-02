@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/spatial_pyramid.hpp"
+#include "ssiglib/ml/spatial_pyramid.hpp"
 
 #include <vector>
 

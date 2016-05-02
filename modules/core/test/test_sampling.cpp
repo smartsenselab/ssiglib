@@ -44,7 +44,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 
-#include <core/sampling.hpp>
+#include <ssiglib/core/sampling.hpp>
 
 TEST(ImageSampling, execution) {
   auto samples = ssig::Sampling::sampleImage(10, 10, 2, 2, 1.0f, 1.0f, 1,

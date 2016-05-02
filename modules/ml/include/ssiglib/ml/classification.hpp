@@ -48,8 +48,8 @@
 
 #include <opencv2/core.hpp>
 
-#include "ml/ml_defs.hpp"
-#include "core/algorithm.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/core/algorithm.hpp"
 
 namespace ssig {
 

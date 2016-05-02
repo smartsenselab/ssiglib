@@ -43,7 +43,7 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <core/math.hpp>
+#include <ssiglib/core/math.hpp>
 
 TEST(Cosine, PerpendicularitySimilarityTest) {
   cv::Mat_<float> samples = (cv::Mat_<float>(2, 2) << 0 , 1 , 1 , 0);

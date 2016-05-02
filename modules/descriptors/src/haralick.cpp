@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/haralick.hpp"
+#include "ssiglib/descriptors/haralick.hpp"
 
 #include <vector>
 

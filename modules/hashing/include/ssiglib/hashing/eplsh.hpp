@@ -39,35 +39,45 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_CORE_ALGORITHM_HPP_
-#define _SSIG_CORE_ALGORITHM_HPP_
+#ifndef _SSF_HASHING_PLSH_HPP_
+#define _SSF_HASHING_PLSH_HPP_
 
-#include <string>
+#include <vector>
+#include <random>
+#include <utility>
 
-#include <opencv2/core.hpp>
-
-#include "core/core_defs.hpp"
-#include "core/resource.hpp"
+#include "ssiglib/ml/pls.hpp"
+#include "hashing_defs.hpp"
 
 namespace ssig {
-
-class Algorithm : public Resource {
+class EPLSH {
  public:
-  CORE_EXPORT Algorithm(void);
-  CORE_EXPORT virtual ~Algorithm(void) = 0;
-  CORE_EXPORT Algorithm(const Algorithm& rhs);
-  CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
+  typedef std::vector<std::pair<int, float>> CandListType;
 
-  CORE_EXPORT virtual void load(const std::string& filename,
-                                const std::string& nodename);
+  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples,
+                       const cv::Mat_<int> labels,
+                       const int models,
+                       const int factors = 10,
+                       const int ndim = 5000);
 
-  CORE_EXPORT virtual void save(const std::string& filename,
-                                const std::string& nodename) const;
+  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
+                                     CandListType& candidates);
 
- protected:
-  CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
-  CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
+ private:
+  struct HashModel {
+    PLS mHashFunc;
+    std::vector<int> mSubjects;
+    std::vector<size_t> mIndexes;
+  };
+
+  std::vector<HashModel> mHashModels;
+  std::vector<int> mSubjects;
+
+  int mFactors;
 };
 
 }  // namespace ssig
-#endif  // !_SSIG_CORE_ALGORITHM_HPP_
+
+#endif  // !_SSF_HASHING_PLSH_HPP_
+
+
