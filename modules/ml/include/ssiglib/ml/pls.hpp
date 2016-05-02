@@ -39,45 +39,81 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_HASHING_PLSH_HPP_
-#define _SSF_HASHING_PLSH_HPP_
 
+#ifndef _SSIG_ML_PLS_HPP_
+#define _SSIG_ML_PLS_HPP_
+
+#include <stdexcept>
 #include <vector>
-#include <random>
-#include <utility>
+#include <string>
 
-#include "ml/pls.hpp"
-#include "hashing_defs.hpp"
+
+#include <opencv2/core.hpp>
+#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
-class EPLSH {
+
+class PLS {
+  // set output matrix according to indices
+  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+                 std::vector<size_t>& indices);
+
+  // compute regression error
+  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
+
+  // function to computer the Bstar (nfactors must be the maximum the number of
+  // factors of the PLS model)
+  void computeBstar(int nfactors);
+
  public:
-  typedef std::vector<std::pair<int, float>> CandListType;
+  PLS() = default;
+  virtual ~PLS() = default;
+  // compute PLS model
+  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
-  HASHING_EXPORT EPLSH(const cv::Mat_<float> samples,
-                       const cv::Mat_<int> labels,
-                       const int models,
-                       const int factors = 10,
-                       const int ndim = 5000);
+  // return projection considering n factors
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
+                         int nfactors);
 
-  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
-                                     CandListType& candidates);
+  // retrieve the number of factors
+  ML_EXPORT int getNFactors() const;
 
- private:
-  struct HashModel {
-    PLS mHashFunc;
-    std::vector<int> mSubjects;
-    std::vector<size_t> mIndexes;
-  };
+  // projection Bstar considering a number of factors (must be smaller than the
+  // maximum)
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
-  std::vector<HashModel> mHashModels;
-  std::vector<int> mSubjects;
+  // save PLS model
+  ML_EXPORT void save(std::string filename) const;
+  ML_EXPORT void save(cv::FileStorage& storage) const;
 
-  int mFactors;
+  // load PLS model
+  ML_EXPORT void load(std::string filename);
+  ML_EXPORT void load(const cv::FileNode& node);
+
+  // compute PLS using cross-validation to define the number of factors
+  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
+                                          cv::Mat_<float>& Y, int minDims,
+                                          int maxDims, int step);
+
+ protected:
+  cv::Mat_<float> mXmean;
+  cv::Mat_<float> mXstd;
+  cv::Mat_<float> mYmean;
+  cv::Mat_<float> mYstd;
+
+  cv::Mat_<float> mB;
+  cv::Mat_<float> mT;
+  cv::Mat_<float> mP;
+  cv::Mat_<float> mW;
+
+  cv::Mat_<float> mWstar;
+  cv::Mat_<float> mBstar;
+
+  cv::Mat_<float> mZDataV;
+  cv::Mat_<float> mYscaled;
+  int mNFactors;
 };
 
 }  // namespace ssig
 
-#endif  // !_SSF_HASHING_PLSH_HPP_
-
-
+#endif  // !_SSIG_ML_PLS_HPP_

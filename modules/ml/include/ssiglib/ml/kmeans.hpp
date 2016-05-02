@@ -47,7 +47,7 @@
 #include <string>
 #include <memory>
 
-#include "ml/clustering.hpp"
+#include "ssiglib/ml/clustering.hpp"
 #include "classification.hpp"
 #include "oaa_classifier.hpp"
 

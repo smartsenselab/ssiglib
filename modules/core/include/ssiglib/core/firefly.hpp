@@ -44,8 +44,8 @@
 #include <string>
 
 #include <opencv2/core.hpp>
-#include <core/math.hpp>
-#include <core/algorithm.hpp>
+#include <ssiglib/core/math.hpp>
+#include <ssiglib/core/algorithm.hpp>
 
 #include "core_defs.hpp"
 

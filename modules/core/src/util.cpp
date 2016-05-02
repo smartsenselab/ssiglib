@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "core/util.hpp"
+#include "ssiglib/core/util.hpp"
 
 #include <algorithm>
 #include <functional>

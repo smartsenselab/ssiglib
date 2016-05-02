@@ -46,8 +46,8 @@
 #include <string>
 
 #include <opencv2/core.hpp>
-#include <core/util.hpp>
-#include <core/firefly.hpp>
+#include <ssiglib/core/util.hpp>
+#include <ssiglib/core/firefly.hpp>
 
 
 cv::Mat_<float> ssig::Firefly::

@@ -39,75 +39,57 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
-#define _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
+
+#ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
+#define _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
 
 #include <vector>
 
-#include "clustering.hpp"
-#include "ml_defs.hpp"
+#include <ssiglib/core/algorithm.hpp>
+#include <opencv2/core.hpp>
 
-#include <core/math.hpp>
-#include <opencv2/flann.hpp>
+#include "ssiglib/descriptors/descriptors_defs.hpp"
+#include "ssiglib/descriptors/descriptor.hpp"
 
 namespace ssig {
-enum ClusteringDistance {
-  L2,
-  L1,
-  MinkowskiDistance,
-  MaxDistance,
-  HistIntersectionDistance,
-  HellingerDistance,
-  ChiSquareDistance,
-  KL_Divergence,
-};
 
-class HierarchicalKmeans : public Clustering {
+class Descriptor2D : public Descriptor {
  public:
-  ML_EXPORT HierarchicalKmeans(void);
-  ML_EXPORT virtual ~HierarchicalKmeans(void);
-  ML_EXPORT HierarchicalKmeans(const HierarchicalKmeans& rhs);
-  ML_EXPORT HierarchicalKmeans& operator=(const HierarchicalKmeans& rhs);
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input);
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const cv::Mat& input,
+                                           const Descriptor& descriptor);
+  DESCRIPTORS_EXPORT explicit Descriptor2D(const Descriptor2D& descriptor);
 
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-  ML_EXPORT void predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
-  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
+  DESCRIPTORS_EXPORT virtual ~Descriptor2D(void) = default;
 
-  ML_EXPORT void setDistance(
-    const ClusteringDistance& distType,
-    const int minkowski = 1);
-  ML_EXPORT ClusteringDistance getDistance() const;
+  /**
+  On the first call to this function it returns the feature vector
+  of the mat set up in the constructor call.
 
-  ML_EXPORT int getMinkowskiParameter() const;
+  @param out The matrix that will contain the feature vector for the current
+  patch.
+  */
+  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
+                                  cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,
+                                  cv::Mat& output);
 
-  ML_EXPORT void setInitialization(
-    const cvflann::flann_centers_init_t& initType);
-  ML_EXPORT cvflann::flann_centers_init_t getInitialization() const;
-  ML_EXPORT void setBranchingFactor(const int branchingFactor);
-  ML_EXPORT int getBranchingFactor() const;
-  ML_EXPORT void setCBIndex(const float cbIndex);
-  ML_EXPORT float getCBIndex() const;
+  DESCRIPTORS_EXPORT void setData(const cv::Mat& img);
 
- private:
-  // private members
 
-  ClusteringDistance mDistType;
-  cvflann::flann_centers_init_t mInitType;
-  int mBranchingFactor = 4;
-  int mMinkowski = 3;
-  float mCBIndex = 0.2f;
-  cv::Mat_<float> mCenters;
+ protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+
+  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const cv::Rect& patch,
+                                                  cv::Mat& output) = 0;
+  std::vector<cv::Rect> mPatches;
+  cv::Mat mImage;
+  bool mIsPrepared = false;
 };
+
 }  // namespace ssig
-#endif  // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 
-
+#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_

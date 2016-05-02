@@ -41,7 +41,7 @@
 
 #ifndef _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
 #define _SSIG_DESCRIPTORS_DESRIPTOR_HPP_
-#include <core/algorithm.hpp>
+#include <ssiglib/core/algorithm.hpp>
 #include "descriptors_defs.hpp"
 
 namespace ssig {

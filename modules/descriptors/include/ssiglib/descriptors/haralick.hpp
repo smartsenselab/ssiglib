@@ -43,7 +43,7 @@
 #define _SSIG_DESCRIPTORS_HARALICK_HPP_
 
 #include <opencv2/core.hpp>
-#include "descriptors/descriptors_defs.hpp"
+#include "ssiglib/descriptors/descriptors_defs.hpp"
 
 #define HARALICK_EPSILON 0.00001
 

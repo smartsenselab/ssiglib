@@ -44,11 +44,11 @@
 #include <vector>
 
 #include <opencv2/core.hpp>
-#include <core/math.hpp>
+#include <ssiglib/core/math.hpp>
 
-#include "ml/kmeans.hpp"
-#include "ml/pls_classifier.hpp"
-#include "ml/pls_image_clustering.hpp"
+#include "ssiglib/ml/kmeans.hpp"
+#include "ssiglib/ml/pls_classifier.hpp"
+#include "ssiglib/ml/pls_image_clustering.hpp"
 
 
 TEST(PLSIC, CorrelationClusteringTest) {

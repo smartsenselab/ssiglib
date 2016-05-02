@@ -40,80 +40,67 @@
 *****************************************************************************L*/
 
 
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
+#ifndef _SSIG_ML_SINGH_HPP_
+#define _SSIG_ML_SINGH_HPP_
 
-#include <stdexcept>
-#include <vector>
+#include <memory>
 #include <string>
+#include <vector>
 
-
-#include <opencv2/core.hpp>
-#include <ml/ml_defs.hpp>
+#include "ssiglib/ml/classifier_clustering.hpp"
+#include "ssiglib/ml/hard_mining_classifier.hpp"
+#include "ssiglib/ml/kmeans.hpp"
 
 namespace ssig {
 
-class PLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
-
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
-
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
-
+class Singh : public ClassifierClustering {
  public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  ML_EXPORT Singh(void) = default;
+  ML_EXPORT virtual ~Singh(void);
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors);
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors() const;
+  ML_EXPORT void setClassifier(Classifier& classifier) override;
 
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ML_EXPORT float getLambda() const;
 
-  // save PLS model
-  ML_EXPORT void save(std::string filename) const;
-  ML_EXPORT void save(cv::FileStorage& storage) const;
+  ML_EXPORT void setLambda(float lambda);
 
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
-
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
 
  protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
+  ML_EXPORT void precondition() override;
+  ML_EXPORT void initializeClusterings(
+      const std::vector<int>& assignmentSet) override;
+  ML_EXPORT void initializeClassifiers() override;
+  ML_EXPORT void trainClassifiers(
+    const cv::Mat_<float>& samples,
+    const std::vector<Cluster>& clusters,
+    const std::vector<int>& negativeLearningSet,
+    const std::vector<int>& negativeExtras) override;
+  ML_EXPORT bool isFinished() override;
+  ML_EXPORT void postCondition() override;
+  ML_EXPORT void assignment(const cv::Mat_<float>& samples,
+                            const int clusterSize, const int nClusters,
+                            const std::vector<int>& assignmentSet,
+                            std::vector<std::vector<float>>& clustersResponses,
+                            std::vector<int>& clustersIds,
+                            std::vector<Cluster>& out) override;
 
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
-
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
-
-  cv::Mat_<float> mZDataV;
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
+ private:
+  // private members
+  float mLambda;
+  bool mTrained;
+  std::vector<HardMiningClassifier*> mClassifiers;
+  std::unique_ptr<Classifier> mUnderlyingClassifier;
 };
 
 }  // namespace ssig
 
-#endif  // !_SSIG_ML_PLS_HPP_
+#endif  // !_SSIG_ML_SINGH_HPP_

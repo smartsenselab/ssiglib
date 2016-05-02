@@ -39,41 +39,35 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
-#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
 
-#include <memory>
-#include <vector>
+#ifndef _SSIG_CORE_EXCEPTION_HPP_
+#define _SSIG_CORE_EXCEPTION_HPP_
 
-#include <core/algorithm.hpp>
+#include <string>
+#include <exception>
 
-#include "ml_defs.hpp"
-#include "clustering.hpp"
-
+#include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {
-class SpatialPyramid : public ssig::Algorithm {
- public:
-  SpatialPyramid(void);
-  virtual ~SpatialPyramid(void);
-  SpatialPyramid(const SpatialPyramid& rhs);
-  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-  ML_EXPORT static void pool(
-    const cv::Size& imageSize,
-    const std::vector<ssig::Clustering*>& clusteringMethods,
-    const std::vector<cv::Vec2i>& pyramidConfigurations,
-    const std::vector<float>& poolingWeights,
-    const std::vector<cv::Mat_<float>>& partFeatures,
-    const std::vector<cv::Rect>& partWindows,
-    const std::vector<int>& scaledHeights,
-    cv::Mat_<float>& output);
+class Exception : public std::exception {
+ public:
+  CORE_EXPORT explicit Exception(const char* message = "");
+
+  CORE_EXPORT explicit Exception(const std::string& message);
+
+  CORE_EXPORT virtual ~Exception() throw();
+
+  CORE_EXPORT Exception(const Exception& rhs);
+
+  CORE_EXPORT Exception& operator=(const Exception& rhs);
+
+  CORE_EXPORT const char* what() const throw() override;
 
  protected:
-  void read(const cv::FileNode& fn) override;
-  void write(cv::FileStorage& fs) const override;
+  std::string mMessage;
 };
+
 }  // namespace ssig
-#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
-
+#endif

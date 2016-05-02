@@ -43,7 +43,7 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
-#include "core_defs.hpp"
+#include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {
 

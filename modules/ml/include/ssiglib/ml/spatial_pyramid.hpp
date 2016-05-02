@@ -39,35 +39,41 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
+#define _SSIG_ML_SPATIAL_PYRAMID_HPP_
 
-#ifndef _SSIG_CORE_EXCEPTION_HPP_
-#define _SSIG_CORE_EXCEPTION_HPP_
+#include <memory>
+#include <vector>
 
-#include <string>
-#include <exception>
+#include <ssiglib/core/algorithm.hpp>
 
-#include "core/core_defs.hpp"
+#include "ml_defs.hpp"
+#include "clustering.hpp"
+
 
 namespace ssig {
-
-class Exception : public std::exception {
+class SpatialPyramid : public ssig::Algorithm {
  public:
-  CORE_EXPORT explicit Exception(const char* message = "");
+  SpatialPyramid(void);
+  virtual ~SpatialPyramid(void);
+  SpatialPyramid(const SpatialPyramid& rhs);
+  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-  CORE_EXPORT explicit Exception(const std::string& message);
-
-  CORE_EXPORT virtual ~Exception() throw();
-
-  CORE_EXPORT Exception(const Exception& rhs);
-
-  CORE_EXPORT Exception& operator=(const Exception& rhs);
-
-  CORE_EXPORT const char* what() const throw() override;
+  ML_EXPORT static void pool(
+    const cv::Size& imageSize,
+    const std::vector<ssig::Clustering*>& clusteringMethods,
+    const std::vector<cv::Vec2i>& pyramidConfigurations,
+    const std::vector<float>& poolingWeights,
+    const std::vector<cv::Mat_<float>>& partFeatures,
+    const std::vector<cv::Rect>& partWindows,
+    const std::vector<int>& scaledHeights,
+    cv::Mat_<float>& output);
 
  protected:
-  std::string mMessage;
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 };
-
 }  // namespace ssig
+#endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 
-#endif
+

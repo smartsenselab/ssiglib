@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/math.hpp"
+#include "ssiglib/core/math.hpp"
 #include <opencv2/core.hpp>
 
 namespace ssig {

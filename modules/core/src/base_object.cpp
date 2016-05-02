@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "core/base_object.hpp"
+#include "ssiglib/core/base_object.hpp"
 
 namespace ssig {
 

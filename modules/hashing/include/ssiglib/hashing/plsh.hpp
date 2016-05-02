@@ -39,25 +39,39 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSF_HASHING_PLSH_HPP_
+#define _SSF_HASHING_PLSH_HPP_
 
-#ifndef _SSIG_CORE_BASE_OBJECT_HPP_
-#define _SSIG_CORE_BASE_OBJECT_HPP_
+#include <vector>
+#include <random>
+#include <utility>
 
-#include "core/core_defs.hpp"
+#include "ssiglib/ml/pls.hpp"
+#include "hashing_defs.hpp"
 
 namespace ssig {
-
-class BaseObject {
+class PLSH {
  public:
-  CORE_EXPORT BaseObject(void);
+  typedef std::vector<std::pair<int, float>> CandListType;
 
-  CORE_EXPORT virtual ~BaseObject(void);
+  HASHING_EXPORT PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
+                      const int models, const int factors = 10);
 
-  CORE_EXPORT BaseObject(const BaseObject& rhs);
+  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
+                                     CandListType& candidates);
 
-  CORE_EXPORT BaseObject& operator=(const BaseObject& rhs);
+ private:
+  struct HashModel {
+    PLS mHashFunc;
+    std::vector<int> mSubjects;
+  };
+
+  std::vector<HashModel> mHashModels;
+  std::vector<int> mSubjects;
+
+  int mFactors;
 };
 
 }  // namespace ssig
 
-#endif  // !_SSIG_CORE_BASE_OBJECT_HPP_PP_
+#endif  // !_SSF_HASHING_PLSH_HPP_

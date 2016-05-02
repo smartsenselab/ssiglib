@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/hierarchical_kmeans.hpp"
+#include "ssiglib/ml/hierarchical_kmeans.hpp"
 
 #include <vector>
 

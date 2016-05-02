@@ -39,39 +39,56 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_HASHING_PLSH_HPP_
-#define _SSF_HASHING_PLSH_HPP_
+#ifndef _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
+#define _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-#include <vector>
-#include <random>
-#include <utility>
 
-#include "ml/pls.hpp"
-#include "hashing_defs.hpp"
+#include <ssiglib/descriptors/descriptors_defs.hpp>
+#include "descriptor_2d.hpp"
 
 namespace ssig {
-class PLSH {
+class Descriptor2D;
+
+class ColorHistogramHSV : public Descriptor2D {
  public:
-  typedef std::vector<std::pair<int, float>> CandListType;
+  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
 
-  HASHING_EXPORT PLSH(const cv::Mat_<float> samples, const cv::Mat_<int> labels,
-                      const int models, const int factors = 10);
+  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input,
+                                       const Descriptor2D& descriptor);
 
-  HASHING_EXPORT CandListType& query(const cv::Mat_<float> sample,
-                                     CandListType& candidates);
+  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor2D& descriptor);
+
+  DESCRIPTORS_EXPORT virtual ~ColorHistogramHSV(void) = default;
+  DESCRIPTORS_EXPORT ColorHistogramHSV(const ColorHistogramHSV& rhs);
+
+
+  DESCRIPTORS_EXPORT int getNumberHueBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberHueBins(const int numberHueBins);
+
+  DESCRIPTORS_EXPORT int getNumberSaturationBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberSaturationBins(
+    const int numberSaturationBins);
+
+  DESCRIPTORS_EXPORT int getNumberValueBins() const;
+
+  DESCRIPTORS_EXPORT void setNumberValueBins(const int numberValueBins);
+
+ protected:
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
+  DESCRIPTORS_EXPORT void beforeProcess() override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+                                          cv::Mat& output) override;
 
  private:
-  struct HashModel {
-    PLS mHashFunc;
-    std::vector<int> mSubjects;
-  };
-
-  std::vector<HashModel> mHashModels;
-  std::vector<int> mSubjects;
-
-  int mFactors;
+  // private members
+  int mNumberHueBins = 16;
+  int mNumberSaturationBins = 4;
+  int mNumberValueBins = 4;
 };
-
 }  // namespace ssig
+#endif  // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-#endif  // !_SSF_HASHING_PLSH_HPP_
+

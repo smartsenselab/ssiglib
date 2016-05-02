@@ -39,26 +39,75 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
+#define _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 
-#ifndef _SSIG_CORE_RESOURCE_HPP_
-#define _SSIG_CORE_RESOURCE_HPP_
+#include <vector>
 
-#include "core/core_defs.hpp"
-#include "core/base_object.hpp"
+#include "clustering.hpp"
+#include "ml_defs.hpp"
+
+#include <ssiglib/core/math.hpp>
+#include <opencv2/flann.hpp>
 
 namespace ssig {
-
-class Resource : public BaseObject {
- public:
-  CORE_EXPORT Resource(void);
-
-  CORE_EXPORT virtual ~Resource(void);
-
-  CORE_EXPORT Resource(const Resource& rhs);
-
-  CORE_EXPORT Resource& operator=(const Resource& rhs);
+enum ClusteringDistance {
+  L2,
+  L1,
+  MinkowskiDistance,
+  MaxDistance,
+  HistIntersectionDistance,
+  HellingerDistance,
+  ChiSquareDistance,
+  KL_Divergence,
 };
 
-}  // namespace ssig
+class HierarchicalKmeans : public Clustering {
+ public:
+  ML_EXPORT HierarchicalKmeans(void);
+  ML_EXPORT virtual ~HierarchicalKmeans(void);
+  ML_EXPORT HierarchicalKmeans(const HierarchicalKmeans& rhs);
+  ML_EXPORT HierarchicalKmeans& operator=(const HierarchicalKmeans& rhs);
 
-#endif  // !_SSIG_CORE_RESOURCE_HPP_
+  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
+  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
+  ML_EXPORT void predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const override;
+  ML_EXPORT std::vector<Cluster> getClustering() const override;
+  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+
+  ML_EXPORT void setDistance(
+    const ClusteringDistance& distType,
+    const int minkowski = 1);
+  ML_EXPORT ClusteringDistance getDistance() const;
+
+  ML_EXPORT int getMinkowskiParameter() const;
+
+  ML_EXPORT void setInitialization(
+    const cvflann::flann_centers_init_t& initType);
+  ML_EXPORT cvflann::flann_centers_init_t getInitialization() const;
+  ML_EXPORT void setBranchingFactor(const int branchingFactor);
+  ML_EXPORT int getBranchingFactor() const;
+  ML_EXPORT void setCBIndex(const float cbIndex);
+  ML_EXPORT float getCBIndex() const;
+
+ private:
+  // private members
+
+  ClusteringDistance mDistType;
+  cvflann::flann_centers_init_t mInitType;
+  int mBranchingFactor = 4;
+  int mMinkowski = 3;
+  float mCBIndex = 0.2f;
+  cv::Mat_<float> mCenters;
+};
+}  // namespace ssig
+#endif  // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_
+
+

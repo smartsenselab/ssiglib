@@ -39,56 +39,26 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
-#define _SSIG_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
+#ifndef _SSIG_CORE_RESOURCE_HPP_
+#define _SSIG_CORE_RESOURCE_HPP_
 
-#include <descriptors/descriptors_defs.hpp>
-#include "descriptor_2d.hpp"
+#include "ssiglib/core/core_defs.hpp"
+#include "ssiglib/core/base_object.hpp"
 
 namespace ssig {
-class Descriptor2D;
 
-class ColorHistogramHSV : public Descriptor2D {
+class Resource : public BaseObject {
  public:
-  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const cv::Mat& input);
+  CORE_EXPORT Resource(void);
 
-  DESCRIPTORS_EXPORT ColorHistogramHSV(const cv::Mat& input,
-                                       const Descriptor2D& descriptor);
+  CORE_EXPORT virtual ~Resource(void);
 
-  DESCRIPTORS_EXPORT explicit ColorHistogramHSV(const Descriptor2D& descriptor);
+  CORE_EXPORT Resource(const Resource& rhs);
 
-  DESCRIPTORS_EXPORT virtual ~ColorHistogramHSV(void) = default;
-  DESCRIPTORS_EXPORT ColorHistogramHSV(const ColorHistogramHSV& rhs);
-
-
-  DESCRIPTORS_EXPORT int getNumberHueBins() const;
-
-  DESCRIPTORS_EXPORT void setNumberHueBins(const int numberHueBins);
-
-  DESCRIPTORS_EXPORT int getNumberSaturationBins() const;
-
-  DESCRIPTORS_EXPORT void setNumberSaturationBins(
-    const int numberSaturationBins);
-
-  DESCRIPTORS_EXPORT int getNumberValueBins() const;
-
-  DESCRIPTORS_EXPORT void setNumberValueBins(const int numberValueBins);
-
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
-
- private:
-  // private members
-  int mNumberHueBins = 16;
-  int mNumberSaturationBins = 4;
-  int mNumberValueBins = 4;
+  CORE_EXPORT Resource& operator=(const Resource& rhs);
 };
+
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_COLOR_HISTOGRAM_HSV_HPP_
 
-
+#endif  // !_SSIG_CORE_RESOURCE_HPP_
