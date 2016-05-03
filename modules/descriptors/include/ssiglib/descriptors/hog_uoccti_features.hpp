@@ -82,7 +82,7 @@ class HOGUOCCTI : public ssig::Descriptor2D {
   DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
 
   DESCRIPTORS_EXPORT void setCellConfiguration(
-    const cv::Size& cellConfiguration); //numebr of cells per rowXcol
+    const cv::Size& cellConfiguration);  // number of cells per rowXcol
 
   DESCRIPTORS_EXPORT int getNumberOfBins() const;
 
