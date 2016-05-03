@@ -1,0 +1,22 @@
+codecov:
+  coverage:
+  ignore:
+  - /usr/.*
+  - 3rdparty/.*
+  - usr/.*
+  - .*/tests/.*
+  status:
+    patch: false
+    project:
+      default:
+        target: auto
+        threshold: 5
+        branches: null
+        base: auto
+        set_pending: yes
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: error
+        only_pulls: null
+        flags: null
+        paths: null
