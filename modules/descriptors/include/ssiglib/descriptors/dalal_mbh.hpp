@@ -41,26 +41,25 @@
 
 #ifndef _SSIG_DESCRIPTORS_HOF_HPP_
 #define _SSIG_DESCRIPTORS_HOF_HPP_
+#include <vector>
 
 #include <ssiglib/descriptors/temporal_descriptor.hpp>
+#include <opencv2/video.hpp>
 
 namespace ssig {
-  enum FrameCombination {
-    MAX_POOL,
-    CONCATENATION,
-    AVERAGE
-  };
+
 class DalalMBH : public TemporalDescriptors {
-public:
+ public:
   DESCRIPTORS_EXPORT DalalMBH(const std::vector<cv::Mat>& data);
   DESCRIPTORS_EXPORT virtual ~DalalMBH(void) = default;
   DESCRIPTORS_EXPORT DalalMBH(const DalalMBH& rhs);
-  //DalalMBH& operator=(const DalalMBH& rhs);
 
   DESCRIPTORS_EXPORT void setFrameCombination(const FrameCombination comb);
   DESCRIPTORS_EXPORT FrameCombination getFrameCombination() const;
+  DESCRIPTORS_EXPORT void setOpticalFlowMethod(
+    const cv::Ptr<cv::DenseOpticalFlow>& method);
 
-protected:
+ protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
   DESCRIPTORS_EXPORT void beforeProcess() override;
@@ -74,12 +73,14 @@ protected:
   DESCRIPTORS_EXPORT void frameCombination(const std::vector<cv::Mat>& flowX,
     const std::vector<cv::Mat>& flowY,
     cv::Mat& out) const;
-private:
+
+ private:
   // private members
   std::vector<cv::Mat> mFlows;
   FrameCombination mFrameComb = MAX_POOL;
+  cv::Ptr<cv::DenseOpticalFlow> of;
 };
-} // namespace ssig
-#endif // !_SSIG_DESCRIPTORS_HOF_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_DESCRIPTORS_HOF_HPP_
 
 

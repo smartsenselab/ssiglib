@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "{module}/{file_name}.hpp"
+#include "ssiglib/{module}/{file_name}.hpp"
 
 TEST({class_name}, Sample{class_name}) {{
   // Automatically generated stub

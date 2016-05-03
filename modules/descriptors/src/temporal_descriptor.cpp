@@ -41,9 +41,12 @@
 
 #include "ssiglib/descriptors/temporal_descriptor.hpp"
 
+#include <iostream>
+#include <string>
+#include <vector>
+
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>
-#include <iostream>
 
 namespace ssig {
 
@@ -61,13 +64,15 @@ TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data,
     mData[i] = data[i].clone();
 }
 
-TemporalDescriptors::TemporalDescriptors(const TemporalDescriptors& descriptor) {
+TemporalDescriptors::TemporalDescriptors(
+  const TemporalDescriptors& descriptor) {
   mData.resize(descriptor.mData.size());
   for (int i = 0; i < static_cast<int>(mData.size()); ++i)
     mData[i] = descriptor.mData[i].clone();
 }
 
-TemporalDescriptors& TemporalDescriptors::operator=(const TemporalDescriptors& rhs) {
+TemporalDescriptors& TemporalDescriptors::operator=(
+  const TemporalDescriptors& rhs) {
   if (this != &rhs) {
     // code here
   }
@@ -92,7 +97,7 @@ void TemporalDescriptors::readVideo(const std::string& videoname,
   cv::Mat frame;
   for (int i = 0; i < totalFrames; ++i) {
     int errorCode = capture.read(frame);
-    if(convert2BW) {
+    if (convert2BW) {
       cv::cvtColor(frame, frame, cv::COLOR_RGB2GRAY);
     }
     frame.copyTo(frames[i]);
@@ -105,7 +110,7 @@ void TemporalDescriptors::extract(cv::Mat& out) {
     mIsPrepared = true;
   }
   auto window = cv::Rect(0, 0, mWidth, mHeight);
-  cv::Point2i depth(0, mData.size());
+  cv::Point2i depth(0, static_cast<int>(mData.size()));
   extractFeatures(window, depth, out);
 }
 
@@ -117,7 +122,7 @@ void TemporalDescriptors::extract(const std::vector<cv::Rect>& windows,
   }
   for (int i = 0; i < static_cast<int>(windows.size()); ++i) {
     auto window = cv::Rect(0, 0, mWidth, mHeight);
-    cv::Point2i depth(0, mData.size());
+    cv::Point2i depth(0, static_cast<int>(mData.size()));
     cv::Mat out;
     extractFeatures(window, depth, out);
     output.push_back(out);
@@ -163,12 +168,12 @@ void TemporalDescriptors::setData(const std::vector<cv::Mat>& data) {
 }
 
 int TemporalDescriptors::getNFrames() const {
-  return mData.size();
+  return static_cast<int>(mData.size());
 }
 
 std::vector<cv::Mat> TemporalDescriptors::getData() const {
   return mData;
 }
-} // namespace ssig
+}  // namespace ssig
 
 

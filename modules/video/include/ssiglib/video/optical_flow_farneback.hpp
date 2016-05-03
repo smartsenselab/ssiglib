@@ -39,79 +39,52 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
-#define _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
+#ifndef _SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
+#define _SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
 
-#include <string>
-#include <vector>
-
-#include <ssiglib/descriptors/descriptor.hpp>
+#include <opencv2/video.hpp>
+#include "video_defs.hpp"
 
 namespace ssig {
-enum FrameCombination {
-  MAX_POOL,
-  SUM,
-  AVERAGE,
-  CONCATENATION
-};
-
-class TemporalDescriptors : Descriptor {
+class OpticalFlowFarneback : public cv::DenseOpticalFlow {
  public:
-  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data);
-  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data,
-    const Descriptor& descriptor);
-  DESCRIPTORS_EXPORT TemporalDescriptors(const TemporalDescriptors& rhs);
-  DESCRIPTORS_EXPORT virtual ~TemporalDescriptors(void) = default;
+  VIDEO_EXPORT static cv::Ptr<cv::DenseOpticalFlow> create();
 
-  DESCRIPTORS_EXPORT TemporalDescriptors& operator=(
-    const TemporalDescriptors& rhs);
+  VIDEO_EXPORT void calc(cv::InputArray I0,
+    cv::InputArray I1,
+    cv::InputOutputArray flow) override;
 
-  DESCRIPTORS_EXPORT static void readVideo(
-    const std::string& videoname,
-    std::vector<cv::Mat>& frames,
-    const bool convert2BW);
+  VIDEO_EXPORT virtual ~OpticalFlowFarneback(void) = default;
+
+  VIDEO_EXPORT void collectGarbage() override {};
 
 
-  /**
-  On the first call to this function it returns the feature vector
-  of the mat set up in the constructor call.
-
-  @param out The matrix that will contain the feature vector for the current
-  patch.
-  */
-  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Point2i>& depths,
-    cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    const std::vector<cv::Point2i>& depths,
-    cv::Mat& output);
-
-  DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& data);
-  DESCRIPTORS_EXPORT int getNFrames() const;
+  VIDEO_EXPORT double getPyrscale() const;
+  VIDEO_EXPORT void setPyrscale(const double pyrscale);
+  VIDEO_EXPORT double getPolySigma() const;
+  VIDEO_EXPORT void setPolySigma(const double polySigma);
+  VIDEO_EXPORT int getLevels() const;
+  VIDEO_EXPORT void setLevels(const int levels);
+  VIDEO_EXPORT int getWinsize() const;
+  VIDEO_EXPORT void setWinsize(const int winsize);
+  VIDEO_EXPORT int getIterations() const;
+  VIDEO_EXPORT void setIterations(const int iterations);
+  VIDEO_EXPORT int getPolyN() const;
+  VIDEO_EXPORT void setPolyN(const int polyN);
+  VIDEO_EXPORT int getFlags() const;
+  VIDEO_EXPORT void setFlags(const int flags);
 
  protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(
-    const cv::Rect& patch,
-    const cv::Point2i depth,
-    cv::Mat& output) = 0;
-
-  std::vector<cv::Mat> getData() const;
-
- private:
-  // private members
-  std::vector<cv::Rect> mWindows;
-  std::vector<cv::Point2i> mdepths;
-  std::vector<cv::Mat> mData;
-  bool mIsPrepared = false;
-  int mWidth = 0, mHeight = 0;
+  VIDEO_EXPORT OpticalFlowFarneback() = default;
+  double mPyrscale = 0.5,
+      mPoly_sigma = 1.1;
+  int mLevels = 4,
+      mWinsize = 5,
+      mIterations = 20,
+      mPoly_n = 5;
+  int mFlags = cv::OPTFLOW_FARNEBACK_GAUSSIAN;
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
+#endif  // !_SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
 
 

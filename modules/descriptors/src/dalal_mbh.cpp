@@ -42,6 +42,7 @@
 #include "ssiglib/descriptors/dalal_mbh.hpp"
 
 #include <vector>
+#include <algorithm>
 
 #include <ssiglib/descriptors/hog_uoccti_features.hpp>
 #include <opencv2/video.hpp>
@@ -49,7 +50,9 @@
 namespace ssig {
 
 DalalMBH::DalalMBH(const std::vector<cv::Mat>& data) :
-  TemporalDescriptors(data) {}
+  TemporalDescriptors(data) {
+  of = cv::createOptFlow_DualTVL1();
+}
 
 DalalMBH::DalalMBH(const DalalMBH& rhs) : TemporalDescriptors(rhs) {
   // Constructor Copy
@@ -63,6 +66,12 @@ FrameCombination DalalMBH::getFrameCombination() const {
   return mFrameComb;
 }
 
+void DalalMBH::setOpticalFlowMethod(
+  const cv::Ptr<cv::DenseOpticalFlow>& method) {
+  of = method;
+}
+
+
 void DalalMBH::read(const cv::FileNode& fn) {}
 
 void DalalMBH::write(cv::FileStorage& fs) const {}
@@ -70,25 +79,10 @@ void DalalMBH::write(cv::FileStorage& fs) const {}
 void DalalMBH::beforeProcess() {
   auto data = getData();
   mFlows.resize(static_cast<int>(data.size()) - 1);
-  double pyrscale = 0.5,
-      poly_sigma = 1.1;
-  int levels = 4,
-      winsize = 5,
-      iterations = 20,
-      poly_n = 5;
   for (int i = 0; i < static_cast<int>(data.size()) - 1; ++i) {
     cv::Mat& frame0 = data[i];
     cv::Mat& framef = data[i + 1];
-
-    cv::calcOpticalFlowFarneback(frame0, framef,
-                                 mFlows[i],
-                                 pyrscale,
-                                 levels,
-                                 winsize,
-                                 iterations,
-                                 poly_n,
-                                 poly_sigma,
-                                 cv::OPTFLOW_FARNEBACK_GAUSSIAN);
+    of->calc(frame0, framef, mFlows[i]);
   }
 }
 
@@ -163,6 +157,23 @@ void DalalMBH::frameCombination(const std::vector<cv::Mat>& flowX,
     out.reshape(1, 1);
   }
     break;
+  case SUM: {
+    cv::Mat x, y;
+    for (int i = 0; i < static_cast<int>(flowX.size()); ++i) {
+      if (x.empty())
+        x = flowX[i];
+      else
+        x += flowX[i];
+    }
+    for (int i = 0; i < static_cast<int>(flowY.size()); ++i) {
+      if (y.empty())
+        y = flowY[i];
+      else
+        y = y + flowY[i];
+    }
+    cv::hconcat(x, y, out);
+  }
+    break;
   case AVERAGE: {
     cv::Mat x, y;
     for (int i = 0; i < static_cast<int>(flowX.size()); ++i) {
@@ -187,13 +198,6 @@ void DalalMBH::frameCombination(const std::vector<cv::Mat>& flowX,
   }
 }
 
-// DalalMBH& DalalMBH::operator=(const DalalMBH& rhs) {
-//  if (this != &rhs) {
-//    // code here
-//  }
-//  return *this;
-//}
-
-} // namespace ssig
+}  // namespace ssig
 
 
