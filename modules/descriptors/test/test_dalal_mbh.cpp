@@ -41,7 +41,7 @@
 
 #include <gtest/gtest.h>
 #include <opencv2/highgui.hpp>
-#include "descriptors/dalal_mbh.hpp"
+#include "ssiglib/descriptors/dalal_mbh.hpp"
 
 TEST(HOF, SampleHOF) {
   // Automatically generated stub

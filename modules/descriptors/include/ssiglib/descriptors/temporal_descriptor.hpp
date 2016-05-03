@@ -42,7 +42,7 @@
 #ifndef _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
 #define _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
 
-#include <descriptors/descriptor.hpp>
+#include <ssiglib/descriptors/descriptor.hpp>
 
 namespace ssig {
 class TemporalDescriptors : Descriptor {

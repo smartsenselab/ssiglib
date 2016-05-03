@@ -42,15 +42,23 @@
 #ifndef _SSIG_DESCRIPTORS_HOF_HPP_
 #define _SSIG_DESCRIPTORS_HOF_HPP_
 
-#include <descriptors/temporal_descriptor.hpp>
+#include <ssiglib/descriptors/temporal_descriptor.hpp>
 
 namespace ssig {
+  enum FrameCombination {
+    MAX_POOL,
+    CONCATENATION,
+    AVERAGE
+  };
 class DalalMBH : public TemporalDescriptors {
 public:
   DESCRIPTORS_EXPORT DalalMBH(const std::vector<cv::Mat>& data);
   DESCRIPTORS_EXPORT virtual ~DalalMBH(void) = default;
   DESCRIPTORS_EXPORT DalalMBH(const DalalMBH& rhs);
   //DalalMBH& operator=(const DalalMBH& rhs);
+
+  DESCRIPTORS_EXPORT void setFrameCombination(const FrameCombination comb);
+  DESCRIPTORS_EXPORT FrameCombination getFrameCombination() const;
 
 protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
@@ -59,10 +67,17 @@ protected:
   DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
     const cv::Point2i depth,
     cv::Mat& output) override;
-  DESCRIPTORS_EXPORT void extractStatistics(const cv::Mat& roi, cv::Mat& out) const;
+  DESCRIPTORS_EXPORT void extractStatistics(const cv::Mat& roi,
+    cv::Mat& outX,
+    cv::Mat& outY) const;
+
+  DESCRIPTORS_EXPORT void frameCombination(const std::vector<cv::Mat>& flowX,
+    const std::vector<cv::Mat>& flowY,
+    cv::Mat& out) const;
 private:
   // private members
   std::vector<cv::Mat> mFlows;
+  FrameCombination mFrameComb = MAX_POOL;
 };
 } // namespace ssig
 #endif // !_SSIG_DESCRIPTORS_HOF_HPP_
