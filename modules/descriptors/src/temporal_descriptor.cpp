@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/temporal_descriptor.hpp"
+#include "ssiglib/descriptors/temporal_descriptor.hpp"
 
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>

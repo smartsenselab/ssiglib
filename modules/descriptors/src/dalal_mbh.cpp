@@ -39,20 +39,28 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/dalal_mbh.hpp"
+#include "ssiglib/descriptors/dalal_mbh.hpp"
 
-#include <descriptors/hog_uoccti_features.hpp>
+#include <vector>
+
+#include <ssiglib/descriptors/hog_uoccti_features.hpp>
 #include <opencv2/video.hpp>
-
-//#include <opencv2/video/tracking.hpp>
 
 namespace ssig {
 
 DalalMBH::DalalMBH(const std::vector<cv::Mat>& data) :
-  TemporalDescriptors(data) { }
+  TemporalDescriptors(data) {}
 
 DalalMBH::DalalMBH(const DalalMBH& rhs) : TemporalDescriptors(rhs) {
   // Constructor Copy
+}
+
+void DalalMBH::setFrameCombination(const FrameCombination comb) {
+  mFrameComb = comb;
+}
+
+FrameCombination DalalMBH::getFrameCombination() const {
+  return mFrameComb;
 }
 
 void DalalMBH::read(const cv::FileNode& fn) {}
@@ -82,7 +90,6 @@ void DalalMBH::beforeProcess() {
                                  poly_sigma,
                                  cv::OPTFLOW_FARNEBACK_GAUSSIAN);
   }
-
 }
 
 void DalalMBH::extractFeatures(const cv::Rect& patch,
@@ -93,24 +100,100 @@ void DalalMBH::extractFeatures(const cv::Rect& patch,
     depth.y < static_cast<int>(getNFrames()) &&
     depth.y > depth.x);
   auto data = getData();
-  std::vector<cv::Mat> flowFeats(depth.y - depth.x);
+  int len = depth.y - depth.x;
+  std::vector<cv::Mat> flowFeatsX(len),
+      flowFeatsY(len);
   for (int i = depth.x; i < depth.y; ++i) {
     roi = data[i](patch);
-    extractStatistics(roi, flowFeats[i]);
+    extractStatistics(roi, flowFeatsX[i], flowFeatsY[i]);
   }
+  frameCombination(flowFeatsX, flowFeatsY, output);
+  output = output.reshape(0, 1);
 }
 
 void DalalMBH::extractStatistics(const cv::Mat& roi,
-  cv::Mat& out) const {
-  
+  cv::Mat& outX,
+  cv::Mat& outY) const {
+  std::vector<cv::Mat> flows;
+  std::vector<cv::Mat> outs(2);
+  cv::split(roi, flows);
+  for (int j = 0; j < 2; ++j) {
+    ssig::HOGUOCCTI hog(flows[j]);
+    hog.setNumberOfBins(9);
+    hog.setBlockConfiguration(cv::Size(32, 32));
+    hog.setBlockStride(cv::Size(16, 16));
+    hog.setCellConfiguration(cv::Size(2, 2));
+    hog.extract(outs[j]);
+  }
+  outX = outs[0];
+  outY = outs[1];
 }
 
-//DalalMBH& DalalMBH::operator=(const DalalMBH& rhs) {
+void DalalMBH::frameCombination(const std::vector<cv::Mat>& flowX,
+  const std::vector<cv::Mat>& flowY,
+  cv::Mat& out) const {
+  switch (getFrameCombination()) {
+  case MAX_POOL: {
+    cv::Mat x, y;
+    for (int i = 0; i < static_cast<int>(flowX.size()); ++i) {
+      if (x.empty())
+        x = flowX[i];
+      else
+        x = cv::max(x, flowX[i]);
+    }
+    for (int i = 0; i < static_cast<int>(flowY.size()); ++i) {
+      if (y.empty())
+        y = flowY[i];
+      else
+        y = cv::max(y, flowY[i]);
+    }
+    cv::hconcat(x, y, out);
+  }
+    break;
+  case CONCATENATION: {
+    cv::Mat x, y;
+    for (int i = 0; i < static_cast<int>(flowX.size()); ++i) {
+      x.push_back(flowX[i]);
+    }
+    for (int i = 0; i < static_cast<int>(flowY.size()); ++i) {
+      y.push_back(flowY[i]);
+    }
+    out.push_back(x);
+    out.push_back(y);
+    out.reshape(1, 1);
+  }
+    break;
+  case AVERAGE: {
+    cv::Mat x, y;
+    for (int i = 0; i < static_cast<int>(flowX.size()); ++i) {
+      if (x.empty())
+        x = flowX[i];
+      else
+        x += flowX[i];
+    }
+    x = x / static_cast<int>(flowX.size());
+    for (int i = 0; i < static_cast<int>(flowY.size()); ++i) {
+      if (y.empty())
+        y = flowY[i];
+      else
+        y = y + flowY[i];
+    }
+    y = y / static_cast<int>(flowY.size());
+    cv::hconcat(x, y, out);
+  }
+    break;
+  default: {}
+    break;
+  }
+}
+
+// DalalMBH& DalalMBH::operator=(const DalalMBH& rhs) {
 //  if (this != &rhs) {
 //    // code here
 //  }
 //  return *this;
 //}
+
 } // namespace ssig
 
 
