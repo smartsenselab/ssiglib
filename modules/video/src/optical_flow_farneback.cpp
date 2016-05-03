@@ -39,34 +39,87 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <gtest/gtest.h>
-#include <opencv2/highgui.hpp>
-#include "ssiglib/descriptors/dalal_mbh.hpp"
 #include "ssiglib/video/optical_flow_farneback.hpp"
+#include <opencv2/core.hpp>
 
-/*
-TEST(HOF, SampleHOF) {
-  // Automatically generated stub
-
-  std::vector<cv::Mat> frames;
-  ssig::TemporalDescriptors::readVideo("d:/Downloads/aw7z4Wx_460sv.mp4",
-                                       frames, true);
-  ssig::DalalMBH mbh(frames);
-  mbh.setFrameCombination(ssig::FrameCombination::MAX_POOL);
-  auto of = cv::createOptFlow_DualTVL1();
-  
-  auto of = ssig::OpticalFlowFarneback::create();
-  mbh.setOpticalFlowMethod(of);
-  cv::Mat out;
-  mbh.extract(out);
-  EXPECT_EQ(2, 2 + 2);
+namespace ssig {
+cv::Ptr<cv::DenseOpticalFlow> OpticalFlowFarneback::create() {
+  struct _Farneback :OpticalFlowFarneback {};
+  return cv::makePtr<_Farneback>();
 }
-*/
-/*
-of->setGamma(0.5);
-of->setInnerIterations(10);
-of->setScalesNumber(4);
-of->setOuterIterations(10);
-of->setLambda(1);
-of->setMedianFiltering(3);
-*/
+
+void OpticalFlowFarneback::calc(cv::InputArray I0,
+  cv::InputArray I1,
+  cv::InputOutputArray flow) {
+  cv::Mat i0 = I0.getMat(),
+      i1 = I0.getMat();
+  cv::Mat flowMat;
+  cv::calcOpticalFlowFarneback(i0, i1, flowMat,
+                               mPyrscale, mLevels,
+                               mWinsize,
+                               mIterations,
+                               mPoly_n,
+                               mPoly_sigma,
+                               mFlags);
+  flowMat.copyTo(flow);
+}
+
+inline double OpticalFlowFarneback::getPyrscale() const {
+  return mPyrscale;
+}
+
+inline void OpticalFlowFarneback::setPyrscale(const double pyrscale) {
+  this->mPyrscale = pyrscale;
+}
+
+inline double OpticalFlowFarneback::getPolySigma() const {
+  return mPoly_sigma;
+}
+
+inline void OpticalFlowFarneback::setPolySigma(const double polySigma) {
+  mPoly_sigma = polySigma;
+}
+
+inline int OpticalFlowFarneback::getLevels() const {
+  return mLevels;
+}
+
+inline void OpticalFlowFarneback::setLevels(const int levels) {
+  this->mLevels = levels;
+}
+
+inline int OpticalFlowFarneback::getWinsize() const {
+  return mWinsize;
+}
+
+inline void OpticalFlowFarneback::setWinsize(const int winsize) {
+  this->mWinsize = winsize;
+}
+
+inline int OpticalFlowFarneback::getIterations() const {
+  return mIterations;
+}
+
+inline void OpticalFlowFarneback::setIterations(const int iterations) {
+  this->mIterations = iterations;
+}
+
+inline int OpticalFlowFarneback::getPolyN() const {
+  return mPoly_n;
+}
+
+inline void OpticalFlowFarneback::setPolyN(const int polyN) {
+  mPoly_n = polyN;
+}
+
+inline int OpticalFlowFarneback::getFlags() const {
+  return mFlags;
+}
+
+inline void OpticalFlowFarneback::setFlags(const int flags) {
+  this->mFlags = flags;
+}
+
+} // namespace ssig
+
+

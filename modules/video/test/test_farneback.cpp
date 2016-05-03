@@ -40,33 +40,10 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include <opencv2/highgui.hpp>
-#include "ssiglib/descriptors/dalal_mbh.hpp"
 #include "ssiglib/video/optical_flow_farneback.hpp"
 
-/*
-TEST(HOF, SampleHOF) {
+TEST(OpticalFlowFarneback, SampleOpticalFlowFarneback) {
   // Automatically generated stub
 
-  std::vector<cv::Mat> frames;
-  ssig::TemporalDescriptors::readVideo("d:/Downloads/aw7z4Wx_460sv.mp4",
-                                       frames, true);
-  ssig::DalalMBH mbh(frames);
-  mbh.setFrameCombination(ssig::FrameCombination::MAX_POOL);
-  auto of = cv::createOptFlow_DualTVL1();
-  
-  auto of = ssig::OpticalFlowFarneback::create();
-  mbh.setOpticalFlowMethod(of);
-  cv::Mat out;
-  mbh.extract(out);
   EXPECT_EQ(2, 2 + 2);
 }
-*/
-/*
-of->setGamma(0.5);
-of->setInnerIterations(10);
-of->setScalesNumber(4);
-of->setOuterIterations(10);
-of->setLambda(1);
-of->setMedianFiltering(3);
-*/
