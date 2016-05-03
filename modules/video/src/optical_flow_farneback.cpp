@@ -120,6 +120,6 @@ inline void OpticalFlowFarneback::setFlags(const int flags) {
   this->mFlags = flags;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
