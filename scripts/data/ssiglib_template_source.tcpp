@@ -1,4 +1,4 @@
-#include "{module}/{file_name}.hpp"
+#include "ssiglib/{module}/{file_name}.hpp"
 
 namespace ssig {{
 {class_name}::{class_name}() {{

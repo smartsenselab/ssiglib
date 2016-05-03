@@ -39,87 +39,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
-#define _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
-
+#ifndef _SSIG_DESCRIPTORS_HOF_HPP_
+#define _SSIG_DESCRIPTORS_HOF_HPP_
 #include <vector>
 
-#include "descriptor_2d.hpp"
-
-
+#include <ssiglib/descriptors/temporal_descriptor.hpp>
+#include <opencv2/video.hpp>
 
 namespace ssig {
-class HOGUOCCTI : public ssig::Descriptor2D {
-  cv::Size mBlockConfiguration;
-  cv::Size mCellConfiguration;
-  cv::Size mBlockStride;
-  int mNumberOfBins = 9;
-  float mClipping = 0.2f;
-  bool mGammaCorrection = true;
 
-  std::vector<cv::Mat_<double>> mSignedIntegralImages;
-  std::vector<cv::Mat_<double>> mIntegralImages;
-
+class DalalMBH : public TemporalDescriptors {
  public:
-  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input);
+  DESCRIPTORS_EXPORT DalalMBH(const std::vector<cv::Mat>& data);
+  DESCRIPTORS_EXPORT virtual ~DalalMBH(void) = default;
+  DESCRIPTORS_EXPORT DalalMBH(const DalalMBH& rhs);
 
-  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input,
-                               const ssig::HOGUOCCTI& descriptor);
-
-  DESCRIPTORS_EXPORT HOGUOCCTI(const ssig::HOGUOCCTI& descriptor);
-
-  DESCRIPTORS_EXPORT virtual ~HOGUOCCTI(void) = default;
-
-  DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
-
-  DESCRIPTORS_EXPORT void setBlockConfiguration(
-    const cv::Size& blockConfiguration);
-
-  DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
-
-  DESCRIPTORS_EXPORT void setBlockStride(const cv::Size& blockStride);
-
-  DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
-
-  DESCRIPTORS_EXPORT void setCellConfiguration(
-    const cv::Size& cellConfiguration);  // number of cells per rowXcol
-
-  DESCRIPTORS_EXPORT int getNumberOfBins() const;
-
-  DESCRIPTORS_EXPORT void setNumberOfBins(int numberOfBins);
-
-  DESCRIPTORS_EXPORT float getClipping() const;
-
-  DESCRIPTORS_EXPORT void setClipping(float clipping);
-
+  DESCRIPTORS_EXPORT void setFrameCombination(const FrameCombination comb);
+  DESCRIPTORS_EXPORT FrameCombination getFrameCombination() const;
+  DESCRIPTORS_EXPORT void setOpticalFlowMethod(
+    const cv::Ptr<cv::DenseOpticalFlow>& method);
 
  protected:
   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-
-  DESCRIPTORS_EXPORT void extractFeatures(
-    const cv::Rect& patch,
-    cv::Mat& output) override;
-
   DESCRIPTORS_EXPORT void beforeProcess() override;
+  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
+    const cv::Point2i depth,
+    cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractStatistics(const cv::Mat& roi,
+    cv::Mat& outX,
+    cv::Mat& outY) const;
+
+  DESCRIPTORS_EXPORT void frameCombination(const std::vector<cv::Mat>& flowX,
+    const std::vector<cv::Mat>& flowY,
+    cv::Mat& out) const;
 
  private:
-  DESCRIPTORS_EXPORT void computeBlockDescriptor(
-    int rowOffset,
-    int colOffset,
-    const std::vector<cv::Mat_<double>>& integralImages,
-    const std::vector<cv::Mat_<double>>& signedIntegralImages,
-    cv::Mat_<float>& out) const;
-
-  DESCRIPTORS_EXPORT
-  std::vector<cv::Mat_<double>> computeIntegralGradientImages(
-    const cv::Mat& img,
-    bool signedGradient) const;
-
-  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(
-    const cv::Mat_<float>& blockFeat) const;
+  // private members
+  std::vector<cv::Mat> mFlows;
+  FrameCombination mFrameComb = MAX_POOL;
+  cv::Ptr<cv::DenseOpticalFlow> of;
 };
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
+#endif  // !_SSIG_DESCRIPTORS_HOF_HPP_
 
 

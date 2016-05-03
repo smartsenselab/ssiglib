@@ -39,87 +39,52 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
-#define _SSIG_DESCRIPTORS_HOG_UOCCTI_HPP_
+#ifndef _SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
+#define _SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
 
-#include <vector>
-
-#include "descriptor_2d.hpp"
-
-
+#include <opencv2/video.hpp>
+#include "video_defs.hpp"
 
 namespace ssig {
-class HOGUOCCTI : public ssig::Descriptor2D {
-  cv::Size mBlockConfiguration;
-  cv::Size mCellConfiguration;
-  cv::Size mBlockStride;
-  int mNumberOfBins = 9;
-  float mClipping = 0.2f;
-  bool mGammaCorrection = true;
-
-  std::vector<cv::Mat_<double>> mSignedIntegralImages;
-  std::vector<cv::Mat_<double>> mIntegralImages;
-
+class OpticalFlowFarneback : public cv::DenseOpticalFlow {
  public:
-  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input);
+  VIDEO_EXPORT static cv::Ptr<cv::DenseOpticalFlow> create();
 
-  DESCRIPTORS_EXPORT HOGUOCCTI(const cv::Mat& input,
-                               const ssig::HOGUOCCTI& descriptor);
+  VIDEO_EXPORT void calc(cv::InputArray I0,
+    cv::InputArray I1,
+    cv::InputOutputArray flow) override;
 
-  DESCRIPTORS_EXPORT HOGUOCCTI(const ssig::HOGUOCCTI& descriptor);
+  VIDEO_EXPORT virtual ~OpticalFlowFarneback(void) = default;
 
-  DESCRIPTORS_EXPORT virtual ~HOGUOCCTI(void) = default;
+  VIDEO_EXPORT void collectGarbage() override {};
 
-  DESCRIPTORS_EXPORT cv::Size getBlockConfiguration() const;
 
-  DESCRIPTORS_EXPORT void setBlockConfiguration(
-    const cv::Size& blockConfiguration);
-
-  DESCRIPTORS_EXPORT cv::Size getBlockStride() const;
-
-  DESCRIPTORS_EXPORT void setBlockStride(const cv::Size& blockStride);
-
-  DESCRIPTORS_EXPORT cv::Size getCellConfiguration() const;
-
-  DESCRIPTORS_EXPORT void setCellConfiguration(
-    const cv::Size& cellConfiguration);  // number of cells per rowXcol
-
-  DESCRIPTORS_EXPORT int getNumberOfBins() const;
-
-  DESCRIPTORS_EXPORT void setNumberOfBins(int numberOfBins);
-
-  DESCRIPTORS_EXPORT float getClipping() const;
-
-  DESCRIPTORS_EXPORT void setClipping(float clipping);
-
+  VIDEO_EXPORT double getPyrscale() const;
+  VIDEO_EXPORT void setPyrscale(const double pyrscale);
+  VIDEO_EXPORT double getPolySigma() const;
+  VIDEO_EXPORT void setPolySigma(const double polySigma);
+  VIDEO_EXPORT int getLevels() const;
+  VIDEO_EXPORT void setLevels(const int levels);
+  VIDEO_EXPORT int getWinsize() const;
+  VIDEO_EXPORT void setWinsize(const int winsize);
+  VIDEO_EXPORT int getIterations() const;
+  VIDEO_EXPORT void setIterations(const int iterations);
+  VIDEO_EXPORT int getPolyN() const;
+  VIDEO_EXPORT void setPolyN(const int polyN);
+  VIDEO_EXPORT int getFlags() const;
+  VIDEO_EXPORT void setFlags(const int flags);
 
  protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-
-  DESCRIPTORS_EXPORT void extractFeatures(
-    const cv::Rect& patch,
-    cv::Mat& output) override;
-
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-
- private:
-  DESCRIPTORS_EXPORT void computeBlockDescriptor(
-    int rowOffset,
-    int colOffset,
-    const std::vector<cv::Mat_<double>>& integralImages,
-    const std::vector<cv::Mat_<double>>& signedIntegralImages,
-    cv::Mat_<float>& out) const;
-
-  DESCRIPTORS_EXPORT
-  std::vector<cv::Mat_<double>> computeIntegralGradientImages(
-    const cv::Mat& img,
-    bool signedGradient) const;
-
-  DESCRIPTORS_EXPORT cv::Mat normalizeBlock(
-    const cv::Mat_<float>& blockFeat) const;
+  VIDEO_EXPORT OpticalFlowFarneback() = default;
+  double mPyrscale = 0.5,
+      mPoly_sigma = 1.1;
+  int mLevels = 4,
+      mWinsize = 5,
+      mIterations = 20,
+      mPoly_n = 5;
+  int mFlags = cv::OPTFLOW_FARNEBACK_GAUSSIAN;
 };
 }  // namespace ssig
-#endif  // !_SSF_DESCRIPTORS_HOG_UOCCTI_HPP_
+#endif  // !_SSIG_VIDEO_OPTICAL_FLOW_FARNEBACK_HPP_
 
 
