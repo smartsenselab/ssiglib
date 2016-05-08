@@ -45,6 +45,8 @@
 #include <cfloat>
 
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include <ssiglib/core/algorithm.hpp>
 
@@ -56,10 +58,11 @@ class DistanceFunctor;
 class UtilityFunctor;
 
 class PSO : public Optimization {
-public:
+ public:
   CORE_EXPORT virtual ~PSO(void) = default;
 
-  CORE_EXPORT static std::unique_ptr<PSO> create(UtilityFunctor& utilityFunction,
+  CORE_EXPORT static std::unique_ptr<PSO> create(
+    UtilityFunctor& utilityFunction,
     DistanceFunctor& distanceFunction);
 
 
@@ -86,7 +89,7 @@ public:
 
   CORE_EXPORT float getBestUtil() const;
 
-protected:
+ protected:
   CORE_EXPORT void setup(cv::Mat_<float>& input) override;
   CORE_EXPORT PSO(UtilityFunctor& utility,
     DistanceFunctor& distance);
@@ -98,7 +101,7 @@ protected:
     cv::Mat& velocity,
     cv::Mat& position);
 
-private:
+ private:
   // private members
   cv::Mat mBestPosition;
   cv::Mat mLocalBests;
@@ -111,7 +114,7 @@ private:
   float mBestUtil = -FLT_MAX;
   std::vector<float> mLocalUtils;
 };
-} // namespace ssig
-#endif // !_SSIG_CORE_PSO_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_CORE_PSO_HPP_
 
 
