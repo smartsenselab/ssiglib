@@ -39,65 +39,64 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#ifndef _SSIG_CORE_OPTIMIZATION_HPP_
+#define _SSIG_CORE_OPTIMIZATION_HPP_
 
-#include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
 #include <ssiglib/core/algorithm.hpp>
 
 #include "core_defs.hpp"
-#include "optimization.hpp"
+#include <memory>
 
 namespace ssig {
-class Firefly : public Optimization {
- public:
+class UtilityFunctor;
+class DistanceFunctor;
 
- CORE_EXPORT static std::unique_ptr<Firefly> create(
-   UtilityFunctor& utilityFunction,
-   DistanceFunctor& distanceFunction);
+class Optimization : public Algorithm {
+public:
+  virtual ~Optimization(void) = default;
 
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
 
-  CORE_EXPORT bool iterate();
+  CORE_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
 
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
+  CORE_EXPORT cv::Mat_<float> getResults() const;
 
-  CORE_EXPORT void save(const std::string& filename,
-                                const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-                                const std::string& nodename) override;
+  CORE_EXPORT cv::Mat_<float> getState() const;
 
-  CORE_EXPORT float getAbsorption() const;
+  CORE_EXPORT void setState(const cv::Mat_<float>& state);
 
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
+  CORE_EXPORT int getMaxIterations() const;
+  CORE_EXPORT void setMaxIterations(const int maxIterations);
 
-  CORE_EXPORT float getAnnealling() const;
+  CORE_EXPORT double getEps() const;
+  CORE_EXPORT void setEps(const double eps);
 
-  CORE_EXPORT void setAnnealling(float annealling);
+protected:
+  CORE_EXPORT Optimization(void) = default;
+  CORE_EXPORT Optimization(
+    UtilityFunctor& utilityFunction,
+    DistanceFunctor& distanceFunction);
+  CORE_EXPORT static cv::Mat_<float> randomVector(
+    const int dimensionality,
+    const double minRange = 0.5,
+    const double maxRange = 0.5);
 
-  CORE_EXPORT float getStep() const;
+  CORE_EXPORT void read(const cv::FileNode& fn) override {};
 
-  CORE_EXPORT void setStep(float step);
+  CORE_EXPORT void write(cv::FileStorage& fs) const override {};
 
- protected:
- CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-   DistanceFunctor& distanceFunction);
+  UtilityFunctor& utility;
+  DistanceFunctor& distance;
+  cv::Mat_<float> mPopulation;
+  cv::Mat_<float> mUtilities;
 
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
+  int mMaxIterations = 100;
+  double mEps = 0.0001;
 
- private:
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
+private:
+  // private members
 };
-}  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+} // namespace ssig
+#endif // !_SSIG_CORE_OPTIMIZATION_HPP_
+
+
