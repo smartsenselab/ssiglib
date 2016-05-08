@@ -39,65 +39,47 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#include <gtest/gtest.h>
 
-#include <opencv2/core.hpp>
 #include <ssiglib/core/math.hpp>
-#include <ssiglib/core/algorithm.hpp>
 
-#include "core_defs.hpp"
-#include "optimization.hpp"
+#include "ssiglib/core/pso.hpp"
 
-namespace ssig {
-class Firefly : public Optimization {
- public:
 
- CORE_EXPORT static std::unique_ptr<Firefly> create(
-   UtilityFunctor& utilityFunction,
-   DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT bool iterate();
-
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT void save(const std::string& filename,
-                                const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-                                const std::string& nodename) override;
-
-  CORE_EXPORT float getAbsorption() const;
-
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
-
-  CORE_EXPORT float getAnnealling() const;
-
-  CORE_EXPORT void setAnnealling(float annealling);
-
-  CORE_EXPORT float getStep() const;
-
-  CORE_EXPORT void setStep(float step);
-
- protected:
- CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-   DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
-
- private:
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
+struct Distance : ssig::DistanceFunctor {
+  virtual float operator()(const cv::Mat& x,
+    const cv::Mat& y) const override {
+    return static_cast<float>(cv::norm(x - y, cv::NORM_L1));
+  }
 };
-}  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+
+TEST(PSO, 2Sqrt) {
+  struct Utility : ssig::UtilityFunctor {
+    float operator()(const cv::Mat& v) const override {
+      cv::Mat_<float> f;
+      v.convertTo(f, CV_32FC1);
+      float x = f[0][0];
+      auto ans = static_cast<float>(x * x - 2);
+      ans = -1 * std::abs(ans);
+      return ans;
+    }
+  };
+  Utility util;
+  Distance dist;
+  auto pso = ssig::PSO::create(util, dist);
+  cv::Mat_<float> input;
+  cv::Mat inertia;
+  inertia = (cv::Mat_<float>(1, 3) << 0.8f , 0.8f , 1.f);
+  pso->setInertia(inertia);
+  pso->setDimensionality(1);
+  pso->setPopulationConstraint(-10.f, 10.f);
+  pso->setEps(1.0e-5);
+  pso->setMaxIterations(40);
+
+  pso->learn(input);
+  cv::Mat results = pso->getResults();
+  cv::Mat pop = pso->getState();
+  auto actual = pso->getBestPosition().at<float>(0);
+  ASSERT_LT(sqrt(2.f)- std::abs(actual), 0.0001f);
+};
+
