@@ -81,5 +81,5 @@ TEST(PSO, 2Sqrt) {
   cv::Mat pop = pso->getState();
   auto actual = pso->getBestPosition().at<float>(0);
   ASSERT_LT(sqrt(2.f)- std::abs(actual), 0.0001f);
-};
+}
 

@@ -42,17 +42,19 @@
 #ifndef _SSIG_CORE_OPTIMIZATION_HPP_
 #define _SSIG_CORE_OPTIMIZATION_HPP_
 
+#include <memory>
+
 #include <ssiglib/core/algorithm.hpp>
 
 #include "core_defs.hpp"
-#include <memory>
+
 
 namespace ssig {
 class UtilityFunctor;
 class DistanceFunctor;
 
 class Optimization : public Algorithm {
-public:
+ public:
   virtual ~Optimization(void) = default;
 
   CORE_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
@@ -71,7 +73,7 @@ public:
   CORE_EXPORT double getEps() const;
   CORE_EXPORT void setEps(const double eps);
 
-protected:
+ protected:
   CORE_EXPORT Optimization(void) = default;
   CORE_EXPORT Optimization(
     UtilityFunctor& utilityFunction,
@@ -93,10 +95,10 @@ protected:
   int mMaxIterations = 100;
   double mEps = 0.0001;
 
-private:
+ private:
   // private members
 };
-} // namespace ssig
-#endif // !_SSIG_CORE_OPTIMIZATION_HPP_
+}  // namespace ssig
+#endif  // !_SSIG_CORE_OPTIMIZATION_HPP_
 
 

@@ -39,9 +39,15 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <utility>
+
 #include "ssiglib/core/pso.hpp"
 
 #include "ssiglib/core/math.hpp"
+
+#ifndef __linux__
+#define rand_r rand
+#endif
 
 namespace ssig {
 std::unique_ptr<PSO> PSO::create(
@@ -66,7 +72,6 @@ void PSO::setup(cv::Mat_<float>& input) {
                                  mPopulationConstraint.first,
                                  mPopulationConstraint.second);
       mPopulation.push_back(row);
-
     }
   } else {
     mPopulation = input;
@@ -102,7 +107,6 @@ void PSO::setup(cv::Mat_<float>& input) {
       mBestPosition = row;
     }
   }
-
 }
 
 void PSO::learn(cv::Mat_<float>& input) {
@@ -182,20 +186,19 @@ void PSO::update(const cv::Mat& globalBest,
   const cv::Mat& inertia,
   cv::Mat& velocity,
   cv::Mat& position) {
-
-  float R1 = (rand() % 1000) / 1000.f;
-  float R2 = (rand() % 1000) / 1000.f;
-  //v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :
+  float R1 = (rand_r() % 1000) / 1000.f;
+  float R2 = (rand_r() % 1000) / 1000.f;
+  // v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :
   cv::Mat term1 = velocity * inertia.at<float>(0);
   cv::Mat term2 = (localBest - position) * inertia.at<float>(1) * R1;
   cv::Mat term3 = (globalBest - position) * (inertia.at<float>(2) * R2);
 
   velocity = term1 + term2 + term3;
 
-  //X = X + v :
+  // X = X + v :
   position = position + velocity;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
