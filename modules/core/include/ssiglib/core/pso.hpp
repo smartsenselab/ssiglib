@@ -39,66 +39,82 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#ifndef _SSIG_CORE_PSO_HPP_
+#define _SSIG_CORE_PSO_HPP_
 
-#include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
+#include <cfloat>
+
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include <ssiglib/core/algorithm.hpp>
 
 #include "core_defs.hpp"
 #include "optimization.hpp"
 
 namespace ssig {
-class Firefly : public Optimization {
+class DistanceFunctor;
+class UtilityFunctor;
+
+class PSO : public Optimization {
  public:
-  CORE_EXPORT static std::unique_ptr<Firefly> create(
+  CORE_EXPORT virtual ~PSO(void) = default;
+
+  CORE_EXPORT static std::unique_ptr<PSO> create(
     UtilityFunctor& utilityFunction,
     DistanceFunctor& distanceFunction);
 
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT bool iterate();
 
   CORE_EXPORT void learn(cv::Mat_<float>& input) override;
 
-  CORE_EXPORT void save(const std::string& filename,
-    const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-    const std::string& nodename) override;
 
-  CORE_EXPORT float getAbsorption() const;
+  CORE_EXPORT cv::Mat getInertia() const;
+  // a 1x3 matrix of floating point numbers
+  CORE_EXPORT void setInertia(const cv::Mat& inertia);
 
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
 
-  CORE_EXPORT float getAnnealling() const;
+  CORE_EXPORT int getPopulationLength() const;
+  CORE_EXPORT void setPopulationLength(const int populationLength);
 
-  CORE_EXPORT void setAnnealling(float annealling);
+  CORE_EXPORT void setDimensionality(int d);
 
-  CORE_EXPORT float getStep() const;
 
-  CORE_EXPORT void setStep(float step);
+  CORE_EXPORT std::pair<float, float> getPopulationConstraint() const;
+  CORE_EXPORT void setPopulationConstraint(const float minRange,
+    const float maxRange);
+
+
+  CORE_EXPORT cv::Mat getBestPosition() const;
+
+  CORE_EXPORT float getBestUtil() const;
 
  protected:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT PSO(UtilityFunctor& utility,
+    DistanceFunctor& distance);
 
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
+  CORE_EXPORT void iterate();
+  CORE_EXPORT static void update(const cv::Mat& globalBest,
+    const cv::Mat& localBest,
+    const cv::Mat& inertia,
+    cv::Mat& velocity,
+    cv::Mat& position);
 
  private:
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
+  // private members
+  cv::Mat mBestPosition;
+  cv::Mat mLocalBests;
+  cv::Mat mVelocities;
+  cv::Mat mInertia;
+  std::pair<float, float> mPopulationConstraint;
+  int mPopulationLength = 100;
+  int mDimensions = 1;
+
+  float mBestUtil = -FLT_MAX;
+  std::vector<float> mLocalUtils;
 };
 }  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+#endif  // !_SSIG_CORE_PSO_HPP_
 
 
