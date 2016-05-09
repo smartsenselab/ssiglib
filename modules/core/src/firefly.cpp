@@ -61,7 +61,7 @@ std::unique_ptr<ssig::Firefly> ssig::Firefly::create(
     _Firefly(UtilityFunctor& utilityFunction,
       DistanceFunctor& distanceFunction) :
       Firefly(utilityFunction,
-              distanceFunction) {};
+              distanceFunction) {}
   };
 
   return std::unique_ptr<ssig::Firefly>(new _Firefly(
