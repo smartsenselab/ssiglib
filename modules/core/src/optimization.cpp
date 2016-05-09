@@ -86,6 +86,6 @@ randomVector(const int dimensionality,
   return vec;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
