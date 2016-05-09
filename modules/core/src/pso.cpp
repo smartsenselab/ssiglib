@@ -39,13 +39,13 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <ctime>
 #include <utility>
 #include <random>
 
 #include "ssiglib/core/pso.hpp"
 
 #include "ssiglib/core/math.hpp"
-#include <ctime>
 
 namespace ssig {
 std::unique_ptr<PSO> PSO::create(
@@ -199,6 +199,6 @@ void PSO::update(const cv::Mat& globalBest,
   position = position + velocity;
 }
 
-} // namespace ssig
+}  // namespace ssig
 
 
