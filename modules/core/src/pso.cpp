@@ -185,7 +185,7 @@ void PSO::update(const cv::Mat& globalBest,
   cv::Mat& velocity,
   cv::Mat& position) {
   std::mt19937 gen(static_cast<uint>(time(nullptr)));
-  std::uniform_int_distribution<int> dist(-1000, 1000);
+  std::uniform_int_distribution<int> dist(0, 1000);
   float R1 = (dist(gen) % 1000) / 1000.f;
   float R2 = (dist(gen) % 1000) / 1000.f;
   // v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :

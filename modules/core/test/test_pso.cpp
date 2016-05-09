@@ -73,8 +73,8 @@ TEST(PSO, 2Sqrt) {
   pso->setInertia(inertia);
   pso->setDimensionality(1);
   pso->setPopulationConstraint(-10.f, 10.f);
-  pso->setEps(1.0e-5);
-  pso->setMaxIterations(40);
+  pso->setEps(1.0e-8);
+  pso->setMaxIterations(100);
 
   pso->learn(input);
   cv::Mat results = pso->getResults();
