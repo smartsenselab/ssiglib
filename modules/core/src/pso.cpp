@@ -40,14 +40,12 @@
 *****************************************************************************L*/
 
 #include <utility>
+#include <random>
 
 #include "ssiglib/core/pso.hpp"
 
 #include "ssiglib/core/math.hpp"
-
-#ifndef __linux__
-#define rand_r rand
-#endif
+#include <ctime>
 
 namespace ssig {
 std::unique_ptr<PSO> PSO::create(
@@ -186,8 +184,10 @@ void PSO::update(const cv::Mat& globalBest,
   const cv::Mat& inertia,
   cv::Mat& velocity,
   cv::Mat& position) {
-  float R1 = (rand_r() % 1000) / 1000.f;
-  float R2 = (rand_r() % 1000) / 1000.f;
+  std::mt19937 gen(static_cast<uint>(time(nullptr)));
+  std::uniform_int_distribution<int> dist(-1000, 1000);
+  float R1 = (dist(gen) % 1000) / 1000.f;
+  float R2 = (dist(gen) % 1000) / 1000.f;
   // v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :
   cv::Mat term1 = velocity * inertia.at<float>(0);
   cv::Mat term2 = (localBest - position) * inertia.at<float>(1) * R1;
@@ -199,6 +199,6 @@ void PSO::update(const cv::Mat& globalBest,
   position = position + velocity;
 }
 
-}  // namespace ssig
+} // namespace ssig
 
 
