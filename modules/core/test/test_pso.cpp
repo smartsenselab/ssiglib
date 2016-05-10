@@ -74,13 +74,13 @@ TEST(PSO, 2Sqrt) {
   pso->setDimensionality(1);
   pso->setPopulationConstraint(-10.f, 10.f);
   pso->setEps(1.0e-9);
-  pso->setPopulationLength(static_cast<int>(1.5e2));
-  pso->setMaxIterations(100);
+  pso->setPopulationLength(static_cast<int>(2.0e2));
+  pso->setMaxIterations(500);
 
   pso->learn(input);
   cv::Mat results = pso->getResults();
   cv::Mat pop = pso->getState();
   auto actual = pso->getBestPosition().at<float>(0);
-  ASSERT_LT(std::abs(sqrt(2.f) - actual), 0.001f);
+  ASSERT_LT(std::abs(sqrt(2.f) - std::abs(actual)), 0.005f);
 }
 
