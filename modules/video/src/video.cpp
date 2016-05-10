@@ -39,74 +39,42 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
-#define _SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
+#include "ssiglib/video/video.hpp"
 
-#include <string>
+#include <iostream>
 #include <vector>
+#include <string>
 
-#include <ssiglib/descriptors/descriptor.hpp>
+#include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
 
 namespace ssig {
-enum FrameCombination {
-  MAX_POOL,
-  SUM,
-  AVERAGE,
-  CONCATENATION
-};
 
-class TemporalDescriptors : Descriptor {
- public:
-  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data);
-  DESCRIPTORS_EXPORT TemporalDescriptors(const std::vector<cv::Mat>& data,
-    const Descriptor& descriptor);
-  DESCRIPTORS_EXPORT TemporalDescriptors(const TemporalDescriptors& rhs);
-  DESCRIPTORS_EXPORT virtual ~TemporalDescriptors(void) = default;
+void readVideo(const std::string& videoname,
+  std::vector<cv::Mat>& frames,
+  const bool convert2BW) {
+  cv::VideoCapture capture;
 
-  DESCRIPTORS_EXPORT TemporalDescriptors& operator=(
-    const TemporalDescriptors& rhs);
+  capture.open(videoname);
+  if (!capture.isOpened()) {
+    std::cout << "Error opening video!" << std::endl;
+    exit(1);
+  }
 
+  int totalFrames = static_cast<int>(capture.get(cv::CAP_PROP_FRAME_COUNT));
+  capture.set(cv::CAP_PROP_CONVERT_RGB, 1);
 
-  /**
-  On the first call to this function it returns the feature vector
-  of the mat set up in the constructor call.
+  frames.resize(totalFrames);
+  cv::Mat frame;
+  for (int i = 0; i < totalFrames; ++i) {
+    int errorCode = capture.read(frame);
+    if (convert2BW) {
+      cv::cvtColor(frame, frame, cv::COLOR_RGB2GRAY);
+    }
+    frame.copyTo(frames[i]);
+  }
+}
 
-  @param out The matrix that will contain the feature vector for the current
-  patch.
-  */
-  DESCRIPTORS_EXPORT void extract(cv::Mat& out);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Point2i>& depths,
-    cv::Mat& output);
-  DESCRIPTORS_EXPORT void extract(const std::vector<cv::Rect>& windows,
-    const std::vector<cv::Point2i>& depths,
-    cv::Mat& output);
-
-  DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& data);
-  DESCRIPTORS_EXPORT int getNFrames() const;
-
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
-
-  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-  DESCRIPTORS_EXPORT virtual void extractFeatures(
-    const cv::Rect& patch,
-    const cv::Point2i depth,
-    cv::Mat& output) = 0;
-
-  std::vector<cv::Mat> getData() const;
-
- private:
-  // private members
-  std::vector<cv::Rect> mWindows;
-  std::vector<cv::Point2i> mdepths;
-  std::vector<cv::Mat> mData;
-  bool mIsPrepared = false;
-  int mWidth = 0, mHeight = 0;
-};
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_TEMPORAL_DESCRIPTOR_HPP_
 
 
