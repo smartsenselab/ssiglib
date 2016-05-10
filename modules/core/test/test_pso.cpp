@@ -74,8 +74,8 @@ TEST(PSO, 2Sqrt) {
   pso->setDimensionality(1);
   pso->setPopulationConstraint(-10.f, 10.f);
   pso->setEps(1.0e-9);
-  pso->setPopulationLength(static_cast<int>(2.0e2));
-  pso->setMaxIterations(500);
+  pso->setPopulationLength(300);
+  pso->setMaxIterations(1000);
 
   pso->learn(input);
   cv::Mat results = pso->getResults();
