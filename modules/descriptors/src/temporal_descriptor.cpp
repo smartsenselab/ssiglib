@@ -79,31 +79,6 @@ TemporalDescriptors& TemporalDescriptors::operator=(
   return *this;
 }
 
-void TemporalDescriptors::readVideo(const std::string& videoname,
-  std::vector<cv::Mat>& frames,
-  const bool convert2BW) {
-  cv::VideoCapture capture;
-
-  capture.open(videoname);
-  if (!capture.isOpened()) {
-    std::cout << "Error opening video!" << std::endl;
-    exit(1);
-  }
-
-  int totalFrames = static_cast<int>(capture.get(cv::CAP_PROP_FRAME_COUNT));
-  capture.set(cv::CAP_PROP_CONVERT_RGB, 1);
-
-  frames.resize(totalFrames);
-  cv::Mat frame;
-  for (int i = 0; i < totalFrames; ++i) {
-    int errorCode = capture.read(frame);
-    if (convert2BW) {
-      cv::cvtColor(frame, frame, cv::COLOR_RGB2GRAY);
-    }
-    frame.copyTo(frames[i]);
-  }
-}
-
 void TemporalDescriptors::extract(cv::Mat& out) {
   if (!mIsPrepared) {
     beforeProcess();
@@ -174,6 +149,7 @@ int TemporalDescriptors::getNFrames() const {
 std::vector<cv::Mat> TemporalDescriptors::getData() const {
   return mData;
 }
+
 }  // namespace ssig
 
 

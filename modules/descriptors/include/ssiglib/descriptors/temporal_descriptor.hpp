@@ -66,11 +66,6 @@ class TemporalDescriptors : Descriptor {
   DESCRIPTORS_EXPORT TemporalDescriptors& operator=(
     const TemporalDescriptors& rhs);
 
-  DESCRIPTORS_EXPORT static void readVideo(
-    const std::string& videoname,
-    std::vector<cv::Mat>& frames,
-    const bool convert2BW);
-
 
   /**
   On the first call to this function it returns the feature vector

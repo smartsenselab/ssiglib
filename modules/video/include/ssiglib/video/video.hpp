@@ -39,35 +39,21 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <gtest/gtest.h>
-#include <opencv2/highgui.hpp>
-#include "ssiglib/descriptors/dalal_mbh.hpp"
+#ifndef _SSIG_VIDEO_VIDEO_HPP_
+#define _SSIG_VIDEO_VIDEO_HPP_
+
+#include <vector>
+#include <string>
+
+#include <opencv2/core/mat.hpp>
+
+#include "ssiglib/video/video_defs.hpp"
 #include "ssiglib/video/optical_flow_farneback.hpp"
-#include "ssiglib/video/video.hpp"
 
-/*
-TEST(HOF, SampleHOF) {
-  // Automatically generated stub
-
-  std::vector<cv::Mat> frames;
-  ssig::readVideo("d:/Downloads/aw7z4Wx_460sv.mp4",
-                                       frames, true);
-  ssig::DalalMBH mbh(frames);
-  mbh.setFrameCombination(ssig::FrameCombination::MAX_POOL);
-  auto of = cv::createOptFlow_DualTVL1();
-  
-  auto of = ssig::OpticalFlowFarneback::create();
-  mbh.setOpticalFlowMethod(of);
-  cv::Mat out;
-  mbh.extract(out);
-  EXPECT_EQ(2, 2 + 2);
-}
-*/
-/*
-of->setGamma(0.5);
-of->setInnerIterations(10);
-of->setScalesNumber(4);
-of->setOuterIterations(10);
-of->setLambda(1);
-of->setMedianFiltering(3);
-*/
+namespace ssig {
+  VIDEO_EXPORT void readVideo(
+    const std::string& videoname,
+    std::vector<cv::Mat>& frames,
+    const bool convert2BW);
+}  // namespace ssig
+#endif  // !_SSIG_VIDEO_VIDEO_HPP_

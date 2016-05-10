@@ -39,35 +39,42 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <gtest/gtest.h>
-#include <opencv2/highgui.hpp>
-#include "ssiglib/descriptors/dalal_mbh.hpp"
-#include "ssiglib/video/optical_flow_farneback.hpp"
 #include "ssiglib/video/video.hpp"
 
-/*
-TEST(HOF, SampleHOF) {
-  // Automatically generated stub
+#include <iostream>
+#include <vector>
+#include <string>
 
-  std::vector<cv::Mat> frames;
-  ssig::readVideo("d:/Downloads/aw7z4Wx_460sv.mp4",
-                                       frames, true);
-  ssig::DalalMBH mbh(frames);
-  mbh.setFrameCombination(ssig::FrameCombination::MAX_POOL);
-  auto of = cv::createOptFlow_DualTVL1();
-  
-  auto of = ssig::OpticalFlowFarneback::create();
-  mbh.setOpticalFlowMethod(of);
-  cv::Mat out;
-  mbh.extract(out);
-  EXPECT_EQ(2, 2 + 2);
+#include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
+
+namespace ssig {
+
+void readVideo(const std::string& videoname,
+  std::vector<cv::Mat>& frames,
+  const bool convert2BW) {
+  cv::VideoCapture capture;
+
+  capture.open(videoname);
+  if (!capture.isOpened()) {
+    std::cout << "Error opening video!" << std::endl;
+    exit(1);
+  }
+
+  int totalFrames = static_cast<int>(capture.get(cv::CAP_PROP_FRAME_COUNT));
+  capture.set(cv::CAP_PROP_CONVERT_RGB, 1);
+
+  frames.resize(totalFrames);
+  cv::Mat frame;
+  for (int i = 0; i < totalFrames; ++i) {
+    int errorCode = capture.read(frame);
+    if (convert2BW) {
+      cv::cvtColor(frame, frame, cv::COLOR_RGB2GRAY);
+    }
+    frame.copyTo(frames[i]);
+  }
 }
-*/
-/*
-of->setGamma(0.5);
-of->setInnerIterations(10);
-of->setScalesNumber(4);
-of->setOuterIterations(10);
-of->setLambda(1);
-of->setMedianFiltering(3);
-*/
+
+}  // namespace ssig
+
+
