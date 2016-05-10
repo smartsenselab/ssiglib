@@ -74,6 +74,7 @@ TEST(PSO, 2Sqrt) {
   pso->setDimensionality(1);
   pso->setPopulationConstraint(-10.f, 10.f);
   pso->setEps(1.0e-8);
+  pso->setPopulationLength(static_cast<int>(1.0e2));
   pso->setMaxIterations(100);
 
   pso->learn(input);
