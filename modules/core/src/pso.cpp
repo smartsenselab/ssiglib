@@ -122,7 +122,7 @@ void PSO::learn(cv::Mat_<float>& input) {
 }
 
 void PSO::iterate() {
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for (int r = 0; r < mPopulationLength; ++r) {
     cv::Mat position = mPopulation.row(r),
         localBest = mLocalBests.row(r),
@@ -132,7 +132,7 @@ void PSO::iterate() {
     float currentUtil = utility(position);
     mLocalUtils[r] = currentUtil;
 
-    //#pragma omp critical(UPDATING)
+    #pragma omp critical(UPDATING)
     if (currentUtil >= mBestUtil) {
       mBestPosition = position.clone();
       mBestUtil = currentUtil;
