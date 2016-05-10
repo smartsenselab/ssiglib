@@ -47,6 +47,8 @@
 
 #include "ssiglib/core/math.hpp"
 
+static std::mt19937 gen(static_cast<uint>(time(nullptr)));
+
 namespace ssig {
 std::unique_ptr<PSO> PSO::create(
   UtilityFunctor& utilityFunction,
@@ -102,7 +104,7 @@ void PSO::setup(cv::Mat_<float>& input) {
     mUtilities.at<float>(i) = util;
     if (util > mBestUtil) {
       mBestUtil = util;
-      mBestPosition = row;
+      mBestPosition = row.clone();
     }
   }
 }
@@ -120,6 +122,7 @@ void PSO::learn(cv::Mat_<float>& input) {
 }
 
 void PSO::iterate() {
+  #pragma omp parallel for
   for (int r = 0; r < mPopulationLength; ++r) {
     cv::Mat position = mPopulation.row(r),
         localBest = mLocalBests.row(r),
@@ -128,6 +131,8 @@ void PSO::iterate() {
 
     float currentUtil = utility(position);
     mLocalUtils[r] = currentUtil;
+
+    #pragma omp critical(UPDATING)
     if (currentUtil >= mBestUtil) {
       mBestPosition = position.clone();
       mBestUtil = currentUtil;
@@ -184,8 +189,8 @@ void PSO::update(const cv::Mat& globalBest,
   const cv::Mat& inertia,
   cv::Mat& velocity,
   cv::Mat& position) {
-  std::mt19937 gen(static_cast<uint>(time(nullptr)));
-  std::uniform_int_distribution<int> dist(0, 1000);
+  static std::uniform_real_distribution<float> dist(0.0f, 1000.0f);
+
   float R1 = (dist(gen)) / 1000.f;
   float R2 = (dist(gen)) / 1000.f;
   // v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :
