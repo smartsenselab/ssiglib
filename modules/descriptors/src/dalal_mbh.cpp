@@ -46,6 +46,7 @@
 
 #include <ssiglib/descriptors/hog_uoccti_features.hpp>
 #include <opencv2/video.hpp>
+#include <ssiglib/core/util.hpp>
 
 namespace ssig {
 
@@ -79,26 +80,34 @@ void DalalMBH::write(cv::FileStorage& fs) const {}
 void DalalMBH::beforeProcess() {
   auto data = getData();
   mFlows.resize(static_cast<int>(data.size()) - 1);
+
+#pragma omp parallel for
   for (int i = 0; i < static_cast<int>(data.size()) - 1; ++i) {
     cv::Mat& frame0 = data[i];
     cv::Mat& framef = data[i + 1];
-    of->calc(frame0, framef, mFlows[i]);
+    cv::Mat flow;
+    if (!(frame0.empty() && framef.empty()))
+      of->calc(frame0, framef, flow);
+    mFlows[i] = flow;
   }
 }
 
 void DalalMBH::extractFeatures(const cv::Rect& patch,
   const cv::Point2i depth,
   cv::Mat& output) {
-  cv::Mat roi;
+  int len = static_cast<int>(getNFrames());
   assert(depth.x >= 0 &&
-    depth.y < static_cast<int>(getNFrames()) &&
+    depth.y < len &&
     depth.y > depth.x);
   auto data = getData();
-  int len = depth.y - depth.x;
+  len = depth.y - depth.x;
   std::vector<cv::Mat> flowFeatsX(len),
       flowFeatsY(len);
+
+#pragma omp parallel for
   for (int i = depth.x; i < depth.y; ++i) {
-    roi = data[i](patch);
+    cv::Mat roi;
+    roi = mFlows[i](patch);
     extractStatistics(roi, flowFeatsX[i], flowFeatsY[i]);
   }
   frameCombination(flowFeatsX, flowFeatsY, output);
@@ -112,7 +121,8 @@ void DalalMBH::extractStatistics(const cv::Mat& roi,
   std::vector<cv::Mat> outs(2);
   cv::split(roi, flows);
   for (int j = 0; j < 2; ++j) {
-    ssig::HOGUOCCTI hog(flows[j]);
+    cv::Mat flowImg = ssig::Util::convertToImg(flows[j]);
+    ssig::HOGUOCCTI hog(flowImg);
     hog.setNumberOfBins(9);
     hog.setBlockConfiguration(cv::Size(32, 32));
     hog.setBlockStride(cv::Size(16, 16));

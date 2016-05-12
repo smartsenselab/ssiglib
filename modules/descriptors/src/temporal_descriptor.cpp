@@ -53,8 +53,13 @@ namespace ssig {
 TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data)
   : Descriptor() {
   mData.resize(data.size());
-  for (int i = 0; i < static_cast<int>(mData.size()); ++i)
+  for (int i = 0; i < static_cast<int>(mData.size()); ++i) {
     mData[i] = data[i].clone();
+    if (i == 0) {
+      mWidth = mData[0].cols;
+      mHeight = mData[0].rows;
+    }
+  }
 }
 
 TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data,
@@ -85,7 +90,7 @@ void TemporalDescriptors::extract(cv::Mat& out) {
     mIsPrepared = true;
   }
   auto window = cv::Rect(0, 0, mWidth, mHeight);
-  cv::Point2i depth(0, static_cast<int>(mData.size()));
+  cv::Point2i depth(0, static_cast<int>(mData.size() - 1));
   extractFeatures(window, depth, out);
 }
 
@@ -97,7 +102,7 @@ void TemporalDescriptors::extract(const std::vector<cv::Rect>& windows,
   }
   for (int i = 0; i < static_cast<int>(windows.size()); ++i) {
     auto window = cv::Rect(0, 0, mWidth, mHeight);
-    cv::Point2i depth(0, static_cast<int>(mData.size()));
+    cv::Point2i depth(0, static_cast<int>(mData.size() - 1));
     cv::Mat out;
     extractFeatures(window, depth, out);
     output.push_back(out);

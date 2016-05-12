@@ -63,6 +63,8 @@ namespace ssig {
 
 class Util {
  public:
+  CORE_EXPORT static cv::Mat convertToImg(const cv::Mat& m);
+
   CORE_EXPORT static std::string ltrim(std::string str);
 
   CORE_EXPORT static std::string rtrim(std::string str);
@@ -70,11 +72,11 @@ class Util {
   CORE_EXPORT static std::string trim(std::string str);
 
   CORE_EXPORT static void reorder(const cv::Mat& collection,
-                                  cv::Mat_<int>& ordering, cv::Mat& out);
+    cv::Mat_<int>& ordering, cv::Mat& out);
 
   template <class T>
   static void reorder(const cv::Mat_<T>& collection, cv::Mat_<int>& ordering,
-                      cv::Mat_<T>& out) {
+    cv::Mat_<T>& out) {
     out = cv::Mat_<T>::zeros(collection.rows, collection.cols);
     for (int i = 0; i < ordering.rows; ++i) {
       collection.row(ordering[i][0]).copyTo(out.row(i));
@@ -83,7 +85,7 @@ class Util {
 
   template <class C>
   static void reorder(const C& collection, const std::vector<int>& ordering,
-                      C& out) {
+    C& out) {
     out = collection;
     auto o = ordering;
     for (int i = 0; i < static_cast<int>(ordering.size()); ++i) {
@@ -96,7 +98,7 @@ class Util {
   **/
   template <class C>
   static C sort(const C& collection, const size_t len,
-                std::vector<int>& ordering) {
+    std::vector<int>& ordering) {
     for (int i = 0; i < static_cast<int>(len); ++i) {
       ordering.push_back(i);
     }
@@ -113,14 +115,14 @@ class Util {
   template <class K, class V>
   static void write(const std::unordered_map<K, V>& map, cv::FileStorage& fs) {
     fs << "keys"
-       << "[";
+        << "[";
     for (auto& p : map) {
       fs << p.first;
     }
     fs << "]";
 
     fs << "values"
-       << "[";
+        << "[";
     for (auto& p : map) {
       fs << p.second;
     }
@@ -145,3 +147,5 @@ class Util {
 }  // namespace ssig
 
 #endif  // !_SSIG_CORE_UTIL_HPP_PP_
+
+
