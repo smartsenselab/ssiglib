@@ -45,6 +45,8 @@
 
 #include <ssiglib/ml/svm_classifier.hpp>
 
+#include "../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
+
 namespace ssig {
 
 SVMClassifier::SVMClassifier() {
