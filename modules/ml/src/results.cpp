@@ -270,7 +270,7 @@ void Results::makeConfusionMatrixVisualization(const int blockWidth,
   float scale = blockWidth * nclasses / static_cast<float>(textLabels.cols);
   cv::resize(textLabels, textLabels,
              cv::Size(blockWidth * nclasses,
-                      scale * textLabels.rows));
+                      static_cast<int>(scale * textLabels.rows)));
 
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
       (blockWidth * nclasses, blockWidth * nclasses);
