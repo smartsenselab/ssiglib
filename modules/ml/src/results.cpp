@@ -282,8 +282,7 @@ void Results::makeConfusionMatrixVisualization(const int blockWidth,
   cv::resize(textLabels, textLabels,
              cv::Size(blockWidth * nclasses,
                       static_cast<int>(scale * textLabels.rows)));
-  
-  
+
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
       (blockWidth * nclasses, blockWidth * nclasses);
   for (int r = 0; r < aux.rows; ++r) {
@@ -346,7 +345,6 @@ void Results::makeTextImage(cv::Mat& img) {
     }
   }
 
-  
   for (int j = 0; j < textLen; ++j) {
     cv::Mat auxMat;
     std::stringstream aux;
