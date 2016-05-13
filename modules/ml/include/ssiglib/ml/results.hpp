@@ -43,6 +43,7 @@
 #define _SSIG_CORE_RESULTS_HPP_
 
 #include <utility>
+#include <string>
 #include <vector>
 #include <unordered_map>
 
@@ -56,6 +57,8 @@ class Results {
   cv::Mat_<int> mConfusionMatrix;
   cv::Mat_<int> mGroundTruth;
   cv::Mat_<int> mLabels;
+  std::unordered_map<int, int> mLabelMap;
+  std::unordered_map<int, std::string> mStringLabels;
 
  public:
   ML_EXPORT Results() = default;
@@ -70,6 +73,10 @@ class Results {
 
   ML_EXPORT cv::Mat getConfusionMatrix();
 
+  ML_EXPORT std::vector<int> getLabelMap() const;
+  ML_EXPORT void setStringLabels(std::unordered_map<int,
+    std::string>& stringLabels);
+
   ML_EXPORT static std::pair<float, float> crossValidation(
     const cv::Mat_<float>& features,
     const cv::Mat_<int>& labels,
@@ -82,11 +89,17 @@ class Results {
     const cv::Mat_<float>& confusionMatrix,
     cv::Mat& visualization);
 
+  ML_EXPORT void makeConfusionMatrixVisualization(
+    const int blockWidth,
+    cv::Mat& visualization);
+
  private:
   std::unordered_map<int, int> compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
     cv::Mat_<int>& confusionMatrix) const;
+
+  ML_EXPORT void makeTextImage(cv::Mat& img);
   // private members
 };
 }  // namespace ssig
