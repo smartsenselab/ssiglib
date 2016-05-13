@@ -53,7 +53,8 @@
 namespace ssig {
   VIDEO_EXPORT void readVideo(
     const std::string& videoname,
+    const bool convert2BW,
     std::vector<cv::Mat>& frames,
-    const bool convert2BW);
+    int& fps);
 }  // namespace ssig
 #endif  // !_SSIG_VIDEO_VIDEO_HPP_

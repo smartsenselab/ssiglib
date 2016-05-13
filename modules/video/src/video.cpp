@@ -50,9 +50,10 @@
 
 namespace ssig {
 
-void readVideo(const std::string& videoname,
-  std::vector<cv::Mat>& frames,
-  const bool convert2BW) {
+  void readVideo(const std::string& videoname,
+    const bool convert2BW,
+    std::vector<cv::Mat>& frames,
+    int& fps) {
   cv::VideoCapture capture;
 
   capture.open(videoname);
@@ -62,6 +63,7 @@ void readVideo(const std::string& videoname,
   }
 
   int totalFrames = static_cast<int>(capture.get(cv::CAP_PROP_FRAME_COUNT));
+  fps = static_cast<int>(capture.get(cv::CAP_PROP_FPS));
   capture.set(cv::CAP_PROP_CONVERT_RGB, 1);
 
   frames.resize(totalFrames);
