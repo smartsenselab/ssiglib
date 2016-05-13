@@ -67,9 +67,10 @@ class Results {
     const cv::Mat_<int>& expectedLabels);
   ML_EXPORT virtual ~Results(void) = default;
 
-  int getClassesLen() const;
+  ML_EXPORT int getClassesLen() const;
 
   ML_EXPORT float getAccuracy();
+  ML_EXPORT float getMeanAccuracy();
 
   ML_EXPORT cv::Mat getConfusionMatrix();
 

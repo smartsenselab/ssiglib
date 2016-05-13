@@ -81,11 +81,11 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     getInitialization(),
     getCBIndex());
 
-  int k;
+
   switch (getDistance()) {
   case L2: {
     cvflann::L2<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -94,7 +94,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case L1: {
     cvflann::L1<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -103,7 +103,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case MinkowskiDistance: {
     cvflann::MinkowskiDistance<float> distType(getMinkowskiParameter());
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -112,7 +112,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case MaxDistance: {
     cvflann::MaxDistance<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -121,7 +121,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case HistIntersectionDistance: {
     cvflann::HistIntersectionDistance<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -130,7 +130,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case HellingerDistance: {
     cvflann::HellingerDistance<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -139,7 +139,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case ChiSquareDistance: {
     cvflann::ChiSquareDistance<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -148,7 +148,7 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
     break;
   case KL_Divergence: {
     cvflann::KL_Divergence<float> distType;
-    k = cv::flann::hierarchicalClustering(
+    cv::flann::hierarchicalClustering(
       features,
       centers,
       kMeansIndexParams,
@@ -175,7 +175,7 @@ std::vector<Cluster> HierarchicalKmeans::getClustering() const {
     cv::Mat query = mSamples.row(r);
     for (int rc = 0; rc < nCenters; ++rc) {
       cv::Mat sample = mCenters.row(rc);
-      float dist = cv::norm(sample - query);
+      float dist = static_cast<float>(cv::norm(sample - query));
       if (dist < minDist) {
         minDist = dist;
         chosenCenter = rc;
@@ -247,5 +247,3 @@ float HierarchicalKmeans::getCBIndex() const {
   return mCBIndex;
 }
 }  // namespace ssig
-
-
