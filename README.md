@@ -1,12 +1,17 @@
 # SSIGLib - Smart Surveillance Interest Group Library
 
-[![BSD License](https://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)
-[![Build Status](https://travis-ci.org/ssig/ssiglib.svg?branch=develop)](https://travis-ci.org/ssig/ssiglib)
-[![codecov.io](https://codecov.io/github/ssig/ssiglib/coverage.svg?branch=develop)](https://codecov.io/github/ssig/ssiglib?branch=develop)
+<a href="http://www.ssig.dcc.ufmg.br" target=_blank><img src="http://www.ssig.dcc.ufmg.br/wp-content/uploads/2014/02/ssig_logo_bitmap_hd-300x205.png"></a>
+
+| License|Linux|Win|Code Coverage|
+| ----|----|----- | ---------|
+|[![BSD License](https://img.shields.io/badge/license-BSD-blue.svg)](http://opensource.org/licenses/BSD-3-Clause)| [![Build Status](https://travis-ci.org/ssig/ssiglib.svg?branch=develop)](https://travis-ci.org/ssig/ssiglib) | [![Build status](https://ci.appveyor.com/api/projects/status/rmyr058kebpbg3v7/branch/develop?svg=true)](https://ci.appveyor.com/project/rbkloss/ssiglib) | [![codecov.io](https://codecov.io/github/ssig/ssiglib/coverage.svg?branch=develop)](https://codecov.io/github/ssig/ssiglib?branch=develop) |
 
 The Smart Surveillance Interest Group Library (SSIGLib) is a C/C++ library built to provide a set of functionalities that aid researchers not only on the development of surveillance systems but also on the creation of novel solutions for problems related to video surveillance.
 
 The SSIGLib was designed to provide features for a good scene understanding, scalability, real-time operation, multi-sensor environment, usage of low cost standard components, and communication control.
+
+###Warning
+Be noted that there is no stable version yet, which means that some interfaces may change with each update and the library has most of its features in an experimental fashion.
 
 ## Contributing
 

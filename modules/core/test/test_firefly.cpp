@@ -38,10 +38,6 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <core/util.hpp>
-
 #include <gtest/gtest.h>
 
 #include <cstdlib>
@@ -49,7 +45,11 @@
 #include <algorithm>
 #include <cmath>
 
-#include "core/firefly.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <ssiglib/core/util.hpp>
+
+#include "ssiglib/core/firefly.hpp"
 
 
 struct Utility : ssig::UtilityFunctor {
@@ -115,7 +115,7 @@ TEST(Utils, StlReorder) {
 TEST(Firefly, Execution) {
   Distance dist;
   Utility util;
-  ssig::Firefly firefly(dist, util);
+  auto firefly = ssig::Firefly::create(util, dist);
 
 #if 0
   cv::Mat_<float> imgMat;
@@ -158,17 +158,17 @@ TEST(Firefly, Execution) {
   float step = 0.02f;
   float annealling = 0.97f;
 
-  firefly.setMaxIterations(maxIt);
-  firefly.setAbsorption(absorption);
-  firefly.setAnnealling(annealling);
-  firefly.setStep(step);
+  firefly->setMaxIterations(maxIt);
+  firefly->setAbsorption(absorption);
+  firefly->setAnnealling(annealling);
+  firefly->setStep(step);
 
   cv::Mat_<float> state;
   cv::Mat_<float> results;
 
   cv::Mat frame;
-  firefly.setup(pop);
-  while (!firefly.iterate()) {
+  firefly->setup(pop);
+  while (!firefly->iterate()) {
 #if 0
     state = firefly.getState();
     results = firefly.getResults();
@@ -188,7 +188,7 @@ TEST(Firefly, Execution) {
     }
 #endif
   }
-  results = firefly.getResults();
+  results = firefly->getResults();
   // Asserts that the highest utility is near 2
   ASSERT_GT(results[popLen - 1][0], 1.8f);
 }

@@ -27,7 +27,7 @@ set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 option(BUILD_TESTS "Build tests" ON)
 
 #Option to check if 'app' will be available
-option(BUILD_APPS "Build APP's" ON)
+option(BUILD_PERF_TESTS "Build performance tests" OFF)
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
@@ -110,7 +110,7 @@ elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 #if (OPENMP_FOUND)
   #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} /W3 /WX")
 #elseif()
-	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} /W3 /WX")
+	set(CMAKE_CXX_FLAGS                "${CMAKE_CXX_FLAGS} /W3")
 #endif()
 	set(CMAKE_CXX_FLAGS_DEBUG          "${CMAKE_CXX_FLAGS_DEBUG}")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL     "${CMAKE_CXX_FLAGS_MINSIZEREL}")

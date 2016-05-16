@@ -39,16 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
+
+#include <vector>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include <vector>
-
-#include "descriptors/hog_features.hpp"
+#include "ssiglib/descriptors/hog_features.hpp"
 
 TEST(HOG, Simple) {
   cv::Mat img;
@@ -72,7 +72,7 @@ TEST(HOG, Simple) {
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = 2*FLT_EPSILON;
+  epsilon = static_cast<float>(1e-4);
   cv::Mat cmpson;
   cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
   int diffSum = cv::countNonZero(cmpson);
@@ -108,9 +108,12 @@ TEST(HOG, SimpleSigned) {
   auto sum1 = static_cast<float>(cv::sum(out(cv::Rect(0, 0, 36, 1)))[0]);
   auto sum2 = static_cast<float>(cv::sum(out(cv::Rect(36, 0, 36, 1)))[0]);
 
-  cv::Mat diff;
-  cv::compare(out, expected, diff, cv::CMP_EQ);
-  int diffSum = cv::countNonZero(diff);
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = static_cast<float>(1e-4);
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
 
   EXPECT_GT(sum1, sum2);
   EXPECT_EQ(72, diffSum);

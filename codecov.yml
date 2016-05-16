@@ -1,0 +1,34 @@
+codecov:
+  token: 917e6854-0681-4e05-9c8e-50446045f887
+  branch: develop
+  bot: rbkloss
+  ci: null
+  strict_yaml_branch: null
+  max_report_age: null
+  notify:
+    after_n_builds: null
+    countdown: null
+    require_ci_to_pass: no
+  archive:
+    uploads: yes
+  coverage:
+    ignore:
+    - /usr/.*
+    - 3rdparty/.*
+    - usr/.*
+    - .*/tests/.*
+  status:
+    patch: false
+    project:
+      default:
+        target: auto
+        threshold: 5
+        branches: null
+        base: auto
+        set_pending: yes
+        if_no_uploads: success
+        if_not_found: success
+        if_ci_failed: success
+        only_pulls: null
+        flags: null
+        paths: null

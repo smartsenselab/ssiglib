@@ -40,15 +40,31 @@
 *****************************************************************************L*/
 
 
-#include "core/util.hpp"
+#include "ssiglib/core/util.hpp"
 
 #include <algorithm>
 #include <functional>
 #include <cctype>
+#include <vector>
 #include <locale>
 #include <string>
 
 namespace ssig {
+
+  cv::Mat Util::convertToImg(const cv::Mat& m) {
+    std::vector<cv::Mat> channels(3);
+    cv::split(m, channels);
+    for (auto& channel : channels) {
+      double minVal = 0, maxVal = 0;
+      cv::minMaxIdx(channel, &minVal, &maxVal);
+      channel = channel - minVal;
+      channel = channel / (maxVal - minVal);
+    }
+    cv::Mat ans;
+    cv::merge(channels, ans);
+    ans.convertTo(ans, CV_8UC3, 255);
+    return ans;
+  }
 
 std::string Util::ltrim(std::string str) {
   str.erase(str.begin(),

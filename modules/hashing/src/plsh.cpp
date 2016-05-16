@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "hashing/plsh.hpp"
+#include "ssiglib/hashing/plsh.hpp"
 
 #include <time.h>
 #include <vector>

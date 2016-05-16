@@ -40,9 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "ml/pls_image_clustering.hpp"
-
-#include <core/math.hpp>
+#include "ssiglib/ml/pls_image_clustering.hpp"
 
 #include <string>
 #include <random>
@@ -51,6 +49,7 @@
 #include <utility>
 #include <vector>
 
+#include <ssiglib/core/math.hpp>
 
 namespace ssig {
 
@@ -139,6 +138,7 @@ void PLSImageClustering::setClusterRepresentationType(
 void PLSImageClustering::read(const cv::FileNode& fn) {
   auto node = fn["Classifier"];
   mClassifier->read(node);
+  mLength  = static_cast<int>(mClassifier->getLabelsOrdering().size());
 }
 
 void PLSImageClustering::write(cv::FileStorage& fs) const {
@@ -158,10 +158,6 @@ int PLSImageClustering::getMaximumMergedPairs() const {
 
 void PLSImageClustering::setMaximumMergedPairs(int nMergesPerIteration1) {
   nMergesPerIteration = nMergesPerIteration1;
-}
-
-size_t PLSImageClustering::getSize() const {
-  return mNewClusters.size();
 }
 
 void PLSImageClustering::precondition() {}

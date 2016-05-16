@@ -39,10 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/bic_features.hpp"
+#include <ssiglib/descriptors/bic_features.hpp>
+#include <stdexcept>
+#include <vector>
 
 #include <opencv2/imgproc.hpp>
-#include <vector>
 
 namespace ssig {
 

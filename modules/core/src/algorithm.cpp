@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "core/algorithm.hpp"
+#include "ssiglib/core/algorithm.hpp"
 
 #include <string>
 

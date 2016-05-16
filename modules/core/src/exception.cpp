@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 
-#include "core/exception.hpp"
+#include "ssiglib/core/exception.hpp"
 
 #include <string>
 

@@ -42,8 +42,8 @@
 #include <gtest/gtest.h>
 #include <opencv2/core.hpp>
 
-#include <ml/pls_classifier.hpp>
-#include <ml/hard_mining_classifier.hpp>
+#include <ssiglib/ml/pls_classifier.hpp>
+#include <ssiglib/ml/hard_mining_classifier.hpp>
 
 class HardMiningClassifierTest : public ::testing::Test {
  protected:

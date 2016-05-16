@@ -39,13 +39,13 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/sampling.hpp"
-
-#include <opencv2/features2d.hpp>
-#include <opencv2/imgproc.hpp>
+#include "ssiglib/core/sampling.hpp"
 
 #include <stdexcept>
 #include <vector>
+
+#include <opencv2/features2d.hpp>
+#include <opencv2/imgproc.hpp>
 
 namespace ssig {
 

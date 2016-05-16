@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/clustering.hpp"
+#include "ssiglib/ml/clustering.hpp"
 
 #include <vector>
 

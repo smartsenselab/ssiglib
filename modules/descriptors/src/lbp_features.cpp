@@ -40,11 +40,12 @@
 *****************************************************************************L*/
 
 
-#include "descriptors/lbp_features.hpp"
+#include "ssiglib/descriptors/lbp_features.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <stdexcept>
 
 namespace ssig {
 

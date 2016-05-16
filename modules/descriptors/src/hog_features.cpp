@@ -44,15 +44,18 @@
 #include <omp.h>
 #endif
 
-#include <opencv2/core.hpp>
-#include <opencv2/objdetect.hpp>
-#include <opencv2/imgproc.hpp>
+
 #include <cstdint>
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
 
-#include "descriptors/hog_features.hpp"
-#include "core/exception.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc.hpp>
+
+#include "ssiglib/descriptors/hog_features.hpp"
+#include "ssiglib/core/exception.hpp"
 
 namespace ssig {
 

@@ -39,10 +39,10 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
 #include <gtest/gtest.h>
+
 #include <opencv2/core.hpp>
-#include <descriptors/lbp_features.hpp>
+#include <ssiglib/descriptors/lbp_features.hpp>
 
 TEST(LBP, SimpleResult) {
   cv::Mat_<uchar> img = (cv::Mat_<uchar>(3, 3) <<

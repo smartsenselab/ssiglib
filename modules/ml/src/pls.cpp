@@ -39,10 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ml/pls.hpp"
-
-#include <core/math.hpp>
-#include <opencv2/ml.hpp>
+#include "ssiglib/ml/pls.hpp"
 
 #include <random>
 #include <map>
@@ -50,7 +47,8 @@
 #include <vector>
 #include <string>
 
-
+#include <ssiglib/core/math.hpp>
+#include <opencv2/ml.hpp>
 
 namespace ssig {
 

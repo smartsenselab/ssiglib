@@ -39,12 +39,14 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/hog_uoccti_features.hpp"
-#include <opencv2/imgproc.hpp>
-#include <opencv2/objdetect.hpp>
+#include "ssiglib/descriptors/hog_uoccti_features.hpp"
 
 #include <vector>
 #include <algorithm>
+#include <stdexcept>
+
+#include <opencv2/imgproc.hpp>
+#include <opencv2/objdetect.hpp>
 
 namespace ssig {
 

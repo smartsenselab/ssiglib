@@ -43,38 +43,40 @@
 #include <omp.h>
 #endif
 
-#include <opencv2/core.hpp>
-#include <core/util.hpp>
-#include <core/firefly.hpp>
 #include <string>
 
-
-cv::Mat_<float> ssig::Firefly::
-randomVector() const {
-  const int d = mPopulation.cols;
-  cv::Mat_<float> vec(1, d);
-  cv::randu(vec, cv::Scalar::all(-0.5), cv::Scalar::all(0.5));
-  return vec;
-}
+#include <opencv2/core.hpp>
+#include <ssiglib/core/util.hpp>
+#include <ssiglib/core/firefly.hpp>
 
 ssig::Firefly::Firefly(UtilityFunctor& utilityFunction,
-                       DistanceFunctor& distanceFunction) :
-  utility(utilityFunction),
-  distance(distanceFunction) {}
+  DistanceFunctor& distanceFunction) :
+  Optimization(utilityFunction,
+               distanceFunction) {}
 
-ssig::Firefly::Firefly(DistanceFunctor& distanceFunction,
-                       UtilityFunctor& utilityFunction):
-  utility(utilityFunction),
-  distance(distanceFunction) {}
+std::unique_ptr<ssig::Firefly> ssig::Firefly::create(
+  UtilityFunctor& utilityFunction,
+  DistanceFunctor& distanceFunction) {
+  struct _Firefly : Firefly {
+    _Firefly(UtilityFunctor& utilityFunction,
+      DistanceFunctor& distanceFunction) :
+      Firefly(utilityFunction,
+              distanceFunction) {}
+  };
+
+  return std::unique_ptr<ssig::Firefly>(new _Firefly(
+    utilityFunction,
+    distanceFunction));
+}
 
 void ssig::Firefly::setup(cv::Mat_<float>& input) {
   mIterations = 0;
   mPopulation = input;
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
+  #ifdef _OPENMP
+  #pragma omp parallel for
+  #endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     mUtilities[0][i] = utility(mPopulation.row(i));
   }
@@ -105,7 +107,7 @@ bool ssig::Firefly::iterate() {
         auto expX = (mAbsorption * dist * dist);
         auto attractiveness = mUtilities[0][j] / (1 + expX + expX * expX / 2);
         mPopulation.row(i) = xi * (1 - attractiveness) +
-          attractiveness * (xj) + mStep * randomVector();
+            attractiveness * (xj) + mStep * randomVector(mPopulation.cols);
       }
     }
   }
@@ -134,35 +136,19 @@ bool ssig::Firefly::iterate() {
 }
 
 
-cv::Mat_<float> ssig::Firefly::learn(cv::Mat_<float>& input) {
+void ssig::Firefly::learn(cv::Mat_<float>& input) {
   setup(input);
   while (!iterate()) { }
-  return getResults();
-}
-
-
-cv::Mat_<float>
-ssig::Firefly::getResults() const {
-  return mUtilities;
-}
-
-
-cv::Mat_<float> ssig::Firefly::getState() const {
-  return mPopulation;
-}
-
-void ssig::Firefly::setState(const cv::Mat_<float>& state) {
-  mPopulation = state.clone();
 }
 
 void ssig::Firefly::save(const std::string& filename,
-                         const std::string& nodename) const {
+  const std::string& nodename) const {
   std::runtime_error("Unimplemented Method");
 }
 
 
 void ssig::Firefly::load(const std::string& filename,
-                         const std::string& nodename) {
+  const std::string& nodename) {
   std::runtime_error("Unimplemented Method");
 }
 
@@ -180,14 +166,6 @@ float ssig::Firefly::getAbsorption() const {
 
 void ssig::Firefly::setAbsorption(float absorption) {
   mAbsorption = absorption;
-}
-
-int ssig::Firefly::getMaxIterations() const {
-  return mMaxIterations;
-}
-
-void ssig::Firefly::setMaxIterations(int maxIterations) {
-  mMaxIterations = maxIterations;
 }
 
 float ssig::Firefly::getAnnealling() const {

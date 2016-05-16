@@ -14,7 +14,7 @@ macro(ssig_link_opencv SSIGLIB_MODULE)
 	ssig_find_opencv(COMPONENTS ${ARGN})
 	
 	message(STATUS "Link to OpenCV Libraries:")
-	find_path(OpenCV_INCLUDE_DIR "opencv/cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" DOC "")
+	find_path(OpenCV_INCLUDE_DIRS "opencv/cv.h" PATHS "${OpenCV_DIR}" PATH_SUFFIXES "include" DOC "")
 	target_include_directories(${SSIGLIB_MODULE} PUBLIC ${OpenCV_INCLUDE_DIR})
 
 	target_link_libraries(${SSIGLIB_MODULE} ${OpenCV_LIBS})
