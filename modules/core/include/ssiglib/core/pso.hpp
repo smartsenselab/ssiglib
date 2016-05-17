@@ -43,7 +43,6 @@
 #define _SSIG_CORE_PSO_HPP_
 
 #include <cfloat>
-
 #include <memory>
 #include <utility>
 #include <vector>
@@ -82,7 +81,7 @@ class PSO : public Optimization {
 
   CORE_EXPORT std::pair<float, float> getPopulationConstraint() const;
   CORE_EXPORT void setPopulationConstraint(const float minRange,
-    const float maxRange);
+                                           const float maxRange);
 
 
   CORE_EXPORT cv::Mat getBestPosition() const;
@@ -92,17 +91,20 @@ class PSO : public Optimization {
  protected:
   CORE_EXPORT void setup(cv::Mat_<float>& input) override;
   CORE_EXPORT PSO(UtilityFunctor& utility,
-    DistanceFunctor& distance);
+                  DistanceFunctor& distance);
 
   CORE_EXPORT void iterate();
   CORE_EXPORT static void update(const cv::Mat& globalBest,
-    const cv::Mat& localBest,
-    const cv::Mat& inertia,
-    cv::Mat& velocity,
-    cv::Mat& position);
+                                 const cv::Mat& localBest,
+                                 const cv::Mat& inertia,
+                                 cv::Mat& velocity,
+                                 cv::Mat& position);
 
  private:
   // private members
+  UtilityFunctor& utility;
+  DistanceFunctor& distance;
+
   cv::Mat mBestPosition;
   cv::Mat mLocalBests;
   cv::Mat mVelocities;
@@ -116,5 +118,3 @@ class PSO : public Optimization {
 };
 }  // namespace ssig
 #endif  // !_SSIG_CORE_PSO_HPP_
-
-

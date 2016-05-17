@@ -42,8 +42,6 @@
 #ifndef _SSIG_CORE_OPTIMIZATION_HPP_
 #define _SSIG_CORE_OPTIMIZATION_HPP_
 
-#include <memory>
-
 #include <ssiglib/core/algorithm.hpp>
 
 #include "core_defs.hpp"
@@ -65,6 +63,7 @@ class Optimization : public Algorithm {
 
   CORE_EXPORT cv::Mat_<float> getState() const;
 
+  // sets the initial "population" of the method
   CORE_EXPORT void setState(const cv::Mat_<float>& state);
 
   CORE_EXPORT int getMaxIterations() const;
@@ -75,9 +74,7 @@ class Optimization : public Algorithm {
 
  protected:
   CORE_EXPORT Optimization(void) = default;
-  CORE_EXPORT Optimization(
-    UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+
   CORE_EXPORT static cv::Mat_<float> randomVector(
     const int dimensionality,
     const double minRange = 0.5,
@@ -87,8 +84,6 @@ class Optimization : public Algorithm {
 
   CORE_EXPORT void write(cv::FileStorage& fs) const override {};
 
-  UtilityFunctor& utility;
-  DistanceFunctor& distance;
   cv::Mat_<float> mPopulation;
   cv::Mat_<float> mUtilities;
 

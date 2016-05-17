@@ -182,7 +182,8 @@ float PSO::getBestUtil() const {
 
 PSO::PSO(UtilityFunctor& utility,
   DistanceFunctor& distance) :
-  Optimization(utility, distance) {}
+  utility(utility),
+  distance(distance) {}
 
 void PSO::update(const cv::Mat& globalBest,
   const cv::Mat& localBest,

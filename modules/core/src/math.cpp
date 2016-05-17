@@ -101,6 +101,12 @@ float CorrelationSimilarity::operator()(const cv::Mat& x,
     return -sim;
   }
 
+  float EuclideanDistance::operator()(
+    const cv::Mat& x,
+    const cv::Mat& y) const {
+    return static_cast<float>(cv::norm(x - y));
+  }
+
   cv::Mat_<float> Math::buildSimilarity(
   const cv::Mat_<float>& input,
   SimilarityFunctor
