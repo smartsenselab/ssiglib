@@ -39,51 +39,41 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-#include <vector>
+#ifndef _SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
+#define _SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
 
 #include <opencv2/core.hpp>
 
-#include "descriptor_2d.hpp"
-
-
 namespace ssig {
-class ColorCoOccurrence : public Descriptor2D {
+class CoOccurrence {
  public:
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input);
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input,
-      const ColorCoOccurrence& descriptor);
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(
-      const ColorCoOccurrence& descriptor);
+  CoOccurrence(void) = default;
+  virtual ~CoOccurrence(void) = default;
 
-    DESCRIPTORS_EXPORT virtual ~ColorCoOccurrence(void) = default;
+  static void extractCoOccurrence(
+    const cv::Mat& mat,
+    const cv::Rect& patch,
+    const int dx, const int dy,
+    const int nbins,
+    const int levels,
+    cv::Mat& out);
 
+  static void extractPairCoOccurrence(
+    const cv::Mat& m1,
+    const cv::Mat& m2,
+    const cv::Rect window,
+    const int dx, const int dy,
+    const int levels1,
+    const int bins1,
+    const int levels2,
+    const int bins2,
+    cv::Mat& out);
 
-    DESCRIPTORS_EXPORT std::vector<int> getLevels() const;
-    DESCRIPTORS_EXPORT void setLevels(const std::vector<int>& levels);
-    DESCRIPTORS_EXPORT std::vector<int> getBins() const;
-    DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
+  static int isValidPixel(int i, int j, int rows, int cols);
 
- protected:
-    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-    DESCRIPTORS_EXPORT void beforeProcess() override;
-    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-      cv::Mat& output) override;
 
  private:
-    // private members
-    // the number of levels in each channel
-    std::vector<int> mLevels;
-    std::vector<int> mBins;
-
-    int mDi = 0, mDj = 1;
-
-    std::vector<cv::Mat> mChannels;
+  // private members
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-
+#endif  // !_SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
