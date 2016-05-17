@@ -45,6 +45,8 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include <ssiglib/descriptors/co_occurrence.hpp>
+
 namespace ssig {
 GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
   Descriptor2D(input) {}
@@ -101,29 +103,11 @@ void GrayLevelCoOccurrence::beforeProcess() {
 
 void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
                                             cv::Mat& output) {
-  output = cv::Mat::zeros(mBins, mBins, CV_32FC1);
-  int binWidth = mLevels / mBins;
-
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-  for (int i = patch.y; i < patch.height; i++) {
-    for (int j = patch.x; j < patch.width; j++) {
-      if (isValidPixel(i + mDi, j + mDj, mGreyImg.rows, mGreyImg.cols)) {
-        auto val1 = static_cast<int>(mGreyImg.at<float>(i, j) / binWidth);
-        auto val2 = static_cast<int>(
-          mGreyImg.at<float>(i + mDi, j + mDj) / binWidth);
-
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-        {
-          output.at<float>(val1, val2)++;
-        }
-      }
-    }
-  }
-  output = output.reshape(1, 1);
+  CoOccurrence::extractCoOccurrence(mGreyImg,
+    patch,
+    mDj, mDi,
+    mBins, mLevels,
+    output);
 }
 
 int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {

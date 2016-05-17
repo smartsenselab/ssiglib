@@ -57,10 +57,10 @@ TEST(GLCM, GLCM_Simple) {
   glcm.extract(out);
 
   cv::Mat_<float> expected = (cv::Mat_<float>(1, 16) <<
-    235, 0, 0, 1,
-    2, 0, 0, 0,
-    0, 0, 0, 0,
-    0, 2, 0, 0);
+    235 , 0 , 0 , 1 ,
+          2 , 0 , 0 , 0 ,
+          0 , 0 , 0 , 0 ,
+          0 , 2 , 0 , 0);
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
@@ -70,11 +70,12 @@ TEST(GLCM, GLCM_Simple) {
   int diffSum = cv::countNonZero(cmpson);
   EXPECT_EQ(16, diffSum);
 }
+
 TEST(GLCM, GLCM_Vert) {
-  cv::Mat img = (cv::Mat_<int>(3, 3) << 
-    1,1,1,
-    0,0,0,
-    255,255,255);
+  cv::Mat img = (cv::Mat_<int>(3, 3) <<
+    1 , 1 , 1 ,
+    0 , 0 , 0 ,
+    255 , 255 , 255);
   ASSERT_FALSE(img.empty());
   ssig::GrayLevelCoOccurrence glcm(img);
   cv::Mat out;
@@ -85,7 +86,7 @@ TEST(GLCM, GLCM_Vert) {
   glcm.extract(out);
 
   cv::Mat_<float> expected = (cv::Mat_<float>(1, 4) <<
-   3,3,0,0);
+    3 , 3 , 0 , 0);
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
@@ -98,9 +99,9 @@ TEST(GLCM, GLCM_Vert) {
 
 TEST(GLCM, GLCM_Diag) {
   cv::Mat img = (cv::Mat_<int>(3, 3) <<
-    1, 1, 1,
-    0, 0, 0,
-    2, 2, 2);
+    1 , 1 , 1 ,
+        0 , 0 , 0 ,
+        2 , 2 , 2);
   ASSERT_FALSE(img.empty());
   ssig::GrayLevelCoOccurrence glcm(img);
   cv::Mat out;
@@ -112,9 +113,9 @@ TEST(GLCM, GLCM_Diag) {
   glcm.extract(out);
 
   cv::Mat_<float> expected = (cv::Mat_<float>(1, 9) <<
-    0,0,2,
-    2,0,0,
-    0,0,0);
+    0 , 0 , 2 ,
+        2 , 0 , 0 ,
+        0 , 0 , 0);
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);

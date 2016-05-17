@@ -39,51 +39,79 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-#include <vector>
+#include "ssiglib/descriptors/co_occurrence.hpp"
 
 #include <opencv2/core.hpp>
 
-#include "descriptor_2d.hpp"
-
-
 namespace ssig {
-class ColorCoOccurrence : public Descriptor2D {
- public:
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input);
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(const cv::Mat& input,
-      const ColorCoOccurrence& descriptor);
-    DESCRIPTORS_EXPORT explicit ColorCoOccurrence(
-      const ColorCoOccurrence& descriptor);
 
-    DESCRIPTORS_EXPORT virtual ~ColorCoOccurrence(void) = default;
+void CoOccurrence::extractCoOccurrence(
+  const cv::Mat& mat,
+  const cv::Rect& patch,
+  const int dx, const int dy,
+  const int nbins, const int levels,
+  cv::Mat& output) {
+  output = cv::Mat::zeros(nbins, nbins, CV_32FC1);
+  int binWidth = levels / nbins;
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int i = patch.y; i < patch.height; i++) {
+    for (int j = patch.x; j < patch.width; j++) {
+      if (isValidPixel(i + dy, j + dx, mat.rows, mat.cols)) {
+        auto val1 = static_cast<int>(mat.at<float>(i, j) / binWidth);
+        auto val2 = static_cast<int>(
+          mat.at<float>(i + dy, j + dx) / binWidth);
 
-    DESCRIPTORS_EXPORT std::vector<int> getLevels() const;
-    DESCRIPTORS_EXPORT void setLevels(const std::vector<int>& levels);
-    DESCRIPTORS_EXPORT std::vector<int> getBins() const;
-    DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+          output.at<float>(val1, val2)++;
+        }
+      }
+    }
+  }
+  output = output.reshape(1, 1);
+}
 
- protected:
-    DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-    DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-    DESCRIPTORS_EXPORT void beforeProcess() override;
-    DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-      cv::Mat& output) override;
+void CoOccurrence::extractPairCoOccurrence(
+  const cv::Mat& m1,
+  const cv::Mat& m2,
+  const cv::Rect window,
+  const int dx, const int dy,
+  const int levels1,
+  const int bins1,
+  const int levels2,
+  const int bins2,
+  cv::Mat& out) {
+  out = cv::Mat::zeros(bins1, bins2, CV_32FC1);
+  int binWidth1 = levels1 / bins1;
+  int binWidth2 = levels2 / bins2;
 
- private:
-    // private members
-    // the number of levels in each channel
-    std::vector<int> mLevels;
-    std::vector<int> mBins;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int i = window.y; i < window.height; i++) {
+    for (int j = window.x; j < window.width; j++) {
+      if (isValidPixel(i + dy, j + dx, m2.rows, m2.cols)) {
+        auto val1 = static_cast<int>(m1.at<float>(i, j) / binWidth1);
+        auto val2 = static_cast<int>(m2.at<float>(i, j + 1) / binWidth2);
 
-    int mDi = 0, mDj = 1;
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+          out.at<float>(val1, val2)++;
+        }
+      }
+    }
+  }
+  out = out.reshape(1, 1);
+}
 
-    std::vector<cv::Mat> mChannels;
-};
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-
+int CoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+  return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
+}
+} // namespace ssig
