@@ -46,7 +46,6 @@
 #include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {
-
 class UtilityFunctor {
  public:
   virtual ~UtilityFunctor() {}
@@ -74,6 +73,12 @@ struct CorrelationSimilarity : DistanceFunctor {
 
 struct Chi2Similarity : DistanceFunctor {
   CORE_EXPORT float operator()(const cv::Mat& x,
+                               const cv::Mat& y) const override;
+};
+
+struct EuclideanDistance : DistanceFunctor {
+  CORE_EXPORT float operator()(
+    const cv::Mat& x,
     const cv::Mat& y) const override;
 };
 
@@ -92,7 +97,7 @@ class Math {
     & similarityFunction);
 };
 
-template<class T>
+template <class T>
 void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
                     cv::Mat_<T>& std) {
   cv::Mat aux, auxMean, auxStd;
@@ -126,7 +131,7 @@ void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
   }
 }
 
-template<typename Type>
+template <typename Type>
 void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
                    cv::Mat_<Type>& std) {
   int y;
@@ -138,6 +143,4 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
 }
 }  // namespace ssig
 
-#endif  // !_SSF_CORE_MATH_HPP_
-
-
+#endif   // !_SSF_CORE_MATH_HPP_

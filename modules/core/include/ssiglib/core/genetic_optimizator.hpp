@@ -39,68 +39,74 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#ifndef _SSIG_CORE_GENETIC_OPTIMIZATOR_HPP_
+#define _SSIG_CORE_GENETIC_OPTIMIZATOR_HPP_
 
-#include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
-#include <ssiglib/core/algorithm.hpp>
+#include <memory>
+#include <vector>
 
-#include "core_defs.hpp"
 #include "optimization.hpp"
 
 namespace ssig {
-class Firefly : public Optimization {
- public:
-  CORE_EXPORT static std::unique_ptr<Firefly> create(
+/*
+@brief
+  This implements a genetic optimization.
+  This king of heuristical optimization is more recommended
+  if the space is not differentiable.
+*/
+class GeneticOptimizator : public Optimization {
+  class CrossOverFunctor {
+  public:
+    CORE_EXPORT virtual ~CrossOverFunctor() = default;
+
+    CORE_EXPORT virtual void operator()(
+      const cv::Mat& indA,
+      const cv::Mat& indB,
+      cv::Mat& child) = 0;
+  };
+
+public:
+  virtual ~GeneticOptimizator(void) = default;
+
+  CORE_EXPORT static std::unique_ptr<GeneticOptimizator> create(
     UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT bool iterate();
+    CrossOverFunctor& crossOverFunction);
 
   CORE_EXPORT void learn(cv::Mat_<float>& input) override;
 
-  CORE_EXPORT void save(const std::string& filename,
-    const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-    const std::string& nodename) override;
+  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT void iterate();
 
-  CORE_EXPORT float getAbsorption() const;
 
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
+protected:
+  CORE_EXPORT GeneticOptimizator(void);
+  CORE_EXPORT GeneticOptimizator(UtilityFunctor& utilityFunction,
+                                 CrossOverFunctor& crossOverFunction);
 
-  CORE_EXPORT float getAnnealling() const;
+  void applyReproduction(
+    const cv::Mat& pop,
+    const cv::Mat& utilities,
+    const int newPopLen,
+    const CrossOverFunctor& crossover,
+    cv::Mat& newPop
+  ) const;
 
-  CORE_EXPORT void setAnnealling(float annealling);
+  void applyMutation(
+    const double mutationRate,
+    const cv::Mat& pop,
+    cv::Mat& newPop);
 
-  CORE_EXPORT float getStep() const;
-
-  CORE_EXPORT void setStep(float step);
-
- protected:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
-
- private:
+  CrossOverFunctor& crossOver;
   UtilityFunctor& utility;
-  DistanceFunctor& distance;
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
+
+  int mPopulationLength;
+  double mElistimFactor,
+         mMutationFactor;
+
+  cv::Point2d mMutationRange;
+
+private:
+  // private members
 };
-}  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-
-
+} // namespace ssig
+#endif  // !_SSIG_CORE_GENETIC_OPTIMIZATOR_HPP_

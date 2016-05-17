@@ -39,68 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
+#include <gtest/gtest.h>
+#include "ssiglib/core/genetic_optimizator.hpp"
 
-#include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
-#include <ssiglib/core/algorithm.hpp>
+TEST(GeneticOptimizator, SampleGeneticOptimizator) {
+  // Automatically generated stub
 
-#include "core_defs.hpp"
-#include "optimization.hpp"
-
-namespace ssig {
-class Firefly : public Optimization {
- public:
-  CORE_EXPORT static std::unique_ptr<Firefly> create(
-    UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT bool iterate();
-
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
-
-  CORE_EXPORT void save(const std::string& filename,
-    const std::string& nodename) const override;
-  CORE_EXPORT void load(const std::string& filename,
-    const std::string& nodename) override;
-
-  CORE_EXPORT float getAbsorption() const;
-
-  /**
-  @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
-  */
-  CORE_EXPORT void setAbsorption(float absorption);
-
-  CORE_EXPORT float getAnnealling() const;
-
-  CORE_EXPORT void setAnnealling(float annealling);
-
-  CORE_EXPORT float getStep() const;
-
-  CORE_EXPORT void setStep(float step);
-
- protected:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
-
-  CORE_EXPORT void read(const cv::FileNode& fn) override;
-  CORE_EXPORT void write(cv::FileStorage& fs) const override;
-
- private:
-  UtilityFunctor& utility;
-  DistanceFunctor& distance;
-  float mAbsorption = 1.5f;
-  int mIterations = 0;
-  float mAnnealling = 0.97f;
-  float mStep = 0.9f;
-  cv::RNG mRng;
-};
-}  // namespace ssig
-#endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-
-
+  EXPECT_EQ(2, 2 + 2);
+}

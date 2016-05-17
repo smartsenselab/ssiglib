@@ -50,23 +50,23 @@
 #include <ssiglib/core/firefly.hpp>
 
 ssig::Firefly::Firefly(UtilityFunctor& utilityFunction,
-  DistanceFunctor& distanceFunction) :
-  Optimization(utilityFunction,
-               distanceFunction) {}
+                       DistanceFunctor& distanceFunction)
+  : utility(utilityFunction),
+    distance(distanceFunction) {}
 
 std::unique_ptr<ssig::Firefly> ssig::Firefly::create(
   UtilityFunctor& utilityFunction,
   DistanceFunctor& distanceFunction) {
   struct _Firefly : Firefly {
     _Firefly(UtilityFunctor& utilityFunction,
-      DistanceFunctor& distanceFunction) :
+             DistanceFunctor& distanceFunction) :
       Firefly(utilityFunction,
               distanceFunction) {}
   };
 
   return std::unique_ptr<ssig::Firefly>(new _Firefly(
-    utilityFunction,
-    distanceFunction));
+                                                     utilityFunction,
+                                                     distanceFunction));
 }
 
 void ssig::Firefly::setup(cv::Mat_<float>& input) {
@@ -74,9 +74,9 @@ void ssig::Firefly::setup(cv::Mat_<float>& input) {
   mPopulation = input;
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
-  #ifdef _OPENMP
+#ifdef _OPENMP
   #pragma omp parallel for
-  #endif
+#endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     mUtilities[0][i] = utility(mPopulation.row(i));
   }
@@ -130,8 +130,10 @@ bool ssig::Firefly::iterate() {
   mPopulation = npop;
   mUtilities = nuti;
 
-  if (++mIterations > mMaxIterations) return true;
-  if (mStep < 0.001f) return true;
+  if (++mIterations > mMaxIterations)
+    return true;
+  if (mStep < 0.001f)
+    return true;
   return false;
 }
 
@@ -142,13 +144,13 @@ void ssig::Firefly::learn(cv::Mat_<float>& input) {
 }
 
 void ssig::Firefly::save(const std::string& filename,
-  const std::string& nodename) const {
+                         const std::string& nodename) const {
   std::runtime_error("Unimplemented Method");
 }
 
 
 void ssig::Firefly::load(const std::string& filename,
-  const std::string& nodename) {
+                         const std::string& nodename) {
   std::runtime_error("Unimplemented Method");
 }
 
@@ -183,4 +185,3 @@ float ssig::Firefly::getStep() const {
 void ssig::Firefly::setStep(float step) {
   mStep = step;
 }
-
