@@ -38,8 +38,13 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #include "ssiglib/descriptors/co_occurrence.hpp"
+
+#include <vector>
 
 #include <opencv2/core.hpp>
 
@@ -51,11 +56,19 @@ void CoOccurrence::extractCoOccurrence(
   const int dx, const int dy,
   const int nbins, const int levels,
   cv::Mat& output) {
-  output = cv::Mat::zeros(nbins, nbins, CV_32FC1);
-  int binWidth = levels / nbins;
-
 #ifdef _OPENMP
-#pragma omp parallel for
+  int nthreads = omp_get_max_threads();
+  std::vector<cv::Mat> out;
+  out.resize(nthreads);
+  for (int i = 0; i < nthreads; ++i) {
+    out[i] = cv::Mat::zeros(nbins, nbins, CV_32FC1);
+  }
+#else
+  cv::Mat out = cv::Mat::zeros(nbins, nbins, CV_32FC1);
+#endif
+  int binWidth = levels / nbins;
+#ifdef _OPENMP
+#pragma omp parallel for num_threads(nthreads)
 #endif
   for (int i = patch.y; i < patch.height; i++) {
     for (int j = patch.x; j < patch.width; j++) {
@@ -65,14 +78,25 @@ void CoOccurrence::extractCoOccurrence(
           mat.at<float>(i + dy, j + dx) / binWidth);
 
 #ifdef _OPENMP
-#pragma omp critical
+        int currThread = omp_get_thread_num();
+        out[currThread].at<float>(val1, val2)++;
+#else
+        out.at<float>(val1, val2)++;
 #endif
-        {
-          output.at<float>(val1, val2)++;
-        }
       }
     }
   }
+#ifdef _OPENMP
+  for (int i = 0; i < nthreads; ++i) {
+    if (output.empty())
+      output = out[i] + 0;
+    else
+      output += out[i];
+  }
+#else
+  output = out;
+#endif
+
   output = output.reshape(1, 1);
 }
 
@@ -85,8 +109,17 @@ void CoOccurrence::extractPairCoOccurrence(
   const int bins1,
   const int levels2,
   const int bins2,
-  cv::Mat& out) {
-  out = cv::Mat::zeros(bins1, bins2, CV_32FC1);
+  cv::Mat& output) {
+#ifdef _OPENMP
+  int nthreads = omp_get_max_threads();
+  std::vector<cv::Mat> out;
+  out.resize(nthreads);
+  for (int i = 0; i < nthreads; ++i) {
+    out[i] = cv::Mat::zeros(bins1, bins2, CV_32FC1);
+  }
+#else
+  cv::Mat out = cv::Mat::zeros(bins1, bins2, CV_32FC1);
+#endif
   int binWidth1 = levels1 / bins1;
   int binWidth2 = levels2 / bins2;
 
@@ -100,15 +133,25 @@ void CoOccurrence::extractPairCoOccurrence(
         auto val2 = static_cast<int>(m2.at<float>(i, j + 1) / binWidth2);
 
 #ifdef _OPENMP
-#pragma omp critical
+        int currThread = omp_get_thread_num();
+        out[currThread].at<float>(val1, val2)++;
+#else
+        out.at<float>(val1, val2)++;
 #endif
-        {
-          out.at<float>(val1, val2)++;
-        }
       }
     }
   }
-  out = out.reshape(1, 1);
+#ifdef _OPENMP
+  for (int i = 0; i < nthreads; ++i) {
+    if (output.empty())
+      output = out[i] + 0;
+    else
+      output += out[i];
+  }
+#else
+  output = out;
+#endif
+  output = output.reshape(1, 1);
 }
 
 int CoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
