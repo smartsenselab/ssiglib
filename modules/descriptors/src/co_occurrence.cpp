@@ -114,4 +114,4 @@ void CoOccurrence::extractPairCoOccurrence(
 int CoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
   return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
 }
-} // namespace ssig
+}  // namespace ssig
