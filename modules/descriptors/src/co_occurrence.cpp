@@ -39,51 +39,79 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#include "ssiglib/descriptors/co_occurrence.hpp"
 
 #include <opencv2/core.hpp>
 
-#include "descriptor_2d.hpp"
-
 namespace ssig {
-class GrayLevelCoOccurrence : public Descriptor2D {
- public:
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const cv::Mat& input,
-    const GrayLevelCoOccurrence& descriptor);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const GrayLevelCoOccurrence& descriptor);
 
-  DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
+void CoOccurrence::extractCoOccurrence(
+  const cv::Mat& mat,
+  const cv::Rect& patch,
+  const int dx, const int dy,
+  const int nbins, const int levels,
+  cv::Mat& output) {
+  output = cv::Mat::zeros(nbins, nbins, CV_32FC1);
+  int binWidth = levels / nbins;
 
-  DESCRIPTORS_EXPORT int getLevels() const;
-  DESCRIPTORS_EXPORT int getBins() const;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int i = patch.y; i < patch.height; i++) {
+    for (int j = patch.x; j < patch.width; j++) {
+      if (isValidPixel(i + dy, j + dx, mat.rows, mat.cols)) {
+        auto val1 = static_cast<int>(mat.at<float>(i, j) / binWidth);
+        auto val2 = static_cast<int>(
+          mat.at<float>(i + dy, j + dx) / binWidth);
 
-  DESCRIPTORS_EXPORT void setLevels(const int levels);
-  DESCRIPTORS_EXPORT void setBins(const int bins);
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+          output.at<float>(val1, val2)++;
+        }
+      }
+    }
+  }
+  output = output.reshape(1, 1);
+}
 
-  // Set the direction to count the co-occurrence
-  DESCRIPTORS_EXPORT void setDirection(int x, int y);
+void CoOccurrence::extractPairCoOccurrence(
+  const cv::Mat& m1,
+  const cv::Mat& m2,
+  const cv::Rect window,
+  const int dx, const int dy,
+  const int levels1,
+  const int bins1,
+  const int levels2,
+  const int bins2,
+  cv::Mat& out) {
+  out = cv::Mat::zeros(bins1, bins2, CV_32FC1);
+  int binWidth1 = levels1 / bins1;
+  int binWidth2 = levels2 / bins2;
 
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int i = window.y; i < window.height; i++) {
+    for (int j = window.x; j < window.width; j++) {
+      if (isValidPixel(i + dy, j + dx, m2.rows, m2.cols)) {
+        auto val1 = static_cast<int>(m1.at<float>(i, j) / binWidth1);
+        auto val2 = static_cast<int>(m2.at<float>(i, j + 1) / binWidth2);
 
- private:
-  // private members
-  // the number of levels of intensity
-  int mLevels = 256;
-  int mBins = 8;
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+          out.at<float>(val1, val2)++;
+        }
+      }
+    }
+  }
+  out = out.reshape(1, 1);
+}
 
-  int mDi = 0, mDj = 1;
-
-  cv::Mat mGreyImg;
-  static int isValidPixel(int i, int j, int rows, int cols);
-};
+int CoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+  return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
+}
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
