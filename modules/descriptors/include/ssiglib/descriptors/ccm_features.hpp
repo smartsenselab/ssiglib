@@ -66,6 +66,9 @@ class ColorCoOccurrence : public Descriptor2D {
     DESCRIPTORS_EXPORT std::vector<int> getBins() const;
     DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
 
+    // Set the direction to count the co-occurrence
+    DESCRIPTORS_EXPORT void setDirection(int x, int y);
+
  protected:
     DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
     DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
