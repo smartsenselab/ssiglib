@@ -149,3 +149,28 @@ TEST(Results, MissingLabel) {
 
   ASSERT_FLOAT_EQ((1.5f)/3.f, meanAccuracy);
 }
+
+TEST(Results, MissingLabel2) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(5, 1) << 0, 1, 2, 1, 2);
+  cv::Mat_<int> labels = (cv::Mat_<int>(5, 1) << 0, 1, 1, 2, 4);
+
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 4) <<
+    1, 0, 0, 0,
+    0, 1, 1, 0,
+    0, 1, 0, 1);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 12);
+
+  ASSERT_FLOAT_EQ(0.4f, results.getAccuracy());
+
+  float meanAccuracy = results.getMeanAccuracy();
+
+  ASSERT_FLOAT_EQ((1.5f) / 3.f, meanAccuracy);
+}
