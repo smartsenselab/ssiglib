@@ -247,25 +247,24 @@ void Results::makeConfusionMatrixVisualization(
   const int blockWidth,
   const cv::Mat_<float>& confusionMatrix,
   cv::Mat& visualization) {
-  if (confusionMatrix.rows != confusionMatrix.cols) {
-    std::string warningMessage = "A confusion matrix must have same";
-    warningMessage = warningMessage + "number of rows and cols";
-    std::runtime_error(warningMessage.c_str());
-  }
-  const int nclasses = confusionMatrix.rows;
   cv::Mat aux = confusionMatrix.clone();
   aux.convertTo(aux, CV_64F);
 
+  const int nclasses = confusionMatrix.rows;
+  const int nrows = aux.rows,
+    ncols = aux.cols;
+
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
-      (blockWidth * nclasses, blockWidth * nclasses);
+      (blockWidth * nrows, blockWidth * ncols);
   for (int r = 0; r < confusionMatrix.rows; ++r) {
     cv::normalize(aux.row(r), aux.row(r), 1, 0, cv::NORM_L1);
   }
-  for (int i = 0; i < nclasses; ++i) {
-    for (int j = 0; j < nclasses; ++j) {
+
+  for (int i = 0; i < nrows; ++i) {
+    for (int j = 0; j < ncols; ++j) {
       cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
                                       blockWidth, blockWidth));
-      roi = aux.at<float>(i, j);
+      roi = aux.at<double>(i, j);
     }
   }
 
@@ -274,8 +273,12 @@ void Results::makeConfusionMatrixVisualization(
   cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
 
   for (int i = 0; i < nclasses; ++i) {
+    if (i >= nrows || i >= ncols)
+      continue;
+
     cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
                                           blockWidth, blockWidth));
+
     const int x = i * blockWidth;
     const int y = i * blockWidth;
     auto color = CV_RGB(255, 255, 255);
@@ -365,41 +368,43 @@ void Results::makeConfusionMatrixVisualization(const int blockWidth,
 }
 
 // TODO(Ricardo): Improve label text visualization
-//  void Results::makeTextImage(cv::Mat& img) {
-//  int textLen = 0;
-//  std::vector<std::string> strVec(mLabelMap.size());
-//  if (mStringLabels.size() >= mLabelMap.size()) {
-//    for (const auto& it : mStringLabels) {
-//      if (mLabelMap.find(it.first) != mLabelMap.end()) {
-//        strVec[mLabelMap[it.first]] = it.second;
-//      }
-//      int len = static_cast<int>(it.second.size());
-//      if (len > textLen)
-//        textLen = len;
-//    }
-//  }
-//
-//  for (int j = 0; j < textLen; ++j) {
-//    cv::Mat auxMat;
-//    std::stringstream aux;
-//    for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
-//      if (j < strVec[i].size())
-//        aux << strVec[i][j];
-//      else
-//        aux << " ";
-//    }
-//    int baseline;
-//    cv::Size sz = cv::getTextSize(aux.str(),
-//                                cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-//                                  10, 3, &baseline);
-//    auxMat = cv::Mat::zeros(sz, CV_8UC3);
-//    auxMat = 0;
-//    cv::putText(auxMat, aux.str(), cv::Point(0, auxMat.rows),
-//                cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-//                10, cv::Scalar(255, 255, 255), 3, cv::LineTypes::FILLED);
-//    if (!img.empty())
-//      cv::resize(auxMat, auxMat, cv::Size(img.cols, auxMat.rows));
-//    img.push_back(auxMat);
-//  }
-//  }
+void Results::makeTextImage(cv::Mat& img) {
+  int textLen = 0;
+  std::vector<std::string> strVec(mLabelMap.size());
+  if (mStringLabels.size() >= mLabelMap.size()) {
+    for (const auto& it : mStringLabels) {
+      if (mLabelMap.find(it.first) != mLabelMap.end()) {
+        strVec[mLabelMap[it.first]] = it.second;
+      }
+      int len = static_cast<int>(it.second.size());
+      if (len > textLen)
+        textLen = len;
+    }
+  }
+
+  for (int j = 0; j < textLen; ++j) {
+    cv::Mat auxMat;
+    std::stringstream aux;
+    for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
+      if (j < strVec[i].size())
+        aux << strVec[i][j];
+      else
+        aux << " ";
+    }
+    int baseline;
+    cv::Size sz = cv::getTextSize(aux.str(),
+                                  cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
+                                  10, 3, &baseline);
+    auxMat = cv::Mat::zeros(sz, CV_8UC3);
+    auxMat = 0;
+    auto textOrigin = cv::Point((auxMat.cols - sz.width) / 2,
+                                (auxMat.rows + sz.height) / 2);
+    cv::putText(auxMat, aux.str(), textOrigin,
+                cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
+                10, cv::Scalar(255, 255, 255), 3, cv::LineTypes::FILLED);
+    if (!img.empty())
+      cv::resize(auxMat, auxMat, cv::Size(img.cols, auxMat.rows));
+    img.push_back(auxMat);
+  }
+}
 } // namespace ssig
