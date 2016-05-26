@@ -64,28 +64,31 @@ Results::Results(
   mLabels(actualLabels) {}
 
 void Results::computeLabelsVec(
-  const cv::Mat_<int>& groundTruth,
-  std::vector<int>& labelsVec) const {
-  for (int i = 0; i < groundTruth.rows; ++i) {
-    auto label = groundTruth.at<int>(i);
-    labelsVec.push_back(label);
+  const cv::Mat_<int>& labelMat,
+  std::unordered_map<int, int>& labelsMap) const {
+  std::vector<int> labelsVec(labelMat.rows);
+  for (int i = 0; i < labelMat.rows; ++i) {
+    auto label = labelMat.at<int>(i);
+    labelsVec[i] = label;
   }
   std::sort(labelsVec.begin(), labelsVec.end(), [](const int a, const int b) {
               return a < b;
             });
   auto pos = std::unique(labelsVec.begin(), labelsVec.end());
   labelsVec.erase(pos, labelsVec.end());
+  for (int i = 0; i < static_cast<int>(labelsVec.size()); ++i) {
+    labelsMap[labelsVec[i]] = i;
+  }
 }
 
 void Results::compute(
   const cv::Mat_<int>& groundTruth,
   const cv::Mat_<int>& labels,
-  std::vector<int>& labelsVec,
-  std::vector<int>& labelsVecGt,
+  std::unordered_map<int, int>& labelsVec,
+  std::unordered_map<int, int>& labelsVecGt,
   cv::Mat_<int>& confusionMatrix) const {
   computeLabelsVec(groundTruth, labelsVecGt);
   computeLabelsVec(labels, labelsVec);
-
 
   auto len1 = static_cast<int>(labelsVecGt.size());
   int len2 = static_cast<int>(labelsVec.size());
@@ -94,11 +97,6 @@ void Results::compute(
     auto value = labels.at<int>(i);
     auto gt = groundTruth.at<int>(i);
     confusionMatrix[labelsVecGt[gt]][labelsVec[value]] += 1;
-  }
-
-  std::unordered_map<int, int> labelsMap;
-  for (int i = 0; i < static_cast<int>(labelsVec.size()); ++i) {
-    labelsMap[labelsVec[i]] = i;
   }
 }
 
@@ -122,14 +120,13 @@ float Results::getMeanAccuracy() {
   float ans = 0.f;
   int ncols = mConfusionMatrix.cols;
   for (int r = 0; r < mConfusionMatrix.rows; ++r) {
-    float accuracy;
-    if (r > ncols) {
-      accuracy = 0;
-    } else {
+    float accuracy = 0;
+    if (r < ncols) {
       float sum = static_cast<float>(cv::sum(mConfusionMatrix.row(r))[0]);
-      accuracy = mConfusionMatrix.at<int>(r, r) / sum;
+      if (sum > 0.f) {
+        accuracy = mConfusionMatrix.at<int>(r, r) / (sum);
+      }
     }
-
     ans += accuracy;
   }
   ans = ans / mConfusionMatrix.rows;
@@ -146,18 +143,13 @@ cv::Mat Results::getConfusionMatrix() {
   return mConfusionMatrix;
 }
 
-void Results::getLabelMap(std::vector<int>& rowLabels,
-                          std::vector<int>& colLabels) const {
-  colLabels.resize(mLabelMap.size()) ,
-      rowLabels.resize(mGtLabelMap.size());
+void Results::getLabelMap(std::unordered_map<int, int>& rowLabels,
+                          std::unordered_map<int, int>& colLabels) const {
+  for (const auto& it : mGtLabelMap)
+    rowLabels[it.second] = it.first;
 
-  for (int i = 0; i < static_cast<int>(mLabelMap.size()); ++i) {
-    colLabels[i] = mLabelMap[i];
-  }
-
-  for (int i = 0; i < static_cast<int>(mGtLabelMap.size()); ++i) {
-    rowLabels[i] = mGtLabelMap[i];
-  }
+  for (const auto& it : mLabelMap)
+    colLabels[it.second] = it.first;
 }
 
 void Results::setStringLabels(std::unordered_map<int,
@@ -410,4 +402,4 @@ void Results::makeConfusionMatrixVisualization(const int blockWidth,
 //    img.push_back(auxMat);
 //  }
 //  }
-}  // namespace ssig
+} // namespace ssig
