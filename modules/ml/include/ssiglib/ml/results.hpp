@@ -96,13 +96,15 @@ class Results {
     std::vector<Results>& out);
 
   ML_EXPORT static void makeConfusionMatrixVisualization(
+    const bool color,
     const int blockWidth,
     const cv::Mat_<float>& confusionMatrix,
     cv::Mat& visualization);
 
   ML_EXPORT void makeConfusionMatrixVisualization(
+    const bool color,
     const int blockWidth,
-    cv::Mat& visualization);
+    cv::Mat& visualization) const;
 
  private:
   void compute(
@@ -112,7 +114,12 @@ class Results {
     std::unordered_map<int, int>& labelsVecGt,
     cv::Mat_<int>& confusionMatrix) const;
 
-   ML_EXPORT void makeTextImage(cv::Mat& img);
+  ML_EXPORT void makeTextImage(
+    const int blockWidth,
+    const bool row,
+    const std::unordered_map<int, int>& labelMap,
+    const std::unordered_map<int, std::string>& stringLabelsMap,
+    cv::Mat& img) const;
 };
 }  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_

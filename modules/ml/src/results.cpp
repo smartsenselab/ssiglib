@@ -244,6 +244,7 @@ std::pair<float, float> Results::crossValidation(
 }
 
 void Results::makeConfusionMatrixVisualization(
+  const bool color,
   const int blockWidth,
   const cv::Mat_<float>& confusionMatrix,
   cv::Mat& visualization) {
@@ -252,7 +253,7 @@ void Results::makeConfusionMatrixVisualization(
 
   const int nclasses = confusionMatrix.rows;
   const int nrows = aux.rows,
-    ncols = aux.cols;
+      ncols = aux.cols;
 
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
       (blockWidth * nrows, blockWidth * ncols);
@@ -270,7 +271,10 @@ void Results::makeConfusionMatrixVisualization(
 
   visFloat.convertTo(aux, CV_8UC1, 255);
 
-  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+  if (color)
+    cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+  else
+    cv::applyColorMap(aux, visualization, cv::COLORMAP_BONE);
 
   for (int i = 0; i < nclasses; ++i) {
     if (i >= nrows || i >= ncols)
@@ -281,100 +285,76 @@ void Results::makeConfusionMatrixVisualization(
 
     const int x = i * blockWidth;
     const int y = i * blockWidth;
-    auto color = CV_RGB(255, 255, 255);
+    auto lineColor = CV_RGB(255, 255, 255);
     const int len = blockWidth - 1;
     cv::line(visualization,
              cv::Point(x, y),
              cv::Point(x + len, y),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x, y),
              cv::Point(x, y + len),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x + len, y),
              cv::Point(x + len, y + len),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x, y + len),
              cv::Point(x + len, y + len),
-             color, 1);
+             lineColor, 1);
   }
 }
 
-void Results::makeConfusionMatrixVisualization(const int blockWidth,
-                                               cv::Mat& visualization) {
-  cv::Mat confusionMatrix = getConfusionMatrix();
-  const int nclasses = static_cast<int>(mLabelMap.size());
-  cv::Mat aux = confusionMatrix.clone();
-  aux.convertTo(aux, CV_64F);
+void Results::makeConfusionMatrixVisualization(const bool color,
+                                               const int blockWidth,
+                                               cv::Mat& visualization) const {
+  makeConfusionMatrixVisualization(color,
+                                   blockWidth,
+                                   mConfusionMatrix,
+                                   visualization);
+  const int ncols = mConfusionMatrix.cols;
+  cv::Mat textLabels;
+  makeTextImage(blockWidth, false,
+                mLabelMap,
+                mStringLabels,
+                textLabels);
+  float scale = blockWidth * ncols / static_cast<float>(textLabels.cols);
+  cv::resize(textLabels, textLabels,
+             cv::Size(blockWidth * ncols,
+                      static_cast<int>(scale * textLabels.rows)));
 
-  /* cv::Mat textLabels;
-   makeTextImage(textLabels);
-   float scale = blockWidth * nclasses / static_cast<float>(textLabels.cols);
-   cv::resize(textLabels, textLabels,
-              cv::Size(blockWidth * nclasses,
-                       static_cast<int>(scale * textLabels.rows)));*/
+  textLabels.push_back(visualization);
+  visualization = textLabels.clone();
 
-  cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
-      (blockWidth * nclasses, blockWidth * nclasses);
-  for (int r = 0; r < aux.rows; ++r) {
-    cv::normalize(aux.row(r), aux.row(r), 1, 0, cv::NORM_L1);
-  }
-  for (int i = 0; i < nclasses; ++i) {
-    for (int j = 0; j < nclasses; ++j) {
-      cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
-                                      blockWidth, blockWidth));
-      roi = aux.at<double>(i, j);
-    }
-  }
+  makeTextImage(blockWidth, true,
+                mGtLabelMap,
+                mStringLabels,
+                textLabels);
+  cv::Mat block = cv::Mat::zeros(blockWidth, blockWidth, CV_8UC3);
+  cv::vconcat(block, textLabels, textLabels);
 
-  visFloat.convertTo(aux, CV_8UC1, 255);
-
-  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
-
-  for (int i = 0; i < nclasses; ++i) {
-    cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
-                                          blockWidth, blockWidth));
-    const int x = i * blockWidth;
-    const int y = i * blockWidth;
-    auto color = CV_RGB(255, 255, 255);
-    const int len = blockWidth - 1;
-    cv::line(visualization,
-             cv::Point(x, y),
-             cv::Point(x + len, y),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x, y),
-             cv::Point(x, y + len),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x + len, y),
-             cv::Point(x + len, y + len),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x, y + len),
-             cv::Point(x + len, y + len),
-             color, 1);
-  }
-  // textLabels.push_back(visualization);
-  // visualization = textLabels;
+  cv::hconcat(textLabels, visualization, visualization);
 }
 
-// TODO(Ricardo): Improve label text visualization
-void Results::makeTextImage(cv::Mat& img) {
+void Results::makeTextImage(
+  const int blockWidth,
+  const bool row,
+  const std::unordered_map<int, int>& labelMap,
+  const std::unordered_map<int, std::string>& stringLabelsMap,
+  cv::Mat& img) const {
+  img.release();
   int textLen = 0;
-  std::vector<std::string> strVec(mLabelMap.size());
-  if (mStringLabels.size() >= mLabelMap.size()) {
-    for (const auto& it : mStringLabels) {
-      if (mLabelMap.find(it.first) != mLabelMap.end()) {
-        strVec[mLabelMap[it.first]] = it.second;
+  std::vector<std::string> strVec(labelMap.size());
+  if (stringLabelsMap.size() >= labelMap.size()) {
+    for (const auto& it : stringLabelsMap) {
+      const auto k_v = labelMap.find(it.first);
+      if (k_v != labelMap.end()) {
+        const auto value = k_v->second;
+        strVec[value] = it.second;
       }
       int len = static_cast<int>(it.second.size());
       if (len > textLen)
@@ -382,29 +362,45 @@ void Results::makeTextImage(cv::Mat& img) {
     }
   }
 
-  for (int j = 0; j < textLen; ++j) {
+  cv::Size blockSize = {blockWidth, blockWidth};
+  int lineWidth = cv::max(1, blockWidth / 2);
+  for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
     cv::Mat auxMat;
-    std::stringstream aux;
-    for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
-      if (j < strVec[i].size())
-        aux << strVec[i][j];
-      else
-        aux << " ";
-    }
     int baseline;
-    cv::Size sz = cv::getTextSize(aux.str(),
+    const std::string& labelText = strVec[i];
+    double fontScale = blockWidth * 0.1f;
+    int thickness = 3;
+    cv::Size sz = cv::getTextSize(labelText,
                                   cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-                                  10, 3, &baseline);
+                                  fontScale, thickness, &baseline);
+    sz.width += lineWidth;
     auxMat = cv::Mat::zeros(sz, CV_8UC3);
     auxMat = 0;
     auto textOrigin = cv::Point((auxMat.cols - sz.width) / 2,
                                 (auxMat.rows + sz.height) / 2);
-    cv::putText(auxMat, aux.str(), textOrigin,
+    cv::putText(auxMat, labelText, textOrigin,
                 cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-                10, cv::Scalar(255, 255, 255), 3, cv::LineTypes::FILLED);
-    if (!img.empty())
-      cv::resize(auxMat, auxMat, cv::Size(img.cols, auxMat.rows));
-    img.push_back(auxMat);
+                fontScale, cv::Scalar(255, 255, 255),
+                thickness, cv::LineTypes::LINE_AA);
+    if (!row) {
+      cv::line(auxMat, {auxMat.cols - 1, 0},
+               {auxMat.cols - 1, auxMat.rows - 1},
+               cv::Scalar(255, 0, 0), lineWidth);
+    }
+
+    cv::resize(auxMat, auxMat, blockSize);
+
+
+    if (img.empty()) {
+      img = auxMat;
+    } else {
+      if (row) {
+        cv::vconcat(img, auxMat, img);
+      } else {
+        cv::hconcat(img, auxMat, img);
+      }
+    }
   }
 }
-} // namespace ssig
+
+}  // namespace ssig
