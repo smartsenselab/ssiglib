@@ -101,8 +101,8 @@ void CoOccurrence::extractCoOccurrence(
 }
 
 void CoOccurrence::extractPairCoOccurrence(
-  const cv::Mat& m1,
-  const cv::Mat& m2,
+  const cv::Mat& mat1,
+  const cv::Mat& mat2,
   const cv::Rect window,
   const int dx, const int dy,
   const int levels1,
@@ -110,6 +110,10 @@ void CoOccurrence::extractPairCoOccurrence(
   const int levels2,
   const int bins2,
   cv::Mat& output) {
+  cv::Mat m1, m2;
+  mat1.convertTo(m1, CV_32F);
+  mat2.convertTo(m2, CV_32F);
+
 #ifdef _OPENMP
   int nthreads = omp_get_max_threads();
   std::vector<cv::Mat> out;
@@ -124,13 +128,13 @@ void CoOccurrence::extractPairCoOccurrence(
   int binWidth2 = levels2 / bins2;
 
 #ifdef _OPENMP
-#pragma omp parallel for
+#pragma omp parallel for num_threads(nthreads)
 #endif
   for (int i = window.y; i < window.height; i++) {
     for (int j = window.x; j < window.width; j++) {
       if (isValidPixel(i + dy, j + dx, m2.rows, m2.cols)) {
         auto val1 = static_cast<int>(m1.at<float>(i, j) / binWidth1);
-        auto val2 = static_cast<int>(m2.at<float>(i, j + 1) / binWidth2);
+        auto val2 = static_cast<int>(m2.at<float>(i + dy, j + dx) / binWidth2);
 
 #ifdef _OPENMP
         int currThread = omp_get_thread_num();

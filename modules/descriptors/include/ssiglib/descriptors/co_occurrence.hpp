@@ -43,14 +43,15 @@
 #define _SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
 
 #include <opencv2/core.hpp>
+#include "descriptors_defs.hpp"
 
 namespace ssig {
 class CoOccurrence {
  public:
-  CoOccurrence(void) = default;
-  virtual ~CoOccurrence(void) = default;
+  DESCRIPTORS_EXPORT CoOccurrence(void) = default;
+  DESCRIPTORS_EXPORT virtual ~CoOccurrence(void) = default;
 
-  static void extractCoOccurrence(
+  DESCRIPTORS_EXPORT static void extractCoOccurrence(
     const cv::Mat& mat,
     const cv::Rect& patch,
     const int dx, const int dy,
@@ -58,7 +59,7 @@ class CoOccurrence {
     const int levels,
     cv::Mat& out);
 
-  static void extractPairCoOccurrence(
+  DESCRIPTORS_EXPORT static void extractPairCoOccurrence(
     const cv::Mat& m1,
     const cv::Mat& m2,
     const cv::Rect window,
@@ -69,8 +70,7 @@ class CoOccurrence {
     const int bins2,
     cv::Mat& out);
 
-  static int isValidPixel(int i, int j, int rows, int cols);
-
+  DESCRIPTORS_EXPORT static int isValidPixel(int i, int j, int rows, int cols);
 
  private:
   // private members

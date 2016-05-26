@@ -57,7 +57,7 @@ TEST(Results, binaryConfMat) {
 
   cv::Mat_<int> EXPECTED = (cv::Mat_<int>(2, 2) <<
     1 , 1 ,
-    0 , 2);
+        0 , 2);
   cv::Mat out;
   cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
   auto zeroes = cv::countNonZero(out);
@@ -75,19 +75,10 @@ TEST(Results, simpleConfMat) {
 
   auto confMat = results.getConfusionMatrix();
 
-  cv::Mat vis;
-  std::unordered_map<int, std::string> stringLabels = {
-    {0, "ab"},
-    {1, "bb"},
-    {2, "cb"}
-  };
-  results.setStringLabels(stringLabels);
-  results.makeConfusionMatrixVisualization(20, vis);
-
   cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 3) <<
     1 , 0 , 0 ,
-    0 , 1 , 1 ,
-    0 , 1 , 0);
+        0 , 1 , 1 ,
+        0 , 1 , 0);
   cv::Mat out;
   cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
   auto zeroes = cv::countNonZero(out);
@@ -100,3 +91,84 @@ TEST(Results, simpleConfMat) {
   ASSERT_FLOAT_EQ(0.5f, results.getAccuracy());
 }
 
+TEST(Results, MissingLabel_gt) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(5, 1) << 0 , 1 , 2 , 1 , 3);
+  cv::Mat_<int> labels = (cv::Mat_<int>(5, 1) << 0 , 1 , 1 , 2 , 0);
+
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(4, 3) <<
+    1 , 0 , 0 ,
+        0 , 1 , 1 ,
+        0 , 1 , 0 ,
+        1 , 0 , 0);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  cv::Mat vis;
+  std::unordered_map<int, std::string> stringLabels = {
+    {0, "abb"},
+    {1, "bbc"},
+    {2, "cbd"},
+    { 3, "brad" }
+  };
+  results.setStringLabels(stringLabels);
+  results.makeConfusionMatrixVisualization(false, 50, vis);
+
+  ASSERT_EQ(zeroes, 12);
+
+  ASSERT_FLOAT_EQ(0.4f, results.getAccuracy());
+}
+
+TEST(Results, MissingLabel) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(5, 1) << 0 , 1 , 2 , 1 , 2);
+  cv::Mat_<int> labels = (cv::Mat_<int>(5, 1) << 0 , 1 , 1 , 2 , 3);
+
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 4) <<
+    1 , 0 , 0 , 0 ,
+        0 , 1 , 1 , 0 ,
+        0 , 1 , 0 , 1);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 12);
+
+  ASSERT_FLOAT_EQ(0.4f, results.getAccuracy());
+
+  float meanAccuracy = results.getMeanAccuracy();
+
+  ASSERT_FLOAT_EQ((1.5f)/3.f, meanAccuracy);
+}
+
+TEST(Results, MissingLabel2) {
+  cv::Mat_<int> gt = (cv::Mat_<int>(5, 1) << 0 , 1 , 2 , 1 , 2);
+  cv::Mat_<int> labels = (cv::Mat_<int>(5, 1) << 0 , 1 , 1 , 2 , 4);
+
+  ssig::Results results(labels, gt);
+
+  auto confMat = results.getConfusionMatrix();
+
+  cv::Mat_<int> EXPECTED = (cv::Mat_<int>(3, 4) <<
+    1 , 0 , 0 , 0 ,
+        0 , 1 , 1 , 0 ,
+        0 , 1 , 0 , 1);
+  cv::Mat out;
+  cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
+  auto zeroes = cv::countNonZero(out);
+
+  ASSERT_EQ(zeroes, 12);
+
+  ASSERT_FLOAT_EQ(0.4f, results.getAccuracy());
+
+  float meanAccuracy = results.getMeanAccuracy();
+
+  ASSERT_FLOAT_EQ((1.5f) / 3.f, meanAccuracy);
+}
