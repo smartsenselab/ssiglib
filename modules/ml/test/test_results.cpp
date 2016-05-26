@@ -117,8 +117,8 @@ TEST(Results, MissingLabel_gt) {
   cv::compare(confMat, EXPECTED, out, cv::CMP_EQ);
   auto zeroes = cv::countNonZero(out);
 
-  // cv::Mat vis;
-  // ssig::Results::makeConfusionMatrixVisualization(10, confMat, vis);
+   cv::Mat vis;
+   ssig::Results::makeConfusionMatrixVisualization(10, confMat, vis);
 
   ASSERT_EQ(zeroes, 12);
 
@@ -174,3 +174,4 @@ TEST(Results, MissingLabel2) {
 
   ASSERT_FLOAT_EQ((1.5f) / 3.f, meanAccuracy);
 }
+

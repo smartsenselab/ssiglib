@@ -61,14 +61,15 @@ class Results {
   std::unordered_map<int, int> mGtLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
-public:
+ public:
   ML_EXPORT Results() = default;
   ML_EXPORT Results(
     const cv::Mat_<int>& actualLabels,
     const cv::Mat_<int>& expectedLabels);
 
-  ML_EXPORT void computeLabelsVec(const cv::Mat_<int>& groundTruth,
-                                  std::unordered_map<int, int>& labelsVec) const;
+  ML_EXPORT void computeLabelsVec(
+    const cv::Mat_<int>& groundTruth,
+    std::unordered_map<int, int>& labelsVec) const;
 
   ML_EXPORT virtual ~Results(void) = default;
 
@@ -103,7 +104,7 @@ public:
     const int blockWidth,
     cv::Mat& visualization);
 
-private:
+ private:
   void compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
@@ -111,8 +112,7 @@ private:
     std::unordered_map<int, int>& labelsVecGt,
     cv::Mat_<int>& confusionMatrix) const;
 
-  // ML_EXPORT void makeTextImage(cv::Mat& img);
-  // private members
+   ML_EXPORT void makeTextImage(cv::Mat& img);
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_
