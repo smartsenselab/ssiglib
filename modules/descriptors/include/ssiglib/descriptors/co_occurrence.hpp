@@ -39,51 +39,41 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#ifndef _SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
+#define _SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_
 
 #include <opencv2/core.hpp>
-
-#include "descriptor_2d.hpp"
+#include "descriptors_defs.hpp"
 
 namespace ssig {
-class GrayLevelCoOccurrence : public Descriptor2D {
+class CoOccurrence {
  public:
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const cv::Mat& input,
-    const GrayLevelCoOccurrence& descriptor);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const GrayLevelCoOccurrence& descriptor);
+  DESCRIPTORS_EXPORT CoOccurrence(void) = default;
+  DESCRIPTORS_EXPORT virtual ~CoOccurrence(void) = default;
 
-  DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
+  DESCRIPTORS_EXPORT static void extractCoOccurrence(
+    const cv::Mat& mat,
+    const cv::Rect& patch,
+    const int dx, const int dy,
+    const int nbins,
+    const int levels,
+    cv::Mat& out);
 
-  DESCRIPTORS_EXPORT int getLevels() const;
-  DESCRIPTORS_EXPORT int getBins() const;
+  DESCRIPTORS_EXPORT static void extractPairCoOccurrence(
+    const cv::Mat& m1,
+    const cv::Mat& m2,
+    const cv::Rect window,
+    const int dx, const int dy,
+    const int levels1,
+    const int bins1,
+    const int levels2,
+    const int bins2,
+    cv::Mat& out);
 
-  DESCRIPTORS_EXPORT void setLevels(const int levels);
-  DESCRIPTORS_EXPORT void setBins(const int bins);
-
-  // Set the direction to count the co-occurrence
-  DESCRIPTORS_EXPORT void setDirection(int x, int y);
-
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+  DESCRIPTORS_EXPORT static int isValidPixel(int i, int j, int rows, int cols);
 
  private:
   // private members
-  // the number of levels of intensity
-  int mLevels = 256;
-  int mBins = 8;
-
-  int mDi = 0, mDj = 1;
-
-  cv::Mat mGreyImg;
-  static int isValidPixel(int i, int j, int rows, int cols);
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#endif  // !_SSIG_DESCRIPTORS_CO_OCCURRENCE_HPP_

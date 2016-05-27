@@ -39,51 +39,77 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#include <gtest/gtest.h>
+// c++ Headers
+#include <utility>
+#include <vector>
+#include <cfloat>
+#include <random>
+#include <algorithm>
 
-#include <opencv2/core.hpp>
+#include "ssiglib/ml/mst_clustering.hpp"
 
-#include "descriptor_2d.hpp"
+TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {
+  const float inf = FLT_MAX;
+  cv::Mat_<float> input = (cv::Mat_<float>(7, 7) <<
+    inf , 7 , inf , 5 , inf , inf , inf ,
+          7 , inf , 8 , 9 , 7 , inf , inf ,
+          inf , 8 , inf , inf , 5 , inf , inf ,
+          5 , 9 , inf , inf , 15 , 6 , inf ,
+          inf , 7 , 5 , 15 , inf , 8 , 9 ,
+          inf , inf , inf , 6 , 8 , inf , 11 ,
+          inf , inf , inf , inf , 9 , 11 , inf);
+  typedef std::vector<std::forward_list<std::pair<int, float>>> AdjList;
+  AdjList adjList;
+  AdjList expected{
+    {{1, 7.f}, {3, 5.f}},
+    {{0, 7.f}, {4, 7.f}},
+    {{4, 5.f}},
+    {{0, 5.f}, {5, 6.f}},
+    {{1, 7.f}, {2, 5.f}, {6, 9.f}},
+    {{3, 6.f}},
+    {{4, 9.f}}};
+  ssig::MSTreeClustering::computeMinimumSpanningTree(input, adjList);
 
-namespace ssig {
-class GrayLevelCoOccurrence : public Descriptor2D {
- public:
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const cv::Mat& input,
-    const GrayLevelCoOccurrence& descriptor);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const GrayLevelCoOccurrence& descriptor);
+  EXPECT_EQ(expected, adjList);
+}
 
-  DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
-
-  DESCRIPTORS_EXPORT int getLevels() const;
-  DESCRIPTORS_EXPORT int getBins() const;
-
-  DESCRIPTORS_EXPORT void setLevels(const int levels);
-  DESCRIPTORS_EXPORT void setBins(const int bins);
-
-  // Set the direction to count the co-occurrence
-  DESCRIPTORS_EXPORT void setDirection(int x, int y);
-
+class MSTreeClusteringTest : public ::testing::Test {
  protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+  cv::Mat_<float> inp;
+  ssig::MSTreeClustering mstree;
 
- private:
-  // private members
-  // the number of levels of intensity
-  int mLevels = 256;
-  int mBins = 8;
 
-  int mDi = 0, mDj = 1;
+  void SetUp() override {
+    auto rnd = std::default_random_engine(1234);
+    inp = cv::Mat_<float>::zeros(6, 2);
+    for (int i = 0; i < 3; ++i) {
+      inp[i][0] = static_cast<float>(rnd() % 5);
+      inp[i][1] = static_cast<float>(rnd() % 5);
+      inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
+      inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+    }
 
-  cv::Mat mGreyImg;
-  static int isValidPixel(int i, int j, int rows, int cols);
+    mstree.setK(2);
+    mstree.setMaxIterations(500);
+    mstree.learn(inp);
+  }
 };
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+
+TEST_F(MSTreeClusteringTest, SanityClusteringTest) {
+  auto clusters = mstree.getClustering();
+  std::vector<int> gt1 = {0, 1, 2};
+  std::vector<int> gt2 = {3, 4, 5};
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
+  int equalCount = 0;
+  for (const auto& cluster : clusters) {
+    if (std::is_permutation(gt1.begin(), gt1.end(),
+                            cluster.begin())) {
+      ++equalCount;
+    } else if (std::is_permutation(gt2.begin(), gt2.end(),
+                                   cluster.begin())) {
+      ++equalCount;
+    }
+  }
+  EXPECT_EQ(2, equalCount);
+}

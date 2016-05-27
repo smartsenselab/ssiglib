@@ -39,51 +39,53 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
-#define _SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#ifndef _SSIG_ML_MST_CLUSTERING_HPP_
+#define _SSIG_ML_MST_CLUSTERING_HPP_
 
-#include <opencv2/core.hpp>
+#include <forward_list>
+#include <utility>
+#include <vector>
 
-#include "descriptor_2d.hpp"
+#include "clustering.hpp"
 
 namespace ssig {
-class GrayLevelCoOccurrence : public Descriptor2D {
+class MSTreeClustering : public Clustering {
  public:
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(const cv::Mat& input);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const cv::Mat& input,
-    const GrayLevelCoOccurrence& descriptor);
-  DESCRIPTORS_EXPORT explicit GrayLevelCoOccurrence(
-    const GrayLevelCoOccurrence& descriptor);
+  MSTreeClustering(void) = default;
+  virtual ~MSTreeClustering(void) = default;
 
-  DESCRIPTORS_EXPORT virtual ~GrayLevelCoOccurrence(void) = default;
+  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
+  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
+  ML_EXPORT void predict(const cv::Mat_<float>& inp,
+                         cv::Mat_<float>& resp) const override;
+  ML_EXPORT std::vector<Cluster> getClustering() const override;
+  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
+  ML_EXPORT bool empty() const override;
+  ML_EXPORT bool isTrained() const override;
+  ML_EXPORT bool isClassifier() const override;
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  DESCRIPTORS_EXPORT int getLevels() const;
-  DESCRIPTORS_EXPORT int getBins() const;
-
-  DESCRIPTORS_EXPORT void setLevels(const int levels);
-  DESCRIPTORS_EXPORT void setBins(const int bins);
-
-  // Set the direction to count the co-occurrence
-  DESCRIPTORS_EXPORT void setDirection(int x, int y);
-
- protected:
-  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
-  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
-  DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const cv::Rect& patch,
-                                          cv::Mat& output) override;
+  /**
+  @brief Uses the Prim algorithm to compute a minimum spanning tree over
+  a graph represented by the adjacency matrix input (see computeAdjacencyMatrix)
+  */
+  ML_EXPORT static void computeMinimumSpanningTree(
+    const cv::Mat_<float>& input,
+    std::vector<std::forward_list<std::pair<int, float>>>& adjList);
+  ML_EXPORT static void computeMinimumSpanningTree(
+    const cv::Mat_<float>& input,
+    std::vector<std::pair<int, int>>& edges);
 
  private:
+  /**
+  @brief Given a set of samples it computes a graph represented by an adjacency matrix
+  where the edge represents the euclidean distance from point 'i' to 'j'
+  */
+  ML_EXPORT static void computeAdjacencyMatrix(const cv::Mat_<float>& input,
+                                               cv::Mat_<float>& adjMatrix);
+
   // private members
-  // the number of levels of intensity
-  int mLevels = 256;
-  int mBins = 8;
-
-  int mDi = 0, mDj = 1;
-
-  cv::Mat mGreyImg;
-  static int isValidPixel(int i, int j, int rows, int cols);
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_GLCM_FEATURES_HPP_
+#endif  // !_SSIG_ML_MST_CLUSTERING_HPP_

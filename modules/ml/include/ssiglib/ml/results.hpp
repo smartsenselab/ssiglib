@@ -58,6 +58,7 @@ class Results {
   cv::Mat_<int> mGroundTruth;
   cv::Mat_<int> mLabels;
   std::unordered_map<int, int> mLabelMap;
+  std::unordered_map<int, int> mGtLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
  public:
@@ -65,6 +66,11 @@ class Results {
   ML_EXPORT Results(
     const cv::Mat_<int>& actualLabels,
     const cv::Mat_<int>& expectedLabels);
+
+  ML_EXPORT void computeLabelsVec(
+    const cv::Mat_<int>& groundTruth,
+    std::unordered_map<int, int>& labelsVec) const;
+
   ML_EXPORT virtual ~Results(void) = default;
 
   ML_EXPORT int getClassesLen() const;
@@ -74,36 +80,46 @@ class Results {
 
   ML_EXPORT cv::Mat getConfusionMatrix();
 
-  ML_EXPORT std::vector<int> getLabelMap() const;
+  ML_EXPORT void getLabelMap(std::unordered_map<int, int>& rowLabels,
+                             std::unordered_map<int, int>& colLabels) const;
   ML_EXPORT void setStringLabels(std::unordered_map<int,
-    std::string>& stringLabels);
+                                                    std::string>& stringLabels);
+
+  ML_EXPORT std::vector<int> getLabelsCount();
 
   ML_EXPORT static std::pair<float, float> crossValidation(
     const cv::Mat_<float>& features,
     const cv::Mat_<int>& labels,
     const int nfolds,
+    const size_t seed,
     ssig::Classifier& classifier,
     std::vector<Results>& out);
 
   ML_EXPORT static void makeConfusionMatrixVisualization(
+    const bool color,
     const int blockWidth,
     const cv::Mat_<float>& confusionMatrix,
     cv::Mat& visualization);
 
   ML_EXPORT void makeConfusionMatrixVisualization(
+    const bool color,
     const int blockWidth,
-    cv::Mat& visualization);
+    cv::Mat& visualization) const;
 
  private:
-  std::unordered_map<int, int> compute(
+  void compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
+    std::unordered_map<int, int>& labelsVec,
+    std::unordered_map<int, int>& labelsVecGt,
     cv::Mat_<int>& confusionMatrix) const;
 
-  ML_EXPORT void makeTextImage(cv::Mat& img);
-  // private members
+  ML_EXPORT void makeTextImage(
+    const int blockWidth,
+    const bool row,
+    const std::unordered_map<int, int>& labelMap,
+    const std::unordered_map<int, std::string>& stringLabelsMap,
+    cv::Mat& img) const;
 };
 }  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_
-
-

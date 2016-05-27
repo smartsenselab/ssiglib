@@ -96,7 +96,7 @@ class TemporalDescriptors : Descriptor {
     const cv::Point2i depth,
     cv::Mat& output) = 0;
 
-  std::vector<cv::Mat> getData() const;
+  DESCRIPTORS_EXPORT std::vector<cv::Mat> getData() const;
 
  private:
   // private members

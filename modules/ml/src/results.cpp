@@ -57,40 +57,47 @@
 #include <ssiglib/ml/classification.hpp>
 
 namespace ssig {
-Results::Results(const cv::Mat_<int>& actualLabels,
+Results::Results(
+  const cv::Mat_<int>& actualLabels,
   const cv::Mat_<int>& expectedLabels) :
   mGroundTruth(expectedLabels),
   mLabels(actualLabels) {}
 
-std::unordered_map<int, int> Results::compute(
-  const cv::Mat_<int>& groundTruth,
-  const cv::Mat_<int>& labels,
-  cv::Mat_<int>& confusionMatrix) const {
-  std::vector<int> labelsVec;
-  for (int i = 0; i < groundTruth.rows; ++i) {
-    auto label = groundTruth.at<int>(i);
-    labelsVec.push_back(label);
+void Results::computeLabelsVec(
+  const cv::Mat_<int>& labelMat,
+  std::unordered_map<int, int>& labelsMap) const {
+  std::vector<int> labelsVec(labelMat.rows);
+  for (int i = 0; i < labelMat.rows; ++i) {
+    auto label = labelMat.at<int>(i);
+    labelsVec[i] = label;
   }
   std::sort(labelsVec.begin(), labelsVec.end(), [](const int a, const int b) {
               return a < b;
             });
   auto pos = std::unique(labelsVec.begin(), labelsVec.end());
   labelsVec.erase(pos, labelsVec.end());
-
-  std::unordered_map<int, int> labelsMap;
   for (int i = 0; i < static_cast<int>(labelsVec.size()); ++i) {
     labelsMap[labelsVec[i]] = i;
   }
+}
 
-  auto len = static_cast<int>(labelsMap.size());
-  confusionMatrix = cv::Mat_<int>::zeros(len, len);
+void Results::compute(
+  const cv::Mat_<int>& groundTruth,
+  const cv::Mat_<int>& labels,
+  std::unordered_map<int, int>& labelsVec,
+  std::unordered_map<int, int>& labelsVecGt,
+  cv::Mat_<int>& confusionMatrix) const {
+  computeLabelsVec(groundTruth, labelsVecGt);
+  computeLabelsVec(labels, labelsVec);
+
+  auto len1 = static_cast<int>(labelsVecGt.size());
+  int len2 = static_cast<int>(labelsVec.size());
+  confusionMatrix = cv::Mat_<int>::zeros(len1, len2);
   for (int i = 0; i < groundTruth.rows; ++i) {
     auto value = labels.at<int>(i);
     auto gt = groundTruth.at<int>(i);
-    confusionMatrix[labelsMap[gt]][labelsMap[value]] += 1;
+    confusionMatrix[labelsVecGt[gt]][labelsVec[value]] += 1;
   }
-
-  return std::move(labelsMap);
 }
 
 int Results::getClassesLen() const {
@@ -99,7 +106,10 @@ int Results::getClassesLen() const {
 
 float Results::getAccuracy() {
   if (mConfusionMatrix.empty())
-    compute(mGroundTruth, mLabels, mConfusionMatrix);
+    compute(mGroundTruth, mLabels,
+            mLabelMap,
+            mGtLabelMap,
+            mConfusionMatrix);
 
   auto accrcy = cv::trace(mConfusionMatrix);
   accrcy = accrcy / cv::sum(mConfusionMatrix);
@@ -108,9 +118,15 @@ float Results::getAccuracy() {
 
 float Results::getMeanAccuracy() {
   float ans = 0.f;
+  int ncols = mConfusionMatrix.cols;
   for (int r = 0; r < mConfusionMatrix.rows; ++r) {
-    float sum = static_cast<float>(cv::sum(mConfusionMatrix.row(r))[0]);
-    float accuracy = mConfusionMatrix.at<int>(r, r) / sum;
+    float accuracy = 0;
+    if (r < ncols) {
+      float sum = static_cast<float>(cv::sum(mConfusionMatrix.row(r))[0]);
+      if (sum > 0.f) {
+        accuracy = mConfusionMatrix.at<int>(r, r) / (sum);
+      }
+    }
     ans += accuracy;
   }
   ans = ans / mConfusionMatrix.rows;
@@ -119,20 +135,21 @@ float Results::getMeanAccuracy() {
 
 cv::Mat Results::getConfusionMatrix() {
   if (mConfusionMatrix.empty())
-    mLabelMap = compute(mGroundTruth,
-                        mLabels,
-                        mConfusionMatrix);
+    compute(mGroundTruth,
+            mLabels,
+            mLabelMap,
+            mGtLabelMap,
+            mConfusionMatrix);
   return mConfusionMatrix;
 }
 
-std::vector<int> Results::getLabelMap() const {
-  std::vector<int> ans(mLabelMap.size());
+void Results::getLabelMap(std::unordered_map<int, int>& rowLabels,
+                          std::unordered_map<int, int>& colLabels) const {
+  for (const auto& it : mGtLabelMap)
+    rowLabels[it.second] = it.first;
 
-  for (const auto& it : mLabelMap) {
-    ans[it.second] = it.first;
-  }
-
-  return ans;
+  for (const auto& it : mLabelMap)
+    colLabels[it.second] = it.first;
 }
 
 void Results::setStringLabels(std::unordered_map<int,
@@ -140,14 +157,30 @@ void Results::setStringLabels(std::unordered_map<int,
   mStringLabels = stringLabels;
 }
 
+std::vector<int> Results::getLabelsCount() {
+  if (mConfusionMatrix.empty())
+    compute(mGroundTruth, mLabels,
+            mLabelMap,
+            mGtLabelMap,
+            mConfusionMatrix);
+  int nrows = mConfusionMatrix.rows;
+  std::vector<int> ans(mConfusionMatrix.rows);
+
+  for (int r = 0; r < nrows; ++r) {
+    ans[r] = static_cast<int>(cv::sum(mConfusionMatrix.row(r))[0]);
+  }
+  return ans;
+}
+
 std::pair<float, float> Results::crossValidation(
   const cv::Mat_<float>& features,
   const cv::Mat_<int>& labels,
   const int nfolds,
+  const size_t seed,
   ssig::Classifier& classifier,
   std::vector<Results>& out) {
   cv::Mat_<float> accuracies(nfolds, 1, 0.0f);
-  cv::RNG rng(time(nullptr));
+  cv::RNG rng(static_cast<uint64>(seed));
   const int len = features.rows;
   cv::Mat_<int> ordering(len, 1);
   for (int i = 0; i < len; ++i)
@@ -211,85 +244,25 @@ std::pair<float, float> Results::crossValidation(
 }
 
 void Results::makeConfusionMatrixVisualization(
+  const bool color,
   const int blockWidth,
   const cv::Mat_<float>& confusionMatrix,
   cv::Mat& visualization) {
-  if (confusionMatrix.rows != confusionMatrix.cols) {
-    std::string warningMessage = "A confusion matrix must have same";
-    warningMessage = warningMessage + "number of rows and cols";
-    std::runtime_error(warningMessage.c_str());
-  }
-  const int nclasses = confusionMatrix.rows;
   cv::Mat aux = confusionMatrix.clone();
   aux.convertTo(aux, CV_64F);
 
+  const int nclasses = confusionMatrix.rows;
+  const int nrows = aux.rows,
+      ncols = aux.cols;
+
   cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
-      (blockWidth * nclasses, blockWidth * nclasses);
+      (blockWidth * nrows, blockWidth * ncols);
   for (int r = 0; r < confusionMatrix.rows; ++r) {
     cv::normalize(aux.row(r), aux.row(r), 1, 0, cv::NORM_L1);
   }
-  for (int i = 0; i < nclasses; ++i) {
-    for (int j = 0; j < nclasses; ++j) {
-      cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
-                                      blockWidth, blockWidth));
-      roi = aux.at<float>(i, j);
-    }
-  }
 
-  visFloat.convertTo(aux, CV_8UC1, 255);
-
-  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
-
-  for (int i = 0; i < nclasses; ++i) {
-    cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
-                                          blockWidth, blockWidth));
-    const int x = i * blockWidth;
-    const int y = i * blockWidth;
-    auto color = CV_RGB(255, 255, 255);
-    const int len = blockWidth - 1;
-    cv::line(visualization,
-             cv::Point(x, y),
-             cv::Point(x + len, y),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x, y),
-             cv::Point(x, y + len),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x + len, y),
-             cv::Point(x + len, y + len),
-             color, 1);
-
-    cv::line(visualization,
-             cv::Point(x, y + len),
-             cv::Point(x + len, y + len),
-             color, 1);
-  }
-}
-
-void Results::makeConfusionMatrixVisualization(const int blockWidth,
-  cv::Mat& visualization) {
-  cv::Mat confusionMatrix = getConfusionMatrix();
-  const int nclasses = static_cast<int>(mLabelMap.size());
-  cv::Mat aux = confusionMatrix.clone();
-  aux.convertTo(aux, CV_64F);
-
-  cv::Mat textLabels;
-  makeTextImage(textLabels);
-  float scale = blockWidth * nclasses / static_cast<float>(textLabels.cols);
-  cv::resize(textLabels, textLabels,
-             cv::Size(blockWidth * nclasses,
-                      static_cast<int>(scale * textLabels.rows)));
-
-  cv::Mat_<float> visFloat = cv::Mat_<float>::zeros
-      (blockWidth * nclasses, blockWidth * nclasses);
-  for (int r = 0; r < aux.rows; ++r) {
-    cv::normalize(aux.row(r), aux.row(r), 1, 0, cv::NORM_L1);
-  }
-  for (int i = 0; i < nclasses; ++i) {
-    for (int j = 0; j < nclasses; ++j) {
+  for (int i = 0; i < nrows; ++i) {
+    for (int j = 0; j < ncols; ++j) {
       cv::Mat roi = visFloat(cv::Rect(j * blockWidth, i * blockWidth,
                                       blockWidth, blockWidth));
       roi = aux.at<double>(i, j);
@@ -298,46 +271,90 @@ void Results::makeConfusionMatrixVisualization(const int blockWidth,
 
   visFloat.convertTo(aux, CV_8UC1, 255);
 
-  cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+  if (color)
+    cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+  else
+    cv::applyColorMap(aux, visualization, cv::COLORMAP_BONE);
 
   for (int i = 0; i < nclasses; ++i) {
+    if (i >= nrows || i >= ncols)
+      continue;
+
     cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
                                           blockWidth, blockWidth));
+
     const int x = i * blockWidth;
     const int y = i * blockWidth;
-    auto color = CV_RGB(255, 255, 255);
+    auto lineColor = CV_RGB(255, 255, 255);
     const int len = blockWidth - 1;
     cv::line(visualization,
              cv::Point(x, y),
              cv::Point(x + len, y),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x, y),
              cv::Point(x, y + len),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x + len, y),
              cv::Point(x + len, y + len),
-             color, 1);
+             lineColor, 1);
 
     cv::line(visualization,
              cv::Point(x, y + len),
              cv::Point(x + len, y + len),
-             color, 1);
+             lineColor, 1);
   }
-  textLabels.push_back(visualization);
-  visualization = textLabels;
 }
 
-void Results::makeTextImage(cv::Mat& img) {
+void Results::makeConfusionMatrixVisualization(const bool color,
+                                               const int blockWidth,
+                                               cv::Mat& visualization) const {
+  makeConfusionMatrixVisualization(color,
+                                   blockWidth,
+                                   mConfusionMatrix,
+                                   visualization);
+  const int ncols = mConfusionMatrix.cols;
+  cv::Mat textLabels;
+  makeTextImage(blockWidth, false,
+                mLabelMap,
+                mStringLabels,
+                textLabels);
+  float scale = blockWidth * ncols / static_cast<float>(textLabels.cols);
+  cv::resize(textLabels, textLabels,
+             cv::Size(blockWidth * ncols,
+                      static_cast<int>(scale * textLabels.rows)));
+
+  textLabels.push_back(visualization);
+  visualization = textLabels.clone();
+
+  makeTextImage(blockWidth, true,
+                mGtLabelMap,
+                mStringLabels,
+                textLabels);
+  cv::Mat block = cv::Mat::zeros(blockWidth, blockWidth, CV_8UC3);
+  cv::vconcat(block, textLabels, textLabels);
+
+  cv::hconcat(textLabels, visualization, visualization);
+}
+
+void Results::makeTextImage(
+  const int blockWidth,
+  const bool row,
+  const std::unordered_map<int, int>& labelMap,
+  const std::unordered_map<int, std::string>& stringLabelsMap,
+  cv::Mat& img) const {
+  img.release();
   int textLen = 0;
-  std::vector<std::string> strVec(mLabelMap.size());
-  if (mStringLabels.size() >= mLabelMap.size()) {
-    for (const auto& it : mStringLabels) {
-      if (mLabelMap.find(it.first) != mLabelMap.end()) {
-        strVec[mLabelMap[it.first]] = it.second;
+  std::vector<std::string> strVec(labelMap.size());
+  if (stringLabelsMap.size() >= labelMap.size()) {
+    for (const auto& it : stringLabelsMap) {
+      const auto k_v = labelMap.find(it.first);
+      if (k_v != labelMap.end()) {
+        const auto value = k_v->second;
+        strVec[value] = it.second;
       }
       int len = static_cast<int>(it.second.size());
       if (len > textLen)
@@ -345,27 +362,45 @@ void Results::makeTextImage(cv::Mat& img) {
     }
   }
 
-  for (int j = 0; j < textLen; ++j) {
+  cv::Size blockSize = {blockWidth, blockWidth};
+  int lineWidth = cv::max(1, blockWidth / 2);
+  for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
     cv::Mat auxMat;
-    std::stringstream aux;
-    for (int i = 0; i < static_cast<int>(strVec.size()); ++i) {
-      if (j < strVec[i].size())
-        aux << strVec[i][j];
-      else
-        aux << " ";
-    }
     int baseline;
-    cv::Size sz = cv::getTextSize(aux.str(),
+    const std::string& labelText = strVec[i];
+    double fontScale = blockWidth * 0.1f;
+    int thickness = 3;
+    cv::Size sz = cv::getTextSize(labelText,
                                   cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-                                  10, 3, &baseline);
+                                  fontScale, thickness, &baseline);
+    sz.width += lineWidth;
     auxMat = cv::Mat::zeros(sz, CV_8UC3);
     auxMat = 0;
-    cv::putText(auxMat, aux.str(), cv::Point(0, auxMat.rows),
+    auto textOrigin = cv::Point((auxMat.cols - sz.width) / 2,
+                                (auxMat.rows + sz.height) / 2);
+    cv::putText(auxMat, labelText, textOrigin,
                 cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-                10, cv::Scalar(255, 255, 255), 3, cv::LineTypes::FILLED);
-    if (!img.empty())
-      cv::resize(auxMat, auxMat, cv::Size(img.cols, auxMat.rows));
-    img.push_back(auxMat);
+                fontScale, cv::Scalar(255, 255, 255),
+                thickness, cv::LineTypes::LINE_AA);
+    if (!row) {
+      cv::line(auxMat, {auxMat.cols - 1, 0},
+               {auxMat.cols - 1, auxMat.rows - 1},
+               cv::Scalar(255, 0, 0), lineWidth);
+    }
+
+    cv::resize(auxMat, auxMat, blockSize);
+
+
+    if (img.empty()) {
+      img = auxMat;
+    } else {
+      if (row) {
+        cv::vconcat(img, auxMat, img);
+      } else {
+        cv::hconcat(img, auxMat, img);
+      }
+    }
   }
 }
+
 }  // namespace ssig

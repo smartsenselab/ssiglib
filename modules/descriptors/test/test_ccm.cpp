@@ -38,10 +38,13 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
 #include <gtest/gtest.h>
+
+#include <vector>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
+
 #include "ssiglib/descriptors/ccm_features.hpp"
 
 TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
@@ -50,8 +53,8 @@ TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
   ssig::ColorCoOccurrence ccm(img);
   cv::Mat out;
 
-  ccm.setBins({ 4, 4, 4 });
-  ccm.setLevels({ 256, 256, 256 });
+  ccm.setBins({4, 4, 4});
+  ccm.setLevels({256, 256, 256});
 
   ccm.extract(out);
 
@@ -68,4 +71,43 @@ TEST(ColorCoOccurrence, SimpleColorCoOccurrence) {
   cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
   int diffSum = cv::countNonZero(cmpson);
   EXPECT_EQ(16, diffSum);*/
+}
+
+TEST(CCM, CCM_Vert) {
+  cv::Mat red = (cv::Mat_<int>(2, 2) <<
+        1 , 1 ,
+            0 , 0),
+      green = (cv::Mat_<int>(2, 2) <<
+        0 , 0 ,
+            1 , 1),
+      blue = (cv::Mat_<int>(2, 2) <<
+        1 , 1 ,
+            0 , 0);
+  cv::Mat img;
+  std::vector<cv::Mat> channels = {blue, green, red};
+  cv::merge(channels, img);
+  ASSERT_FALSE(img.empty());
+  ssig::ColorCoOccurrence ccm(img);
+  cv::Mat out;
+
+  ccm.setBins({2, 2, 2});
+  ccm.setLevels({2, 2, 2});
+  ccm.setDirection(0, 1);
+  ccm.extract(out);
+
+  cv::Mat_<float> expected = (cv::Mat_<float>(1, 24) <<
+    0 , 0 , 2 , 0 ,
+        0 , 0 , 0 , 2 ,
+        0 , 0 , 2 , 0 ,
+        0 , 2 , 0 , 0 ,
+        2 , 0 , 0 , 0 ,
+        0 , 0 , 2 , 0);
+
+  cv::Mat diff = cv::abs(out - expected);
+  cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
+  epsilon = 4 * FLT_EPSILON;
+  cv::Mat cmpson;
+  cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
+  int diffSum = cv::countNonZero(cmpson);
+  EXPECT_EQ(24, diffSum);
 }
