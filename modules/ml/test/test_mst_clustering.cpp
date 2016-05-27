@@ -40,6 +40,10 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
+
+#include <utility>
+#include <vector>
+
 #include "ssiglib/ml/mst_clustering.hpp"
 
 TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {

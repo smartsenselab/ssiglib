@@ -64,7 +64,7 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
             });
   edges.erase(edges.begin(), edges.begin() + mK);
 
-  //find the components after pruning
+  // find the components after pruning
   std::vector<std::vector<int>> children(input.rows);
   for (const auto& edge : edges) {
     const int &i = edge.first,
@@ -229,4 +229,4 @@ void MSTreeClustering::computeAdjacencyMatrix(
   }
 }
 
-} // namespace ssig
+}  // namespace ssig
