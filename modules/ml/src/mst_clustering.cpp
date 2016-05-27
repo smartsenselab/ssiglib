@@ -60,9 +60,9 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
   std::sort(edges.begin(), edges.end(),
             [&adjMat](const std::pair<int, int>& a,
               const std::pair<int, int>& b) {
-              return adjMat[a.first][a.second] < adjMat[b.first][b.second];
+              return adjMat[a.first][a.second] > adjMat[b.first][b.second];
             });
-  edges.erase(edges.begin(), edges.begin() + mK);
+  edges.erase(edges.begin(), edges.begin() + (mK - 1));
 
   // find the components after pruning
   std::vector<std::vector<int>> children(input.rows);
@@ -114,7 +114,7 @@ void MSTreeClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
     for (const auto& id : cluster) {
       centroidsMatrix.row(i) += mSamples.row(id);
     }
-    centroidsMatrix.row(i) /= cluster.size();
+    centroidsMatrix.row(i) /= static_cast<float>(cluster.size());
   }
 }
 
@@ -144,7 +144,7 @@ void MSTreeClustering::computeMinimumSpanningTree(
   std::vector<std::pair<int, int>>& edges) {
   // Simple Prim since the graph is dense
   const int nrows = input.rows;
-  std::srand(static_cast<size_t>(time(nullptr)));
+  std::srand(static_cast<unsigned int>(time(nullptr)));
   int u = std::rand() % nrows;
   int solLen = 0;
   std::vector<bool> inSolution(nrows);
@@ -191,7 +191,9 @@ void MSTreeClustering::computeMinimumSpanningTree(
   computeMinimumSpanningTree(input, edges);
 
   edges.reserve(edges.size() * 2);
-  for (const auto& edge : edges) {
+  const int len = static_cast<int>(edges.size());
+  for (int i = 0; i < len; ++i) {
+    const auto& edge = edges[i];
     edges.push_back(std::make_pair(edge.second, edge.first));
   }
   std::sort(edges.begin(), edges.end(),
@@ -212,11 +214,8 @@ void MSTreeClustering::computeAdjacencyMatrix(
   const cv::Mat_<float>& input,
   cv::Mat_<float>& adjMatrix) {
   const int nrows = input.rows;
-  int len = (nrows * (nrows - 1)) >> 2;
-  adjMatrix = cv::Mat_<float>::zeros(len, len);
-
-  std::vector<int> nodesSet(nrows);
-  std::iota(nodesSet.begin(), nodesSet.end(), 1);
+  adjMatrix = cv::Mat_<float>::zeros(nrows, nrows);
+  adjMatrix = FLT_MAX;
 
   for (int i = 0; i < nrows; ++i) {
     cv::Mat_<float> sampleA = input.row(i);
@@ -229,4 +228,4 @@ void MSTreeClustering::computeAdjacencyMatrix(
   }
 }
 
-}  // namespace ssig
+} // namespace ssig

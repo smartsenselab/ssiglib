@@ -40,16 +40,19 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-
+// c++ Headers
 #include <utility>
 #include <vector>
+#include <cfloat>
+#include <random>
+#include <algorithm>
 
 #include "ssiglib/ml/mst_clustering.hpp"
 
 TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {
   const float inf = FLT_MAX;
   cv::Mat_<float> input = (cv::Mat_<float>(7, 7) <<
-          inf , 7 , inf , 5 , inf , inf , inf ,
+    inf , 7 , inf , 5 , inf , inf , inf ,
           7 , inf , 8 , 9 , 7 , inf , inf ,
           inf , 8 , inf , inf , 5 , inf , inf ,
           5 , 9 , inf , inf , 15 , 6 , inf ,
@@ -69,4 +72,44 @@ TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {
   ssig::MSTreeClustering::computeMinimumSpanningTree(input, adjList);
 
   EXPECT_EQ(expected, adjList);
+}
+
+class MSTreeClusteringTest : public ::testing::Test {
+ protected:
+  cv::Mat_<float> inp;
+  ssig::MSTreeClustering mstree;
+
+
+  void SetUp() override {
+    auto rnd = std::default_random_engine(1234);
+    inp = cv::Mat_<float>::zeros(6, 2);
+    for (int i = 0; i < 3; ++i) {
+      inp[i][0] = static_cast<float>(rnd() % 5);
+      inp[i][1] = static_cast<float>(rnd() % 5);
+      inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
+      inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
+    }
+
+    mstree.setK(2);
+    mstree.setMaxIterations(500);
+    mstree.learn(inp);
+  }
+};
+
+TEST_F(MSTreeClusteringTest, SanityClusteringTest) {
+  auto clusters = mstree.getClustering();
+  std::vector<int> gt1 = {0, 1, 2};
+  std::vector<int> gt2 = {3, 4, 5};
+  ASSERT_EQ(2, static_cast<int>(clusters.size()));
+  int equalCount = 0;
+  for (const auto& cluster : clusters) {
+    if (std::is_permutation(gt1.begin(), gt1.end(),
+                            cluster.begin())) {
+      ++equalCount;
+    } else if (std::is_permutation(gt2.begin(), gt2.end(),
+                                   cluster.begin())) {
+      ++equalCount;
+    }
+  }
+  EXPECT_EQ(2, equalCount);
 }
