@@ -42,19 +42,22 @@
 #ifndef _SSIG_ML_MST_CLUSTERING_HPP_
 #define _SSIG_ML_MST_CLUSTERING_HPP_
 
-#include "clustering.hpp"
-
 #include <forward_list>
+#include <utility>
+#include <vector>
+
+#include "clustering.hpp"
 
 namespace ssig {
 class MSTreeClustering : Clustering {
-public:
+ public:
   MSTreeClustering(void) = default;
   virtual ~MSTreeClustering(void) = default;
 
   void setup(const cv::Mat_<float>& input) override;
   void learn(const cv::Mat_<float>& input) override;
-  void predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override;
+  void predict(const cv::Mat_<float>& inp,
+               cv::Mat_<float>& resp) const override;
   std::vector<Cluster> getClustering() const override;
   void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
   bool empty() const override;
@@ -74,8 +77,7 @@ public:
     const cv::Mat_<float>& input,
     std::vector<std::pair<int, int>>& edges);
 
-private:
-
+ private:
   /**
   @brief Given a set of samples it computes a graph represented by an adjacency matrix
   where the edge represents the euclidean distance from point 'i' to 'j'
@@ -85,5 +87,5 @@ private:
 
   // private members
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_MST_CLUSTERING_HPP_
