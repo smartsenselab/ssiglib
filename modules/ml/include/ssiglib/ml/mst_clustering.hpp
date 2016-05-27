@@ -50,7 +50,7 @@
 
 namespace ssig {
 class MSTreeClustering : public Clustering {
-public:
+ public:
   MSTreeClustering(void) = default;
   virtual ~MSTreeClustering(void) = default;
 
@@ -77,7 +77,7 @@ public:
     const cv::Mat_<float>& input,
     std::vector<std::pair<int, int>>& edges);
 
-private:
+ private:
   /**
   @brief Given a set of samples it computes a graph represented by an adjacency matrix
   where the edge represents the euclidean distance from point 'i' to 'j'
@@ -87,5 +87,5 @@ private:
 
   // private members
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_MST_CLUSTERING_HPP_

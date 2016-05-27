@@ -228,4 +228,4 @@ void MSTreeClustering::computeAdjacencyMatrix(
   }
 }
 
-} // namespace ssig
+}  // namespace ssig
