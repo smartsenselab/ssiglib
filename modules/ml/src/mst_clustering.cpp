@@ -52,9 +52,10 @@ namespace ssig {
 void MSTreeClustering::setup(const cv::Mat_<float>& input) {}
 
 void MSTreeClustering::learn(const cv::Mat_<float>& input) {
+  mSamples = input.clone();
   cv::Mat_<float> adjMat;
   std::vector<std::pair<int, int>> edges;
-  computeAdjacencyMatrix(input, adjMat);
+  computeAdjacencyMatrix(mSamples, adjMat);
   computeMinimumSpanningTree(adjMat, edges);
 
   std::sort(edges.begin(), edges.end(),
@@ -65,7 +66,7 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
   edges.erase(edges.begin(), edges.begin() + (mK - 1));
 
   // find the components after pruning
-  std::vector<std::vector<int>> children(input.rows);
+  std::vector<std::vector<int>> children(mSamples.rows);
   for (const auto& edge : edges) {
     const int &i = edge.first,
         &j = edge.second;
@@ -75,8 +76,8 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
 
   // dfs for finding components
   std::vector<ssig::Cluster> clustering;
-  std::vector<bool> visited(input.rows, false);
-  for (int r = 0; r < input.rows; ++r) {
+  std::vector<bool> visited(mSamples.rows, false);
+  for (int r = 0; r < mSamples.rows; ++r) {
     if (visited[r])
       continue;
     clustering.resize(clustering.size() + 1);
@@ -99,7 +100,9 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
 
 void MSTreeClustering::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {}
+  cv::Mat_<float>& resp) const {
+
+}
 
 std::vector<Cluster> MSTreeClustering::getClustering() const {
   return mClusters;
@@ -228,4 +231,4 @@ void MSTreeClustering::computeAdjacencyMatrix(
   }
 }
 
-}  // namespace ssig
+} // namespace ssig
