@@ -75,20 +75,24 @@ int Clustering::getPredictionDistanceType() const {
 }
 
 void Clustering::predict(
-  const cv::Mat_<float>& sample,
+  const cv::Mat_<float>& samples,
   const cv::Mat_<float>& centroids,
   const ssig::Clustering::PredictionType normtype,
   cv::Mat_<float>& resp) {
   const int n = centroids.rows;
+  const int nsamples = samples.rows;
 
-  resp = cv::Mat_<float>::zeros(1, n);
+  resp = cv::Mat_<float>::zeros(nsamples, n);
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
-  for (int i = 0; i < n; ++i) {
-    auto cvNorm = static_cast<cv::NormTypes>(normtype);
-    resp[0][i] = -1 * static_cast<float>(
-      cv::norm(sample - centroids.row(i), cvNorm));
+  for (int r = 0; r < nsamples; ++r) {
+    cv::Mat_<float> sample = samples.row(r);
+    for (int i = 0; i < n; ++i) {
+      auto cvNorm = static_cast<cv::NormTypes>(normtype);
+      resp[r][i] = -1 * static_cast<float>(
+        cv::norm(sample - centroids.row(i), cvNorm));
+    }
   }
 }
 

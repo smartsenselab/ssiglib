@@ -89,7 +89,7 @@ class Kmeans : public Clustering {
 
   ML_EXPORT size_t getSize() const override;
 
-  private:
+ private:
   // private members
   cv::Mat_<float> mCentroids;
   int mFlags;
