@@ -42,14 +42,15 @@
 #ifndef _SSIG_CORE_PSO_HPP_
 #define _SSIG_CORE_PSO_HPP_
 
+// c++
 #include <cfloat>
-
 #include <memory>
 #include <utility>
 #include <vector>
-
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
 #include <ssiglib/core/algorithm.hpp>
-
 #include "core_defs.hpp"
 #include "optimization.hpp"
 
@@ -61,17 +62,17 @@ class PSO : public Optimization {
  public:
   CORE_EXPORT virtual ~PSO(void) = default;
 
-  CORE_EXPORT static std::unique_ptr<PSO> create(
-    UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT static cv::Ptr<PSO> create(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
 
 
   CORE_EXPORT void learn(cv::Mat_<float>& input) override;
 
 
-  CORE_EXPORT cv::Mat getInertia() const;
+  CORE_EXPORT cv::Mat3f getInertia() const;
   // a 1x3 matrix of floating point numbers
-  CORE_EXPORT void setInertia(const cv::Mat& inertia);
+  CORE_EXPORT void setInertia(const cv::Mat3f& inertia);
 
 
   CORE_EXPORT int getPopulationLength() const;
@@ -90,9 +91,13 @@ class PSO : public Optimization {
   CORE_EXPORT float getBestUtil() const;
 
  protected:
+  CORE_EXPORT PSO(
+    cv::Ptr<UtilityFunctor>& utility,
+   cv::Ptr<DistanceFunctor>& distance);
+  CORE_EXPORT PSO(const PSO& rhs);
+
   CORE_EXPORT void setup(cv::Mat_<float>& input) override;
-  CORE_EXPORT PSO(UtilityFunctor& utility,
-    DistanceFunctor& distance);
+  
 
   CORE_EXPORT void iterate();
   CORE_EXPORT static void update(const cv::Mat& globalBest,
@@ -106,7 +111,7 @@ class PSO : public Optimization {
   cv::Mat mBestPosition;
   cv::Mat mLocalBests;
   cv::Mat mVelocities;
-  cv::Mat mInertia;
+  cv::Mat3f mInertia;
   std::pair<float, float> mPopulationConstraint;
   int mPopulationLength = 100;
   int mDimensions = 1;

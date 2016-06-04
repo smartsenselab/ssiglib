@@ -64,11 +64,11 @@ TEST(PSO, 2Sqrt) {
       return ans;
     }
   };
-  Utility util;
-  Distance dist;
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
+  cv::Ptr<ssig::DistanceFunctor> dist = cv::makePtr<Distance>();
   auto pso = ssig::PSO::create(util, dist);
   cv::Mat_<float> input;
-  cv::Mat inertia;
+  cv::Mat3f inertia;
   inertia = (cv::Mat_<float>(1, 3) << 0.8f , 0.8f , 1.f);
   pso->setInertia(inertia);
   pso->setDimensionality(1);
