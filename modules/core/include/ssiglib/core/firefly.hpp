@@ -53,9 +53,9 @@
 namespace ssig {
 class Firefly : public Optimization {
  public:
-  CORE_EXPORT static std::unique_ptr<Firefly> create(
-    UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT static cv::Ptr<Firefly> create(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
 
   CORE_EXPORT void setup(cv::Mat_<float>& input) override;
 
@@ -85,8 +85,11 @@ class Firefly : public Optimization {
   CORE_EXPORT void setStep(float step);
 
  protected:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT Firefly(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
+
+  CORE_EXPORT Firefly(const Firefly& rhs);
 
   CORE_EXPORT void read(const cv::FileNode& fn) override;
   CORE_EXPORT void write(cv::FileStorage& fs) const override;

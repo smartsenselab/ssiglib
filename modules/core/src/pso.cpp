@@ -43,26 +43,26 @@
 #include <utility>
 #include <random>
 
-#include "ssiglib/core/pso.hpp"
+#include <opencv2/core.hpp>
 
+#include "ssiglib/core/pso.hpp"
 #include "ssiglib/core/math.hpp"
 
 static std::mt19937 gen(static_cast<uint>(time(nullptr)));
 
 namespace ssig {
-std::unique_ptr<PSO> PSO::create(
-  UtilityFunctor& utilityFunction,
-  DistanceFunctor& distanceFunction) {
+cv::Ptr<PSO> PSO::create(
+  cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) {
   struct _PSO : PSO {
-    _PSO(UtilityFunctor& utilityFunction,
-      DistanceFunctor& distanceFunction) :
+    _PSO(cv::Ptr<UtilityFunctor> utilityFunction,
+         cv::Ptr<DistanceFunctor> distanceFunction) :
       PSO(utilityFunction,
           distanceFunction) {};
   };
 
-  return std::unique_ptr<ssig::PSO>(new _PSO(
-    utilityFunction,
-    distanceFunction));
+  return cv::makePtr<_PSO>(utilityFunction,
+                                    distanceFunction);
 }
 
 void PSO::setup(cv::Mat_<float>& input) {
@@ -99,7 +99,7 @@ void PSO::setup(cv::Mat_<float>& input) {
 
   for (int i = 0; i < mPopulationLength; ++i) {
     cv::Mat row = mPopulation.row(i);
-    float util = utility(row);
+    float util = (*utility)(row);
     mLocalUtils[i] = util;
     mUtilities.at<float>(i) = util;
     if (util > mBestUtil) {
@@ -122,17 +122,17 @@ void PSO::learn(cv::Mat_<float>& input) {
 }
 
 void PSO::iterate() {
-  #pragma omp parallel for
+#pragma omp parallel for
   for (int r = 0; r < mPopulationLength; ++r) {
     cv::Mat position = mPopulation.row(r),
         localBest = mLocalBests.row(r),
         vel = mVelocities.row(r);
     update(mBestPosition, localBest, mInertia, vel, position);
 
-    float currentUtil = utility(position);
+    float currentUtil = (*utility)(position);
     mLocalUtils[r] = currentUtil;
 
-    #pragma omp critical(UPDATING)
+#pragma omp critical(UPDATING)
     if (currentUtil >= mBestUtil) {
       mBestPosition = position.clone();
       mBestUtil = currentUtil;
@@ -143,11 +143,11 @@ void PSO::iterate() {
   }
 }
 
-cv::Mat PSO::getInertia() const {
+cv::Mat3f PSO::getInertia() const {
   return mInertia;
 }
 
-void PSO::setInertia(const cv::Mat& inertia) {
+void PSO::setInertia(const cv::Mat3f& inertia) {
   mInertia = inertia;
 }
 
@@ -168,7 +168,7 @@ std::pair<float, float> PSO::getPopulationConstraint() const {
 }
 
 void PSO::setPopulationConstraint(const float minRange,
-  const float maxRange) {
+                                  const float maxRange) {
   mPopulationConstraint = {minRange, maxRange};
 }
 
@@ -180,16 +180,26 @@ float PSO::getBestUtil() const {
   return mBestUtil;
 }
 
-PSO::PSO(UtilityFunctor& utility,
-  DistanceFunctor& distance) :
-  utility(utility),
-  distance(distance) {}
+PSO::PSO(const PSO& rhs) {
+  setDimensionality(rhs.mDimensions);
+  setInertia(rhs.getInertia());
+  auto constraint = getPopulationConstraint();
+  setPopulationConstraint(constraint.first, constraint.second);
+  setPopulationLength(getPopulationLength());
+  setEps(getEps());
+  setMaxIterations(getMaxIterations());
+}
+
+PSO::PSO(
+  cv::Ptr<UtilityFunctor>& utility,
+  cv::Ptr<DistanceFunctor>& distance) :
+  Optimization(utility, distance) {}
 
 void PSO::update(const cv::Mat& globalBest,
-  const cv::Mat& localBest,
-  const cv::Mat& inertia,
-  cv::Mat& velocity,
-  cv::Mat& position) {
+                 const cv::Mat& localBest,
+                 const cv::Mat& inertia,
+                 cv::Mat& velocity,
+                 cv::Mat& position) {
   static std::uniform_real_distribution<float> dist(0.0f, 1000.0f);
 
   float R1 = (dist(gen)) / 1000.f;
@@ -205,6 +215,4 @@ void PSO::update(const cv::Mat& globalBest,
   position = position + velocity;
 }
 
-}  // namespace ssig
-
-
+} // namespace ssig

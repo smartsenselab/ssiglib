@@ -69,12 +69,20 @@ class Optimization : public Algorithm {
   CORE_EXPORT int getMaxIterations() const;
   CORE_EXPORT void setMaxIterations(const int maxIterations);
 
+  CORE_EXPORT cv::Ptr<UtilityFunctor> getUtility() const;
+  CORE_EXPORT cv::Ptr<DistanceFunctor> getDistance() const;
+  CORE_EXPORT void setUtilityFunctor(cv::Ptr<UtilityFunctor>& utilityFunctor);
+  CORE_EXPORT void setDistanceFunctor(cv::Ptr<DistanceFunctor>& distanceFunctor);
+
   CORE_EXPORT double getEps() const;
   CORE_EXPORT void setEps(const double eps);
 
  protected:
-  CORE_EXPORT Optimization(void) = default;
+  CORE_EXPORT Optimization() = default;
 
+  CORE_EXPORT Optimization(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
   CORE_EXPORT static cv::Mat_<float> randomVector(
     const int dimensionality,
     const double minRange = 0.5,
@@ -84,6 +92,8 @@ class Optimization : public Algorithm {
 
   CORE_EXPORT void write(cv::FileStorage& fs) const override {};
 
+  cv::Ptr<UtilityFunctor> utility;
+  cv::Ptr<DistanceFunctor> distance;
   cv::Mat_<float> mPopulation;
   cv::Mat_<float> mUtilities;
 

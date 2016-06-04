@@ -62,6 +62,24 @@ void Optimization::setMaxIterations(const int maxIterations) {
   mMaxIterations = maxIterations;
 }
 
+cv::Ptr<UtilityFunctor> Optimization::getUtility() const {
+  return utility;
+}
+
+cv::Ptr<DistanceFunctor> Optimization::getDistance() const {
+  return distance;
+}
+
+void Optimization::setUtilityFunctor(
+  cv::Ptr<UtilityFunctor>& utilityFunctor) {
+  utility = utilityFunctor;
+}
+
+void Optimization::setDistanceFunctor(
+  cv::Ptr<DistanceFunctor>& distanceFunctor) {
+  distance = distanceFunctor;
+}
+
 double Optimization::getEps() const {
   return mEps;
 }
@@ -69,6 +87,12 @@ double Optimization::getEps() const {
 void Optimization::setEps(const double eps) {
   mEps = eps;
 }
+
+Optimization::Optimization(
+  cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) :
+  utility(utilityFunction),
+  distance(distanceFunction) {}
 
 cv::Mat_<float> ssig::Optimization::
 randomVector(const int dimensionality,
