@@ -55,9 +55,9 @@ class Optimization : public Algorithm {
  public:
   virtual ~Optimization(void) = default;
 
-  CORE_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
+  CORE_EXPORT virtual void setup(const cv::Mat_<float>& input) = 0;
 
-  CORE_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
+  CORE_EXPORT virtual void learn(const cv::Mat_<float>& input) = 0;
 
   CORE_EXPORT cv::Mat_<float> getResults() const;
 
