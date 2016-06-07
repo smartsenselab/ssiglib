@@ -75,7 +75,7 @@ cv::Ptr<ssig::Firefly> ssig::Firefly::create(
   return cv::makePtr<_Firefly>(utilityFunction, distanceFunction);
 }
 
-void ssig::Firefly::setup(cv::Mat_<float>& input) {
+void ssig::Firefly::setup(const cv::Mat_<float>& input) {
   mIterations = 0;
   mPopulation = input;
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
@@ -142,7 +142,7 @@ bool ssig::Firefly::iterate() {
 }
 
 
-void ssig::Firefly::learn(cv::Mat_<float>& input) {
+void ssig::Firefly::learn(const cv::Mat_<float>& input) {
   setup(input);
   while (!iterate()) { }
 }

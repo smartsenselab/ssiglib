@@ -57,11 +57,11 @@ class Firefly : public Optimization {
     cv::Ptr<UtilityFunctor>& utilityFunction,
     cv::Ptr<DistanceFunctor>& distanceFunction);
 
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT void setup(const cv::Mat_<float>& input) override;
 
   CORE_EXPORT bool iterate();
 
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
+  CORE_EXPORT void learn(const cv::Mat_<float>& input) override;
 
   CORE_EXPORT void save(const std::string& filename,
     const std::string& nodename) const override;
