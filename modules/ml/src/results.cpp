@@ -281,7 +281,7 @@ void Results::makeConfusionMatrixVisualization(
     char msg[10];
     sprintf(msg, "%3.2f", aux.at<double>(i, i));
     cv::Mat textRoi = visualization(cv::Rect(i * blockWidth, i * blockWidth,
-                                       blockWidth, blockWidth));
+                                             blockWidth, blockWidth));
 
     /**
     This part place the accuracy as a text in the center of the block
@@ -301,10 +301,13 @@ void Results::makeConfusionMatrixVisualization(
     auxText = cv::Scalar(0, 0, 0, 0);
     auto textOrigin = cv::Point((auxText.cols - sz.width) / 2,
                                 (auxText.rows + sz.height) / 2);
+    auto textColor = cv::Scalar(10, 10, 255, 255);
+    if (color)
+      textColor = cv::Scalar(255, 255, 255, 255);
 
     cv::putText(auxText, msg, textOrigin,
                 cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
-                fontScale, cv::Scalar(10, 10, 255, 255),
+                fontScale, textColor,
                 thickness, cv::LineTypes::LINE_8);
     cv::resize(auxText, auxText, cv::Size(blockWidth, blockWidth));
     cv::Mat mask;
