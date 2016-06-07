@@ -267,18 +267,53 @@ void Results::makeConfusionMatrixVisualization(
       roi = aux.at<double>(i, j);
     }
   }
-
-  visFloat.convertTo(aux, CV_8UC1, 255);
+  cv::Mat temp = aux.clone();
+  visFloat.convertTo(temp, CV_8UC1, 255);
 
   if (color)
-    cv::applyColorMap(aux, visualization, cv::COLORMAP_JET);
+    cv::applyColorMap(temp, visualization, cv::COLORMAP_JET);
   else
-    cv::applyColorMap(aux, visualization, cv::COLORMAP_BONE);
+    cv::applyColorMap(temp, visualization, cv::COLORMAP_BONE);
 
+  temp = visualization.clone();
+  cv::cvtColor(temp, visualization, CV_BGR2BGRA);
+  for (int i = 0; i < nrows; ++i) {
+    char msg[10];
+    sprintf(msg, "%3.2f", aux.at<double>(i, i));
+    cv::Mat textRoi = visualization(cv::Rect(i * blockWidth, i * blockWidth,
+                                       blockWidth, blockWidth));
+
+    /**
+    This part place the accuracy as a text in the center of the block
+    */
+    int baseline;
+    const double fontScale = 3;
+    int thickness = 4;
+    const auto font = cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL;
+    cv::Size sz = cv::getTextSize(
+                                  msg,
+                                  font,
+                                  fontScale,
+                                  thickness,
+                                  &baseline);
+
+    cv::Mat auxText = cv::Mat(sz, CV_8UC4);
+    auxText = cv::Scalar(0, 0, 0, 0);
+    auto textOrigin = cv::Point((auxText.cols - sz.width) / 2,
+                                (auxText.rows + sz.height) / 2);
+
+    cv::putText(auxText, msg, textOrigin,
+                cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
+                fontScale, cv::Scalar(10, 10, 255, 255),
+                thickness, cv::LineTypes::LINE_8);
+    cv::resize(auxText, auxText, cv::Size(blockWidth, blockWidth));
+    cv::Mat mask;
+    cv::cvtColor(auxText, mask, CV_BGRA2GRAY, 1);
+    auxText.copyTo(textRoi, mask);
+  }
+  cv::cvtColor(visualization, visualization, CV_BGRA2BGR, 1);
+  cv::medianBlur(visualization, visualization, 3);
   for (int i = 0; i < nclasses; ++i) {
-    if (i >= nrows || i >= ncols)
-      continue;
-
     cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
                                           blockWidth, blockWidth));
 
@@ -402,4 +437,4 @@ void Results::makeTextImage(
   }
 }
 
-}  // namespace ssig
+} // namespace ssig
