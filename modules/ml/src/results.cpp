@@ -273,10 +273,8 @@ void Results::makeConfusionMatrixVisualization(
   if (color)
     cv::applyColorMap(temp, visualization, cv::COLORMAP_JET);
   else
-    cv::applyColorMap(temp, visualization, cv::COLORMAP_BONE);
+    cv::cvtColor(temp, visualization, CV_GRAY2BGR);
 
-  temp = visualization.clone();
-  cv::cvtColor(temp, visualization, CV_BGR2BGRA);
   for (int i = 0; i < nrows; ++i) {
     char msg[10];
     sprintf(msg, "%3.2f", aux.at<double>(i, i));
@@ -297,24 +295,23 @@ void Results::makeConfusionMatrixVisualization(
                                   thickness,
                                   &baseline);
 
-    cv::Mat auxText = cv::Mat(sz, CV_8UC4);
-    auxText = cv::Scalar(0, 0, 0, 0);
+    cv::Mat auxText = cv::Mat(sz, CV_8UC3);
+    auxText = cv::Scalar(0, 0, 0);
     auto textOrigin = cv::Point((auxText.cols - sz.width) / 2,
                                 (auxText.rows + sz.height) / 2);
-    auto textColor = cv::Scalar(10, 10, 255, 255);
+    auto textColor = cv::Scalar(10, 10, 255);
     if (color)
-      textColor = cv::Scalar(255, 255, 255, 255);
+      textColor = cv::Scalar(255, 255, 255);
 
     cv::putText(auxText, msg, textOrigin,
                 cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
                 fontScale, textColor,
-                thickness, cv::LineTypes::LINE_8);
+                thickness, cv::LineTypes::LINE_AA);
     cv::resize(auxText, auxText, cv::Size(blockWidth, blockWidth));
     cv::Mat mask;
-    cv::cvtColor(auxText, mask, CV_BGRA2GRAY, 1);
+    cv::cvtColor(auxText, mask, CV_BGR2GRAY, 1);
     auxText.copyTo(textRoi, mask);
   }
-  cv::cvtColor(visualization, visualization, CV_BGRA2BGR, 1);
   cv::medianBlur(visualization, visualization, 3);
   for (int i = 0; i < nclasses; ++i) {
     cv::Mat temp = visualization(cv::Rect(i * blockWidth, i * blockWidth,
