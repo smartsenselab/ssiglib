@@ -286,7 +286,7 @@ void Results::makeConfusionMatrixVisualization(
     */
     int baseline;
     const double fontScale = 3;
-    int thickness = 4;
+    int thickness = 5;
     const auto font = cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL;
     cv::Size sz = cv::getTextSize(
                                   msg,
@@ -296,20 +296,32 @@ void Results::makeConfusionMatrixVisualization(
                                   &baseline);
 
     cv::Mat auxText = cv::Mat(sz, CV_8UC3);
-    auxText = cv::Scalar(0, 0, 0);
+    auxText = cv::Scalar(255, 255, 255);
     auto textOrigin = cv::Point((auxText.cols - sz.width) / 2,
                                 (auxText.rows + sz.height) / 2);
     auto textColor = cv::Scalar(10, 10, 255);
     if (color)
-      textColor = cv::Scalar(255, 255, 255);
+      textColor = cv::Scalar(0, 0, 0);
 
     cv::putText(auxText, msg, textOrigin,
                 cv::HersheyFonts::FONT_HERSHEY_COMPLEX_SMALL,
                 fontScale, textColor,
-                thickness, cv::LineTypes::LINE_AA);
+                thickness, cv::LineTypes::LINE_4);
     cv::resize(auxText, auxText, cv::Size(blockWidth, blockWidth));
-    cv::Mat mask;
-    cv::cvtColor(auxText, mask, CV_BGR2GRAY, 1);
+    cv::Mat mask = cv::Mat::zeros(auxText.size(), CV_8UC3);
+    mask = textColor;
+    for (int row = 0; row < mask.rows; ++row) {
+      for (int col = 0; col < mask.cols; ++col) {
+        if (mask.at<cv::Vec3b>(row, col) ==
+          auxText.at<cv::Vec3b>(row, col)) {
+          mask.at<cv::Vec3b>(row, col) = cv::Vec3b(255, 255, 255);
+        } else {
+          mask.at<cv::Vec3b>(row, col) = cv::Vec3b(0, 0, 0);
+        }
+      }
+    }
+
+    cv::cvtColor(mask, mask, CV_BGR2GRAY, 1);
     auxText.copyTo(textRoi, mask);
   }
   cv::medianBlur(visualization, visualization, 3);
