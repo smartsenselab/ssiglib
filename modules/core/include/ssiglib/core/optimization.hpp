@@ -73,7 +73,8 @@ class Optimization : public Algorithm {
   CORE_EXPORT cv::Ptr<UtilityFunctor> getUtility() const;
   CORE_EXPORT cv::Ptr<DistanceFunctor> getDistance() const;
   CORE_EXPORT void setUtilityFunctor(cv::Ptr<UtilityFunctor>& utilityFunctor);
-  CORE_EXPORT void setDistanceFunctor(cv::Ptr<DistanceFunctor>& distanceFunctor);
+  CORE_EXPORT void setDistanceFunctor(
+    cv::Ptr<DistanceFunctor>& distanceFunctor);
 
   CORE_EXPORT double getEps() const;
   CORE_EXPORT void setEps(const double eps);
@@ -105,5 +106,3 @@ class Optimization : public Algorithm {
 };
 }  // namespace ssig
 #endif  // !_SSIG_CORE_OPTIMIZATION_HPP_
-
-

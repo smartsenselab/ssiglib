@@ -98,7 +98,7 @@ void PSO::setup(const cv::Mat_<float>& input) {
       mMaxRange.at<float>(d) = static_cast<float>(max);
     }
   }
-  
+
   mVelocities = cv::Mat::zeros(mPopulationLength, mPopulation.cols, CV_32F);
 #ifdef _OPENMP
 #pragma omp parallel for
@@ -256,4 +256,4 @@ void PSO::update(const cv::Mat& globalBest,
   position = position + velocity;
 }
 
-} // namespace ssig
+}  // namespace ssig

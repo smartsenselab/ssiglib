@@ -96,18 +96,18 @@ class PSO : public Optimization {
  protected:
   CORE_EXPORT PSO(
     cv::Ptr<UtilityFunctor>& utility,
-   cv::Ptr<DistanceFunctor>& distance);
+    cv::Ptr<DistanceFunctor>& distance);
   CORE_EXPORT PSO(const PSO& rhs);
 
   CORE_EXPORT void setup(const cv::Mat_<float>& input) override;
-  
+
 
   CORE_EXPORT void iterate();
   CORE_EXPORT static void update(const cv::Mat& globalBest,
-    const cv::Mat& localBest,
-    const cv::Vec3f& inertia,
-    cv::Mat& velocity,
-    cv::Mat& position);
+                                 const cv::Mat& localBest,
+                                 const cv::Vec3f& inertia,
+                                 cv::Mat& velocity,
+                                 cv::Mat& position);
 
  private:
   // private members
@@ -126,5 +126,3 @@ class PSO : public Optimization {
 };
 }  // namespace ssig
 #endif  // !_SSIG_CORE_PSO_HPP_
-
-
