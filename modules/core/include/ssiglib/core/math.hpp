@@ -50,7 +50,7 @@ class UtilityFunctor {
  public:
   virtual ~UtilityFunctor() {}
   UtilityFunctor() = default;
-  UtilityFunctor(const UtilityFunctor& rhs) {};
+  UtilityFunctor(const UtilityFunctor& rhs) {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
 };
@@ -59,7 +59,7 @@ class DistanceFunctor {
  public:
   virtual ~DistanceFunctor() = default;
   DistanceFunctor() = default;
-  DistanceFunctor(const DistanceFunctor& rhs) {};
+  DistanceFunctor(const DistanceFunctor& rhs) {}
   CORE_EXPORT virtual float operator()(const cv::Mat& x,
                                        const cv::Mat& y) const = 0;
 };

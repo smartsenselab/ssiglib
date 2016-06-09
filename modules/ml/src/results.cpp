@@ -41,7 +41,8 @@
 
 #include "ssiglib/ml/results.hpp"
 
-#include <limits.h>
+#include <cstdio>
+#include <climits>
 #include <sstream>
 #include <algorithm>
 #include <string>
@@ -55,6 +56,10 @@
 #include <opencv2/core.hpp>
 
 #include <ssiglib/ml/classification.hpp>
+
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
 
 namespace ssig {
 Results::Results(
@@ -277,7 +282,7 @@ void Results::makeConfusionMatrixVisualization(
 
   for (int i = 0; i < nrows; ++i) {
     char msg[10];
-    sprintf(msg, "%3.2f", aux.at<double>(i, i));
+    snprintf(msg, sizeof(msg), "%3.2f", aux.at<double>(i, i));
     cv::Mat textRoi = visualization(cv::Rect(i * blockWidth, i * blockWidth,
                                              blockWidth, blockWidth));
 
@@ -449,4 +454,4 @@ void Results::makeTextImage(
   }
 }
 
-} // namespace ssig
+}  // namespace ssig

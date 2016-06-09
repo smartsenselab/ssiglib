@@ -60,7 +60,7 @@ class Results {
   std::unordered_map<int, int> mLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
-public:
+ public:
   ML_EXPORT Results() = default;
   ML_EXPORT Results(
     const cv::Mat_<int>& actualLabels,
@@ -106,7 +106,7 @@ public:
     const int blockWidth,
     cv::Mat& visualization) const;
 
-private:
+ private:
   void compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
@@ -120,5 +120,5 @@ private:
     const std::unordered_map<int, std::string>& stringLabelsMap,
     cv::Mat& img) const;
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_
