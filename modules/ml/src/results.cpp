@@ -70,15 +70,19 @@ Results::Results(
   mLabels(actualLabels) {}
 
 cv::Mat Results::getRandomConfusion() {
-  double min, max;
-  cv::minMaxIdx(mGroundTruth, &min, &max);
+  int max = static_cast<int>(mLabelMap.size());
+  std::unordered_map<int, int> invertedLabelMap;
+  for (const auto& it : mLabelMap) {
+    invertedLabelMap[it.second] = it.first;
+  }
+
   std::uniform_int_distribution<int> lRandu(
-                                            static_cast<int>(min),
-                                            static_cast<int>(max));
+                                            0,
+                                            max - 1);
   std::mt19937 gen(static_cast<uint>(time(nullptr)));
   cv::Mat_<int> actual(mGroundTruth.size());
-  for (int i = 0; i < mGroundTruth.cols; ++i) {
-    actual.at<int>(i) = lRandu(gen);
+  for (int i = 0; i < mGroundTruth.rows; ++i) {
+    actual.at<int>(i) = invertedLabelMap[lRandu(gen)];
   }
   cv::Mat_<int> ans;
   compute(mGroundTruth, actual, mLabelMap, ans);
@@ -107,6 +111,10 @@ void Results::computeLabelsVec(
   for (int i = 0; i < static_cast<int>(labelsVec.size()); ++i) {
     labelsMap[labelsVec[i]] = i;
   }
+}
+
+void Results::setLabelMap(const std::unordered_map<int, int>& labelMap) {
+  mLabelMap = labelMap;
 }
 
 void Results::compute(
@@ -171,12 +179,13 @@ cv::Mat Results::getConfusionMatrix() {
   return mConfusionMatrix;
 }
 
-void Results::getLabelMap(std::unordered_map<int, int>& rowLabels,
-                          std::unordered_map<int, int>& colLabels) const {
-  for (const auto& it : mLabelMap)
-    colLabels[it.second] = it.first;
+std::unordered_map<int, int> Results::getLabelMap() const {
+  return mLabelMap;
+}
 
-  rowLabels = colLabels;
+void Results::getMapOrderLabel(std::unordered_map<int, int>& map) const {
+  for (const auto& it : mLabelMap)
+    map[it.second] = it.first;
 }
 
 void Results::setStringLabels(std::unordered_map<int,
@@ -390,27 +399,27 @@ void Results::makeConfusionMatrixVisualization(
   const std::unordered_map<int, std::string>& stringLabelsMap,
   cv::Mat& visualization) {
   makeConfusionMatrixVisualization(color,
-    blockWidth,
-    confusionMatrix,
-    visualization);
+                                   blockWidth,
+                                   confusionMatrix,
+                                   visualization);
   const int ncols = confusionMatrix.cols;
   cv::Mat textLabels;
   makeTextImage(blockWidth, false,
-    labelsVec,
-    stringLabelsMap,
-    textLabels);
+                labelsVec,
+                stringLabelsMap,
+                textLabels);
   float scale = blockWidth * ncols / static_cast<float>(textLabels.cols);
   cv::resize(textLabels, textLabels,
-    cv::Size(blockWidth * ncols,
-    static_cast<int>(scale * textLabels.rows)));
+             cv::Size(blockWidth * ncols,
+                      static_cast<int>(scale * textLabels.rows)));
 
   textLabels.push_back(visualization);
   visualization = textLabels.clone();
 
   makeTextImage(blockWidth, true,
-    labelsVec,
-    stringLabelsMap,
-    textLabels);
+                labelsVec,
+                stringLabelsMap,
+                textLabels);
   cv::Mat block = cv::Mat::zeros(blockWidth, blockWidth, CV_8UC3);
   cv::vconcat(block, textLabels, textLabels);
 

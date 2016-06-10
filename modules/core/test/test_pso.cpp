@@ -121,5 +121,5 @@ TEST(PSO, 2Dimensions) {
   auto x = pso->getBestPosition().at<float>(0);
   auto y = pso->getBestPosition().at<float>(1);
 
-  ASSERT_LE(abs(x*x + y), 0.05);
+  ASSERT_LE(abs(x*x + y), 0.1f);
 }
