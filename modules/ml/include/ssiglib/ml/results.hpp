@@ -78,6 +78,9 @@ class Results {
 
   ML_EXPORT virtual ~Results(void) = default;
 
+
+  ML_EXPORT std::unordered_map<int, int> getLabelMap() const;
+  ML_EXPORT void setLabelMap(const std::unordered_map<int, int>& labelMap);
   ML_EXPORT int getClassesLen() const;
 
   ML_EXPORT float getAccuracy();
@@ -85,8 +88,7 @@ class Results {
 
   ML_EXPORT cv::Mat getConfusionMatrix();
 
-  ML_EXPORT void getLabelMap(std::unordered_map<int, int>& rowLabels,
-                             std::unordered_map<int, int>& colLabels) const;
+  ML_EXPORT void getMapOrderLabel(std::unordered_map<int, int>& map) const;
   ML_EXPORT void setStringLabels(std::unordered_map<int,
                                                     std::string>& stringLabels);
 
