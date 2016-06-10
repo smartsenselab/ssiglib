@@ -47,8 +47,8 @@
 
 
 struct Distance : ssig::DistanceFunctor {
-  virtual float operator()(const cv::Mat& x,
-    const cv::Mat& y) const override {
+  float operator()(const cv::Mat& x,
+                   const cv::Mat& y) const override {
     return static_cast<float>(cv::norm(x - y, cv::NORM_L1));
   }
 };
@@ -64,15 +64,18 @@ TEST(PSO, 2Sqrt) {
       return ans;
     }
   };
-  Utility util;
-  Distance dist;
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
+  cv::Ptr<ssig::DistanceFunctor> dist = cv::makePtr<Distance>();
   auto pso = ssig::PSO::create(util, dist);
   cv::Mat_<float> input;
-  cv::Mat inertia;
-  inertia = (cv::Mat_<float>(1, 3) << 0.8f , 0.8f , 1.f);
+  cv::Vec3f inertia(0.8f, 0.8f, 1.f);
   pso->setInertia(inertia);
   pso->setDimensionality(1);
-  pso->setPopulationConstraint(-10.f, 10.f);
+  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 1);
+  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 1);
+  minRange = -10.f;
+  maxRange = 10.f;
+  pso->setPopulationConstraint(minRange, maxRange);
   pso->setEps(1.0e-5);
   pso->setPopulationLength(300);
   pso->setMaxIterations(1000);
@@ -81,6 +84,42 @@ TEST(PSO, 2Sqrt) {
   cv::Mat results = pso->getResults();
   cv::Mat pop = pso->getState();
   auto actual = pso->getBestPosition().at<float>(0);
-  ASSERT_LT(std::abs(sqrt(2.f) - std::abs(actual)), 0.05f);
+  ASSERT_LT(std::abs(sqrt(2.f) - std::abs(actual)), 0.1f);
 }
 
+TEST(PSO, 2Dimensions) {
+  struct Utility : ssig::UtilityFunctor {
+    float operator()(const cv::Mat& v) const override {
+      cv::Mat_<float> f;
+      v.convertTo(f, CV_32FC1);
+      float x = f[0][0];
+      float y = f[0][1];
+      auto ans = static_cast<float>(x * x + y);
+      ans = -1 * std::abs(ans);
+      return ans;
+    }
+  };
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
+  cv::Ptr<ssig::DistanceFunctor> dist = cv::makePtr<Distance>();
+  auto pso = ssig::PSO::create(util, dist);
+  cv::Mat_<float> input;
+  cv::Vec3f inertia(0.8f, 0.8f, 1.f);
+  pso->setInertia(inertia);
+  pso->setDimensionality(2);
+  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 1);
+  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 1);
+  minRange = -10.f;
+  maxRange = 10.f;
+  pso->setPopulationConstraint(minRange, maxRange);
+  pso->setEps(1.0e-5);
+  pso->setPopulationLength(500);
+  pso->setMaxIterations(500);
+
+  pso->learn(input);
+  cv::Mat results = pso->getResults();
+  cv::Mat pop = pso->getState();
+  auto x = pso->getBestPosition().at<float>(0);
+  auto y = pso->getBestPosition().at<float>(1);
+
+  ASSERT_LE(abs(x*x + y), 0.1f);
+}

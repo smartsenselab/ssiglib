@@ -41,24 +41,23 @@
 
 #ifndef _SSIG_CORE_RESULTS_HPP_
 #define _SSIG_CORE_RESULTS_HPP_
-
+// c++
 #include <utility>
 #include <string>
 #include <vector>
 #include <unordered_map>
-
+// opencv
 #include <opencv2/core.hpp>
+// ssiglib
 #include <ssiglib/ml/ml_defs.hpp>
+#include <ssiglib/ml/classification.hpp>
 
 namespace ssig {
-class Classifier;
-
 class Results {
   cv::Mat_<int> mConfusionMatrix;
   cv::Mat_<int> mGroundTruth;
   cv::Mat_<int> mLabels;
   std::unordered_map<int, int> mLabelMap;
-  std::unordered_map<int, int> mGtLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
  public:
@@ -67,12 +66,21 @@ class Results {
     const cv::Mat_<int>& actualLabels,
     const cv::Mat_<int>& expectedLabels);
 
+  /**
+  return a confusion matrix from applying a random classifier on the data.
+  */
+  ML_EXPORT cv::Mat getRandomConfusion();
+
   ML_EXPORT void computeLabelsVec(
-    const cv::Mat_<int>& groundTruth,
-    std::unordered_map<int, int>& labelsVec) const;
+    const cv::Mat_<int>& labelMat,
+    const cv::Mat_<int>& gtLabelMat,
+    std::unordered_map<int, int>& labelsMap) const;
 
   ML_EXPORT virtual ~Results(void) = default;
 
+
+  ML_EXPORT std::unordered_map<int, int> getLabelMap() const;
+  ML_EXPORT void setLabelMap(const std::unordered_map<int, int>& labelMap);
   ML_EXPORT int getClassesLen() const;
 
   ML_EXPORT float getAccuracy();
@@ -80,8 +88,7 @@ class Results {
 
   ML_EXPORT cv::Mat getConfusionMatrix();
 
-  ML_EXPORT void getLabelMap(std::unordered_map<int, int>& rowLabels,
-                             std::unordered_map<int, int>& colLabels) const;
+  ML_EXPORT void getMapOrderLabel(std::unordered_map<int, int>& map) const;
   ML_EXPORT void setStringLabels(std::unordered_map<int,
                                                     std::string>& stringLabels);
 
@@ -101,6 +108,14 @@ class Results {
     const cv::Mat_<float>& confusionMatrix,
     cv::Mat& visualization);
 
+  ML_EXPORT static void makeConfusionMatrixVisualization(
+    const bool color,
+    const int blockWidth,
+    const cv::Mat_<float>& confusionMatrix,
+    const std::unordered_map<int, int>& labelsVec,
+    const std::unordered_map<int, std::string>& stringLabelsMap,
+    cv::Mat& visualization);
+
   ML_EXPORT void makeConfusionMatrixVisualization(
     const bool color,
     const int blockWidth,
@@ -111,15 +126,14 @@ class Results {
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
     std::unordered_map<int, int>& labelsVec,
-    std::unordered_map<int, int>& labelsVecGt,
     cv::Mat_<int>& confusionMatrix) const;
 
-  ML_EXPORT void makeTextImage(
+  ML_EXPORT static void makeTextImage(
     const int blockWidth,
     const bool row,
     const std::unordered_map<int, int>& labelMap,
     const std::unordered_map<int, std::string>& stringLabelsMap,
-    cv::Mat& img) const;
+    cv::Mat& img);
 };
 }  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_
