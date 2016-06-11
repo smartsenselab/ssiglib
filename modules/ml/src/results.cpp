@@ -41,6 +41,7 @@
 
 #include "ssiglib/ml/results.hpp"
 // c++
+#include <ctime>
 #include <random>
 #include <cstdio>
 #include <climits>
@@ -284,52 +285,53 @@ float Results::leaveOneOut(
   const cv::Mat_<float>& features,
   const cv::Mat_<int>& labels,
   ssig::Classifier& classifier,
+  const bool verbose,
   Results& result) {
   cv::Mat_<int> actual(features.rows, 1);
   float hits = 0;
   float misses = 0;
-  int numthreads = 1;
-#ifdef _OPENMP
-  numthreads = omp_get_max_threads();
-#endif
 
-  std::vector<ssig::Classifier*> threadClassifiers(numthreads);
-  for(auto& threadClassifier: threadClassifiers)
-    threadClassifier = classifier.clone();
-
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
   for (int r = 0; r < features.rows; ++r) {
+    clock_t begin = clock();
+    if (verbose) {
+      printf("test sample[%d]\n", r);
+    }
     cv::Mat testSample = features.row(r);
     cv::Mat trainSamples;
     cv::Mat_<int> trainLabels;
     if (r == 0) {
-      trainSamples = features.rowRange(r + 1, features.rows);
-      trainLabels = labels.rowRange(r + 1, labels.rows);
+      trainSamples = features.rowRange(r + 1, features.rows).clone();
+      trainLabels = labels.rowRange(r + 1, labels.rows).clone();
     } else {
-      trainSamples = features.rowRange(0, r - 1);
+      trainSamples = features.rowRange(0, r).clone();
       trainSamples.push_back(features.rowRange(r + 1, features.rows));
-      trainLabels = labels.rowRange(0, r - 1);
+      trainLabels = labels.rowRange(0, r).clone();
       trainLabels.push_back(labels.rowRange(r + 1, labels.rows));
     }
     int t = 0;
-#ifdef _OPENMP
-    t = omp_get_thread_num();
-#endif
-    
-    threadClassifiers[t]->learn(trainSamples, trainLabels);
+
+    classifier.learn(trainSamples, trainLabels);
+    if (verbose) {
+      printf("Iteration Learning Done\n");
+    }
     cv::Mat_<float> resp;
-    int label = threadClassifiers[t]->predict(testSample, resp);
+    int label = classifier.predict(testSample, resp);
+    if (verbose) {
+      printf("Prediction Done: expected[%d] - actual[%d]\n",
+             labels.at<int>(r),
+             label);
+    }
 
     actual.at<int>(r) = label;
-#pragma omp critical
     if (label == labels.at<int>(r)) {
       ++hits;
     } else {
       ++misses;
     }
-
+    if (verbose) {
+      double elapsed = static_cast<double>((clock() - begin) / CLOCKS_PER_SEC);
+      printf("Iteration Done in [%g]seconds\n", elapsed);
+    }
   }
   result = std::move(Results(actual, labels));
   return hits / (hits + misses);
@@ -493,11 +495,11 @@ void Results::makeConfusionMatrixVisualization(
 void Results::makeConfusionMatrixVisualization(const bool color,
                                                const int blockWidth,
                                                cv::Mat& visualization) {
-  if(mConfusionMatrix.empty())
+  if (mConfusionMatrix.empty())
     compute(mGroundTruth,
-    mLabels,
-    mLabelMap,
-    mConfusionMatrix);
+            mLabels,
+            mLabelMap,
+            mConfusionMatrix);
 
   makeConfusionMatrixVisualization(color,
                                    blockWidth,

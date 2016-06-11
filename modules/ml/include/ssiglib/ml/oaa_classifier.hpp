@@ -93,7 +93,7 @@ class OAAClassifier : public Classifier {
   std::unordered_map<int, int> mLabel2Index;
   std::vector<int> mIndex2Label;
 
-  std::vector<std::shared_ptr<Classifier>> mClassifiers;
+  std::vector<std::unique_ptr<Classifier>> mClassifiers;
   std::unique_ptr<Classifier> mUnderlyingClassifier;
   cv::Mat_<int> mLabels;
 
