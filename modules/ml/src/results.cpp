@@ -57,6 +57,8 @@
 #include <opencv2/core.hpp>
 // ssiglib
 #include <ssiglib/ml/classification.hpp>
+// utils
+#include <omp.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -278,6 +280,68 @@ std::pair<float, float> Results::crossValidation(
                         static_cast<float>(stdev[0]));
 }
 
+float Results::leaveOneOut(
+  const cv::Mat_<float>& features,
+  const cv::Mat_<int>& labels,
+  ssig::Classifier& classifier,
+  Results& result) {
+  cv::Mat_<int> actual(features.rows, 1);
+  float hits = 0;
+  float misses = 0;
+  int numthreads = 1;
+#ifdef _OPENMP
+  numthreads = omp_get_max_threads();
+#endif
+
+  std::vector<ssig::Classifier*> threadClassifiers(numthreads);
+  for(auto& threadClassifier: threadClassifiers)
+    threadClassifier = classifier.clone();
+
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int r = 0; r < features.rows; ++r) {
+    cv::Mat testSample = features.row(r);
+    cv::Mat trainSamples;
+    cv::Mat_<int> trainLabels;
+    if (r == 0) {
+      trainSamples = features.rowRange(r + 1, features.rows);
+      trainLabels = labels.rowRange(r + 1, labels.rows);
+    } else {
+      trainSamples = features.rowRange(0, r - 1);
+      trainSamples.push_back(features.rowRange(r + 1, features.rows));
+      trainLabels = labels.rowRange(0, r - 1);
+      trainLabels.push_back(labels.rowRange(r + 1, labels.rows));
+    }
+    int t = 0;
+#ifdef _OPENMP
+    t = omp_get_thread_num();
+#endif
+    
+    threadClassifiers[t]->learn(trainSamples, trainLabels);
+    cv::Mat_<float> resp;
+    int label = threadClassifiers[t]->predict(testSample, resp);
+
+    actual.at<int>(r) = label;
+#pragma omp critical
+    if (label == labels.at<int>(r)) {
+      ++hits;
+    } else {
+      ++misses;
+    }
+
+  }
+  result = std::move(Results(actual, labels));
+  return hits / (hits + misses);
+}
+
+Results::Results(const Results& rhs) {
+  mGroundTruth = rhs.mGroundTruth;
+  mLabels = rhs.mLabels;
+  mLabelMap = rhs.mLabelMap;
+  mStringLabels = rhs.mStringLabels;
+}
+
 void Results::makeConfusionMatrixVisualization(
   const bool color,
   const int blockWidth,
@@ -428,7 +492,13 @@ void Results::makeConfusionMatrixVisualization(
 
 void Results::makeConfusionMatrixVisualization(const bool color,
                                                const int blockWidth,
-                                               cv::Mat& visualization) const {
+                                               cv::Mat& visualization) {
+  if(mConfusionMatrix.empty())
+    compute(mGroundTruth,
+    mLabels,
+    mLabelMap,
+    mConfusionMatrix);
+
   makeConfusionMatrixVisualization(color,
                                    blockWidth,
                                    mConfusionMatrix,
@@ -520,4 +590,4 @@ void Results::makeTextImage(
   }
 }
 
-}  // namespace ssig
+} // namespace ssig
