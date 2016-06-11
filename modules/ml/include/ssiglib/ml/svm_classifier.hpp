@@ -53,15 +53,20 @@
 
 namespace ssig {
 class SVMClassifier : public Classifier {
-  svm_problem* convertToLibSVM(
+  static svm_problem* convertToLibSVM(
     const cv::Mat_<int>& labels,
-    const cv::Mat_<float>& features) const;
-  svm_node** convertToLibSVM(
-    const cv::Mat_<float>& features) const;
+    const cv::Mat_<float>& features,
+    double* & y,
+    svm_node** & x);
 
-  void convertToLibSVM(const std::unordered_map <int, float>&weights);
+  static svm_node** convertToLibSVM(
+    const cv::Mat_<float>& features);
 
- public:
+  static void convertToLibSVM(
+    const std::unordered_map<int, float>& weights,
+    svm_parameter &params);
+
+public:
   enum ModelType {
     C_SVC,
     NU_SVC,
@@ -93,7 +98,7 @@ class SVMClassifier : public Classifier {
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
 
   ML_EXPORT void setClassWeights(const int classLabel,
-    const float weight) override;
+                                 const float weight) override;
 
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
@@ -148,17 +153,19 @@ class SVMClassifier : public Classifier {
 
   // ML_EXPORT void setCrossValidationState(int kfolds);
 
- private:
+private:
+  ML_EXPORT inline void cleanup();
   // private members
   svm_model* mModel = nullptr;
+  double* mY = nullptr;
+  svm_node** mX = nullptr;
+  int mSamplesLen = 0;
 
   svm_parameter mParams;
 
-  std::unordered_map <int, float> mMapLabel2Weight;
+  std::unordered_map<int, float> mMapLabel2Weight;
 };
 
-}  // namespace ssig
+} // namespace ssig
 
 #endif  // !_SSIG_ML_SVMCLASSIFIER_HPP_
-
-

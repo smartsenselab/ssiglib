@@ -76,6 +76,7 @@ public:
     const cv::Mat_<float>& features,
     const cv::Mat_<int>& labels,
     ssig::Classifier& classifier,
+    const bool verbose,
     Results& result);
 
   ML_EXPORT Results() = default;
