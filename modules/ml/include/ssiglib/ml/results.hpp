@@ -60,8 +60,26 @@ class Results {
   std::unordered_map<int, int> mLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
- public:
+public:
+  /**
+  @return: a pair of float where first is mean precision and second is stddev
+  */
+  ML_EXPORT static std::pair<float, float> crossValidation(
+    const cv::Mat_<float>& features,
+    const cv::Mat_<int>& labels,
+    const int nfolds,
+    const size_t seed,
+    ssig::Classifier& classifier,
+    std::vector<Results>& out);
+
+  ML_EXPORT static float leaveOneOut(
+    const cv::Mat_<float>& features,
+    const cv::Mat_<int>& labels,
+    ssig::Classifier& classifier,
+    Results& result);
+
   ML_EXPORT Results() = default;
+  ML_EXPORT Results(const Results& rhs);
   ML_EXPORT Results(
     const cv::Mat_<int>& actualLabels,
     const cv::Mat_<int>& expectedLabels);
@@ -94,14 +112,6 @@ class Results {
 
   ML_EXPORT std::vector<int> getLabelsCount();
 
-  ML_EXPORT static std::pair<float, float> crossValidation(
-    const cv::Mat_<float>& features,
-    const cv::Mat_<int>& labels,
-    const int nfolds,
-    const size_t seed,
-    ssig::Classifier& classifier,
-    std::vector<Results>& out);
-
   ML_EXPORT static void makeConfusionMatrixVisualization(
     const bool color,
     const int blockWidth,
@@ -119,9 +129,9 @@ class Results {
   ML_EXPORT void makeConfusionMatrixVisualization(
     const bool color,
     const int blockWidth,
-    cv::Mat& visualization) const;
+    cv::Mat& visualization);
 
- private:
+private:
   void compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
@@ -135,5 +145,5 @@ class Results {
     const std::unordered_map<int, std::string>& stringLabelsMap,
     cv::Mat& img);
 };
-}  // namespace ssig
+} // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_
