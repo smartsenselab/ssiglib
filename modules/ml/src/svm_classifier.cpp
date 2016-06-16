@@ -363,4 +363,4 @@ void SVMClassifier::cleanup() {
 cv::Mat_<int> SVMClassifier::getLabels() const {
   return mLabels;
 }
-} // namespace ssig
+}  // namespace ssig

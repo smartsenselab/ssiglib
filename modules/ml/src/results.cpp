@@ -40,6 +40,9 @@
 *****************************************************************************L*/
 
 #include "ssiglib/ml/results.hpp"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 // c++
 #include <ctime>
 #include <random>
@@ -50,7 +53,6 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <ctime>
 #include <vector>
 // opencv
 #include <opencv2/imgproc.hpp>
@@ -58,8 +60,6 @@
 #include <opencv2/core.hpp>
 // ssiglib
 #include <ssiglib/ml/classification.hpp>
-// utils
-#include <omp.h>
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -592,4 +592,4 @@ void Results::makeTextImage(
   }
 }
 
-} // namespace ssig
+}  // namespace ssig
