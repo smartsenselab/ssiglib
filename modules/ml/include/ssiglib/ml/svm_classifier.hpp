@@ -66,7 +66,7 @@ class SVMClassifier : public Classifier {
     const std::unordered_map<int, float>& weights,
     svm_parameter &params);
 
-public:
+ public:
   enum ModelType {
     C_SVC,
     NU_SVC,
@@ -153,7 +153,7 @@ public:
 
   // ML_EXPORT void setCrossValidationState(int kfolds);
 
-private:
+ private:
   ML_EXPORT inline void cleanup();
   // private members
   svm_model* mModel = nullptr;
@@ -166,6 +166,6 @@ private:
   std::unordered_map<int, float> mMapLabel2Weight;
 };
 
-} // namespace ssig
+}  // namespace ssig
 
 #endif  // !_SSIG_ML_SVMCLASSIFIER_HPP_

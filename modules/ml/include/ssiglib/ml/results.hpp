@@ -60,7 +60,7 @@ class Results {
   std::unordered_map<int, int> mLabelMap;
   std::unordered_map<int, std::string> mStringLabels;
 
-public:
+ public:
   /**
   @return: a pair of float where first is mean precision and second is stddev
   */
@@ -132,7 +132,7 @@ public:
     const int blockWidth,
     cv::Mat& visualization);
 
-private:
+ private:
   void compute(
     const cv::Mat_<int>& groundTruth,
     const cv::Mat_<int>& labels,
@@ -146,5 +146,5 @@ private:
     const std::unordered_map<int, std::string>& stringLabelsMap,
     cv::Mat& img);
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_

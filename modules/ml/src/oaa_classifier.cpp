@@ -235,4 +235,4 @@ void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
   mLabels = labels;
 }
 
-} // namespace ssig
+}  // namespace ssig
