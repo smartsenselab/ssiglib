@@ -40,7 +40,11 @@
 *****************************************************************************L*/
 
 #include "ssiglib/ml/results.hpp"
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 // c++
+#include <ctime>
 #include <random>
 #include <cstdio>
 #include <climits>
@@ -49,7 +53,6 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <ctime>
 #include <vector>
 // opencv
 #include <opencv2/imgproc.hpp>
@@ -278,6 +281,69 @@ std::pair<float, float> Results::crossValidation(
                         static_cast<float>(stdev[0]));
 }
 
+float Results::leaveOneOut(
+  const cv::Mat_<float>& features,
+  const cv::Mat_<int>& labels,
+  ssig::Classifier& classifier,
+  const bool verbose,
+  Results& result) {
+  cv::Mat_<int> actual(features.rows, 1);
+  float hits = 0;
+  float misses = 0;
+
+  for (int r = 0; r < features.rows; ++r) {
+    clock_t begin = clock();
+    if (verbose) {
+      printf("test sample[%d]\n", r);
+    }
+    cv::Mat testSample = features.row(r);
+    cv::Mat trainSamples;
+    cv::Mat_<int> trainLabels;
+    if (r == 0) {
+      trainSamples = features.rowRange(r + 1, features.rows).clone();
+      trainLabels = labels.rowRange(r + 1, labels.rows).clone();
+    } else {
+      trainSamples = features.rowRange(0, r).clone();
+      trainSamples.push_back(features.rowRange(r + 1, features.rows));
+      trainLabels = labels.rowRange(0, r).clone();
+      trainLabels.push_back(labels.rowRange(r + 1, labels.rows));
+    }
+    int t = 0;
+
+    classifier.learn(trainSamples, trainLabels);
+    if (verbose) {
+      printf("Iteration Learning Done\n");
+    }
+    cv::Mat_<float> resp;
+    int label = classifier.predict(testSample, resp);
+    if (verbose) {
+      printf("Prediction Done: expected[%d] - actual[%d]\n",
+             labels.at<int>(r),
+             label);
+    }
+
+    actual.at<int>(r) = label;
+    if (label == labels.at<int>(r)) {
+      ++hits;
+    } else {
+      ++misses;
+    }
+    if (verbose) {
+      double elapsed = static_cast<double>((clock() - begin) / CLOCKS_PER_SEC);
+      printf("Iteration Done in [%g]seconds\n", elapsed);
+    }
+  }
+  result = std::move(Results(actual, labels));
+  return hits / (hits + misses);
+}
+
+Results::Results(const Results& rhs) {
+  mGroundTruth = rhs.mGroundTruth;
+  mLabels = rhs.mLabels;
+  mLabelMap = rhs.mLabelMap;
+  mStringLabels = rhs.mStringLabels;
+}
+
 void Results::makeConfusionMatrixVisualization(
   const bool color,
   const int blockWidth,
@@ -428,7 +494,13 @@ void Results::makeConfusionMatrixVisualization(
 
 void Results::makeConfusionMatrixVisualization(const bool color,
                                                const int blockWidth,
-                                               cv::Mat& visualization) const {
+                                               cv::Mat& visualization) {
+  if (mConfusionMatrix.empty())
+    compute(mGroundTruth,
+            mLabels,
+            mLabelMap,
+            mConfusionMatrix);
+
   makeConfusionMatrixVisualization(color,
                                    blockWidth,
                                    mConfusionMatrix,

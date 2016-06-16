@@ -40,12 +40,13 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-
+// c++
 #include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-
+// ssiglib
 #include <ssiglib/ml/results.hpp>
+#include <ssiglib/ml/svm_classifier.hpp>
 
 TEST(Results, binaryConfMat) {
   cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0 , 1 , 0 , 1);
@@ -231,3 +232,23 @@ TEST(Results, MissingLabel2) {
 
   ASSERT_FLOAT_EQ((1 + .5f) / 4.f, meanAccuracy);
 }
+
+TEST(Results, LeaveOneOut) {
+  cv::Mat_<float> inp = (cv::Mat_<float>(6, 2) <<
+    3., 4., 0., 0., 2., 1.,
+    10000., 10002., 10003., 10000., 10000., 10000.);
+
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << -1, -1, -1,
+    1, 1, 1);
+
+  ssig::SVMClassifier classifier;
+  classifier.setC(0.1);
+  classifier.setKernelType(ssig::SVMClassifier::LINEAR);
+  classifier.setModelType(ssig::SVMClassifier::C_SVC);
+
+  ssig::Results results;
+  auto p = ssig::Results::leaveOneOut(inp, labels, classifier, false, results);
+
+  ASSERT_FLOAT_EQ(1.f, p);
+}
+
