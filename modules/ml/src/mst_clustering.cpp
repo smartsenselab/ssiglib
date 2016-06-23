@@ -38,6 +38,8 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+#define L2Dist(sampleA, sampleB) static_cast<float>(\
+                                  cv::norm((sampleA) - (sampleB)))
 
 #include "ssiglib/ml/mst_clustering.hpp"
 
@@ -49,23 +51,32 @@
 #include <ctime>
 
 namespace ssig {
+static void computeMST(
+  const cv::Mat_<float>& samples,
+  std::vector<std::pair<int, int>>& edges);
+
 void MSTreeClustering::setup(const cv::Mat_<float>& input) {}
 
 void MSTreeClustering::learn(const cv::Mat_<float>& input) {
-  cv::Mat_<float> adjMat;
+  mSamples = input;
+  // cv::Mat_<float> adjMat;
   std::vector<std::pair<int, int>> edges;
-  computeAdjacencyMatrix(input, adjMat);
-  computeMinimumSpanningTree(adjMat, edges);
+  // computeAdjacencyMatrix(mSamples, adjMat);
+  computeMST(input, edges);
 
   std::sort(edges.begin(), edges.end(),
-            [&adjMat](const std::pair<int, int>& a,
+            [&input](const std::pair<int, int>& a,
               const std::pair<int, int>& b) {
-              return adjMat[a.first][a.second] > adjMat[b.first][b.second];
+              float weightA = L2Dist(input.row(a.first),
+                    input.row(a.second)),
+                  weightB = L2Dist(input.row(b.first),
+                    input.row(b.second));
+              return weightA > weightB;
             });
   edges.erase(edges.begin(), edges.begin() + (mK - 1));
 
   // find the components after pruning
-  std::vector<std::vector<int>> children(input.rows);
+  std::vector<std::vector<int>> children(mSamples.rows);
   for (const auto& edge : edges) {
     const int &i = edge.first,
         &j = edge.second;
@@ -73,33 +84,41 @@ void MSTreeClustering::learn(const cv::Mat_<float>& input) {
     children[j].push_back(i);
   }
 
+  mClusters.resize(getK());
+  int clusterId = 0;
   // dfs for finding components
-  std::vector<ssig::Cluster> clustering;
-  std::vector<bool> visited(input.rows, false);
-  for (int r = 0; r < input.rows; ++r) {
+  std::vector<bool> visited(mSamples.rows, false);
+  for (int r = 0; r < mSamples.rows; ++r) {
     if (visited[r])
       continue;
-    clustering.resize(clustering.size() + 1);
     std::stack<int> stack;
     stack.push(r);
     while (!stack.empty()) {
       auto element = stack.top();
       visited[element] = true;
       stack.pop();
-      clustering.back().push_back(element);
+      mClusters[clusterId].push_back(element);
       for (const auto& child : children[element]) {
         if (!visited[child]) {
           stack.push(child);
         }
       }
     }
+    ++clusterId;
   }
-  mClusters = clustering;
 }
 
 void MSTreeClustering::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {}
+  cv::Mat_<float>& resp) const {
+  cv::Mat_<float> centroids;
+  getCentroids(centroids);
+  ssig::Clustering::predict(
+                            inp,
+                            centroids,
+                            ssig::Clustering::NORM_L2,
+                            resp);
+}
 
 std::vector<Cluster> MSTreeClustering::getClustering() const {
   return mClusters;
@@ -217,6 +236,9 @@ void MSTreeClustering::computeAdjacencyMatrix(
   adjMatrix = cv::Mat_<float>::zeros(nrows, nrows);
   adjMatrix = FLT_MAX;
 
+#ifdef _OPENMP
+  #pragma omp parallel for
+#endif
   for (int i = 0; i < nrows; ++i) {
     cv::Mat_<float> sampleA = input.row(i);
     for (int j = i + 1; j < nrows; ++j) {
@@ -225,6 +247,52 @@ void MSTreeClustering::computeAdjacencyMatrix(
       adjMatrix[i][j] = weight;
       adjMatrix[j][i] = weight;
     }
+  }
+}
+
+void computeMST(
+  const cv::Mat_<float>& samples,
+  std::vector<std::pair<int, int>>& edges) {
+  // Simple Prim since the graph is dense
+  const int nrows = samples.rows;
+  std::srand(static_cast<unsigned int>(time(nullptr)));
+  int u = std::rand() % nrows;
+  int solLen = 0;
+  std::vector<bool> inSolution(nrows);
+  std::vector<float> weights(nrows, FLT_MAX);
+  std::vector<int> predecessors(nrows, -1);
+
+  weights[u] = 0;
+
+  while (solLen < nrows) {
+    float minWeight = FLT_MAX;
+    int pos = 0;;
+    for (int n = 0; n < nrows; ++n) {
+      const auto& weight = weights[n];
+      if (!inSolution[n] && weight < minWeight) {
+        minWeight = weight;
+        pos = n;
+      }
+    }
+    ++solLen;
+    inSolution[pos] = true;
+
+    for (int j = 0; j < nrows; ++j) {
+      float dist = L2Dist(samples.row(pos), samples.row(j));
+      if (!inSolution[j] && dist < weights[j]) {
+        weights[j] = dist;
+        predecessors[j] = pos;
+      }
+    }
+  }
+
+  // From here onwards it is just making sure the answers are always ordered
+  edges.reserve(nrows - 1);
+  for (int i = 0; i < nrows; ++i) {
+    int j = predecessors[i];
+    if (j < 0)
+      continue;
+    edges.push_back(std::make_pair(i, j));
   }
 }
 

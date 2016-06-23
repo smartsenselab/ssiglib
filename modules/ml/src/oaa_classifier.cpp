@@ -55,7 +55,7 @@ namespace ssig {
 
 OAAClassifier::OAAClassifier(const Classifier& prototypeClassifier) {
   mUnderlyingClassifier =
-    std::unique_ptr<Classifier>(prototypeClassifier.clone());
+      std::unique_ptr<Classifier>(prototypeClassifier.clone());
 }
 
 void OAAClassifier::learn(
@@ -81,6 +81,10 @@ void OAAClassifier::learn(
   }
 
   mClassifiers.resize(mLabel2Index.size());
+  for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i)
+    mClassifiers[i] =
+        std::move(std::unique_ptr<Classifier>(mUnderlyingClassifier->clone()));
+
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
@@ -100,9 +104,6 @@ void OAAClassifier::learn(
     }
     nPos = nPos / (nPos + nNeg);
 
-    mClassifiers[i] =
-      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
-
     mClassifiers[i]->setClassWeights(1, nPos);
     mClassifiers[i]->setClassWeights(-1, 1 - nPos);
     mClassifiers[i]->learn(mSamples, localLabels);
@@ -115,7 +116,7 @@ int OAAClassifier::predict(
   const cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const {
   resp =
-    cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
+      cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   float maxResp = -FLT_MAX;
   int bestLabel = 0;
 #ifdef _OPENMP
@@ -138,7 +139,7 @@ int OAAClassifier::predict(
       ++c;
     }
   }
-  return inp.rows > 1?0 : mIndex2Label[bestLabel];
+  return inp.rows > 1 ? 0 : mIndex2Label[bestLabel];
 }
 
 cv::Mat_<int> OAAClassifier::getLabels() const {
@@ -186,20 +187,21 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto classifiersNode = fn["classifiers"];
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
-    mClassifiers.push_back(
-      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone()));
+    auto newClassifier = std::unique_ptr<Classifier>(
+      mUnderlyingClassifier->clone());
+    mClassifiers.push_back(std::move(newClassifier));
     mClassifiers.back()->read(*it);
   }
 }
 
 void OAAClassifier::write(cv::FileStorage& fs) const {
   fs << "labelOrdering"
-    << "{";
+      << "{";
   ssig::Util::write<int, int>(mLabel2Index, fs);
   fs << "}";
 
   fs << "classifiers"
-    << "{";
+      << "{";
   int i = 0;
   for (auto& c : mClassifiers) {
     fs << "c" + std::to_string(i++) << "{";
@@ -225,7 +227,7 @@ std::shared_ptr<Classifier> OAAClassifier::getUnderlyingClassifier() const {
 void OAAClassifier::setUnderlyingClassifier(
   const Classifier& underlyingClassifier) {
   mUnderlyingClassifier =
-    std::unique_ptr<Classifier>(underlyingClassifier.clone());
+      std::unique_ptr<Classifier>(underlyingClassifier.clone());
 }
 
 void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
@@ -234,5 +236,3 @@ void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
 }
 
 }  // namespace ssig
-
-
