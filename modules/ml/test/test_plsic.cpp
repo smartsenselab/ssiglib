@@ -59,7 +59,7 @@ TEST(PLSIC, CorrelationClusteringTest) {
   ssig::PLSClassifier plsclassifier;
   plsclassifier.setNumberOfFactors(2);
 
-  ssig::OAAClassifier oaaclassifier(plsclassifier);
+  auto oaaclassifier = ssig::OAAClassifier::create(plsclassifier);
 
   std::vector<ssig::Cluster> discoverySubsets;
   discoverySubsets.resize(2);
@@ -78,7 +78,7 @@ TEST(PLSIC, CorrelationClusteringTest) {
     {{1}, {8}, {14}, {15}, {23}, {28}};
   std::vector<ssig::Cluster> natVector = {{}, {}};
 
-  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+  ssig::PLSImageClustering clustering(*oaaclassifier, discoverySubsets,
                                       initialClustering);
   clustering.setK(2);
   clustering.setClusterRepresentationType(
@@ -90,7 +90,7 @@ TEST(PLSIC, CorrelationClusteringTest) {
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
-  clustering.setClassifier(oaaclassifier);
+  clustering.setClassifier(*oaaclassifier);
 
 
   clustering.addNaturalWorld(neg, natVector);
@@ -136,7 +136,7 @@ TEST(PLSIC, CosineClusteringTest) {
   ssig::PLSClassifier plsclassifier;
   plsclassifier.setNumberOfFactors(2);
 
-  ssig::OAAClassifier oaaclassifier(plsclassifier);
+  auto oaaclassifier = ssig::OAAClassifier::create(plsclassifier);
 
   std::vector<ssig::Cluster> discoverySubsets;
   discoverySubsets.resize(2);
@@ -155,7 +155,7 @@ TEST(PLSIC, CosineClusteringTest) {
     {{1}, {8}, {14}, {15}, {23}, {28}};
   std::vector<ssig::Cluster> natVector = {{}, {}};
 
-  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
+  ssig::PLSImageClustering clustering(*oaaclassifier, discoverySubsets,
                                       initialClustering);
   clustering.setK(2);
   clustering.setClusterRepresentationType(
@@ -171,7 +171,7 @@ TEST(PLSIC, CosineClusteringTest) {
   clustering.setDiscoveryConfiguration(discoverySubsets);
   clustering.setClusterSize(5);
   clustering.setMaxIterations(8);
-  clustering.setClassifier(oaaclassifier);
+  clustering.setClassifier(*oaaclassifier);
 
 
   clustering.setInitialClustering(initialClustering);

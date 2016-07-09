@@ -188,7 +188,7 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
     auto newClassifier = std::unique_ptr<Classifier>(
-      mUnderlyingClassifier->clone());
+                                                     mUnderlyingClassifier->clone());
     mClassifiers.push_back(std::move(newClassifier));
     mClassifiers.back()->read(*it);
   }
@@ -230,9 +230,15 @@ void OAAClassifier::setUnderlyingClassifier(
       std::unique_ptr<Classifier>(underlyingClassifier.clone());
 }
 
+cv::Ptr<OAAClassifier> OAAClassifier::create(const Classifier& underlying) {
+  auto ans =
+      cv::Ptr<OAAClassifier>(new OAAClassifier(underlying));
+  return ans;
+}
+
 void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
   mLabels.release();
   mLabels = labels;
 }
 
-}  // namespace ssig
+} // namespace ssig

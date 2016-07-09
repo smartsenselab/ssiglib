@@ -39,75 +39,36 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#ifndef _SSIG_ML_MULTICLASS_HPP_
+#define _SSIG_ML_MULTICLASS_HPP_
 
-#ifndef _SSIG_ML_OAACLASSIFIER_HPP_
-#define _SSIG_ML_OAACLASSIFIER_HPP_
+// ssiglib
+#include "ssiglib/core/algorithm.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/ml/classification.hpp"
 
-#include <unordered_map>
-#include <memory>
-#include <vector>
-#include <string>
-
-#include "classification.hpp"
-#include "multiclass.hpp"
 
 namespace ssig {
+class Multiclass : public Classifier {
+public:
+  virtual ~Multiclass() = default;
 
-class OAAClassifier : public Multiclass {
-  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
+  int predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override = 0;
+  void learn(const cv::Mat_<float>& input, const cv::Mat_<int>& labels) override = 0;
+  cv::Mat_<int> getLabels() const override = 0;
+  std::unordered_map<int, int> getLabelsOrdering() const override = 0;
+  bool empty() const override = 0;
+  bool isTrained() const override = 0;
+  bool isClassifier() const override;
+  void read(const cv::FileNode& fn) override = 0;
+  void write(cv::FileStorage& fs) const override = 0;
+  Classifier* clone() const override = 0;
 
- public:
-  virtual ~OAAClassifier(void) = default;
 
-  ML_EXPORT int predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
-
-  ML_EXPORT void learn(
-    const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
-  
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
-  ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
-  
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
-
-  ML_EXPORT Classifier* clone() const override;
-
-  ML_EXPORT std::shared_ptr<Classifier> getUnderlyingClassifier() const;
-  ML_EXPORT void setUnderlyingClassifier(
-    const Classifier& underlyingClassifier);
-
-  ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
-
- protected:
- ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
-  OAAClassifier() = default;
-
- private:
+protected:
+  Multiclass() = default;
+private:
   // private members
-  std::unordered_map<int, int> mLabel2Index;
-  std::vector<int> mIndex2Label;
-
-  std::vector<std::unique_ptr<Classifier>> mClassifiers;
-  std::unique_ptr<Classifier> mUnderlyingClassifier;
-  cv::Mat_<int> mLabels;
-
-  bool mTrained = false;
 };
-
-}  // namespace ssig
-
-#endif  // !_SSIG_ML_OAACLASSIFIER_HPP_
-
-
+} // namespace ssig
+#endif  // !_SSIG_ML_MULTICLASS_HPP_

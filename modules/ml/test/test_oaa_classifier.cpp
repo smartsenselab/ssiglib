@@ -60,21 +60,21 @@ TEST(OAAClassifier, PLSBinaryClassification) {
 
   ssig::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-  ssig::OAAClassifier classifier(underlying);
-  classifier.learn(inp, labels);
+  auto classifier = ssig::OAAClassifier::create(underlying);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
 
   cv::Mat_<float> resp;
-  classifier.predict(query1, resp);
-  auto ordering = classifier.getLabelsOrdering();
+  classifier->predict(query1, resp);
+  auto ordering = classifier->getLabelsOrdering();
   int idx = ordering[1];
   EXPECT_EQ(0, idx);
   EXPECT_GE(resp[0][idx], 0);
   idx = ordering[-1];
   EXPECT_EQ(1, idx);
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   EXPECT_GE(resp[0][idx], 0);
 }
 
@@ -90,16 +90,16 @@ TEST(OAAClassifier, PLSTernaryClassification) {
 
   ssig::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-  ssig::OAAClassifier classifier(underlying);
-  classifier.learn(inp, labels);
+  auto classifier = ssig::OAAClassifier::create(underlying);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1030);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000, 10000);
 
   cv::Mat_<float> resp;
-  classifier.predict(query1, resp);
-  auto ordering = classifier.getLabelsOrdering();
+  classifier->predict(query1, resp);
+  auto ordering = classifier->getLabelsOrdering();
   int label1 = ordering[1];
   int label2 = ordering[2];
   int label3 = ordering[3];
@@ -110,14 +110,14 @@ TEST(OAAClassifier, PLSTernaryClassification) {
   EXPECT_GE(resp[0][label1], maxResp);
 
 
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  classifier.predict(query3, resp);
+  classifier->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
@@ -140,16 +140,16 @@ TEST(OAAClassifier, SVMTernaryClassification) {
   underlying.setC(10.f);
   underlying.setEpsilon(1e-6f);
 
-  ssig::OAAClassifier classifier(underlying);
-  classifier.learn(inp, labels);
+  auto classifier = ssig::OAAClassifier::create(underlying);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -.1f , -.1f);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << .8f , .7f);
 
   cv::Mat_<float> resp;
-  classifier.predict(query1, resp);
-  auto ordering = classifier.getLabelsOrdering();
+  classifier->predict(query1, resp);
+  auto ordering = classifier->getLabelsOrdering();
 
   int label1 = ordering[1];
   int label2 = ordering[2];
@@ -161,14 +161,14 @@ TEST(OAAClassifier, SVMTernaryClassification) {
   EXPECT_GE(resp[0][label1], maxResp);
 
 
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  classifier.predict(query3, resp);
+  classifier->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
@@ -191,15 +191,15 @@ TEST(OAAClassifier, SVMPersistence) {
   underlying.setC(10.f);
   underlying.setEpsilon(1e-4f);
 
-  ssig::OAAClassifier classifier(underlying);
-  classifier.learn(inp, labels);
+  auto classifier = ssig::OAAClassifier::create(underlying);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -.1f , -.1f);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << .8f , .7f);
 
   cv::Mat_<float> resp;
-  auto ordering = classifier.getLabelsOrdering();
+  auto ordering = classifier->getLabelsOrdering();
 
   int label1 = ordering[1];
   int label2 = ordering[2];
@@ -207,31 +207,31 @@ TEST(OAAClassifier, SVMPersistence) {
 
   double maxResp = 0.0;
 
-  classifier.predict(query1, resp);
+  classifier->predict(query1, resp);
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(1) != ordering.end());
   EXPECT_GE(resp[0][label1], maxResp);
 
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  classifier.predict(query3, resp);
+  classifier->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
 
-  classifier.save("oaa.yml", "root");
+  classifier->save("oaa.yml", "root");
 
-  ssig::OAAClassifier loaded(underlying);
-  loaded.load("oaa.yml", "root");
+  auto loaded = ssig::OAAClassifier::create(underlying);
+  loaded->load("oaa.yml", "root");
 
-  loaded.predict(query1, resp);
-  ordering = loaded.getLabelsOrdering();
+  loaded->predict(query1, resp);
+  ordering = loaded->getLabelsOrdering();
   label1 = ordering[1];
   label2 = ordering[2];
   label3 = ordering[3];
@@ -241,14 +241,14 @@ TEST(OAAClassifier, SVMPersistence) {
   EXPECT_GE(resp[0][label1], maxResp);
 
 
-  loaded.predict(query2, resp);
+  loaded->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  loaded.predict(query3, resp);
+  loaded->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
@@ -267,14 +267,14 @@ TEST(OAAClassifier, PLSPersistence) {
 
   ssig::PLSClassifier underlying;
   underlying.setNumberOfFactors(2);
-  ssig::OAAClassifier classifier(underlying);
-  classifier.learn(inp, labels);
+  auto classifier = ssig::OAAClassifier::create(underlying);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1030);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 10000, 10000);
   cv::Mat_<float> resp;
-  auto ordering = classifier.getLabelsOrdering();
+  auto ordering = classifier->getLabelsOrdering();
 
   int label1 = ordering[1];
   int label2 = ordering[2];
@@ -282,32 +282,32 @@ TEST(OAAClassifier, PLSPersistence) {
 
   double maxResp = 0.0;
 
-  classifier.predict(query1, resp);
+  classifier->predict(query1, resp);
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(1) != ordering.end());
   EXPECT_GE(resp[0][label1], maxResp);
 
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  classifier.predict(query3, resp);
+  classifier->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
 
-  classifier.save("oaa.yml", "root");
+  classifier->save("oaa.yml", "root");
 
-  ssig::OAAClassifier loaded(underlying);
-  loaded.load("oaa.yml", "root");
+  auto loaded = ssig::OAAClassifier::create(underlying);
+  loaded->load("oaa.yml", "root");
   remove("oaa.yml");
 
-  loaded.predict(query1, resp);
-  ordering = loaded.getLabelsOrdering();
+  loaded->predict(query1, resp);
+  ordering = loaded->getLabelsOrdering();
   label1 = ordering[1];
   label2 = ordering[2];
   label3 = ordering[3];
@@ -317,14 +317,14 @@ TEST(OAAClassifier, PLSPersistence) {
   EXPECT_GE(resp[0][label1], maxResp);
 
 
-  loaded.predict(query2, resp);
+  loaded->predict(query2, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(2) != ordering.end());
   EXPECT_GE(resp[0][label2], maxResp);
 
 
-  loaded.predict(query3, resp);
+  loaded->predict(query3, resp);
   maxResp = 0.0;
   cv::minMaxIdx(resp, nullptr, &maxResp);
   EXPECT_TRUE(ordering.find(3) != ordering.end());
