@@ -38,13 +38,14 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-#include <ctime>
+// c++
 #include <utility>
 #include <random>
-
+// c
+#include <ctime>
+// opencv
 #include <opencv2/core.hpp>
-
+// ssiglib
 #include "ssiglib/core/pso.hpp"
 #include "ssiglib/core/math.hpp"
 
@@ -249,3 +250,4 @@ void PSO::update(const cv::Mat& globalBest,
 }
 
 }  // namespace ssig
+
