@@ -106,8 +106,8 @@ TEST(PSO, 2Dimensions) {
   cv::Vec3f inertia(0.8f, 0.8f, 1.f);
   pso->setInertia(inertia);
   pso->setDimensionality(2);
-  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 1);
-  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 1);
+  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 2);
+  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 2);
   minRange = -10.f;
   maxRange = 10.f;
   pso->setPopulationConstraint(minRange, maxRange);

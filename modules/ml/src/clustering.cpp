@@ -58,6 +58,32 @@ void Clustering::setInitialClustering(const std::vector<Cluster>& init) {
   mClusters = init;
 }
 
+float Clustering::getCompactness() const {
+  cv::Mat_<float> centroids;
+  getCentroids(centroids);
+  float compactness = 0.0f;
+  auto clustering = getClustering();
+
+  for (int c = 0; c < static_cast<int>(clustering.size()); ++c) {
+    const auto& cluster = clustering[c];
+    for (const auto& id : cluster) {
+      cv::Mat_<float> sample = mSamples.row(id);
+      cv::Mat_<float> diff = centroids.row(c) - sample;
+      compactness += static_cast<float>(
+        cv::norm(diff, cv::NORM_L2SQR));
+    }
+  }
+  return compactness;
+}
+
+int Clustering::getK() const {
+  return mK;
+}
+
+void Clustering::setK(int k) {
+  mK = k;
+}
+
 void Clustering::setPredictionDistanceType(
   ssig::Clustering::PredictionType predictionDistanceType) {
   mPredictionDistanceType = predictionDistanceType;

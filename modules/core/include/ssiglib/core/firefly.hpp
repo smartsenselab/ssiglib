@@ -52,7 +52,7 @@
 
 namespace ssig {
 class Firefly : public Optimization {
- public:
+  public:
   CORE_EXPORT static cv::Ptr<Firefly> create(
     cv::Ptr<UtilityFunctor>& utilityFunction,
     cv::Ptr<DistanceFunctor>& distanceFunction);
@@ -72,7 +72,7 @@ class Firefly : public Optimization {
 
   /**
   @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
+  particle attractiveness
   */
   CORE_EXPORT void setAbsorption(float absorption);
 
@@ -84,7 +84,7 @@ class Firefly : public Optimization {
 
   CORE_EXPORT void setStep(float step);
 
- protected:
+  protected:
   CORE_EXPORT Firefly(
     cv::Ptr<UtilityFunctor>& utilityFunction,
     cv::Ptr<DistanceFunctor>& distanceFunction);
@@ -94,9 +94,7 @@ class Firefly : public Optimization {
   CORE_EXPORT void read(const cv::FileNode& fn) override;
   CORE_EXPORT void write(cv::FileStorage& fs) const override;
 
- private:
-  UtilityFunctor& utility;
-  DistanceFunctor& distance;
+  private:
   float mAbsorption = 1.5f;
   int mIterations = 0;
   float mAnnealling = 0.97f;
@@ -105,5 +103,4 @@ class Firefly : public Optimization {
 };
 }  // namespace ssig
 #endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-
 

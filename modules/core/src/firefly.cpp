@@ -51,8 +51,8 @@
 
 ssig::Firefly::Firefly(cv::Ptr<UtilityFunctor>& utilityFunction,
   cv::Ptr<DistanceFunctor>& distanceFunction) :
-  : utility(utilityFunction),
-    distance(distanceFunction) {}
+  Optimization(utilityFunction,
+  distanceFunction) {}
 
 ssig::Firefly::Firefly(const Firefly& rhs) {
   setAbsorption(rhs.getAbsorption());
@@ -69,7 +69,7 @@ cv::Ptr<ssig::Firefly> ssig::Firefly::create(
     _Firefly(cv::Ptr<UtilityFunctor> utilityFunction,
       cv::Ptr<DistanceFunctor> distanceFunction) :
       Firefly(utilityFunction,
-              distanceFunction) {}
+      distanceFunction) {}
   };
 
   return cv::makePtr<_Firefly>(utilityFunction, distanceFunction);
@@ -81,7 +81,7 @@ void ssig::Firefly::setup(const cv::Mat_<float>& input) {
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
 #ifdef _OPENMP
-  #pragma omp parallel for
+#pragma omp parallel for
 #endif
   for (int i = 0; i < mPopulation.rows; ++i) {
     mUtilities[0][i] = (*utility)(mPopulation.row(i));
@@ -113,7 +113,7 @@ bool ssig::Firefly::iterate() {
         auto expX = (mAbsorption * dist * dist);
         auto attractiveness = mUtilities[0][j] / (1 + expX + expX * expX / 2);
         mPopulation.row(i) = xi * (1 - attractiveness) +
-            attractiveness * (xj) + mStep * randomVector(mPopulation.cols);
+          attractiveness * (xj)+mStep * randomVector(mPopulation.cols);
       }
     }
   }
@@ -136,27 +136,26 @@ bool ssig::Firefly::iterate() {
   mPopulation = npop;
   mUtilities = nuti;
 
-  if (++mIterations > mMaxIterations)
-    return true;
-  if (mStep < 0.001f)
-    return true;
+  if (++mIterations > mMaxIterations) return true;
+  if (mStep < 0.001f) return true;
   return false;
 }
 
 
 void ssig::Firefly::learn(const cv::Mat_<float>& input) {
   setup(input);
-  while (!iterate()) { }
+  while (!iterate()) {
+  }
 }
 
 void ssig::Firefly::save(const std::string& filename,
-                         const std::string& nodename) const {
+  const std::string& nodename) const {
   std::runtime_error("Unimplemented Method");
 }
 
 
 void ssig::Firefly::load(const std::string& filename,
-                         const std::string& nodename) {
+  const std::string& nodename) {
   std::runtime_error("Unimplemented Method");
 }
 

@@ -56,13 +56,13 @@ cv::Ptr<PSO> PSO::create(
   cv::Ptr<DistanceFunctor>& distanceFunction) {
   struct _PSO : PSO {
     _PSO(cv::Ptr<UtilityFunctor> utilityFunction,
-         cv::Ptr<DistanceFunctor> distanceFunction) :
+      cv::Ptr<DistanceFunctor> distanceFunction) :
       PSO(utilityFunction,
-          distanceFunction) {};
+      distanceFunction) {};
   };
 
   return cv::makePtr<_PSO>(utilityFunction,
-                           distanceFunction);
+    distanceFunction);
 }
 static void randVec(
   const int dimensions,
@@ -82,7 +82,7 @@ void PSO::setup(const cv::Mat_<float>& input) {
     for (int i = 0; i < mPopulationLength; ++i) {
       for (int d = 0; d < mDimensions; ++d) {
         std::uniform_real_distribution<float> randu(mMinRange.at<float>(d),
-                                                    mMaxRange.at<float>(d));
+          mMaxRange.at<float>(d));
         mPopulation.at<float>(i, d) = randu(gen);
       }
     }
@@ -152,17 +152,20 @@ void PSO::learn(const cv::Mat_<float>& input) {
 }
 
 void PSO::iterate() {
-#pragma omp parallel for
+  #ifdef _OPENMP
+  #pragma omp parallel for
+  #endif
   for (int r = 0; r < mPopulationLength; ++r) {
     cv::Mat position = mPopulation.row(r),
-        localBest = mLocalBests.row(r),
-        vel = mVelocities.row(r);
+      localBest = mLocalBests.row(r),
+      vel = mVelocities.row(r);
     update(mBestPosition, localBest, mInertia, vel, position);
 
     float currentUtil = (*utility)(position);
     mLocalUtils[r] = currentUtil;
-
-#pragma omp critical
+    #ifdef _OPENMP
+    #pragma omp critical
+    #endif
     {
       if (currentUtil >= mBestUtil) {
         for (int d = 0; d < position.cols; ++d) {
@@ -237,10 +240,10 @@ PSO::PSO(
   Optimization(utility, distance) {}
 
 void PSO::update(const cv::Mat& globalBest,
-                 const cv::Mat& localBest,
-                 const cv::Vec3f& inertia,
-                 cv::Mat& velocity,
-                 cv::Mat& position) {
+  const cv::Mat& localBest,
+  const cv::Vec3f& inertia,
+  cv::Mat& velocity,
+  cv::Mat& position) {
   static std::uniform_real_distribution<float> dist(0.0f, 1000.0f);
 
   float R1 = (dist(gen)) / 1000.f;
