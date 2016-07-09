@@ -47,14 +47,15 @@
 // ssiglib
 #include "pls.hpp"
 #include "classification.hpp"
+#include "multiclass.hpp"
 
 namespace ssig {
 
-class PLSClassifier : public Classifier {
+class PLSClassifier : public Multiclass {
   virtual void addLabels(const cv::Mat_<int>& labels);
 
  public:
-  ML_EXPORT PLSClassifier(void);
+ ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
@@ -79,6 +80,8 @@ class PLSClassifier : public Classifier {
 
   ML_EXPORT void setNumberOfFactors(int numberOfFactors);
 
+ protected:
+  ML_EXPORT PLSClassifier(void);
  private:
   // private members
   std::unique_ptr<PLS> mPls;

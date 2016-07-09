@@ -47,6 +47,10 @@ HardMiningClassifier::HardMiningClassifier(Classifier& c) {
   mClassifier = std::unique_ptr<Classifier>(c.clone());
 }
 
+cv::Ptr<HardMiningClassifier> HardMiningClassifier::create(Classifier& c) {
+  return cv::Ptr<HardMiningClassifier>(new HardMiningClassifier(c));
+}
+
 HardMiningClassifier::HardMiningClassifier(const HardMiningClassifier& rhs) {
   // Constructor Copy
 }

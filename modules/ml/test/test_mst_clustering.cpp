@@ -77,7 +77,7 @@ TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {
 class MSTreeClusteringTest : public ::testing::Test {
  protected:
   cv::Mat_<float> inp;
-  ssig::MSTreeClustering mstree;
+  cv::Ptr<ssig::MSTreeClustering> mstree;
 
 
   void SetUp() override {
@@ -89,15 +89,15 @@ class MSTreeClusteringTest : public ::testing::Test {
       inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
       inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
     }
-
-    mstree.setK(2);
-    mstree.setMaxIterations(500);
-    mstree.learn(inp);
+    mstree = ssig::MSTreeClustering::create();
+    mstree->setK(2);
+    mstree->setMaxIterations(500);
+    mstree->learn(inp);
   }
 };
 
 TEST_F(MSTreeClusteringTest, SanityClusteringTest) {
-  auto clusters = mstree.getClustering();
+  auto clusters = mstree->getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, static_cast<int>(clusters.size()));

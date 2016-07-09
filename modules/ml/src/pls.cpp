@@ -52,6 +52,10 @@
 
 namespace ssig {
 
+cv::Ptr<PLS> PLS::create() {
+  return cv::Ptr<PLS>(new PLS);
+}
+
 void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   int i;
   int kk;

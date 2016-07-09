@@ -42,11 +42,11 @@
 
 #ifndef _SSIG_ML_SVMCLASSIFIER_HPP_
 #define _SSIG_ML_SVMCLASSIFIER_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <unordered_map>
 #include <string>
+// opencv
+#include <opencv2/core.hpp>
 // libsvm
 #include "../../../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
 // ssiglib
@@ -84,7 +84,7 @@ class SVMClassifier : public Classifier {
     PRECOMPUTED
   };
 
-  ML_EXPORT SVMClassifier(void);
+  ML_EXPORT static cv::Ptr<SVMClassifier> create();
   ML_EXPORT virtual ~SVMClassifier(void);
 
   ML_EXPORT void learn(
@@ -153,6 +153,9 @@ class SVMClassifier : public Classifier {
   // ML_EXPORT size_t getCrossValidationState() const;
 
   // ML_EXPORT void setCrossValidationState(int kfolds);
+
+ protected:
+  ML_EXPORT SVMClassifier(void);
 
  private:
   ML_EXPORT inline void cleanup();

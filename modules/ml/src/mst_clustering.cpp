@@ -55,6 +55,10 @@ static void computeMST(
   const cv::Mat_<float>& samples,
   std::vector<std::pair<int, int>>& edges);
 
+cv::Ptr<MSTreeClustering> MSTreeClustering::create() {
+  return cv::Ptr<MSTreeClustering>(new MSTreeClustering());
+}
+
 void MSTreeClustering::setup(const cv::Mat_<float>& input) {}
 
 void MSTreeClustering::learn(const cv::Mat_<float>& input) {
@@ -296,4 +300,4 @@ void computeMST(
   }
 }
 
-}  // namespace ssig
+} // namespace ssig

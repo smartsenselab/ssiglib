@@ -241,13 +241,13 @@ TEST(Results, LeaveOneOut) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << -1, -1, -1,
     1, 1, 1);
 
-  ssig::SVMClassifier classifier;
-  classifier.setC(0.1);
-  classifier.setKernelType(ssig::SVMClassifier::LINEAR);
-  classifier.setModelType(ssig::SVMClassifier::C_SVC);
+  auto classifier = ssig::SVMClassifier::create();
+  classifier->setC(0.1);
+  classifier->setKernelType(ssig::SVMClassifier::LINEAR);
+  classifier->setModelType(ssig::SVMClassifier::C_SVC);
 
   ssig::Results results;
-  auto p = ssig::Results::leaveOneOut(inp, labels, classifier, false, results);
+  auto p = ssig::Results::leaveOneOut(inp, labels, *classifier, false, results);
 
   ASSERT_FLOAT_EQ(1.f, p);
 }
