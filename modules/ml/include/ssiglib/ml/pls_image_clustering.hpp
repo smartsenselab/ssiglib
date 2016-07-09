@@ -42,15 +42,16 @@
 
 #ifndef _SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
-
-#include <utility>
-#include <vector>
-
+// ssiglib
 #include <ssiglib/core/util.hpp>
 #include <ssiglib/core/math.hpp>
 
 #include <ssiglib/ml/classifier_clustering.hpp>
 #include <ssiglib/ml/oaa_classifier.hpp>
+
+// c++
+#include <utility>
+#include <vector>
 
 namespace ssig {
 

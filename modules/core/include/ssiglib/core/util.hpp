@@ -42,7 +42,9 @@
 
 #ifndef _SSIG_CORE_UTIL_HPP_
 #define _SSIG_CORE_UTIL_HPP_
-
+// opencv
+#include <opencv2/core.hpp>
+// c++
 #include <algorithm>
 #include <functional>
 #include <cctype>
@@ -50,9 +52,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-
-#include <opencv2/core.hpp>
-
+// ssiglib
 #include "core_defs.hpp"
 
 namespace cv {

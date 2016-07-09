@@ -41,11 +41,11 @@
 
 #ifndef _SSIG_CORE_ALGORITHM_HPP_
 #define _SSIG_CORE_ALGORITHM_HPP_
-
-#include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-
+// c++
+#include <string>
+// ssiglib
 #include "ssiglib/core/core_defs.hpp"
 #include "ssiglib/core/resource.hpp"
 

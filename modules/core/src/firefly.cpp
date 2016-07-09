@@ -42,12 +42,13 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <ssiglib/core/util.hpp>
-#include <ssiglib/core/firefly.hpp>
+// c++
+#include <string>
+// ssiglib
+#include "ssiglib/core/util.hpp"
+#include "ssiglib/core/firefly.hpp"
 
 ssig::Firefly::Firefly(cv::Ptr<UtilityFunctor>& utilityFunction,
   cv::Ptr<DistanceFunctor>& distanceFunction) :

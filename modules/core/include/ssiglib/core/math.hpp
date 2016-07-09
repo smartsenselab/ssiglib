@@ -41,8 +41,10 @@
 #ifndef _SSIG_CORE_MATH_HPP_
 #define _SSIG_CORE_MATH_HPP_
 
+// opencv
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
+// ssiglib
 #include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {

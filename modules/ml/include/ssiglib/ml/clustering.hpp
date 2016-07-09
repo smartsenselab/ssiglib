@@ -43,11 +43,11 @@
 #ifndef _SSIG_ALGORITHMS_CLUSTERING_HPP_
 #define _SSIG_ALGORITHMS_CLUSTERING_HPP_
 
+#include <opencv2/core.hpp>
+// c++
 #include <vector>
 #include <string>
-
-#include <opencv2/core.hpp>
-
+// ssiglib
 #include "ssiglib/ml/ml_defs.hpp"
 #include "ssiglib/core/algorithm.hpp"
 #include "oaa_classifier.hpp"

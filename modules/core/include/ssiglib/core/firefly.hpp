@@ -41,12 +41,13 @@
 
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-#include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
-#include <ssiglib/core/algorithm.hpp>
-
+// c++
+#include <string>
+//ssiglib
+#include "ssiglib/core/math.hpp"
+#include "ssiglib/core/algorithm.hpp"
 #include "core_defs.hpp"
 #include "optimization.hpp"
 

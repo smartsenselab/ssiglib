@@ -41,16 +41,19 @@
 
 #ifndef _SSIG_CORE_RESULTS_HPP_
 #define _SSIG_CORE_RESULTS_HPP_
-// c++
-#include <utility>
-#include <string>
-#include <vector>
-#include <unordered_map>
+
 // opencv
 #include <opencv2/core.hpp>
 // ssiglib
 #include <ssiglib/ml/ml_defs.hpp>
 #include <ssiglib/ml/classification.hpp>
+
+// c++
+#include <utility>
+#include <string>
+#include <vector>
+#include <unordered_map>
+
 
 namespace ssig {
 class Results {

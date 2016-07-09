@@ -39,14 +39,14 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 #include <gtest/gtest.h>
-
-#include <vector>
-#include <random>
-
+// ssiglib
 #include <ssiglib/ml/kmeans.hpp>
 #include <ssiglib/ml/pls_classifier.hpp>
-
+// opencv
 #include <opencv2/core.hpp>
+// c++
+#include <vector>
+#include <random>
 
 class KmeansClusteringTest : public ::testing::Test {
  protected:

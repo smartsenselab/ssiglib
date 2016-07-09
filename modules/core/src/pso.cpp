@@ -64,17 +64,6 @@ cv::Ptr<PSO> PSO::create(
   return cv::makePtr<_PSO>(utilityFunction,
     distanceFunction);
 }
-static void randVec(
-  const int dimensions,
-  const cv::Mat& minRange,
-  const cv::Mat maxRange,
-  cv::Mat& vec) {
-  for (int d = 0; d < dimensions; ++d) {
-    std::uniform_real_distribution<float> randu(minRange.at<float>(d),
-      maxRange.at<float>(d));
-    vec.at<float>(d) = randu(gen);
-  }
-}
 
 void PSO::setup(const cv::Mat_<float>& input) {
   if (input.empty()) {

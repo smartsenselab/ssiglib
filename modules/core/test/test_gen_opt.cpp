@@ -48,7 +48,7 @@
 
 #include "ssiglib/core/genetic_optimizator.hpp"
 
-static struct Crossover : ssig::GeneticOptimizator::CrossOverFunctor {
+struct TestCrossover : ssig::GeneticOptimizator::CrossOverFunctor {
   void operator()(
     const cv::Mat& indA,
     const cv::Mat& indB,
@@ -72,7 +72,7 @@ TEST(GenOpt, 2Sqrt) {
 
   cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
   typedef cv::Ptr<ssig::GeneticOptimizator::CrossOverFunctor> crossPtr;
-  crossPtr dist = cv::makePtr<Crossover>();
+  crossPtr dist = cv::makePtr<TestCrossover>();
   auto genOpt = ssig::GeneticOptimizator::create(12345, util, dist);
   cv::Mat_<float> input;
   genOpt->setElistimFactor(0.1);
@@ -112,7 +112,7 @@ TEST(GenOpt, 2Dimensions) {
   };
   cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
   typedef cv::Ptr<ssig::GeneticOptimizator::CrossOverFunctor> crossPtr;
-  crossPtr cross = cv::makePtr<Crossover>();
+  crossPtr cross = cv::makePtr<TestCrossover>();
   auto genOpt = ssig::GeneticOptimizator::create(12345, util, cross);
   cv::Mat_<float> input;
   cv::Vec3f inertia(0.8f, 0.8f, 1.f);

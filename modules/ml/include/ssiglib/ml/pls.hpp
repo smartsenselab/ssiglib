@@ -42,14 +42,14 @@
 
 #ifndef _SSIG_ML_PLS_HPP_
 #define _SSIG_ML_PLS_HPP_
-
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include <ssiglib/ml/ml_defs.hpp>
+// c++
 #include <stdexcept>
 #include <vector>
 #include <string>
-
-
-#include <opencv2/core.hpp>
-#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
 

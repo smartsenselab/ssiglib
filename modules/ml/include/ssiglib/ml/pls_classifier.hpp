@@ -42,9 +42,9 @@
 
 #ifndef _SSIG_ML_PLSCLASSIFIER_HPP_
 #define _SSIG_ML_PLSCLASSIFIER_HPP_
-
+// c++
 #include <memory>
-
+// ssiglib
 #include "pls.hpp"
 #include "classification.hpp"
 
