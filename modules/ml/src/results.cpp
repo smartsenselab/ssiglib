@@ -39,7 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "ssiglib/ml/results.hpp"
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -61,6 +60,7 @@
 #include <opencv2/core.hpp>
 // ssiglib
 #include "ssiglib/ml/classification.hpp"
+#include "ssiglib/ml/results.hpp"
 
 
 #ifdef _WIN32

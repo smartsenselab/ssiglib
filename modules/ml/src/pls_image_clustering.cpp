@@ -39,10 +39,6 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#include "ssiglib/ml/pls_image_clustering.hpp"
-// ssiglib
-#include <ssiglib/core/math.hpp>
 // c++
 #include <string>
 #include <random>
@@ -50,6 +46,9 @@
 #include <set>
 #include <utility>
 #include <vector>
+// ssiglib
+#include "ssiglib/core/math.hpp"
+#include "ssiglib/ml/pls_image_clustering.hpp"
 
 
 namespace ssig {
