@@ -51,62 +51,99 @@ namespace ssig {
 /*
 @brief
   This implements a genetic optimization.
-  This king of heuristical optimization is more recommended
+  This kind of heuristical optimization is more recommended
   if the space is not differentiable.
 */
 class GeneticOptimizator : public Optimization {
+ public:
   class CrossOverFunctor {
-  public:
+   public:
     CORE_EXPORT virtual ~CrossOverFunctor() = default;
 
     CORE_EXPORT virtual void operator()(
       const cv::Mat& indA,
       const cv::Mat& indB,
-      cv::Mat& child) = 0;
+      cv::Mat& child) const = 0;
   };
 
-public:
+  enum MutationType {
+    Uniform,
+    Gaussian,
+    Boundary
+  };
+
   virtual ~GeneticOptimizator(void) = default;
 
-  CORE_EXPORT static std::unique_ptr<GeneticOptimizator> create(
-    UtilityFunctor& utilityFunction,
-    CrossOverFunctor& crossOverFunction);
+  CORE_EXPORT static cv::Ptr<GeneticOptimizator> create(
+    const int seed,
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<CrossOverFunctor>& crossOverFunction);
 
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
+  CORE_EXPORT void learn(const cv::Mat_<float>& input) override;
 
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT void setup(const cv::Mat_<float>& input) override;
   CORE_EXPORT void iterate();
 
 
-protected:
-  CORE_EXPORT GeneticOptimizator(void);
-  CORE_EXPORT GeneticOptimizator(UtilityFunctor& utilityFunction,
-                                 CrossOverFunctor& crossOverFunction);
+  CORE_EXPORT int getPopulationLength() const;
+  CORE_EXPORT void setPopulationLength(const int populationLength);
+  CORE_EXPORT double getElistimFactor() const;
+  CORE_EXPORT void setElistimFactor(const double elistimFactor);
+  CORE_EXPORT double getMutationRate() const;
+  CORE_EXPORT void setMutationRate(const double mutationRate);
+  CORE_EXPORT cv::Point2d getMutationRange() const;
+  CORE_EXPORT void setMutationRange(const cv::Point2d& mutationRange);
+  CORE_EXPORT MutationType getMutationType() const;
+  CORE_EXPORT void setMutationType(const MutationType mutationType);
 
-  void applyReproduction(
+  CORE_EXPORT float getBestUtil() const;
+
+  CORE_EXPORT void setSeed(int seed);
+  CORE_EXPORT int getSeed() const;
+
+  CORE_EXPORT int getDimensions() const;
+  CORE_EXPORT void setDimensions(const int dimensions);
+
+ protected:
+  CORE_EXPORT GeneticOptimizator(void) = default;
+  CORE_EXPORT GeneticOptimizator(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<CrossOverFunctor>& crossOverFunction);
+  CORE_EXPORT GeneticOptimizator(GeneticOptimizator& rhs);
+
+  static void applyReproduction(
     const cv::Mat& pop,
     const cv::Mat& utilities,
     const int newPopLen,
     const CrossOverFunctor& crossover,
-    cv::Mat& newPop
-  ) const;
-
-  void applyMutation(
-    const double mutationRate,
-    const cv::Mat& pop,
+    float &bestUtil,
     cv::Mat& newPop);
 
-  CrossOverFunctor& crossOver;
-  UtilityFunctor& utility;
+  static void applyMutation(
+    const double mutationRate,
+    const MutationType type,
+    const cv::Mat& pop,
+    const int infLim,
+    const int supLim,
+    cv::RNG& rng,
+    cv::Mat& newPop);
+
+  cv::Ptr<CrossOverFunctor> crossOver;
+  cv::Ptr<UtilityFunctor> utility;
 
   int mPopulationLength;
+  int mDimensions = 2;
   double mElistimFactor,
-         mMutationFactor;
+         mMutationRate;
+  float mBestUtil = 0.0f;
+  cv::RNG mRng;
 
   cv::Point2d mMutationRange;
 
-private:
+  MutationType mMutationType = Gaussian;
+
+ private:
   // private members
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_CORE_GENETIC_OPTIMIZATOR_HPP_

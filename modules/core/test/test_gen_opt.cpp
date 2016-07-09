@@ -38,12 +38,109 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
 #include <gtest/gtest.h>
+
+// c++
+#include <random>
+#include <numeric>
+// ssiglib
+#include <ssiglib/core/math.hpp>
+
 #include "ssiglib/core/genetic_optimizator.hpp"
 
-TEST(GeneticOptimizator, SampleGeneticOptimizator) {
-  // Automatically generated stub
+static struct Crossover : ssig::GeneticOptimizator::CrossOverFunctor {
+  void operator()(
+    const cv::Mat& indA,
+    const cv::Mat& indB,
+    cv::Mat& child) const override {
+    // implements a random swapping crossover
+    child = (indA + indB) / 2;
+  }
+};
 
-  EXPECT_EQ(2, 2 + 2);
+TEST(GenOpt, 2Sqrt) {
+  struct Utility : ssig::UtilityFunctor {
+    float operator()(const cv::Mat& v) const override {
+      cv::Mat_<float> f;
+      v.convertTo(f, CV_32FC1);
+      float x = f[0][0];
+      auto ans = static_cast<float>(x * x - 2);
+      ans = -1 * std::abs(ans);
+      return ans;
+    }
+  };
+
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
+  typedef cv::Ptr<ssig::GeneticOptimizator::CrossOverFunctor> crossPtr;
+  crossPtr dist = cv::makePtr<Crossover>();
+  auto genOpt = ssig::GeneticOptimizator::create(12345, util, dist);
+  cv::Mat_<float> input;
+  genOpt->setElistimFactor(0.1);
+  genOpt->setMutationRange(cv::Point2d(-5, 5));
+  genOpt->setMutationRate(0.2);
+  genOpt->setPopulationLength(500);
+  genOpt->setMutationType(ssig::GeneticOptimizator::Gaussian);
+  genOpt->setMaxIterations(500);
+  genOpt->setEps(0.0001);
+  genOpt->setDimensions(1);
+
+  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 1);
+  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 1);
+  minRange = -10.f;
+  maxRange = 10.f;
+
+  genOpt->learn(input);
+  cv::Mat results = genOpt->getResults();
+  cv::Mat_<int> ordering;
+  cv::sortIdx(results, ordering, cv::SORT_DESCENDING + cv::SORT_EVERY_COLUMN);
+  cv::Mat pop = genOpt->getState();
+  auto actual = pop.at<float>(ordering.at<int>(0));
+  ASSERT_LT(std::abs(sqrt(2.f) - std::abs(actual)), 0.1f);
+}
+
+TEST(GenOpt, 2Dimensions) {
+  struct Utility : ssig::UtilityFunctor {
+    float operator()(const cv::Mat& v) const override {
+      cv::Mat_<float> f;
+      v.convertTo(f, CV_32FC1);
+      float x = f[0][0];
+      float y = f[0][1];
+      auto ans = static_cast<float>(x * x + y);
+      ans = -1 * std::abs(ans);
+      return ans;
+    }
+  };
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
+  typedef cv::Ptr<ssig::GeneticOptimizator::CrossOverFunctor> crossPtr;
+  crossPtr cross = cv::makePtr<Crossover>();
+  auto genOpt = ssig::GeneticOptimizator::create(12345, util, cross);
+  cv::Mat_<float> input;
+  cv::Vec3f inertia(0.8f, 0.8f, 1.f);
+
+  cv::Mat_<float> minRange = cv::Mat_<float>::zeros(1, 2);
+  cv::Mat_<float> maxRange = cv::Mat_<float>::zeros(1, 2);
+
+  genOpt->setElistimFactor(0.1);
+  genOpt->setMutationRange(cv::Point2d(-5, 5));
+  genOpt->setMutationRate(0.2);
+  genOpt->setPopulationLength(500);
+  genOpt->setMutationType(ssig::GeneticOptimizator::Gaussian);
+  genOpt->setMaxIterations(500);
+  genOpt->setEps(0.0001);
+  genOpt->setEps(1.0e-5);
+  genOpt->setPopulationLength(500);
+  genOpt->setMaxIterations(500);
+
+  genOpt->setDimensions(2);
+
+  genOpt->learn(input);
+  cv::Mat results = genOpt->getResults();
+  cv::Mat_<int> ordering;
+  cv::sortIdx(results, ordering, cv::SORT_DESCENDING + cv::SORT_EVERY_COLUMN);
+  cv::Mat pop = genOpt->getState();
+  cv::Mat actual = pop.row(ordering.at<int>(0));
+  auto x = actual.at<float>(0);
+  auto y = actual.at<float>(1);
+
+  ASSERT_LE(abs(x*x + y), 0.1f);
 }

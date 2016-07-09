@@ -88,8 +88,12 @@ void Optimization::setEps(const double eps) {
   mEps = eps;
 }
 
+Optimization::Optimization(
   cv::Ptr<UtilityFunctor>& utilityFunction,
   cv::Ptr<DistanceFunctor>& distanceFunction) :
+  utility(utilityFunction),
+  distance(distanceFunction) {}
+
 cv::Mat_<float> ssig::Optimization::
 randomVector(const int dimensionality,
   const double minRange,

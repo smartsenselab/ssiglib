@@ -83,14 +83,14 @@ class Clustering : public Algorithm {
 
   virtual void getCentroids(cv::Mat_<float>& centroidsMatrix) const = 0;
 
-  static void predict(
+  ML_EXPORT static void predict(
     const cv::Mat_<float>& samples,
     const cv::Mat_<float>& probes,
     const std::vector<ssig::Cluster>& clusters,
     cv::Ptr<ssig::Classifier>& classifier,
     cv::Mat_<float>& resp);
 
-  static void predict(
+  ML_EXPORT static void predict(
     const cv::Mat_<float>& sample,
     const cv::Mat_<float>& centroids,
     const PredictionType normtype,
@@ -105,13 +105,11 @@ class Clustering : public Algorithm {
   ML_EXPORT void read(const cv::FileNode& fn) override = 0;
   ML_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
-  ML_EXPORT int getK() const {
-    return mK;
-  }
+  ML_EXPORT float getCompactness() const;
 
-  ML_EXPORT void setK(int k) {
-    mK = k;
-  }
+  ML_EXPORT int getK() const;
+
+  ML_EXPORT void setK(int k);
 
   ML_EXPORT int getMaxIterations() const {
     return mMaxIterations;
