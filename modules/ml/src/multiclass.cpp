@@ -39,75 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ML_OAACLASSIFIER_HPP_
-#define _SSIG_ML_OAACLASSIFIER_HPP_
-
-#include <unordered_map>
-#include <memory>
-#include <vector>
-#include <string>
-
-#include "classification.hpp"
-#include "multiclass.hpp"
+#include "ssiglib/ml/multiclass.hpp"
 
 namespace ssig {
 
-class OAAClassifier : public Multiclass {
-  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
-
- public:
-  virtual ~OAAClassifier(void) = default;
-
-  ML_EXPORT int predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
-
-  ML_EXPORT void learn(
-    const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
-  
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
-  ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
-  
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
-
-  ML_EXPORT Classifier* clone() const override;
-
-  ML_EXPORT std::shared_ptr<Classifier> getUnderlyingClassifier() const;
-  ML_EXPORT void setUnderlyingClassifier(
-    const Classifier& underlyingClassifier);
-
-  ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
-
- protected:
- ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
-  OAAClassifier() = default;
-
- private:
-  // private members
-  std::unordered_map<int, int> mLabel2Index;
-  std::vector<int> mIndex2Label;
-
-  std::vector<std::unique_ptr<Classifier>> mClassifiers;
-  std::unique_ptr<Classifier> mUnderlyingClassifier;
-  cv::Mat_<int> mLabels;
-
-  bool mTrained = false;
-};
-
+bool Multiclass::isClassifier() const {
+  return true;
+}
 }  // namespace ssig
-
-#endif  // !_SSIG_ML_OAACLASSIFIER_HPP_
-
-
