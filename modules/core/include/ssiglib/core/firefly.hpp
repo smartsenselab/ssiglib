@@ -41,11 +41,11 @@
 
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <string>
-//ssiglib
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
 #include "ssiglib/core/math.hpp"
 #include "ssiglib/core/algorithm.hpp"
 #include "core_defs.hpp"
@@ -53,7 +53,7 @@
 
 namespace ssig {
 class Firefly : public Optimization {
-  public:
+ public:
   CORE_EXPORT static cv::Ptr<Firefly> create(
     cv::Ptr<UtilityFunctor>& utilityFunction,
     cv::Ptr<DistanceFunctor>& distanceFunction);
@@ -85,7 +85,7 @@ class Firefly : public Optimization {
 
   CORE_EXPORT void setStep(float step);
 
-  protected:
+ protected:
   CORE_EXPORT Firefly(
     cv::Ptr<UtilityFunctor>& utilityFunction,
     cv::Ptr<DistanceFunctor>& distanceFunction);
@@ -95,7 +95,7 @@ class Firefly : public Optimization {
   CORE_EXPORT void read(const cv::FileNode& fn) override;
   CORE_EXPORT void write(cv::FileStorage& fs) const override;
 
-  private:
+ private:
   float mAbsorption = 1.5f;
   int mIterations = 0;
   float mAnnealling = 0.97f;

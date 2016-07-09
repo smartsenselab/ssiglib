@@ -59,7 +59,7 @@ class DistanceFunctor;
 class UtilityFunctor;
 
 class PSO : public Optimization {
-  public:
+ public:
   CORE_EXPORT virtual ~PSO(void) = default;
 
   CORE_EXPORT static cv::Ptr<PSO> create(
@@ -93,7 +93,7 @@ class PSO : public Optimization {
 
   CORE_EXPORT float getBestUtil() const;
 
-  protected:
+ protected:
   CORE_EXPORT PSO(
     cv::Ptr<UtilityFunctor>& utility,
     cv::Ptr<DistanceFunctor>& distance);
@@ -109,7 +109,7 @@ class PSO : public Optimization {
     cv::Mat& velocity,
     cv::Mat& position);
 
-  private:
+ private:
   // private members
   cv::Mat mBestPosition;
   cv::Mat mLocalBests;
@@ -126,3 +126,4 @@ class PSO : public Optimization {
 };
 }  // namespace ssig
 #endif  // !_SSIG_CORE_PSO_HPP_
+
