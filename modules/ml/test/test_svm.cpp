@@ -53,23 +53,23 @@ TEST(SVMClassifier, BinaryClassification) {
     (cv::Mat_<float>(6, 2) << 0.8f, 0.8f, 0.7f, 0.7f, 0.9f, 0.8f,
     -0.8f, -0.9f, -0.8f, -0.7f, -0.7f, -0.7f);
 
-  ssig::SVMClassifier classifier;
+  auto classifier = ssig::SVMClassifier::create();
 
-  classifier.setTermType(cv::TermCriteria::MAX_ITER);
-  classifier.setEpsilon(0.01f);
+  classifier->setTermType(cv::TermCriteria::MAX_ITER);
+  classifier->setEpsilon(0.01f);
 
-  classifier.learn(inp, labels);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.6f, 0.7f);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -0.7f, -0.6f);
 
   cv::Mat_<float> resp;
-  classifier.predict(query1, resp);
-  auto ordering = classifier.getLabelsOrdering();
+  classifier->predict(query1, resp);
+  auto ordering = classifier->getLabelsOrdering();
   int idx = ordering[1];
   EXPECT_GE(resp[0][idx], 0);
   idx = ordering[-1];
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   EXPECT_GE(resp[0][idx], 0);
 }
 
@@ -122,38 +122,38 @@ TEST(SVMClassifier, Persistence) {
     (cv::Mat_<float>(6, 2) << 0.8f, 0.8f, 0.7f, 0.7f, 0.9f, 0.8f,
     -0.8f, -0.9f, -0.8f, -0.7f, -0.7f, -0.7f);
 
-  ssig::SVMClassifier classifier;
-  classifier.setC(0.1f);
-  classifier.setKernelType(ssig::SVMClassifier::LINEAR);
-  classifier.setModelType(ssig::SVMClassifier::C_SVC);
+  auto classifier = ssig::SVMClassifier::create();
+  classifier->setC(0.1f);
+  classifier->setKernelType(ssig::SVMClassifier::LINEAR);
+  classifier->setModelType(ssig::SVMClassifier::C_SVC);
 
-  classifier.setTermType(cv::TermCriteria::MAX_ITER);
-  classifier.setEpsilon(0.01f);
+  classifier->setTermType(cv::TermCriteria::MAX_ITER);
+  classifier->setEpsilon(0.01f);
 
-  classifier.learn(inp, labels);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.6f, 0.7f);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << -0.7f, -0.6f);
 
   cv::Mat_<float> resp;
-  classifier.predict(query1, resp);
-  auto ordering = classifier.getLabelsOrdering();
+  classifier->predict(query1, resp);
+  auto ordering = classifier->getLabelsOrdering();
   int idx = ordering[1];
   EXPECT_GE(resp[0][idx], 0);
-  classifier.predict(query2, resp);
+  classifier->predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
 
-  classifier.save("svm.yml", "root");
-  ssig::SVMClassifier loaded;
-  loaded.load("svm.yml", "root");
+  classifier->save("svm.yml", "root");
+  auto loaded = ssig::SVMClassifier::create();;
+  loaded->load("svm.yml", "root");
   remove("svm.yml");
 
-  ordering = loaded.getLabelsOrdering();
+  ordering = loaded->getLabelsOrdering();
   idx = ordering[1];
-  loaded.predict(query1, resp);
+  loaded->predict(query1, resp);
   EXPECT_GE(resp[0][idx], 0);
-  loaded.predict(query2, resp);
+  loaded->predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
 }

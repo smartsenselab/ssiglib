@@ -58,9 +58,9 @@ TEST(OAAClassifier, PLSBinaryClassification) {
     99 , 101);
 
 
-  ssig::PLSClassifier underlying;
-  underlying.setNumberOfFactors(2);
-  auto classifier = ssig::OAAClassifier::create(underlying);
+  auto underlying = ssig::PLSClassifier::create();
+  underlying->setNumberOfFactors(2);
+  auto classifier = ssig::OAAClassifier::create(*underlying);
   classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
@@ -88,9 +88,9 @@ TEST(OAAClassifier, PLSTernaryClassification) {
     2, 2, 2,
     3, 3, 3);
 
-  ssig::PLSClassifier underlying;
-  underlying.setNumberOfFactors(2);
-  auto classifier = ssig::OAAClassifier::create(underlying);
+  auto underlying = ssig::PLSClassifier::create();
+  underlying->setNumberOfFactors(2);
+  auto classifier = ssig::OAAClassifier::create(*underlying);
   classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
@@ -134,13 +134,13 @@ TEST(OAAClassifier, SVMTernaryClassification) {
   stg["labels"] >> labels;
 
 
-  ssig::SVMClassifier underlying;
-  underlying.setKernelType(ssig::SVMClassifier::LINEAR);
-  underlying.setModelType(ssig::SVMClassifier::C_SVC);
-  underlying.setC(10.f);
-  underlying.setEpsilon(1e-6f);
+  auto underlying = ssig::SVMClassifier::create();
+  underlying->setKernelType(ssig::SVMClassifier::LINEAR);
+  underlying->setModelType(ssig::SVMClassifier::C_SVC);
+  underlying->setC(10.f);
+  underlying->setEpsilon(1e-6f);
 
-  auto classifier = ssig::OAAClassifier::create(underlying);
+  auto classifier = ssig::OAAClassifier::create(*underlying);
   classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
@@ -185,13 +185,13 @@ TEST(OAAClassifier, SVMPersistence) {
   stg["inp"] >> inp;
   stg["labels"] >> labels;
 
-  ssig::SVMClassifier underlying;
-  underlying.setKernelType(ssig::SVMClassifier::LINEAR);
-  underlying.setModelType(ssig::SVMClassifier::C_SVC);
-  underlying.setC(10.f);
-  underlying.setEpsilon(1e-4f);
+  auto underlying = ssig::SVMClassifier::create();
+  underlying->setKernelType(ssig::SVMClassifier::LINEAR);
+  underlying->setModelType(ssig::SVMClassifier::C_SVC);
+  underlying->setC(10.f);
+  underlying->setEpsilon(1e-4f);
 
-  auto classifier = ssig::OAAClassifier::create(underlying);
+  auto classifier = ssig::OAAClassifier::create(*underlying);
   classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 0.3f , .3f);
@@ -227,7 +227,7 @@ TEST(OAAClassifier, SVMPersistence) {
 
   classifier->save("oaa.yml", "root");
 
-  auto loaded = ssig::OAAClassifier::create(underlying);
+  auto loaded = ssig::OAAClassifier::create(*underlying);
   loaded->load("oaa.yml", "root");
 
   loaded->predict(query1, resp);
@@ -265,9 +265,9 @@ TEST(OAAClassifier, PLSPersistence) {
     2, 2, 2,
     3, 3, 3);
 
-  ssig::PLSClassifier underlying;
-  underlying.setNumberOfFactors(2);
-  auto classifier = ssig::OAAClassifier::create(underlying);
+  auto underlying = ssig::PLSClassifier::create();
+  underlying->setNumberOfFactors(2);
+  auto classifier = ssig::OAAClassifier::create(*underlying);
   classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
@@ -302,7 +302,7 @@ TEST(OAAClassifier, PLSPersistence) {
 
   classifier->save("oaa.yml", "root");
 
-  auto loaded = ssig::OAAClassifier::create(underlying);
+  auto loaded = ssig::OAAClassifier::create(*underlying);
   loaded->load("oaa.yml", "root");
   remove("oaa.yml");
 

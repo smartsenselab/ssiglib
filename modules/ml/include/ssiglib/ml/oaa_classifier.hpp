@@ -57,6 +57,7 @@ class OAAClassifier : public Multiclass {
   ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
 
  public:
+  ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
   virtual ~OAAClassifier(void) = default;
 
   ML_EXPORT int predict(
@@ -66,14 +67,14 @@ class OAAClassifier : public Multiclass {
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
     const cv::Mat_<int>& labels) override;
-  
+
   ML_EXPORT cv::Mat_<int> getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
-  
+
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
   ML_EXPORT bool isClassifier() const override;
-  
+
   ML_EXPORT void load(const std::string& filename,
                       const std::string& nodename) override;
   ML_EXPORT void save(const std::string& filename,
@@ -88,10 +89,8 @@ class OAAClassifier : public Multiclass {
   ML_EXPORT void setUnderlyingClassifier(
     const Classifier& underlyingClassifier);
 
-  ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
-
  protected:
- ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
+  ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
   OAAClassifier() = default;
 
  private:

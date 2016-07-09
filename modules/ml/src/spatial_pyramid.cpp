@@ -44,25 +44,6 @@
 #include <vector>
 
 namespace ssig {
-SpatialPyramid::SpatialPyramid() {
-  // Constructor
-}
-
-SpatialPyramid::~SpatialPyramid() {
-  // Destructor
-}
-
-SpatialPyramid::SpatialPyramid(const SpatialPyramid& rhs) {
-  // Constructor Copy
-}
-
-SpatialPyramid& SpatialPyramid::operator=(const SpatialPyramid& rhs) {
-  if (this != &rhs) {
-    // code here
-  }
-  return *this;
-}
-
 void SpatialPyramid::pool(
   const cv::Size& imageSize,
   const std::vector<ssig::Clustering*>& clusteringMethods,
@@ -144,13 +125,6 @@ void SpatialPyramid::pool(
   // TODO(Ricardo): implement a test for this method
 }
 
-void SpatialPyramid::read(const cv::FileNode& fn) {
-  std::runtime_error("Unimplemented");
-}
-
-void SpatialPyramid::write(cv::FileStorage& fs) const {
-  std::runtime_error("Unimplemented");
-}
 }  // namespace ssig
 
 

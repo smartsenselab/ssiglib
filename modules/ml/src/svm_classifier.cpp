@@ -166,6 +166,10 @@ void SVMClassifier::convertToLibSVM(
   params.nr_weight = nr;
 }
 
+cv::Ptr<SVMClassifier> SVMClassifier::create() {
+  return cv::Ptr<SVMClassifier>(new SVMClassifier());
+}
+
 void SVMClassifier::learn(
   const cv::Mat_<float>& input,
   const cv::Mat_<int>& labels) {

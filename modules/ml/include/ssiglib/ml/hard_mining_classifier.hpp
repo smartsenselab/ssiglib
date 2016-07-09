@@ -50,7 +50,8 @@
 namespace ssig {
 class HardMiningClassifier : public ssig::Classifier {
  public:
-  ML_EXPORT HardMiningClassifier(Classifier& c);
+  ML_EXPORT static cv::Ptr<HardMiningClassifier> create(Classifier&c);
+
   ML_EXPORT virtual ~HardMiningClassifier(void) = default;
   ML_EXPORT HardMiningClassifier(const HardMiningClassifier& rhs);
   ML_EXPORT HardMiningClassifier& operator=(const HardMiningClassifier& rhs);
@@ -71,6 +72,9 @@ class HardMiningClassifier : public ssig::Classifier {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
   ML_EXPORT Classifier* clone() const override;
+
+ protected:
+  ML_EXPORT HardMiningClassifier(Classifier& c);
 
  private:
   // private members

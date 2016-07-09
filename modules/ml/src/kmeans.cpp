@@ -48,6 +48,10 @@
 
 namespace ssig {
 
+cv::Ptr<Kmeans> Kmeans::create() {
+  return cv::Ptr<Kmeans>(new Kmeans());
+}
+
 Kmeans::Kmeans(const Kmeans& rhs) :
   mFlags(rhs.mFlags),
   mNumberOfAttempts(rhs.mNumberOfAttempts) {
@@ -208,4 +212,4 @@ void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels) {
   }
 }
 
-}  // namespace ssig
+} // namespace ssig

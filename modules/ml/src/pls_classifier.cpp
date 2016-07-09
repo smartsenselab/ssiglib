@@ -86,6 +86,10 @@ void PLSClassifier::addLabels(const cv::Mat_<int>& labels) {
   mLabels = labels;
 }
 
+cv::Ptr<PLSClassifier> PLSClassifier::create() {
+  return cv::Ptr<PLSClassifier>(new PLSClassifier());
+}
+
 void PLSClassifier::learn(
   const cv::Mat_<float>& input,
   const cv::Mat_<int>& labels) {

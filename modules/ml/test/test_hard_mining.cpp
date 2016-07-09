@@ -46,27 +46,26 @@
 #include <ssiglib/ml/hard_mining_classifier.hpp>
 
 class HardMiningClassifierTest : public ::testing::Test {
- protected:
+protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
-  ssig::PLSClassifier classifier;
-  std::unique_ptr<ssig::HardMiningClassifier> hmc;
+  cv::Ptr<ssig::PLSClassifier> classifier;
+  cv::Ptr<ssig::HardMiningClassifier> hmc;
 
 
   void SetUp() override {
     labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
     inp =
-      (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 , 6 ,
-        102 , 100 , 104 , 105 , 99 , 101);
+        (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 , 6 ,
+                                      102 , 100 , 104 , 105 , 99 , 101);
 
     negatives =
-      (cv::Mat_<float>(3, 2) << 100 , 100 , 101 , 101 , 102 , 102);
+        (cv::Mat_<float>(3, 2) << 100 , 100 , 101 , 101 , 102 , 102);
 
-
-    classifier.setNumberOfFactors(2);
-    hmc = std::unique_ptr<ssig::HardMiningClassifier>
-      (new ssig::HardMiningClassifier(classifier));
+    classifier = ssig::PLSClassifier::create();
+    classifier->setNumberOfFactors(2);
+    hmc = ssig::HardMiningClassifier::create(*classifier);
 
     hmc->setMaxIterations(6);
     hmc->setNegatives(negatives);
@@ -107,19 +106,18 @@ TEST_F(HardMiningClassifierTest, Persistence) {
 
   hmc->save("hmc.yml", "root");
 
-  ssig::PLSClassifier pls;
-  ssig::HardMiningClassifier loaded(pls);
+  auto pls = ssig::PLSClassifier::create();
+  auto loaded = ssig::HardMiningClassifier::create(*pls);
 
-  loaded.load("hmc.yml", "root");
+  loaded->load("hmc.yml", "root");
   remove("hmc.yml");
 
-  ordering = loaded.getLabelsOrdering();
+  ordering = loaded->getLabelsOrdering();
   idx = ordering[1];
   resp.release();
-  loaded.predict(query1, resp);
+  loaded->predict(query1, resp);
   EXPECT_GE(resp[0][idx], 0);
-  loaded.predict(query2, resp);
+  loaded->predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
 }
-

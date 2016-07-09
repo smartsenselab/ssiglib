@@ -51,7 +51,7 @@
 namespace ssig {
 class MSTreeClustering : public Clustering {
  public:
-  MSTreeClustering(void) = default;
+ ML_EXPORT static cv::Ptr<MSTreeClustering> create();
   virtual ~MSTreeClustering(void) = default;
 
   ML_EXPORT void setup(const cv::Mat_<float>& input) override;
@@ -76,6 +76,9 @@ class MSTreeClustering : public Clustering {
   ML_EXPORT static void computeMinimumSpanningTree(
     const cv::Mat_<float>& input,
     std::vector<std::pair<int, int>>& edges);
+
+ protected:
+  MSTreeClustering(void) = default;
 
  private:
   /**
