@@ -42,11 +42,11 @@
 
 #ifndef _SSIG_CORE_SAMPLING_METHOD_HPP_
 #define _SSIG_CORE_SAMPLING_METHOD_HPP_
-
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
-
+// c++
+#include <vector>
+// ssiglib
 #include "core_defs.hpp"
 
 namespace ssig {

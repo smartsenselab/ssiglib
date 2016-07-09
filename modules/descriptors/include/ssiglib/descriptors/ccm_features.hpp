@@ -41,11 +41,11 @@
 
 #ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
-
+// c++
+#include <vector>
+// ssiglib
 #include "descriptor_2d.hpp"
 
 

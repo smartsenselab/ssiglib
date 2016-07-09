@@ -92,7 +92,6 @@ void GeneticOptimizator::learn(const cv::Mat_<float>& input) {
 void GeneticOptimizator::setup(const cv::Mat_<float>& input) {
   mPopulation = input;
   if (mPopulation.empty()) {
-    int nSamples = getPopulationLength();
     mPopulation = cv::Mat_<float>::zeros(mPopulationLength, mDimensions);
     for (int i = 0; i < mPopulationLength; ++i) {
       for (int d = 0; d < mDimensions; ++d) {

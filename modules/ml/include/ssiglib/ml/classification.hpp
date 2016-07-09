@@ -42,12 +42,12 @@
 
 #ifndef _SSIG_ML_CLASSIFICATION_HPP_
 #define _SSIG_ML_CLASSIFICATION_HPP_
-
+// opencv
+#include <opencv2/core.hpp>
+// c++
 #include <unordered_map>
 #include <string>
-
-#include <opencv2/core.hpp>
-
+// ssiglib
 #include "ssiglib/ml/ml_defs.hpp"
 #include "ssiglib/core/algorithm.hpp"
 

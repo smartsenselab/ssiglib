@@ -42,11 +42,11 @@
 
 #ifndef _SSIG_ML_KMEANS_HPP_
 #define _SSIG_ML_KMEANS_HPP_
-
+// c++
 #include <vector>
 #include <string>
 #include <memory>
-
+// 
 #include "ssiglib/ml/clustering.hpp"
 #include "classification.hpp"
 #include "oaa_classifier.hpp"

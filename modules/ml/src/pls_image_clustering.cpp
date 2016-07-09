@@ -41,7 +41,9 @@
 
 
 #include "ssiglib/ml/pls_image_clustering.hpp"
-
+// ssiglib
+#include <ssiglib/core/math.hpp>
+// c++
 #include <string>
 #include <random>
 #include <memory>
@@ -49,7 +51,6 @@
 #include <utility>
 #include <vector>
 
-#include <ssiglib/core/math.hpp>
 
 namespace ssig {
 

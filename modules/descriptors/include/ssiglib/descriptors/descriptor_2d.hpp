@@ -42,12 +42,12 @@
 
 #ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
 #define _SSIG_DESCRIPTORS_DESCRIPTOR_INTERFACE_HPP_
-
-#include <vector>
-
-#include <ssiglib/core/algorithm.hpp>
+// opencv
 #include <opencv2/core.hpp>
-
+// c++
+#include <vector>
+// ssiglib
+#include "ssiglib/core/algorithm.hpp"
 #include "ssiglib/descriptors/descriptors_defs.hpp"
 #include "ssiglib/descriptors/descriptor.hpp"
 

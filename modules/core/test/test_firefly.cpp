@@ -39,16 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 #include <gtest/gtest.h>
-
+// opencv
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+// c++
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
 #include <cmath>
-
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <ssiglib/core/util.hpp>
-
+// ssiglib
+#include "ssiglib/core/util.hpp"
 #include "ssiglib/core/firefly.hpp"
 
 

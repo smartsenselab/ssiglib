@@ -40,12 +40,12 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
-
+// c++
+#include <vector>
+// ssiglib
+#include "ssiglib/core/math.hpp"
 #include "ssiglib/ml/kmeans.hpp"
 #include "ssiglib/ml/pls_classifier.hpp"
 #include "ssiglib/ml/pls_image_clustering.hpp"

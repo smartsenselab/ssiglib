@@ -40,12 +40,13 @@
 *****************************************************************************L*/
 #include <gtest/gtest.h>
 
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
-
+// c++
+#include <vector>
+// ssiglib
 #include "ssiglib/descriptors/hog_uoccti_features.hpp"
 
 TEST(HOGUOCCTI, Simple) {

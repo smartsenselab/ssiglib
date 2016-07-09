@@ -42,13 +42,14 @@
 
 #ifndef _SSIG_ML_SVMCLASSIFIER_HPP_
 #define _SSIG_ML_SVMCLASSIFIER_HPP_
-
+// opencv
+#include <opencv2/core.hpp>
+// c++
 #include <unordered_map>
 #include <string>
-
-#include <opencv2/core.hpp>
-
+// libsvm
 #include "../../../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
+// ssiglib
 #include "classification.hpp"
 
 namespace ssig {

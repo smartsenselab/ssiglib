@@ -39,13 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+// ssiglib
+#include <ssiglib/ml/svm_classifier.hpp>
+// c++
 #include <vector>
 #include <string>
 #include <unordered_set>
-
-#include <ssiglib/ml/svm_classifier.hpp>
-
+// libsvm
 #include "../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
+
+
 
 namespace ssig {
 

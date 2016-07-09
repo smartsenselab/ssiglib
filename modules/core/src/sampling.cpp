@@ -40,12 +40,12 @@
 *****************************************************************************L*/
 
 #include "ssiglib/core/sampling.hpp"
-
-#include <stdexcept>
-#include <vector>
-
+// opencv
 #include <opencv2/features2d.hpp>
 #include <opencv2/imgproc.hpp>
+// c++
+#include <stdexcept>
+#include <vector>
 
 namespace ssig {
 

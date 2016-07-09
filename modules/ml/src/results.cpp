@@ -43,6 +43,12 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+// opencv
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/core.hpp>
+// ssiglib
+#include <ssiglib/ml/classification.hpp>
 // c++
 #include <ctime>
 #include <random>
@@ -54,12 +60,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-// opencv
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/core.hpp>
-// ssiglib
-#include <ssiglib/ml/classification.hpp>
+
 
 #ifdef _WIN32
 #define snprintf _snprintf
@@ -308,7 +309,6 @@ float Results::leaveOneOut(
       trainLabels = labels.rowRange(0, r).clone();
       trainLabels.push_back(labels.rowRange(r + 1, labels.rows));
     }
-    int t = 0;
 
     classifier.learn(trainSamples, trainLabels);
     if (verbose) {
