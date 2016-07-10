@@ -64,9 +64,9 @@ class Classifier : public Algorithm {
 
   ML_EXPORT virtual void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) = 0;
+    const cv::Mat& labels) = 0;
 
-  ML_EXPORT virtual cv::Mat_<int> getLabels() const = 0;
+  ML_EXPORT virtual cv::Mat getLabels() const = 0;
   ML_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
 
   ML_EXPORT virtual void setClassWeights(const int classLabel,

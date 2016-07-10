@@ -45,16 +45,16 @@
 #include <ssiglib/ml/pls_classifier.hpp>
 
 TEST(PLSClassifier, BinaryClassification) {
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
   cv::Mat_<float> inp =
-      (cv::Mat_<float>(6, 2) << 1, 2, 2, 2, 4, 6, 102, 100, 104, 105, 99, 101);
+      (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 , 6 , 102 , 100 , 104 , 105 , 99 , 101);
 
   auto classifier = ssig::PLSClassifier::create();
   classifier->setNumberOfFactors(2);
   classifier->learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
 
   cv::Mat_<float> resp;
   classifier->predict(query1, resp);
@@ -67,16 +67,16 @@ TEST(PLSClassifier, BinaryClassification) {
 }
 
 TEST(PLSClassifier, Persistence) {
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
   cv::Mat_<float> inp =
-      (cv::Mat_<float>(6, 2) << 1, 2, 2, 2, 4, 6, 102, 100, 104, 105, 99, 101);
+      (cv::Mat_<float>(6, 2) << 1 , 2 , 2 , 2 , 4 , 6 , 102 , 100 , 104 , 105 , 99 , 101);
 
   auto classifier = ssig::PLSClassifier::create();
   classifier->setNumberOfFactors(2);
   classifier->learn(inp, labels);
 
-  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
-  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100 , 103);
 
   cv::Mat_<float> resp;
   classifier->predict(query1, resp);
@@ -101,4 +101,43 @@ TEST(PLSClassifier, Persistence) {
   loaded->predict(query2, resp);
   idx = ordering[-1];
   EXPECT_GE(resp[0][idx], 0);
+}
+
+TEST(PLSClassifier, MultiClassification) {
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 3) <<
+        1 , -1 , -1 ,
+        1 , -1 , -1 ,
+        -1 , 1 , -1 ,
+        -1 , 1 , -1 ,
+        -1 , -1 , 1 ,
+        -1 , -1 , 1);
+  cv::Mat_<float> inp =
+      (cv::Mat_<float>(6, 2) << 
+      1, 2,
+      2, 2,
+      1005, 1001,
+      1000, 1000,
+      100, 99,
+      99, 101);
+
+  auto classifier = ssig::PLSClassifier::create();
+  classifier->setNumberOfFactors(2);
+  classifier->learn(inp, labels);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1003);
+  cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 100 , 103);
+  
+
+  cv::Mat_<float> resp;
+  classifier->predict(query1, resp);
+  int idx[2];
+  cv::minMaxIdx(resp, 0, 0, 0, idx);
+  EXPECT_EQ(0, idx[1]);
+  classifier->predict(query2, resp);  
+  cv::minMaxIdx(resp, 0, 0, 0, idx);
+  EXPECT_EQ(1, idx[1]);
+  classifier->predict(query3, resp);
+  cv::minMaxIdx(resp, 0, 0, 0, idx);
+  EXPECT_EQ(2, idx[1]);
 }

@@ -89,13 +89,13 @@ class SVMClassifier : public Classifier {
 
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
+    const cv::Mat& labels) override;
 
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
     cv::Mat_<float>& resp) const override;
 
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
+  ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
 
   ML_EXPORT void setClassWeights(const int classLabel,

@@ -62,8 +62,8 @@ class HardMiningClassifier : public ssig::Classifier {
     cv::Mat_<float>& resp) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
+    const cv::Mat& labels) override;
+  ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT void setNegatives(const cv::Mat_<float>& negatives);
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
   ML_EXPORT bool empty() const override;

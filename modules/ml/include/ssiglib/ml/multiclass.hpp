@@ -54,8 +54,8 @@ public:
   virtual ~Multiclass() = default;
 
   int predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override = 0;
-  void learn(const cv::Mat_<float>& input, const cv::Mat_<int>& labels) override = 0;
-  cv::Mat_<int> getLabels() const override = 0;
+  void learn(const cv::Mat_<float>& input, const cv::Mat& labels) override = 0;
+  cv::Mat getLabels() const override = 0;
   std::unordered_map<int, int> getLabelsOrdering() const override = 0;
   bool empty() const override = 0;
   bool isTrained() const override = 0;

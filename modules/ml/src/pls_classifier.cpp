@@ -64,24 +64,32 @@ int PLSClassifier::predict(
   cv::Mat_<float>& resp) const {
   mPls->predict(inp, resp);
   cv::Mat_<float> r;
-  r.create(inp.rows, 2);
-  for (int row = 0; row < inp.rows; ++row) {
-    r[row][0] = resp[row][0];
-    r[row][1] = -1 * resp[row][0];
+  r.create(inp.rows, mYColumns);
+  int labelIdx = -1;
+  if (!mIsMulticlass) {
+    for (int row = 0; row < inp.rows; ++row) {
+      r[row][0] = resp[row][0];
+      r[row][1] = -1 * resp[row][0];
+    }
+    labelIdx = resp[0][0] > 0 ? 1 : -1;
+    resp = r;
   }
-  resp = r;
-  int labelIdx = resp[0][0] > 0?1 : -1;
-
-  return inp.rows > 1?0 : labelIdx;
+  return inp.rows > 1 || mIsMulticlass ? 0 : labelIdx;
 }
 
-void PLSClassifier::addLabels(const cv::Mat_<int>& labels) {
-  std::unordered_set<int> labelsSet;
-  for (int r = 0; r < labels.rows; ++r)
-    labelsSet.insert(labels[r][0]);
-  if (labelsSet.size() > 2) {
-    std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
-      "This is a binary classifier!\n");
+void PLSClassifier::addLabels(const cv::Mat& labels) {
+  if (labels.cols > 1) {
+    // multiclass
+    mYColumns = labels.cols;
+    mIsMulticlass = true;
+  } else {
+    std::unordered_set<int> labelsSet;
+    for (int r = 0; r < labels.rows; ++r)
+      labelsSet.insert(labels.at<int>(r, 0));
+    if (labelsSet.size() > 2) {
+      std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
+                         "This is a binary classifier!\n");
+    }
   }
   mLabels = labels;
 }
@@ -92,7 +100,7 @@ cv::Ptr<PLSClassifier> PLSClassifier::create() {
 
 void PLSClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
+  const cv::Mat& labels) {
   // TODO(Ricardo): assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
@@ -106,11 +114,18 @@ void PLSClassifier::learn(
   mTrained = true;
 }
 
-cv::Mat_<int> PLSClassifier::getLabels() const {
+cv::Mat PLSClassifier::getLabels() const {
   return mLabels;
 }
 
 std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
+  if (mIsMulticlass) {
+    std::unordered_map<int, int> ans;
+    for (int i = 0; i < mYColumns; ++i) {
+      ans[i] = i;
+    }
+    return ans;
+  }
   return {{1, 0}, {-1, 1}};
 }
 
@@ -154,5 +169,3 @@ void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
 }
 
 }  // namespace ssig
-
-
