@@ -107,7 +107,7 @@ def generate(argv):
             f_source.write(str_template_license.rstrip('\r\n') + '\n\n' + \
                           str_template_source.format(**values))
 
-    print 'Class files generate with success!'
+    print 'Class files generated with success!'
 
 
 if __name__ == "__main__":
