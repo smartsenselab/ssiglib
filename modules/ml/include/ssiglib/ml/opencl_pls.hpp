@@ -39,55 +39,79 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#include "ssiglib/core/algorithm.hpp"
-
+#ifndef _SSIG_ML_OPENCL_PLS_HPP_
+#define _SSIG_ML_OPENCL_PLS_HPP_
+// c++
+#include <stdexcept>
+#include <vector>
 #include <string>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "ssiglib/ml/ml_defs.hpp"
 
 namespace ssig {
+class OpenClPLS {
+  // set output matrix according to indices
+  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+    std::vector<size_t>& indices);
 
-Algorithm::Algorithm() {}
+  // compute regression error
+  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
 
-Algorithm::~Algorithm() {}
+  // function to computer the Bstar (nfactors must be the maximum the number of
+  // factors of the PLS model)
+  void computeBstar(int nfactors);
 
-Algorithm::Algorithm(const Algorithm& rhs) {}
+  public:
+  PLS() = default;
+  virtual ~PLS() = default;
 
-Algorithm& Algorithm::operator=(const Algorithm& rhs) {
-  return *this;
-}
+  ML_EXPORT static cv::Ptr<PLS> create();
+  // compute PLS model
+  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
-void Algorithm::load(const std::string& filename,
-                     const std::string& nodename) {
-  cv::FileStorage fileStorage;
-  fileStorage.open(filename, cv::FileStorage::READ);
-  cv::FileNode node;
-  if (!nodename.empty())
-    node = fileStorage[nodename];
-  else
-    node = fileStorage.root();
-  this->read(node);
-  fileStorage.release();
-}
+  // return projection considering n factors
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
+    int nfactors);
 
-void Algorithm::save(const std::string& filename,
-                     const std::string& nodename) const {
-  cv::FileStorage fileStorage;
-  fileStorage.open(filename, cv::FileStorage::WRITE);
-  if (!nodename.empty()) {
-    fileStorage << nodename << "{";
+  // retrieve the number of factors
+  ML_EXPORT int getNFactors() const;
 
-    write(fileStorage);
+  // projection Bstar considering a number of factors (must be smaller than the
+  // maximum)
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
 
-    fileStorage << "}";
-  } else {
-    write(fileStorage);
-  }
-  fileStorage.release();
-}
+  // save PLS model
+  ML_EXPORT void save(std::string filename) const;
+  ML_EXPORT void save(cv::FileStorage& storage) const;
 
-void Algorithm::setUseOpenCl(bool state) {
-  mOpenClEnabled = state;
-}
+  // load PLS model
+  ML_EXPORT void load(std::string filename);
+  ML_EXPORT void load(const cv::FileNode& node);
+
+  // compute PLS using cross-validation to define the number of factors
+  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
+    cv::Mat_<float>& Y, int minDims,
+    int maxDims, int step);
+
+  protected:
+  cv::Mat_<float> mXmean;
+  cv::Mat_<float> mXstd;
+  cv::Mat_<float> mYmean;
+  cv::Mat_<float> mYstd;
+
+  cv::Mat_<float> mB;
+  cv::Mat_<float> mT;
+  cv::Mat_<float> mP;
+  cv::Mat_<float> mW;
+
+  cv::Mat_<float> mWstar;
+  cv::Mat_<float> mBstar;
+
+  cv::Mat_<float> mZDataV;
+  cv::Mat_<float> mYscaled;
+  int mNFactors;
+};
 }  // namespace ssig
-
-
+#endif  // !_SSIG_ML_OPENCL_PLS_HPP_

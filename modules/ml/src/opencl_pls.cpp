@@ -39,55 +39,25 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#include "ssiglib/core/algorithm.hpp"
-
-#include <string>
+#include "ssiglib/ml/opencl_pls.hpp"
 
 namespace ssig {
+OpenClPLS::OpenClPLS() {
+  // Constructor
+}
 
-Algorithm::Algorithm() {}
+OpenClPLS::~OpenClPLS() {
+  // Destructor
+}
 
-Algorithm::~Algorithm() {}
+OpenClPLS::OpenClPLS(const OpenClPLS& rhs) {
+  // Constructor Copy
+}
 
-Algorithm::Algorithm(const Algorithm& rhs) {}
-
-Algorithm& Algorithm::operator=(const Algorithm& rhs) {
+OpenClPLS& OpenClPLS::operator=(const OpenClPLS& rhs) {
+  if (this != &rhs) {
+    // code here
+  }
   return *this;
 }
-
-void Algorithm::load(const std::string& filename,
-                     const std::string& nodename) {
-  cv::FileStorage fileStorage;
-  fileStorage.open(filename, cv::FileStorage::READ);
-  cv::FileNode node;
-  if (!nodename.empty())
-    node = fileStorage[nodename];
-  else
-    node = fileStorage.root();
-  this->read(node);
-  fileStorage.release();
-}
-
-void Algorithm::save(const std::string& filename,
-                     const std::string& nodename) const {
-  cv::FileStorage fileStorage;
-  fileStorage.open(filename, cv::FileStorage::WRITE);
-  if (!nodename.empty()) {
-    fileStorage << nodename << "{";
-
-    write(fileStorage);
-
-    fileStorage << "}";
-  } else {
-    write(fileStorage);
-  }
-  fileStorage.release();
-}
-
-void Algorithm::setUseOpenCl(bool state) {
-  mOpenClEnabled = state;
-}
 }  // namespace ssig
-
-
