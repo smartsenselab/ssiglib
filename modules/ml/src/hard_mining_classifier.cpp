@@ -71,7 +71,7 @@ int HardMiningClassifier::predict(
 
 void HardMiningClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
+  const cv::Mat& labels) {
   cv::Mat_<float> inp = input.clone();
   mLabels = labels.clone();
 
@@ -92,7 +92,7 @@ void HardMiningClassifier::learn(
   }
 }
 
-cv::Mat_<int> HardMiningClassifier::getLabels() const {
+cv::Mat HardMiningClassifier::getLabels() const {
   return mLabels;
 }
 

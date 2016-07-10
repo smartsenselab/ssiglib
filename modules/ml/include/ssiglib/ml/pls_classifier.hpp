@@ -52,7 +52,7 @@
 namespace ssig {
 
 class PLSClassifier : public Multiclass {
-  virtual void addLabels(const cv::Mat_<int>& labels);
+  virtual void addLabels(const cv::Mat& labels);
 
  public:
  ML_EXPORT static cv::Ptr<PLSClassifier> create();
@@ -64,8 +64,8 @@ class PLSClassifier : public Multiclass {
               cv::Mat_<float>& resp) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
+    const cv::Mat& labels) override;
+  ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
@@ -87,7 +87,10 @@ class PLSClassifier : public Multiclass {
   std::unique_ptr<PLS> mPls;
   int mNumberOfFactors = 3;
 
+  int mYColumns = 2;
+
   bool mTrained = false;
+  bool mIsMulticlass = false;
 
   void setClassWeights(const int classLabel, const float weight) override;
 };

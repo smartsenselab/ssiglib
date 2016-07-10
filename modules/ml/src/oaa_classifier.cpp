@@ -60,7 +60,7 @@ OAAClassifier::OAAClassifier(const Classifier& prototypeClassifier) {
 
 void OAAClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
+  const cv::Mat& labels) {
   if (!mClassifiers.empty()) {
     mClassifiers.clear();
   }
@@ -73,7 +73,7 @@ void OAAClassifier::learn(
   int c = -1;
   std::vector<int> labelOrdering;
   for (int i = 0; i < labels.rows; ++i) {
-    auto label = labels[0][i];
+    auto label = labels.at<int>(i);
     if (mLabel2Index.find(label) == mLabel2Index.end()) {
       mLabel2Index[label] = ++c;
       labelOrdering.push_back(label);
@@ -94,11 +94,11 @@ void OAAClassifier::learn(
     float nNeg = 0;
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
     for (int j = 0; j < labels.rows; ++j) {
-      if (labels[j][0] == label) {
-        localLabels[j][0] = 1;
+      if (labels.at<int>(j)  == label) {
+        localLabels.at<int>(j) = 1;
         ++nPos;
       } else {
-        localLabels[j][0] = -1;
+        localLabels.at<int>(j) = -1;
         ++nNeg;
       }
     }
@@ -142,7 +142,7 @@ int OAAClassifier::predict(
   return inp.rows > 1 ? 0 : mIndex2Label[bestLabel];
 }
 
-cv::Mat_<int> OAAClassifier::getLabels() const {
+cv::Mat OAAClassifier::getLabels() const {
   return mLabels;
 }
 
@@ -188,7 +188,7 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
     auto newClassifier = std::unique_ptr<Classifier>(
-                                                     mUnderlyingClassifier->clone());
+      mUnderlyingClassifier->clone());
     mClassifiers.push_back(std::move(newClassifier));
     mClassifiers.back()->read(*it);
   }
@@ -238,7 +238,7 @@ cv::Ptr<OAAClassifier> OAAClassifier::create(const Classifier& underlying) {
 
 void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
   mLabels.release();
-  mLabels = labels;
+  labels.convertTo(mLabels, CV_32SC1);
 }
 
-} // namespace ssig
+}  // namespace ssig
