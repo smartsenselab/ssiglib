@@ -374,7 +374,8 @@ void PLSImageClustering::buildClusterRepresentation(
 }
 
 cv::Ptr<OAAClassifier> PLSImageClustering::getClassifier() const {
-  return cv::Ptr<OAAClassifier>(dynamic_cast<OAAClassifier*>(mClassifier->clone()));
+  return cv::Ptr<OAAClassifier>(
+    dynamic_cast<OAAClassifier*>(mClassifier->clone()));
 }
 
 void PLSImageClustering::setSimBuilder(

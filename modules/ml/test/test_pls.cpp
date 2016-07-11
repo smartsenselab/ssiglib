@@ -206,3 +206,4 @@ TEST(OpenClPLSClassifier, Persistence) {
   loaded->predict(query2, resp);
   EXPECT_LE(resp.at<float>(0), 0);
 }
+

@@ -46,7 +46,7 @@
 #include <ssiglib/ml/hard_mining_classifier.hpp>
 
 class HardMiningClassifierTest : public ::testing::Test {
-protected:
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;

@@ -39,17 +39,18 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 #include <gtest/gtest.h>
-// ssiglib
-#include <ssiglib/ml/kmeans.hpp>
-#include <ssiglib/ml/pls_classifier.hpp>
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <vector>
 #include <random>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "ssiglib/ml/kmeans.hpp"
+#include "ssiglib/ml/pls_classifier.hpp"
+
 
 class KmeansClusteringTest : public ::testing::Test {
-protected:
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
@@ -76,7 +77,7 @@ protected:
 };
 
 class KmeansClusteringClassifierTest : public ::testing::Test {
-protected:
+ protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;

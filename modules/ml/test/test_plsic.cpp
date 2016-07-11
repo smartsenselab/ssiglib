@@ -40,10 +40,10 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <vector>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "ssiglib/core/math.hpp"
 #include "ssiglib/ml/kmeans.hpp"
@@ -84,10 +84,10 @@ TEST(PLSIC, CorrelationClusteringTest) {
                                                      initialClustering);
   clustering->setK(2);
   clustering->setClusterRepresentationType(
-                                           ssig::ClusterRepresentationType::ClustersResponses);
+    ssig::ClusterRepresentationType::ClustersResponses);
   clustering->setMergeThreshold(0.7f);
   auto correlation = std::unique_ptr<ssig::CorrelationSimilarity>(
-                                                                  new ssig::CorrelationSimilarity);
+    new ssig::CorrelationSimilarity);
   clustering->setSimBuilder(std::move(correlation));
   clustering->setDiscoveryConfiguration(discoverySubsets);
   clustering->setClusterSize(5);
@@ -157,15 +157,18 @@ TEST(PLSIC, CosineClusteringTest) {
       {{1}, {8}, {14}, {15}, {23}, {28}};
   std::vector<ssig::Cluster> natVector = {{}, {}};
 
-  auto clustering = ssig::PLSImageClustering::create(*oaaclassifier, discoverySubsets,
-                                                     initialClustering);
+  auto clustering = ssig::PLSImageClustering::create(
+    *oaaclassifier,
+    discoverySubsets,
+    initialClustering);
+
   clustering->setK(2);
   clustering->setClusterRepresentationType(
-                                           ssig::ClusterRepresentationType::ClustersResponses);
+    ssig::ClusterRepresentationType::ClustersResponses);
   clustering->setMergeThreshold(0.7f);
 
   auto cosine = std::unique_ptr<ssig::CosineSimilarity>(
-                                                        new ssig::CosineSimilarity);
+    new ssig::CosineSimilarity);
   clustering->setSimBuilder(std::move(cosine));
 
   clustering->addNaturalWorld(neg, natVector);
