@@ -63,8 +63,8 @@ enum ClusteringDistance {
 };
 
 class HierarchicalKmeans : public Clustering {
-public:
-ML_EXPORT static cv::Ptr<HierarchicalKmeans> create();
+ public:
+  ML_EXPORT static cv::Ptr<HierarchicalKmeans> create();
   ML_EXPORT virtual ~HierarchicalKmeans(void);
   ML_EXPORT HierarchicalKmeans(const HierarchicalKmeans& rhs);
   ML_EXPORT HierarchicalKmeans& operator=(const HierarchicalKmeans& rhs);
@@ -97,10 +97,10 @@ ML_EXPORT static cv::Ptr<HierarchicalKmeans> create();
   ML_EXPORT void setCBIndex(const float cbIndex);
   ML_EXPORT float getCBIndex() const;
 
-protected:
+ protected:
   ML_EXPORT HierarchicalKmeans(void);
 
-private:
+ private:
   // private members
 
   ClusteringDistance mDistType = L2;
@@ -110,5 +110,5 @@ private:
   float mCBIndex = 0.2f;
   cv::Mat_<float> mCenters;
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_HIERARCHICAL_KMEANS_HPP_

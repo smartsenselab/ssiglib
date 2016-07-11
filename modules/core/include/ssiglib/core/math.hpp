@@ -18,7 +18,7 @@
 *    1. Redistributions of source code must retain the above copyright notice,
 *       this list of conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright
+*    2. RedistributIions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
 *
@@ -49,7 +49,7 @@
 
 namespace ssig {
 class UtilityFunctor {
-public:
+ public:
   virtual ~UtilityFunctor() {}
 
   UtilityFunctor() = default;
@@ -60,7 +60,7 @@ public:
 };
 
 class DistanceFunctor {
-public:
+ public:
   virtual ~DistanceFunctor() = default;
   DistanceFunctor() = default;
 
@@ -94,7 +94,7 @@ struct EuclideanDistance : DistanceFunctor {
 typedef DistanceFunctor SimilarityFunctor;
 
 class Math {
-public:
+ public:
   Math(void);
   virtual ~Math(void);
   Math(const Math& rhs);
@@ -162,6 +162,6 @@ CORE_EXPORT void clComputeZScore(cv::UMat& M,
                      cv::UMat& mean,
                      cv::UMat& std);
 
-} // namespace ssig
+}  // namespace ssig
 
 #endif   // !_SSF_CORE_MATH_HPP_

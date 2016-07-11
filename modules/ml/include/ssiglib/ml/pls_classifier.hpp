@@ -56,7 +56,7 @@ class PLSClassifier : public Multiclass {
   virtual void addLabels(const cv::Mat& labels);
 
  public:
- ML_EXPORT static cv::Ptr<PLSClassifier> create();
+  ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
 
   ML_EXPORT int predict(
@@ -83,6 +83,7 @@ class PLSClassifier : public Multiclass {
  protected:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
+
  private:
   // private members
   std::unique_ptr<PLS> mPls;
