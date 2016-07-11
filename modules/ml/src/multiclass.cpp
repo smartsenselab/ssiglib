@@ -39,67 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ML_KMEANS_HPP_
-#define _SSIG_ML_KMEANS_HPP_
-// c++
-#include <vector>
-#include <string>
-#include <memory>
-// ssiglib
-#include "ssiglib/ml/clustering.hpp"
-#include "classification.hpp"
-#include "oaa_classifier.hpp"
+#include "ssiglib/ml/multiclass.hpp"
 
 namespace ssig {
 
-class Kmeans : public Clustering {
- public:
-  ML_EXPORT static cv::Ptr<Kmeans> create();
-  ML_EXPORT virtual ~Kmeans(void) = default;
-  Kmeans(const Kmeans& rhs);
-  Kmeans& operator=(const Kmeans& rhs);
-
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-
-  ML_EXPORT void predict(const cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
-
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
-
-  ML_EXPORT void getCentroids(
-    cv::Mat_<float>& centroidsMatrix) const override;
-
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
-
-  ML_EXPORT int getFlags() const;
-
-  ML_EXPORT void setFlags(int flags);
-
-  ML_EXPORT int getNAttempts() const;
-
-  ML_EXPORT void setNAttempts(int nAttempts);
-
-  ML_EXPORT size_t getSize() const override;
-
- protected:
-  ML_EXPORT Kmeans(void) = default;
-
- private:
-  // private members
-  cv::Mat_<float> mCentroids;
-  int mFlags;
-  int mNumberOfAttempts;
-
-  void setupLabelMatFromInitialization(cv::Mat& labels);
-};
+bool Multiclass::isClassifier() const {
+  return true;
+}
 }  // namespace ssig
-
-#endif  // !_SSIG_ALGORITHMS_KMEANS_HPP_

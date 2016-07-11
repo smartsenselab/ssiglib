@@ -39,77 +39,72 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include <gtest/gtest.h>
-// c++ Headers
-#include <utility>
+#ifndef _SSIG_ML_OPENCL_PLS_HPP_
+#define _SSIG_ML_OPENCL_PLS_HPP_
+// c++
+#include <stdexcept>
 #include <vector>
-#include <cfloat>
-#include <random>
-#include <algorithm>
+#include <string>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "ssiglib/ml/ml_defs.hpp"
 
-#include "ssiglib/ml/mst_clustering.hpp"
+namespace ssig {
+class OpenClPLS {
+ public:
+  ML_EXPORT OpenClPLS() = default;
+  ML_EXPORT virtual ~OpenClPLS() = default;
 
-TEST(MSTreeClustering, computeMinimumSpanningTree_Contract) {
-  const float inf = FLT_MAX;
-  cv::Mat_<float> input = (cv::Mat_<float>(7, 7) <<
-    inf , 7 , inf , 5 , inf , inf , inf ,
-          7 , inf , 8 , 9 , 7 , inf , inf ,
-          inf , 8 , inf , inf , 5 , inf , inf ,
-          5 , 9 , inf , inf , 15 , 6 , inf ,
-          inf , 7 , 5 , 15 , inf , 8 , 9 ,
-          inf , inf , inf , 6 , 8 , inf , 11 ,
-          inf , inf , inf , inf , 9 , 11 , inf);
-  typedef std::vector<std::forward_list<std::pair<int, float>>> AdjList;
-  AdjList adjList;
-  AdjList expected{
-    {{1, 7.f}, {3, 5.f}},
-    {{0, 7.f}, {4, 7.f}},
-    {{4, 5.f}},
-    {{0, 5.f}, {5, 6.f}},
-    {{1, 7.f}, {2, 5.f}, {6, 9.f}},
-    {{3, 6.f}},
-    {{4, 9.f}}};
-  ssig::MSTreeClustering::computeMinimumSpanningTree(input, adjList);
+  ML_EXPORT static cv::Ptr<OpenClPLS> create();
+  // compute OpenClPLS model
+  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
-  EXPECT_EQ(expected, adjList);
-}
+  // return projection considering n factors
+  ML_EXPORT void predict(
+                          const cv::Mat_<float>& X,
+                          cv::Mat_<float>& projX,
+                          int nfactors);
 
-class MSTreeClusteringTest : public ::testing::Test {
+  // retrieve the number of factors
+  ML_EXPORT int getNFactors() const;
+
+  // projection Bstar considering a number of factors (must be smaller than the
+  // maximum)
+  ML_EXPORT void predict(
+                          const cv::Mat_<float>& X,
+                          cv::Mat_<float>& ret);
+
+  // save OpenClPLS model
+  ML_EXPORT void save(std::string filename) const;
+  ML_EXPORT void save(cv::FileStorage& storage) const;
+
+  // load OpenClPLS model
+  ML_EXPORT void load(std::string filename);
+  ML_EXPORT void load(const cv::FileNode& node);
+
+  // compute OpenClPLS using cross-validation to define the number of factors
+  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
+    cv::Mat_<float>& Y, int minDims,
+    int maxDims, int step);
+
  protected:
-  cv::Mat_<float> inp;
-  cv::Ptr<ssig::MSTreeClustering> mstree;
+  cv::UMat mXmean;
+  cv::UMat mXstd;
+  cv::UMat mYmean;
+  cv::UMat mYstd;
 
+  cv::UMat mB;
+  cv::UMat mT;
+  cv::UMat mP;
+  cv::UMat mW;
 
-  void SetUp() override {
-    auto rnd = std::default_random_engine(1234);
-    inp = cv::Mat_<float>::zeros(6, 2);
-    for (int i = 0; i < 3; ++i) {
-      inp[i][0] = static_cast<float>(rnd() % 5);
-      inp[i][1] = static_cast<float>(rnd() % 5);
-      inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
-      inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
-    }
-    mstree = ssig::MSTreeClustering::create();
-    mstree->setK(2);
-    mstree->setMaxIterations(500);
-    mstree->learn(inp);
-  }
+  cv::UMat mWstar;
+  cv::UMat mBstar;
+
+  cv::UMat mZDataV;
+  cv::UMat mYscaled;
+  int mNFactors;
 };
-
-TEST_F(MSTreeClusteringTest, SanityClusteringTest) {
-  auto clusters = mstree->getClustering();
-  std::vector<int> gt1 = {0, 1, 2};
-  std::vector<int> gt2 = {3, 4, 5};
-  ASSERT_EQ(2, static_cast<int>(clusters.size()));
-  int equalCount = 0;
-  for (const auto& cluster : clusters) {
-    if (std::is_permutation(gt1.begin(), gt1.end(),
-                            cluster.begin())) {
-      ++equalCount;
-    } else if (std::is_permutation(gt2.begin(), gt2.end(),
-                                   cluster.begin())) {
-      ++equalCount;
-    }
-  }
-  EXPECT_EQ(2, equalCount);
-}
+}  // namespace ssig
+#endif  // !_SSIG_ML_OPENCL_PLS_HPP_

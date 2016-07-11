@@ -39,21 +39,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 #include <gtest/gtest.h>
-// ssiglib
-#include <ssiglib/ml/kmeans.hpp>
-#include <ssiglib/ml/pls_classifier.hpp>
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <vector>
 #include <random>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "ssiglib/ml/kmeans.hpp"
+#include "ssiglib/ml/pls_classifier.hpp"
+
 
 class KmeansClusteringTest : public ::testing::Test {
  protected:
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
-  ssig::Kmeans kmeans;
+  cv::Ptr<ssig::Kmeans> kmeans;
 
 
   void SetUp() override {
@@ -65,13 +66,13 @@ class KmeansClusteringTest : public ::testing::Test {
       inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
       inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
     }
-
-    kmeans.setK(2);
-    kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-    kmeans.setMaxIterations(500);
-    kmeans.setNAttempts(1);
-    kmeans.setPredictionDistanceType(ssig::Kmeans::NORM_L2);
-    kmeans.learn(inp);
+    kmeans = ssig::Kmeans::create();
+    kmeans->setK(2);
+    kmeans->setFlags(cv::KMEANS_RANDOM_CENTERS);
+    kmeans->setMaxIterations(500);
+    kmeans->setNAttempts(1);
+    kmeans->setPredictionDistanceType(ssig::Kmeans::NORM_L2);
+    kmeans->learn(inp);
   }
 };
 
@@ -80,7 +81,7 @@ class KmeansClusteringClassifierTest : public ::testing::Test {
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
-  ssig::Kmeans kmeans;
+  cv::Ptr<ssig::Kmeans> kmeans;
 
 
   void SetUp() override {
@@ -92,22 +93,22 @@ class KmeansClusteringClassifierTest : public ::testing::Test {
       inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
       inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
     }
+    kmeans = ssig::Kmeans::create();
+    kmeans->setK(2);
+    kmeans->setFlags(cv::KMEANS_RANDOM_CENTERS);
+    kmeans->setMaxIterations(500);
+    kmeans->setNAttempts(1);
 
-    kmeans.setK(2);
-    kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-    kmeans.setMaxIterations(500);
-    kmeans.setNAttempts(1);
+    auto pls = ssig::PLSClassifier::create();
+    pls->setNumberOfFactors(5);
+    kmeans->setPredictionDistanceType(*pls);
 
-    ssig::PLSClassifier pls;
-    pls.setNumberOfFactors(5);
-    kmeans.setPredictionDistanceType(pls);
-
-    kmeans.learn(inp);
+    kmeans->learn(inp);
   }
 };
 
 TEST_F(KmeansClusteringTest, SanityClusteringTest) {
-  auto clusters = kmeans.getClustering();
+  auto clusters = kmeans->getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, static_cast<int>(clusters.size()));
@@ -121,7 +122,7 @@ TEST_F(KmeansClusteringTest, SanityClusteringTest) {
 }
 
 TEST_F(KmeansClusteringClassifierTest, SanityClusteringTest) {
-  auto clusters = kmeans.getClustering();
+  auto clusters = kmeans->getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, static_cast<int>(clusters.size()));
@@ -135,7 +136,7 @@ TEST_F(KmeansClusteringClassifierTest, SanityClusteringTest) {
 }
 
 TEST_F(KmeansClusteringTest, Persistence) {
-  auto clusters = kmeans.getClustering();
+  auto clusters = kmeans->getClustering();
   std::vector<int> gt1 = {0, 1, 2};
   std::vector<int> gt2 = {3, 4, 5};
   ASSERT_EQ(2, static_cast<int>(clusters.size()));
@@ -146,17 +147,17 @@ TEST_F(KmeansClusteringTest, Persistence) {
       EXPECT_EQ(cluster, gt1);
     }
   }
-  kmeans.save("kmeans_.yml", "root");
+  kmeans->save("kmeans_.yml", "root");
 
-  ssig::Kmeans loaded;
-  loaded.load("kmeans_.yml", "root");
+  auto loaded = ssig::Kmeans::create();
+  loaded->load("kmeans_.yml", "root");
   remove("kmeans_.yml");
 
   cv::Mat diff;
   cv::Mat_<float> c1, c2;
 
-  loaded.getCentroids(c1);
-  kmeans.getCentroids(c2);
+  loaded->getCentroids(c1);
+  kmeans->getCentroids(c2);
   const int lenLoaded = static_cast<int>(c1.rows * c1.cols);
   const int len = static_cast<int>(c2.rows * c2.cols);
 
@@ -167,4 +168,3 @@ TEST_F(KmeansClusteringTest, Persistence) {
   auto nonzeros = cv::countNonZero(diff);
   EXPECT_EQ(c1.rows * c1.cols, nonzeros);
 }
-

@@ -47,24 +47,25 @@
 // ssiglib
 #include "pls.hpp"
 #include "classification.hpp"
+#include "multiclass.hpp"
+#include "opencl_pls.hpp"
 
 namespace ssig {
 
-class PLSClassifier : public Classifier {
-  virtual void addLabels(const cv::Mat_<int>& labels);
+class PLSClassifier : public Multiclass {
+  virtual void addLabels(const cv::Mat& labels);
 
  public:
-  ML_EXPORT PLSClassifier(void);
+  ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
-  ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
               cv::Mat_<float>& resp) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) override;
-  ML_EXPORT cv::Mat_<int> getLabels() const override;
+    const cv::Mat& labels) override;
+  ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
   ML_EXPORT bool empty() const override;
   ML_EXPORT bool isTrained() const override;
@@ -79,12 +80,20 @@ class PLSClassifier : public Classifier {
 
   ML_EXPORT void setNumberOfFactors(int numberOfFactors);
 
+ protected:
+  ML_EXPORT PLSClassifier(void);
+  ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
+
  private:
   // private members
   std::unique_ptr<PLS> mPls;
+  std::unique_ptr<OpenClPLS> mClPls;
   int mNumberOfFactors = 3;
 
+  int mYColumns = 2;
+
   bool mTrained = false;
+  bool mIsMulticlass = false;
 
   void setClassWeights(const int classLabel, const float weight) override;
 };

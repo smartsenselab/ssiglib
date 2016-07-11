@@ -116,7 +116,7 @@ svm_problem* SVMClassifier::convertToLibSVM(
 #pragma omp parallel for
 #endif
   for (int i = 0; i < nSamples; ++i) {
-    y[i] = labels.at<int>(i);
+    y[i] = static_cast<double>(labels.at<int>(i));
   }
 
   x = convertToLibSVM(features);
@@ -166,9 +166,13 @@ void SVMClassifier::convertToLibSVM(
   params.nr_weight = nr;
 }
 
+cv::Ptr<SVMClassifier> SVMClassifier::create() {
+  return cv::Ptr<SVMClassifier>(new SVMClassifier());
+}
+
 void SVMClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
+  const cv::Mat& labels) {
   cleanup();
   mSamplesLen = input.rows;
   convertToLibSVM(mMapLabel2Weight, mParams);
@@ -363,7 +367,7 @@ void SVMClassifier::cleanup() {
   }
 }
 
-cv::Mat_<int> SVMClassifier::getLabels() const {
+cv::Mat SVMClassifier::getLabels() const {
   return mLabels;
 }
 }  // namespace ssig

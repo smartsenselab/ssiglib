@@ -64,9 +64,12 @@ class Algorithm : public Resource {
   CORE_EXPORT virtual void save(const std::string& filename,
                                 const std::string& nodename) const;
 
+  CORE_EXPORT void setUseOpenCl(bool state);
+
  protected:
   CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
+  bool mOpenClEnabled = false;
 };
 
 }  // namespace ssig

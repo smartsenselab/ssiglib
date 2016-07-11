@@ -51,7 +51,7 @@ class HierarchicalKmeansClusteringTest : public ::testing::Test {
   cv::Mat_<int> labels;
   cv::Mat_<float> inp;
   cv::Mat_<float> negatives;
-  ssig::HierarchicalKmeans hierarchicalKmeans;
+  cv::Ptr<ssig::HierarchicalKmeans> hierarchicalKmeans;
 
 
   void SetUp() override {
@@ -63,19 +63,19 @@ class HierarchicalKmeansClusteringTest : public ::testing::Test {
       inp[3 + i][0] = static_cast<float>(100 + rnd() % 5);
       inp[3 + i][1] = static_cast<float>(100 + rnd() % 5);
     }
-
-    hierarchicalKmeans.setK(2);
-    hierarchicalKmeans.setBranchingFactor(4);
-    hierarchicalKmeans.setDistance(ssig::L2);
-    hierarchicalKmeans.setInitialization
+    hierarchicalKmeans = ssig::HierarchicalKmeans::create();
+    hierarchicalKmeans->setK(2);
+    hierarchicalKmeans->setBranchingFactor(4);
+    hierarchicalKmeans->setDistance(ssig::L2);
+    hierarchicalKmeans->setInitialization
       (cvflann::flann_centers_init_t::FLANN_CENTERS_KMEANSPP);
-    hierarchicalKmeans.setMaxIterations(20);
-    hierarchicalKmeans.learn(inp);
+    hierarchicalKmeans->setMaxIterations(20);
+    hierarchicalKmeans->learn(inp);
   }
 };
 
 TEST_F(HierarchicalKmeansClusteringTest, SanityClusteringTest) {
-  auto clusters = hierarchicalKmeans.getClustering();
+  auto clusters = hierarchicalKmeans->getClustering();
   std::vector<int> gt1 = { 0, 1, 2 };
   std::vector<int> gt2 = { 3, 4, 5 };
   ASSERT_EQ(2, static_cast<int>(clusters.size()));

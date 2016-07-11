@@ -40,10 +40,10 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <vector>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "ssiglib/core/math.hpp"
 #include "ssiglib/ml/kmeans.hpp"
@@ -56,10 +56,10 @@ TEST(PLSIC, CorrelationClusteringTest) {
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
 
-  ssig::PLSClassifier plsclassifier;
-  plsclassifier.setNumberOfFactors(2);
+  auto plsclassifier = ssig::PLSClassifier::create();
+  plsclassifier->setNumberOfFactors(2);
 
-  ssig::OAAClassifier oaaclassifier(plsclassifier);
+  auto oaaclassifier = ssig::OAAClassifier::create(*plsclassifier);
 
   std::vector<ssig::Cluster> discoverySubsets;
   discoverySubsets.resize(2);
@@ -75,37 +75,39 @@ TEST(PLSIC, CorrelationClusteringTest) {
   stg.release();
 
   std::vector<ssig::Cluster> initialClustering =
-    {{1}, {8}, {14}, {15}, {23}, {28}};
+      {{1}, {8}, {14}, {15}, {23}, {28}};
   std::vector<ssig::Cluster> natVector = {{}, {}};
 
-  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
-                                      initialClustering);
-  clustering.setK(2);
-  clustering.setClusterRepresentationType(
+  auto clustering = ssig::PLSImageClustering::create(
+                                                     *oaaclassifier,
+                                                     discoverySubsets,
+                                                     initialClustering);
+  clustering->setK(2);
+  clustering->setClusterRepresentationType(
     ssig::ClusterRepresentationType::ClustersResponses);
-  clustering.setMergeThreshold(0.7f);
+  clustering->setMergeThreshold(0.7f);
   auto correlation = std::unique_ptr<ssig::CorrelationSimilarity>(
     new ssig::CorrelationSimilarity);
-  clustering.setSimBuilder(std::move(correlation));
-  clustering.setDiscoveryConfiguration(discoverySubsets);
-  clustering.setClusterSize(5);
-  clustering.setMaxIterations(8);
-  clustering.setClassifier(oaaclassifier);
+  clustering->setSimBuilder(std::move(correlation));
+  clustering->setDiscoveryConfiguration(discoverySubsets);
+  clustering->setClusterSize(5);
+  clustering->setMaxIterations(8);
+  clustering->setClassifier(*oaaclassifier);
 
 
-  clustering.addNaturalWorld(neg, natVector);
+  clustering->addNaturalWorld(neg, natVector);
 
-  clustering.setInitialClustering(initialClustering);
-  clustering.setup(inp);
+  clustering->setInitialClustering(initialClustering);
+  clustering->setup(inp);
   bool finished = false;
   do {
-    auto c = clustering.getClustering();
-    auto r = clustering.getClustersResponses();
+    auto c = clustering->getClustering();
+    auto r = clustering->getClustersResponses();
     ASSERT_EQ(c.size(), r.size());
-    finished = clustering.iterate();
+    finished = clustering->iterate();
   } while (!finished);
 
-  auto clusters = clustering.getClustering();
+  auto clusters = clustering->getClustering();
 
   bool label1 = false;
   bool label2 = false;
@@ -133,10 +135,10 @@ TEST(PLSIC, CosineClusteringTest) {
   cv::Mat_<float> inp;
   cv::Mat_<float> neg;
 
-  ssig::PLSClassifier plsclassifier;
-  plsclassifier.setNumberOfFactors(2);
+  auto plsclassifier = ssig::PLSClassifier::create();
+  plsclassifier->setNumberOfFactors(2);
 
-  ssig::OAAClassifier oaaclassifier(plsclassifier);
+  auto oaaclassifier = ssig::OAAClassifier::create(*plsclassifier);
 
   std::vector<ssig::Cluster> discoverySubsets;
   discoverySubsets.resize(2);
@@ -152,39 +154,42 @@ TEST(PLSIC, CosineClusteringTest) {
   stg.release();
 
   std::vector<ssig::Cluster> initialClustering =
-    {{1}, {8}, {14}, {15}, {23}, {28}};
+      {{1}, {8}, {14}, {15}, {23}, {28}};
   std::vector<ssig::Cluster> natVector = {{}, {}};
 
-  ssig::PLSImageClustering clustering(oaaclassifier, discoverySubsets,
-                                      initialClustering);
-  clustering.setK(2);
-  clustering.setClusterRepresentationType(
+  auto clustering = ssig::PLSImageClustering::create(
+    *oaaclassifier,
+    discoverySubsets,
+    initialClustering);
+
+  clustering->setK(2);
+  clustering->setClusterRepresentationType(
     ssig::ClusterRepresentationType::ClustersResponses);
-  clustering.setMergeThreshold(0.7f);
+  clustering->setMergeThreshold(0.7f);
 
   auto cosine = std::unique_ptr<ssig::CosineSimilarity>(
     new ssig::CosineSimilarity);
-  clustering.setSimBuilder(std::move(cosine));
+  clustering->setSimBuilder(std::move(cosine));
 
-  clustering.addNaturalWorld(neg, natVector);
+  clustering->addNaturalWorld(neg, natVector);
 
-  clustering.setDiscoveryConfiguration(discoverySubsets);
-  clustering.setClusterSize(5);
-  clustering.setMaxIterations(8);
-  clustering.setClassifier(oaaclassifier);
+  clustering->setDiscoveryConfiguration(discoverySubsets);
+  clustering->setClusterSize(5);
+  clustering->setMaxIterations(8);
+  clustering->setClassifier(*oaaclassifier);
 
 
-  clustering.setInitialClustering(initialClustering);
-  clustering.setup(inp);
+  clustering->setInitialClustering(initialClustering);
+  clustering->setup(inp);
   bool finished = false;
   do {
-    auto c = clustering.getClustering();
-    auto r = clustering.getClustersResponses();
+    auto c = clustering->getClustering();
+    auto r = clustering->getClustersResponses();
     ASSERT_EQ(c.size(), r.size());
-    finished = clustering.iterate();
+    finished = clustering->iterate();
   } while (!finished);
 
-  auto clusters = clustering.getClustering();
+  auto clusters = clustering->getClustering();
 
   bool label1 = false;
   bool label2 = false;
@@ -207,4 +212,3 @@ TEST(PLSIC, CosineClusteringTest) {
   }
   EXPECT_TRUE(label1 && label2);
 }
-

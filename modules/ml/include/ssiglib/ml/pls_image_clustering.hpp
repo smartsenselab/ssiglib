@@ -42,16 +42,15 @@
 
 #ifndef _SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
 #define _SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
-// ssiglib
-#include <ssiglib/core/util.hpp>
-#include <ssiglib/core/math.hpp>
-
-#include <ssiglib/ml/classifier_clustering.hpp>
-#include <ssiglib/ml/oaa_classifier.hpp>
-
 // c++
 #include <utility>
 #include <vector>
+// ssiglib
+#include <ssiglib/core/util.hpp>
+#include <ssiglib/core/math.hpp>
+#include <ssiglib/ml/classifier_clustering.hpp>
+#include <ssiglib/ml/oaa_classifier.hpp>
+
 
 namespace ssig {
 
@@ -59,11 +58,11 @@ enum ClusterRepresentationType { Centroids, ClustersResponses };
 
 class PLSImageClustering : public ClassifierClustering {
  public:
-  ML_EXPORT PLSImageClustering() = default;
-  ML_EXPORT PLSImageClustering(
-    ssig::OAAClassifier& classifier,
-    const std::vector<std::vector<int>>& discoverySubset,
-    const std::vector<ssig::Cluster>& initialClustering);
+  ML_EXPORT static cv::Ptr<PLSImageClustering> create();
+  ML_EXPORT static cv::Ptr<PLSImageClustering> create(
+  ssig::OAAClassifier& classifier,
+  const std::vector<std::vector<int>>& discoverySubset,
+  const std::vector<ssig::Cluster>& initialClustering);
 
   ML_EXPORT virtual ~PLSImageClustering() = default;
 
@@ -85,7 +84,7 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT std::shared_ptr<OAAClassifier> getClassifier() const;
+  ML_EXPORT cv::Ptr<OAAClassifier> getClassifier() const;
 
   ML_EXPORT void setSimBuilder(
     std::unique_ptr<ssig::SimilarityFunctor> function);
@@ -113,6 +112,12 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void setMaximumMergedPairs(int nMergesPerIteration1);
 
  protected:
+  ML_EXPORT PLSImageClustering() = default;
+  ML_EXPORT PLSImageClustering(
+    ssig::OAAClassifier& classifier,
+    const std::vector<std::vector<int>>& discoverySubset,
+    const std::vector<ssig::Cluster>& initialClustering);
+
   ML_EXPORT void precondition() override;
 
   ML_EXPORT void initializeClusterings(
@@ -179,5 +184,3 @@ class PLSImageClustering : public ClassifierClustering {
 
 }  // namespace ssig
 #endif  // !_SSIG_ALGORITHMS_PLSIMAGECLUSTERING_HPP_
-
-

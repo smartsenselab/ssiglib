@@ -18,7 +18,7 @@
 *    1. Redistributions of source code must retain the above copyright notice,
 *       this list of conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright
+*    2. RedistributIions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
 *
@@ -51,7 +51,9 @@ namespace ssig {
 class UtilityFunctor {
  public:
   virtual ~UtilityFunctor() {}
+
   UtilityFunctor() = default;
+
   UtilityFunctor(const UtilityFunctor& rhs) {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
@@ -61,7 +63,9 @@ class DistanceFunctor {
  public:
   virtual ~DistanceFunctor() = default;
   DistanceFunctor() = default;
+
   DistanceFunctor(const DistanceFunctor& rhs) {}
+
   CORE_EXPORT virtual float operator()(const cv::Mat& x,
                                        const cv::Mat& y) const = 0;
 };
@@ -136,6 +140,8 @@ void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
   }
 }
 
+
+
 template <typename Type>
 void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
                    cv::Mat_<Type>& std) {
@@ -146,6 +152,16 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
     M.row(y) /= std;
   }
 }
+
+CORE_EXPORT void clComputeMeanStd(
+  cv::UMat& m,
+  const int layout,
+  cv::UMat& mean,
+  cv::UMat& std);
+CORE_EXPORT void clComputeZScore(cv::UMat& M,
+                     cv::UMat& mean,
+                     cv::UMat& std);
+
 }  // namespace ssig
 
 #endif   // !_SSF_CORE_MATH_HPP_

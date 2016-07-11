@@ -55,7 +55,7 @@ namespace ssig {
 
 class Singh : public ClassifierClustering {
  public:
-  ML_EXPORT Singh(void) = default;
+  ML_EXPORT static cv::Ptr<Singh> create();
   ML_EXPORT virtual ~Singh(void);
 
   ML_EXPORT void predict(const cv::Mat_<float>& inp,
@@ -75,6 +75,7 @@ class Singh : public ClassifierClustering {
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
  protected:
+  ML_EXPORT Singh(void) = default;
   ML_EXPORT void precondition() override;
   ML_EXPORT void initializeClusterings(
       const std::vector<int>& assignmentSet) override;

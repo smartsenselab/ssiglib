@@ -52,6 +52,10 @@
 
 namespace ssig {
 
+// cv::Ptr<PLS> PLS::create() {
+//  return cv::Ptr<PLS>(new PLS);
+// }
+
 void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   int i;
   int kk;
@@ -258,13 +262,9 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
 }
 
 void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
-  cv::Mat_<float> aux, tmp;
-  int y, i;
-
   ret.create(X.rows, mBstar.cols);
-
-  for (y = 0; y < X.rows; y++) {
-    aux = X.row(y);
+  for (int y = 0; y < X.rows; y++) {
+    cv::Mat_<float> aux = X.row(y);
 
     if (aux.cols != mXmean.cols) {
       throw std::logic_error("Inconsistent data matrix");
@@ -275,10 +275,10 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
     mZDataV /= mXstd;
 
     // X * Bstar .* Ydata.std) +  Ydata.mean;
-    tmp = mZDataV * mBstar;
+    cv::Mat_<float> tmp = mZDataV * mBstar;
     tmp = tmp.mul(mYstd) + mYmean;
 
-    for (i = 0; i < tmp.cols; i++) {
+    for (int i = 0; i < tmp.cols; i++) {
       ret[y][i] = tmp[0][i];
     }
   }
@@ -340,7 +340,9 @@ void PLS::load(std::string filename) {
   storage.release();
 }
 
-void PLS::setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+void PLS::setMatrix(
+                    cv::Mat_<float>& input,
+                    cv::Mat_<float>& output,
                     std::vector<size_t>& indices) {
   size_t i;
 
