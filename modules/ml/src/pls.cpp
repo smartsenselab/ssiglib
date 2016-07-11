@@ -52,9 +52,9 @@
 
 namespace ssig {
 
-cv::Ptr<PLS> PLS::create() {
-  return cv::Ptr<PLS>(new PLS);
-}
+// cv::Ptr<PLS> PLS::create() {
+//  return cv::Ptr<PLS>(new PLS);
+// }
 
 void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   int i;
@@ -263,10 +263,6 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
 
 void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
   ret.create(X.rows, mBstar.cols);
-
-//#ifdef _OPENMP
-//  #pragma omp parallel for
-//#endif
   for (int y = 0; y < X.rows; y++) {
     cv::Mat_<float> aux = X.row(y);
 
@@ -344,7 +340,9 @@ void PLS::load(std::string filename) {
   storage.release();
 }
 
-void PLS::setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
+void PLS::setMatrix(
+                    cv::Mat_<float>& input,
+                    cv::Mat_<float>& output,
                     std::vector<size_t>& indices) {
   size_t i;
 
