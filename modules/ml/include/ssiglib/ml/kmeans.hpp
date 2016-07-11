@@ -55,7 +55,7 @@ namespace ssig {
 
 class Kmeans : public Clustering {
  public:
-  ML_EXPORT Kmeans(void) = default;
+  ML_EXPORT static cv::Ptr<Kmeans> create();
   ML_EXPORT virtual ~Kmeans(void) = default;
   Kmeans(const Kmeans& rhs);
   Kmeans& operator=(const Kmeans& rhs);
@@ -88,6 +88,9 @@ class Kmeans : public Clustering {
   ML_EXPORT void setNAttempts(int nAttempts);
 
   ML_EXPORT size_t getSize() const override;
+
+ protected:
+  ML_EXPORT Kmeans(void) = default;
 
  private:
   // private members

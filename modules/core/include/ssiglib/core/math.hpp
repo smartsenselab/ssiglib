@@ -49,19 +49,23 @@
 
 namespace ssig {
 class UtilityFunctor {
- public:
+public:
   virtual ~UtilityFunctor() {}
+
   UtilityFunctor() = default;
+
   UtilityFunctor(const UtilityFunctor& rhs) {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
 };
 
 class DistanceFunctor {
- public:
+public:
   virtual ~DistanceFunctor() = default;
   DistanceFunctor() = default;
+
   DistanceFunctor(const DistanceFunctor& rhs) {}
+
   CORE_EXPORT virtual float operator()(const cv::Mat& x,
                                        const cv::Mat& y) const = 0;
 };
@@ -90,7 +94,7 @@ struct EuclideanDistance : DistanceFunctor {
 typedef DistanceFunctor SimilarityFunctor;
 
 class Math {
- public:
+public:
   Math(void);
   virtual ~Math(void);
   Math(const Math& rhs);
@@ -136,6 +140,8 @@ void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
   }
 }
 
+
+
 template <typename Type>
 void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
                    cv::Mat_<Type>& std) {
@@ -146,6 +152,16 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
     M.row(y) /= std;
   }
 }
-}  // namespace ssig
+
+CORE_EXPORT void clComputeMeanStd(
+  cv::UMat& m,
+  const int layout,
+  cv::UMat& mean,
+  cv::UMat& std);
+CORE_EXPORT void clComputeZScore(cv::UMat& M,
+                     cv::UMat& mean,
+                     cv::UMat& std);
+
+} // namespace ssig
 
 #endif   // !_SSF_CORE_MATH_HPP_

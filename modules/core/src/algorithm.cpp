@@ -85,6 +85,9 @@ void Algorithm::save(const std::string& filename,
   fileStorage.release();
 }
 
+void Algorithm::setUseOpenCl(bool state) {
+  mOpenClEnabled = state;
+}
 }  // namespace ssig
 
 

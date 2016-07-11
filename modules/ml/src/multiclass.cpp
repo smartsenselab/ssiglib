@@ -39,56 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_MST_CLUSTERING_HPP_
-#define _SSIG_ML_MST_CLUSTERING_HPP_
-
-#include <forward_list>
-#include <utility>
-#include <vector>
-
-#include "clustering.hpp"
+#include "ssiglib/ml/multiclass.hpp"
 
 namespace ssig {
-class MSTreeClustering : public Clustering {
- public:
- ML_EXPORT static cv::Ptr<MSTreeClustering> create();
-  virtual ~MSTreeClustering(void) = default;
 
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-  ML_EXPORT void predict(const cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
-  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
-
-  /**
-  @brief Uses the Prim algorithm to compute a minimum spanning tree over
-  a graph represented by the adjacency matrix input (see computeAdjacencyMatrix)
-  */
-  ML_EXPORT static void computeMinimumSpanningTree(
-    const cv::Mat_<float>& input,
-    std::vector<std::forward_list<std::pair<int, float>>>& adjList);
-  ML_EXPORT static void computeMinimumSpanningTree(
-    const cv::Mat_<float>& input,
-    std::vector<std::pair<int, int>>& edges);
-
- protected:
-  MSTreeClustering(void) = default;
-
- private:
-  /**
-  @brief Given a set of samples it computes a graph represented by an adjacency matrix
-  where the edge represents the euclidean distance from point 'i' to 'j'
-  */
-  ML_EXPORT static void computeAdjacencyMatrix(const cv::Mat_<float>& input,
-                                               cv::Mat_<float>& adjMatrix);
-
-  // private members
-};
+bool Multiclass::isClassifier() const {
+  return true;
+}
 }  // namespace ssig
-#endif  // !_SSIG_ML_MST_CLUSTERING_HPP_

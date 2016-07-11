@@ -39,56 +39,36 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_MST_CLUSTERING_HPP_
-#define _SSIG_ML_MST_CLUSTERING_HPP_
+#ifndef _SSIG_ML_MULTICLASS_HPP_
+#define _SSIG_ML_MULTICLASS_HPP_
 
-#include <forward_list>
-#include <utility>
-#include <vector>
+// ssiglib
+#include "ssiglib/core/algorithm.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/ml/classification.hpp"
 
-#include "clustering.hpp"
 
 namespace ssig {
-class MSTreeClustering : public Clustering {
- public:
- ML_EXPORT static cv::Ptr<MSTreeClustering> create();
-  virtual ~MSTreeClustering(void) = default;
+class Multiclass : public Classifier {
+public:
+  virtual ~Multiclass() = default;
 
-  ML_EXPORT void setup(const cv::Mat_<float>& input) override;
-  ML_EXPORT void learn(const cv::Mat_<float>& input) override;
-  ML_EXPORT void predict(const cv::Mat_<float>& inp,
-                         cv::Mat_<float>& resp) const override;
-  ML_EXPORT std::vector<Cluster> getClustering() const override;
-  ML_EXPORT void getCentroids(cv::Mat_<float>& centroidsMatrix) const override;
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
+  int predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override = 0;
+  void learn(const cv::Mat_<float>& input, const cv::Mat& labels) override = 0;
+  cv::Mat getLabels() const override = 0;
+  std::unordered_map<int, int> getLabelsOrdering() const override = 0;
+  bool empty() const override = 0;
+  bool isTrained() const override = 0;
+  bool isClassifier() const override;
+  void read(const cv::FileNode& fn) override = 0;
+  void write(cv::FileStorage& fs) const override = 0;
+  Classifier* clone() const override = 0;
 
-  /**
-  @brief Uses the Prim algorithm to compute a minimum spanning tree over
-  a graph represented by the adjacency matrix input (see computeAdjacencyMatrix)
-  */
-  ML_EXPORT static void computeMinimumSpanningTree(
-    const cv::Mat_<float>& input,
-    std::vector<std::forward_list<std::pair<int, float>>>& adjList);
-  ML_EXPORT static void computeMinimumSpanningTree(
-    const cv::Mat_<float>& input,
-    std::vector<std::pair<int, int>>& edges);
 
- protected:
-  MSTreeClustering(void) = default;
-
- private:
-  /**
-  @brief Given a set of samples it computes a graph represented by an adjacency matrix
-  where the edge represents the euclidean distance from point 'i' to 'j'
-  */
-  ML_EXPORT static void computeAdjacencyMatrix(const cv::Mat_<float>& input,
-                                               cv::Mat_<float>& adjMatrix);
-
+protected:
+  Multiclass() = default;
+private:
   // private members
 };
-}  // namespace ssig
-#endif  // !_SSIG_ML_MST_CLUSTERING_HPP_
+} // namespace ssig
+#endif  // !_SSIG_ML_MULTICLASS_HPP_

@@ -51,6 +51,10 @@ HierarchicalKmeans::HierarchicalKmeans(): mDistType(L2) {
   // Constructor
 }
 
+cv::Ptr<HierarchicalKmeans> HierarchicalKmeans::create() {
+  return cv::Ptr<HierarchicalKmeans>(new HierarchicalKmeans());
+}
+
 HierarchicalKmeans::~HierarchicalKmeans() {
   // Destructor
 }

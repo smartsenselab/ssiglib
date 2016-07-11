@@ -92,8 +92,7 @@ void Clustering::setPredictionDistanceType(
 void Clustering::setPredictionDistanceType(
   Classifier& predictionClassifier) {
   mPredictionDistanceType = CLASSIFIER_PREDICTION;
-  mPredictionClassifier = cv::Ptr<ssig::OAAClassifier>
-      (new ssig::OAAClassifier(predictionClassifier));
+  mPredictionClassifier = ssig::OAAClassifier::create(predictionClassifier);
 }
 
 int Clustering::getPredictionDistanceType() const {
