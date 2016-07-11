@@ -212,4 +212,4 @@ void Kmeans::setupLabelMatFromInitialization(cv::Mat& labels) {
   }
 }
 
-} // namespace ssig
+}  // namespace ssig

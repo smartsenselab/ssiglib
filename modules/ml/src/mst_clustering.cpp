@@ -300,4 +300,4 @@ void computeMST(
   }
 }
 
-} // namespace ssig
+}  // namespace ssig

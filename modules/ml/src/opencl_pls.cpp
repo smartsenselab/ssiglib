@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 // c++
-
+#include <string>
 // opencv
 #include <opencv2/core.hpp>
 #include <opencv2/core/ocl.hpp>
@@ -183,7 +183,6 @@ void OpenClPLS::predict(
   const cv::Mat_<float>& X,
   cv::Mat_<float>& projX,
   int nfactors) {
-
   cv::UMat aux, aux2;
   int i, y;
 
@@ -320,4 +319,4 @@ void OpenClPLS::learnWithCrossValidation(
   int step) {
   // TODO(Ricardo):
 }
-} // namespace ssig
+}  // namespace ssig

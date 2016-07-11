@@ -52,8 +52,7 @@
 
 namespace ssig {
 class OpenClPLS {
-  
-  public:
+ public:
   ML_EXPORT OpenClPLS() = default;
   ML_EXPORT virtual ~OpenClPLS() = default;
 
@@ -89,7 +88,7 @@ class OpenClPLS {
     cv::Mat_<float>& Y, int minDims,
     int maxDims, int step);
 
-  protected:
+ protected:
   cv::UMat mXmean;
   cv::UMat mXstd;
   cv::UMat mYmean;
