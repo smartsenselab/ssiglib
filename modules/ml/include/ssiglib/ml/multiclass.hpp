@@ -50,10 +50,12 @@
 
 namespace ssig {
 class Multiclass : public Classifier {
-public:
+ public:
   virtual ~Multiclass() = default;
 
-  int predict(const cv::Mat_<float>& inp, cv::Mat_<float>& resp) const override = 0;
+  int predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp) const override = 0;
   void learn(const cv::Mat_<float>& input, const cv::Mat& labels) override = 0;
   cv::Mat getLabels() const override = 0;
   std::unordered_map<int, int> getLabelsOrdering() const override = 0;
@@ -65,10 +67,10 @@ public:
   Classifier* clone() const override = 0;
 
 
-protected:
+ protected:
   Multiclass() = default;
-private:
+ private:
   // private members
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_MULTICLASS_HPP_
