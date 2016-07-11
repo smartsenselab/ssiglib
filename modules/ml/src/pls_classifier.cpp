@@ -62,18 +62,23 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
 int PLSClassifier::predict(
   const cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const {
-  mPls->predict(inp, resp);
-  cv::Mat_<float> r;
-  r.create(inp.rows, mYColumns);
-  int labelIdx = -1;
-  if (!mIsMulticlass) {
-    for (int row = 0; row < inp.rows; ++row) {
-      r[row][0] = resp[row][0];
-      r[row][1] = -1 * resp[row][0];
-    }
-    labelIdx = resp[0][0] > 0 ? 1 : -1;
-    resp = r;
+  if (mOpenClEnabled) {
+    mClPls->predict(inp, resp);
+  } else {
+    mPls->predict(inp, resp);
   }
+    cv::Mat_<float> r;
+    r.create(inp.rows, mYColumns);
+
+    int labelIdx = -1;
+    if (!mIsMulticlass) {
+      for (int row = 0; row < inp.rows; ++row) {
+        r[row][0] = resp[row][0];
+        r[row][1] = -1 * resp[row][0];
+      }
+      labelIdx = resp[0][0] > 0 ? 1 : -1;
+      resp = r;
+    }
   return inp.rows > 1 || mIsMulticlass ? 0 : labelIdx;
 }
 
@@ -104,11 +109,18 @@ void PLSClassifier::learn(
   // TODO(Ricardo): assert labels between -1 and 1
   addLabels(labels);
   assert(!labels.empty());
-  mPls = std::unique_ptr<PLS>(new PLS());
+
   cv::Mat_<float> l;
   mLabels.convertTo(l, CV_32F);
   auto X = input.clone();
-  mPls->learn(X, l, mNumberOfFactors);
+  if (mOpenClEnabled) {
+    mClPls = std::unique_ptr<OpenClPLS>(new OpenClPLS());
+    mClPls->learn(X, l, mNumberOfFactors);
+  } else {
+    mPls = std::unique_ptr<PLS>(new PLS());
+    mPls->learn(X, l, mNumberOfFactors);
+  }
+
   X.release();
   l.release();
   mTrained = true;

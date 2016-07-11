@@ -48,6 +48,7 @@
 #include "pls.hpp"
 #include "classification.hpp"
 #include "multiclass.hpp"
+#include "opencl_pls.hpp"
 
 namespace ssig {
 
@@ -57,7 +58,6 @@ class PLSClassifier : public Multiclass {
  public:
  ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
-  ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
@@ -82,9 +82,11 @@ class PLSClassifier : public Multiclass {
 
  protected:
   ML_EXPORT PLSClassifier(void);
+  ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
  private:
   // private members
   std::unique_ptr<PLS> mPls;
+  std::unique_ptr<OpenClPLS> mClPls;
   int mNumberOfFactors = 3;
 
   int mYColumns = 2;

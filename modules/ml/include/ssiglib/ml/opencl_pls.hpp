@@ -52,65 +52,59 @@
 
 namespace ssig {
 class OpenClPLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-    std::vector<size_t>& indices);
-
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
-
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
-
+  
   public:
-  PLS() = default;
-  virtual ~PLS() = default;
+  ML_EXPORT OpenClPLS() = default;
+  ML_EXPORT virtual ~OpenClPLS() = default;
 
-  ML_EXPORT static cv::Ptr<PLS> create();
-  // compute PLS model
+  ML_EXPORT static cv::Ptr<OpenClPLS> create();
+  // compute OpenClPLS model
   ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
   // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-    int nfactors);
+  ML_EXPORT void predict(
+                          const cv::Mat_<float>& X,
+                          cv::Mat_<float>& projX,
+                          int nfactors);
 
   // retrieve the number of factors
   ML_EXPORT int getNFactors() const;
 
   // projection Bstar considering a number of factors (must be smaller than the
   // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ML_EXPORT void predict(
+                          const cv::Mat_<float>& X,
+                          cv::Mat_<float>& ret);
 
-  // save PLS model
+  // save OpenClPLS model
   ML_EXPORT void save(std::string filename) const;
   ML_EXPORT void save(cv::FileStorage& storage) const;
 
-  // load PLS model
+  // load OpenClPLS model
   ML_EXPORT void load(std::string filename);
   ML_EXPORT void load(const cv::FileNode& node);
 
-  // compute PLS using cross-validation to define the number of factors
+  // compute OpenClPLS using cross-validation to define the number of factors
   ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
     cv::Mat_<float>& Y, int minDims,
     int maxDims, int step);
 
   protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
+  cv::UMat mXmean;
+  cv::UMat mXstd;
+  cv::UMat mYmean;
+  cv::UMat mYstd;
 
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
+  cv::UMat mB;
+  cv::UMat mT;
+  cv::UMat mP;
+  cv::UMat mW;
 
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
+  cv::UMat mWstar;
+  cv::UMat mBstar;
 
-  cv::Mat_<float> mZDataV;
-  cv::Mat_<float> mYscaled;
+  cv::UMat mZDataV;
+  cv::UMat mYscaled;
   int mNFactors;
 };
 }  // namespace ssig

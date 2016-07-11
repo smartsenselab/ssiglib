@@ -40,11 +40,12 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-
+// opencv
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/core.hpp>
-
+// ssiglib
 #include <ssiglib/ml/pls_classifier.hpp>
+#include <ssiglib/ml/opencl_pls.hpp>
 
 TEST(PLSClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
@@ -148,23 +149,60 @@ TEST(PLSClassifier, MultiClassification) {
   EXPECT_EQ(2, idx[1]);
 }
 
-TEST(UMAT, ADD) {
-  cv::ocl::setUseOpenCL(true);
+TEST(OpenClPLSClassifier, BinaryClassification) {
+  cv::Mat_<int> labelsInt = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<float> inp =
+    (cv::Mat_<float>(6, 2) <<
+    1, 2, 2, 2, 4, 6,
+    102, 100, 104, 105, 99, 101);
 
-  cv::Mat a(8000, 8000, CV_32F);
-  cv::Mat b(8000, 8000, CV_32F);
+  cv::Mat_<float> labels;
+  labelsInt.convertTo(labels, CV_32F);
 
-  a = 1.f;
-  b = -1.f;
+  auto classifier = ssig::OpenClPLS::create();
+  classifier->learn(inp, labels, 2);
 
-  cv::UMat ua;
-  cv::UMat ub;
-  a.copyTo(ua);
-  b.copyTo(ub);
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
 
-  cv::Mat c;
-  cv::UMat uc;
+  cv::Mat_<float> resp;
+  classifier->predict(query1, resp);
+  EXPECT_GE(resp.at<float>(0), 0);
+  classifier->predict(query2, resp);
+  EXPECT_LE(resp.at<float>(0), 0);
+}
 
-  cv::add(ua, ua, uc);
-  uc.copyTo(c);
+TEST(OpenClPLSClassifier, Persistence) {
+  cv::Mat_<int> labelsInt = (cv::Mat_<int>(6, 1) << 1, 1, 1, -1, -1, -1);
+  cv::Mat_<float> inp =
+    (cv::Mat_<float>(6, 2) <<
+    1, 2, 2, 2, 4, 6,
+    102, 100, 104, 105, 99, 101);
+
+  cv::Mat_<float> labels;
+  labelsInt.convertTo(labels, CV_32F);
+
+  auto classifier = ssig::OpenClPLS::create();
+  classifier->learn(inp, labels, 2);
+
+  cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
+  cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
+
+  cv::Mat_<float> resp;
+  classifier->predict(query1, resp);
+  EXPECT_GE(resp.at<float>(0), 0);
+  classifier->predict(query2, resp);
+  EXPECT_LE(resp.at<float>(0), 0);
+
+  classifier->save("pls.yml");
+
+  auto loaded = ssig::PLSClassifier::create();
+  loaded->load("pls.yml", "root");
+  remove("pls.yml");
+
+  resp.release();
+  loaded->predict(query1, resp);
+  EXPECT_GE(resp.at<float>(0), 0);
+  loaded->predict(query2, resp);
+  EXPECT_LE(resp.at<float>(0), 0);
 }

@@ -83,31 +83,31 @@ float CorrelationSimilarity::operator()(const cv::Mat& x,
   return correlation;
 }
 
-  float Chi2Similarity::operator()(const cv::Mat& x, const cv::Mat& y) const {
-    // The advantage of this distance is that it is weighted by the bin scale
-    // That is, if the bin tends to have large values, a large distance in the
-    // bin has less weight than in a bin that tend to have smaller values
+float Chi2Similarity::operator()(const cv::Mat& x, const cv::Mat& y) const {
+  // The advantage of this distance is that it is weighted by the bin scale
+  // That is, if the bin tends to have large values, a large distance in the
+  // bin has less weight than in a bin that tend to have smaller values
 
-    float sim = 0;
+  float sim = 0;
 
-    cv::Mat squareDiff = x - y;
-    squareDiff = squareDiff.mul(squareDiff);
-    cv::Mat sum = x + y;
-    sum = 1 / sum;
-    cv::Mat z = squareDiff.mul(sum);
-    sim = static_cast<float>(cv::sum(z)[0]);
-    sim = sim * 0.5f;
-    sim = cv::sqrt(sim);
-    return -sim;
-  }
+  cv::Mat squareDiff = x - y;
+  squareDiff = squareDiff.mul(squareDiff);
+  cv::Mat sum = x + y;
+  sum = 1 / sum;
+  cv::Mat z = squareDiff.mul(sum);
+  sim = static_cast<float>(cv::sum(z)[0]);
+  sim = sim * 0.5f;
+  sim = cv::sqrt(sim);
+  return -sim;
+}
 
-  float EuclideanDistance::operator()(
-    const cv::Mat& x,
-    const cv::Mat& y) const {
-    return static_cast<float>(cv::norm(x - y));
-  }
+float EuclideanDistance::operator()(
+  const cv::Mat& x,
+  const cv::Mat& y) const {
+  return static_cast<float>(cv::norm(x - y));
+}
 
-  cv::Mat_<float> Math::buildSimilarity(
+cv::Mat_<float> Math::buildSimilarity(
   const cv::Mat_<float>& input,
   SimilarityFunctor
   & similarityFunction) {
@@ -128,6 +128,60 @@ float CorrelationSimilarity::operator()(const cv::Mat& x,
   }
   return similarity;
 }
+
+void clComputeZScore(
+  cv::UMat& M,
+  cv::UMat& mean,
+  cv::UMat& std) {
+  int y;
+  for (y = 0; y < M.rows; y++) {
+    cv::subtract(M.row(y), mean, M.row(y));
+    cv::divide(M.row(y), std, M.row(y));
+  }
+}
+
+void clComputeMeanStd(
+  cv::UMat& m,
+  const int layout,
+  cv::UMat& umean,
+  cv::UMat& ustd) {
+  cv::UMat uAux, uAuxMean, uAuxStd;
+  cv::Mat mean, std, aux;
+  int x;
+  int len;
+  if (layout == cv::ml::ROW_SAMPLE) {
+    len = m.rows;
+    mean = cv::Mat::zeros(len, 1, CV_32F);
+    std = cv::Mat::zeros(len, 1, CV_32F);
+  } else {
+    len = m.cols;
+    mean = cv::Mat_<float>::zeros(1, len);
+    std = cv::Mat_<float>::zeros(1, len);
+  }
+
+  for (x = 0; x < len; x++) {
+    if (layout == cv::ml::ROW_SAMPLE) {
+      m.row(x).copyTo(uAux);
+    } else {
+      m.col(x).copyTo(uAux);
+    }
+
+    cv::meanStdDev(uAux, uAuxMean, uAuxStd);
+    uAuxMean.copyTo(aux);
+    if (layout == cv::ml::ROW_SAMPLE) {
+      mean.at<float>(x) = static_cast<float>(aux.at<double>(0));
+    } else {
+      mean.at<float>(x) = static_cast<float>(aux.at<double>(0));
+    }
+    uAuxStd.copyTo(aux);
+    if (layout == cv::ml::ROW_SAMPLE) {
+      std.at<float>(x) = static_cast<float>(aux.at<double>(0));
+    } else {
+      std.at<float>(x) = static_cast<float>(aux.at<double>(0));
+    }
+  }
+  mean.copyTo(umean);
+  std.copyTo(ustd);
+}
+
 }  // namespace ssig
-
-
