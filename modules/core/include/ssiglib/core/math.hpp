@@ -18,7 +18,7 @@
 *    1. Redistributions of source code must retain the above copyright notice,
 *       this list of conditions and the following disclaimer.
 *
-*    2. Redistributions in binary form must reproduce the above copyright
+*    2. RedistributIions in binary form must reproduce the above copyright
 *       notice, this list of conditions and the following disclaimer in the
 *       documentation and/or other materials provided with the distribution.
 *
@@ -41,15 +41,20 @@
 #ifndef _SSIG_CORE_MATH_HPP_
 #define _SSIG_CORE_MATH_HPP_
 
+// opencv
 #include <opencv2/core.hpp>
 #include <opencv2/ml.hpp>
+// ssiglib
 #include "ssiglib/core/core_defs.hpp"
 
 namespace ssig {
-
 class UtilityFunctor {
  public:
   virtual ~UtilityFunctor() {}
+
+  UtilityFunctor() = default;
+
+  UtilityFunctor(const UtilityFunctor& rhs) {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& vector) const = 0;
 };
@@ -57,6 +62,9 @@ class UtilityFunctor {
 class DistanceFunctor {
  public:
   virtual ~DistanceFunctor() = default;
+  DistanceFunctor() = default;
+
+  DistanceFunctor(const DistanceFunctor& rhs) {}
 
   CORE_EXPORT virtual float operator()(const cv::Mat& x,
                                        const cv::Mat& y) const = 0;
@@ -74,6 +82,12 @@ struct CorrelationSimilarity : DistanceFunctor {
 
 struct Chi2Similarity : DistanceFunctor {
   CORE_EXPORT float operator()(const cv::Mat& x,
+                               const cv::Mat& y) const override;
+};
+
+struct EuclideanDistance : DistanceFunctor {
+  CORE_EXPORT float operator()(
+    const cv::Mat& x,
     const cv::Mat& y) const override;
 };
 
@@ -92,7 +106,7 @@ class Math {
     & similarityFunction);
 };
 
-template<class T>
+template <class T>
 void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
                     cv::Mat_<T>& std) {
   cv::Mat aux, auxMean, auxStd;
@@ -126,7 +140,9 @@ void computeMeanStd(cv::Mat_<T>& m, const int layout, cv::Mat_<T>& mean,
   }
 }
 
-template<typename Type>
+
+
+template <typename Type>
 void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
                    cv::Mat_<Type>& std) {
   int y;
@@ -136,8 +152,16 @@ void computeZScore(cv::Mat_<Type>& M, cv::Mat_<Type>& mean,
     M.row(y) /= std;
   }
 }
+
+CORE_EXPORT void clComputeMeanStd(
+  cv::UMat& m,
+  const int layout,
+  cv::UMat& mean,
+  cv::UMat& std);
+CORE_EXPORT void clComputeZScore(cv::UMat& M,
+                     cv::UMat& mean,
+                     cv::UMat& std);
+
 }  // namespace ssig
 
-#endif  // !_SSF_CORE_MATH_HPP_
-
-
+#endif   // !_SSF_CORE_MATH_HPP_

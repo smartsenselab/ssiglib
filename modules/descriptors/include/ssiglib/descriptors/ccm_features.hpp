@@ -41,11 +41,11 @@
 
 #ifndef _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
 #define _SSIG_DESCRIPTORS_CCM_FEATURES_HPP_
-
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
-
+// c++
+#include <vector>
+// ssiglib
 #include "descriptor_2d.hpp"
 
 
@@ -66,6 +66,9 @@ class ColorCoOccurrence : public Descriptor2D {
     DESCRIPTORS_EXPORT std::vector<int> getBins() const;
     DESCRIPTORS_EXPORT void setBins(const std::vector<int>& bins);
 
+    // Set the direction to count the co-occurrence
+    DESCRIPTORS_EXPORT void setDirection(int x, int y);
+
  protected:
     DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override;
     DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override;
@@ -82,17 +85,6 @@ class ColorCoOccurrence : public Descriptor2D {
     int mDi = 0, mDj = 1;
 
     std::vector<cv::Mat> mChannels;
-    static void extractFromPair(
-      const cv::Mat& m1,
-      const cv::Mat& m2,
-      const int levels1,
-      const int bins1,
-      const int levels2,
-      const int bins2,
-      const cv::Rect window,
-      cv::Mat& out);
-
-    static int isValidPixel(int i, int j, int rows, int cols);
 };
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_CCM_FEATURES_HPP_

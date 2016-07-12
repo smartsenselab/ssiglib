@@ -38,12 +38,14 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-#include <ssiglib/descriptors/bic_features.hpp>
+// opencv
+#include <opencv2/imgproc.hpp>
+// c++
 #include <stdexcept>
 #include <vector>
+// ssiglib
+#include "ssiglib/descriptors/bic_features.hpp"
 
-#include <opencv2/imgproc.hpp>
 
 namespace ssig {
 

@@ -39,16 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 #include <gtest/gtest.h>
-
+// opencv
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+// c++
 #include <cstdlib>
 #include <vector>
 #include <algorithm>
 #include <cmath>
-
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <ssiglib/core/util.hpp>
-
+// ssiglib
+#include "ssiglib/core/util.hpp"
 #include "ssiglib/core/firefly.hpp"
 
 
@@ -61,15 +61,15 @@ struct Utility : ssig::UtilityFunctor {
     auto ans = static_cast<float>(
       exp(-1 * ((x - 4) * (x - 4)) - ((y - 4) * (y - 4)))
       + exp(-((x + 4) * (x + 4)) - ((y - 4) * (y - 4))) +
-      2 * exp(-(x * x) - ((y + 4) * (y + 4))) +
-      2 * exp(-(x * x) - (y * y)));
+        2 * exp(-(x * x) - ((y + 4) * (y + 4))) +
+        2 * exp(-(x * x) - (y * y)));
     return ans;
   }
 };
 
 struct Distance : ssig::DistanceFunctor {
   virtual float operator()(const cv::Mat& x,
-    const cv::Mat& y) const override {
+                           const cv::Mat& y) const override {
     return static_cast<float>(cv::norm(x - y, cv::NORM_L2));
   }
 };
@@ -113,8 +113,8 @@ TEST(Utils, StlReorder) {
 }
 
 TEST(Firefly, Execution) {
-  Distance dist;
-  Utility util;
+  cv::Ptr<ssig::DistanceFunctor> dist = cv::makePtr<Distance>();
+  cv::Ptr<ssig::UtilityFunctor> util = cv::makePtr<Utility>();
   auto firefly = ssig::Firefly::create(util, dist);
 
 #if 0
@@ -192,4 +192,3 @@ TEST(Firefly, Execution) {
   // Asserts that the highest utility is near 2
   ASSERT_GT(results[popLen - 1][0], 1.8f);
 }
-

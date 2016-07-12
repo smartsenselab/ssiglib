@@ -44,16 +44,16 @@
 #include <omp.h>
 #endif
 
-
+// opencv
+#include <opencv2/core.hpp>
+#include <opencv2/objdetect.hpp>
+#include <opencv2/imgproc.hpp>
+// c++
 #include <cstdint>
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
-
-#include <opencv2/core.hpp>
-#include <opencv2/objdetect.hpp>
-#include <opencv2/imgproc.hpp>
-
+// ssiglib
 #include "ssiglib/descriptors/hog_features.hpp"
 #include "ssiglib/core/exception.hpp"
 

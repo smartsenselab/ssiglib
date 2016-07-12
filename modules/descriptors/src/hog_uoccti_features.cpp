@@ -38,15 +38,16 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
+// ssiglib
 #include "ssiglib/descriptors/hog_uoccti_features.hpp"
-
+// opencv
+#include <opencv2/imgproc.hpp>
+#include <opencv2/objdetect.hpp>
+// c++
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
 
-#include <opencv2/imgproc.hpp>
-#include <opencv2/objdetect.hpp>
 
 namespace ssig {
 

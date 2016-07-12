@@ -52,21 +52,12 @@ namespace ssig {
 
 TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data)
   : Descriptor() {
-  mData.resize(data.size());
-  for (int i = 0; i < static_cast<int>(mData.size()); ++i) {
-    mData[i] = data[i].clone();
-    if (i == 0) {
-      mWidth = mData[0].cols;
-      mHeight = mData[0].rows;
-    }
-  }
+  setData(data);
 }
 
 TemporalDescriptors::TemporalDescriptors(const std::vector<cv::Mat>& data,
   const Descriptor& descriptor) {
-  mData.resize(data.size());
-  for (int i = 0; i < static_cast<int>(mData.size()); ++i)
-    mData[i] = data[i].clone();
+  setData(data);
 }
 
 TemporalDescriptors::TemporalDescriptors(
@@ -142,9 +133,15 @@ void TemporalDescriptors::extract(
 }
 
 void TemporalDescriptors::setData(const std::vector<cv::Mat>& data) {
-  mData = data;
-  mWidth = mData[0].cols;
-  mHeight = mData[0].rows;
+  mData.resize(data.size());
+  for (int i = 0; i < static_cast<int>(mData.size()); ++i) {
+    mData[i] = data[i].clone();
+    if (i == 0) {
+      mWidth = mData[0].cols;
+      mHeight = mData[0].rows;
+    }
+  }
+  mIsPrepared = false;
 }
 
 int TemporalDescriptors::getNFrames() const {

@@ -41,27 +41,28 @@
 
 #ifndef _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
 #define _SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
+// c++
 #include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <ssiglib/core/math.hpp>
-#include <ssiglib/core/algorithm.hpp>
-
+// ssiglib
+#include "ssiglib/core/math.hpp"
+#include "ssiglib/core/algorithm.hpp"
 #include "core_defs.hpp"
 #include "optimization.hpp"
 
 namespace ssig {
 class Firefly : public Optimization {
  public:
-  CORE_EXPORT static std::unique_ptr<Firefly> create(
-    UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT static cv::Ptr<Firefly> create(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
 
-  CORE_EXPORT void setup(cv::Mat_<float>& input) override;
+  CORE_EXPORT void setup(const cv::Mat_<float>& input) override;
 
   CORE_EXPORT bool iterate();
 
-  CORE_EXPORT void learn(cv::Mat_<float>& input) override;
+  CORE_EXPORT void learn(const cv::Mat_<float>& input) override;
 
   CORE_EXPORT void save(const std::string& filename,
     const std::string& nodename) const override;
@@ -72,7 +73,7 @@ class Firefly : public Optimization {
 
   /**
   @brief: This parameter controls how much one particle perceives another
-   particle attractiveness
+  particle attractiveness
   */
   CORE_EXPORT void setAbsorption(float absorption);
 
@@ -85,8 +86,11 @@ class Firefly : public Optimization {
   CORE_EXPORT void setStep(float step);
 
  protected:
-  CORE_EXPORT Firefly(UtilityFunctor& utilityFunction,
-    DistanceFunctor& distanceFunction);
+  CORE_EXPORT Firefly(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
+
+  CORE_EXPORT Firefly(const Firefly& rhs);
 
   CORE_EXPORT void read(const cv::FileNode& fn) override;
   CORE_EXPORT void write(cv::FileStorage& fs) const override;
@@ -100,5 +104,4 @@ class Firefly : public Optimization {
 };
 }  // namespace ssig
 #endif  // !_SSF_ALGORITHMS_FIREFLY_METHOD_HPP_
-
 

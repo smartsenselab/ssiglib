@@ -42,43 +42,50 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-
-#include <string>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <ssiglib/core/util.hpp>
-#include <ssiglib/core/firefly.hpp>
+// c++
+#include <string>
+// ssiglib
+#include "ssiglib/core/util.hpp"
+#include "ssiglib/core/firefly.hpp"
 
-ssig::Firefly::Firefly(UtilityFunctor& utilityFunction,
-  DistanceFunctor& distanceFunction) :
+ssig::Firefly::Firefly(cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) :
   Optimization(utilityFunction,
-               distanceFunction) {}
+  distanceFunction) {}
 
-std::unique_ptr<ssig::Firefly> ssig::Firefly::create(
-  UtilityFunctor& utilityFunction,
-  DistanceFunctor& distanceFunction) {
-  struct _Firefly : Firefly {
-    _Firefly(UtilityFunctor& utilityFunction,
-      DistanceFunctor& distanceFunction) :
-      Firefly(utilityFunction,
-              distanceFunction) {}
-  };
-
-  return std::unique_ptr<ssig::Firefly>(new _Firefly(
-    utilityFunction,
-    distanceFunction));
+ssig::Firefly::Firefly(const Firefly& rhs) {
+  setAbsorption(rhs.getAbsorption());
+  setAnnealling(rhs.getAnnealling());
+  setStep(rhs.getStep());
+  setEps(rhs.getEps());
+  setMaxIterations(rhs.getMaxIterations());
 }
 
-void ssig::Firefly::setup(cv::Mat_<float>& input) {
+cv::Ptr<ssig::Firefly> ssig::Firefly::create(
+  cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) {
+  struct _Firefly : Firefly {
+    _Firefly(cv::Ptr<UtilityFunctor> utilityFunction,
+      cv::Ptr<DistanceFunctor> distanceFunction) :
+      Firefly(utilityFunction,
+      distanceFunction) {}
+  };
+
+  return cv::makePtr<_Firefly>(utilityFunction, distanceFunction);
+}
+
+void ssig::Firefly::setup(const cv::Mat_<float>& input) {
   mIterations = 0;
   mPopulation = input;
   mUtilities = cv::Mat::zeros(mPopulation.rows, 1, CV_32F);
 
-  #ifdef _OPENMP
-  #pragma omp parallel for
-  #endif
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulation.rows; ++i) {
-    mUtilities[0][i] = utility(mPopulation.row(i));
+    mUtilities[0][i] = (*utility)(mPopulation.row(i));
   }
 
   mRng = cv::theRNG();
@@ -103,11 +110,11 @@ bool ssig::Firefly::iterate() {
       if (mUtilities[0][j] > mUtilities[0][i]) {
         auto xj = mPopulation.row(j);
         auto xi = mPopulation.row(i);
-        auto dist = distance(xi, xj);
+        auto dist = (*distance)(xi, xj);
         auto expX = (mAbsorption * dist * dist);
         auto attractiveness = mUtilities[0][j] / (1 + expX + expX * expX / 2);
         mPopulation.row(i) = xi * (1 - attractiveness) +
-            attractiveness * (xj) + mStep * randomVector(mPopulation.cols);
+          attractiveness * (xj)+mStep * randomVector(mPopulation.cols);
       }
     }
   }
@@ -116,7 +123,7 @@ bool ssig::Firefly::iterate() {
 #pragma omp parallel for
 #endif
   for (int i = 0; i < mPopulation.rows; ++i) {
-    mUtilities[0][i] = utility(mPopulation.row(i));
+    mUtilities[0][i] = (*utility)(mPopulation.row(i));
   }
 
   mStep = mStep * mAnnealling;
@@ -136,9 +143,10 @@ bool ssig::Firefly::iterate() {
 }
 
 
-void ssig::Firefly::learn(cv::Mat_<float>& input) {
+void ssig::Firefly::learn(const cv::Mat_<float>& input) {
   setup(input);
-  while (!iterate()) { }
+  while (!iterate()) {
+  }
 }
 
 void ssig::Firefly::save(const std::string& filename,
@@ -183,4 +191,3 @@ float ssig::Firefly::getStep() const {
 void ssig::Firefly::setStep(float step) {
   mStep = step;
 }
-

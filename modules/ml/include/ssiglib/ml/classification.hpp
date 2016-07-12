@@ -42,12 +42,12 @@
 
 #ifndef _SSIG_ML_CLASSIFICATION_HPP_
 #define _SSIG_ML_CLASSIFICATION_HPP_
-
+// opencv
+#include <opencv2/core.hpp>
+// c++
 #include <unordered_map>
 #include <string>
-
-#include <opencv2/core.hpp>
-
+// ssiglib
 #include "ssiglib/ml/ml_defs.hpp"
 #include "ssiglib/core/algorithm.hpp"
 
@@ -64,9 +64,9 @@ class Classifier : public Algorithm {
 
   ML_EXPORT virtual void learn(
     const cv::Mat_<float>& input,
-    const cv::Mat_<int>& labels) = 0;
+    const cv::Mat& labels) = 0;
 
-  ML_EXPORT virtual cv::Mat_<int> getLabels() const = 0;
+  ML_EXPORT virtual cv::Mat getLabels() const = 0;
   ML_EXPORT virtual std::unordered_map<int, int> getLabelsOrdering() const = 0;
 
   ML_EXPORT virtual void setClassWeights(const int classLabel,

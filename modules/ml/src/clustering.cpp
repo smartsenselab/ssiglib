@@ -38,10 +38,10 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+#include <vector>
 
 #include "ssiglib/ml/clustering.hpp"
-
-#include <vector>
+#include "ssiglib/ml/classification.hpp"
 
 namespace ssig {
 
@@ -58,4 +58,84 @@ void Clustering::setInitialClustering(const std::vector<Cluster>& init) {
   mClusters = init;
 }
 
+float Clustering::getCompactness() const {
+  cv::Mat_<float> centroids;
+  getCentroids(centroids);
+  float compactness = 0.0f;
+  auto clustering = getClustering();
+
+  for (int c = 0; c < static_cast<int>(clustering.size()); ++c) {
+    const auto& cluster = clustering[c];
+    for (const auto& id : cluster) {
+      cv::Mat_<float> sample = mSamples.row(id);
+      cv::Mat_<float> diff = centroids.row(c) - sample;
+      compactness += static_cast<float>(
+        cv::norm(diff, cv::NORM_L2SQR));
+    }
+  }
+  return compactness;
+}
+
+int Clustering::getK() const {
+  return mK;
+}
+
+void Clustering::setK(int k) {
+  mK = k;
+}
+
+void Clustering::setPredictionDistanceType(
+  ssig::Clustering::PredictionType predictionDistanceType) {
+  mPredictionDistanceType = predictionDistanceType;
+}
+
+void Clustering::setPredictionDistanceType(
+  Classifier& predictionClassifier) {
+  mPredictionDistanceType = CLASSIFIER_PREDICTION;
+  mPredictionClassifier = ssig::OAAClassifier::create(predictionClassifier);
+}
+
+int Clustering::getPredictionDistanceType() const {
+  return mPredictionDistanceType;
+}
+
+void Clustering::predict(
+  const cv::Mat_<float>& samples,
+  const cv::Mat_<float>& centroids,
+  const ssig::Clustering::PredictionType normtype,
+  cv::Mat_<float>& resp) {
+  const int n = centroids.rows;
+  const int nsamples = samples.rows;
+
+  resp = cv::Mat_<float>::zeros(nsamples, n);
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
+  for (int r = 0; r < nsamples; ++r) {
+    cv::Mat_<float> sample = samples.row(r);
+    for (int i = 0; i < n; ++i) {
+      auto cvNorm = static_cast<cv::NormTypes>(normtype);
+      resp[r][i] = -1 * static_cast<float>(
+        cv::norm(sample - centroids.row(i), cvNorm));
+    }
+  }
+}
+
+void Clustering::predict(
+  const cv::Mat_<float>& samples,
+  const cv::Mat_<float>& probes,
+  const std::vector<ssig::Cluster>& clusters,
+  cv::Ptr<ssig::Classifier>& classifier,
+  cv::Mat_<float>& resp) {
+  if (!classifier)
+    std::runtime_error("Please Set the Classifier before hand!");
+  for (int c = 0; c < static_cast<int>(clusters.size()); ++c) {
+    cv::Mat_<int> labels(samples.rows, 1, -1);
+    for (const auto& id : clusters[c]) {
+      labels.at<int>(id) = c;
+    }
+    classifier->learn(samples, labels);
+  }
+  classifier->predict(probes, resp);
+}
 }  // namespace ssig

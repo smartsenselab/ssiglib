@@ -39,13 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+// ssiglib
+#include <ssiglib/ml/svm_classifier.hpp>
+// c++
 #include <vector>
 #include <string>
 #include <unordered_set>
-
-#include <ssiglib/ml/svm_classifier.hpp>
-
+// libsvm
 #include "../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
+
+
 
 namespace ssig {
 
@@ -66,11 +69,7 @@ SVMClassifier::SVMClassifier() {
 
 SVMClassifier::~SVMClassifier() {
   // Destructor
-  if (mParams.nr_weight) {
-    delete[] mParams.weight;
-    delete[] mParams.weight_label;
-  }
-  svm_free_and_destroy_model(&mModel);
+  cleanup();
 }
 
 std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
@@ -79,7 +78,7 @@ std::unordered_map<int, int> SVMClassifier::getLabelsOrdering() const {
 }
 
 void SVMClassifier::setClassWeights(const int classLabel,
-  const float weight) {
+                                    const float weight) {
   mMapLabel2Weight[classLabel] = weight;
 }
 
@@ -88,7 +87,7 @@ bool SVMClassifier::empty() const {
 }
 
 bool SVMClassifier::isTrained() const {
-  return false;
+  return mModel != nullptr;
 }
 
 bool SVMClassifier::isClassifier() const {
@@ -104,40 +103,43 @@ Classifier* SVMClassifier::clone() const {
 
 svm_problem* SVMClassifier::convertToLibSVM(
   const cv::Mat_<int>& labels,
-  const cv::Mat_<float>& features) const {
+  const cv::Mat_<float>& features,
+  double* & y,
+  svm_node** & x) {
   const int nSamples = labels.rows;
 
   svm_problem* ans = new svm_problem[nSamples];
-  double* y = new double[nSamples];
+  y = new double[nSamples];
   ans->l = nSamples;
   ans->y = y;
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
   for (int i = 0; i < nSamples; ++i) {
-    y[i] = labels.at<int>(i);
+    y[i] = static_cast<double>(labels.at<int>(i));
   }
 
-  auto nodes = convertToLibSVM(features);
-  ans->x = nodes;
+  x = convertToLibSVM(features);
+  ans->x = x;
 
   return ans;
 }
 
 svm_node** SVMClassifier::convertToLibSVM(
-  const cv::Mat_<float>& features) const {
+  const cv::Mat_<float>& features) {
   const int nSamples = features.rows;
   const int ncols = features.cols;
   svm_node** featNode = new svm_node*[nSamples];
 
-#pragma omp parallel for
   for (int i = 0; i < nSamples; ++i) {
     std::vector<svm_node> row_nodes;
     for (int j = 0; j < ncols; ++j) {
       float feat = features.at<float>(i, j);
       if (cv::abs(feat) > FLT_EPSILON) {
-        row_nodes.push_back(svm_node {j, feat});
+        row_nodes.push_back(svm_node{j, feat});
       }
     }
-    row_nodes.push_back(svm_node {-1, 0.0});
+    row_nodes.push_back(svm_node{-1, 0.0});
     const int len = static_cast<int>(row_nodes.size());
     featNode[i] = new svm_node[len];
     for (int j = 0; j < len; ++j) {
@@ -148,45 +150,58 @@ svm_node** SVMClassifier::convertToLibSVM(
 }
 
 void SVMClassifier::convertToLibSVM(
-  const std::unordered_map<int, float>& weights) {
+  const std::unordered_map<int, float>& weights,
+  svm_parameter& params) {
   int nr = static_cast<int>(weights.size());
   if (nr) {
-    mParams.weight_label = new int[nr];
-    mParams.weight = new double[nr];
+    params.weight_label = new int[nr];
+    params.weight = new double[nr];
   }
   int i = 0;
   for (const auto& p : weights) {
-    mParams.weight[i] = static_cast<double>(p.second);
-    mParams.weight_label[i] = p.first;
+    params.weight[i] = static_cast<double>(p.second);
+    params.weight_label[i] = p.first;
     ++i;
   }
-  mParams.nr_weight = nr;
+  params.nr_weight = nr;
+}
+
+cv::Ptr<SVMClassifier> SVMClassifier::create() {
+  return cv::Ptr<SVMClassifier>(new SVMClassifier());
 }
 
 void SVMClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
-  convertToLibSVM(mMapLabel2Weight);
-  svm_problem* problem = convertToLibSVM(labels, input);
+  const cv::Mat& labels) {
+  cleanup();
+  mSamplesLen = input.rows;
+  convertToLibSVM(mMapLabel2Weight, mParams);
+  svm_problem* problem = convertToLibSVM(labels, input,
+                                         mY, mX);
 
   const char* errMsg = svm_check_parameter(problem, &mParams);
   if (errMsg) {
     printf("%s", errMsg);
     exit(-1);
   }
-
   mModel = svm_train(problem, &mParams);
 }
 
 int SVMClassifier::predict(
   const cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const {
+  if (!isTrained())
+    return -1;
+
   resp = cv::Mat_<float>::zeros(inp.rows, 2);
   int label = 0;
   auto featNode = convertToLibSVM(inp);
   const int len = inp.rows;
-  double dec_value = 0;
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < len; ++i) {
+    double dec_value = 0;
     if (getProbabilisticModel()) {
       if (svm_check_probability_model(mModel)) {
         label = static_cast<int>(
@@ -200,6 +215,7 @@ int SVMClassifier::predict(
     }
     resp[i][0] = static_cast<float>(dec_value);
   }
+
   if (getProbabilisticModel()) {
     resp.col(1) = 1 - resp.col(0);
   } else {
@@ -327,9 +343,31 @@ bool SVMClassifier::getProbabilisticModel() const {
   return (mParams.probability) ? true : false;
 }
 
-cv::Mat_<int> SVMClassifier::getLabels() const {
+void SVMClassifier::cleanup() {
+  if (mParams.nr_weight) {
+    delete[] mParams.weight;
+    delete[] mParams.weight_label;
+  }
+  if (mModel) {
+    svm_free_and_destroy_model(&mModel);
+    mModel = nullptr;
+  }
+
+  if (mX) {
+    for (int i = 0; i < mSamplesLen; ++i) {
+      if (mX[i])
+        delete mX[i];
+    }
+    delete[] mX;
+    mX = nullptr;
+  }
+  if (mY) {
+    delete[] mY;
+    mY = nullptr;
+  }
+}
+
+cv::Mat SVMClassifier::getLabels() const {
   return mLabels;
 }
 }  // namespace ssig
-
-

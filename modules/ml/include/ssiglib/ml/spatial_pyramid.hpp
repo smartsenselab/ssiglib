@@ -42,37 +42,29 @@
 #ifndef _SSIG_ML_SPATIAL_PYRAMID_HPP_
 #define _SSIG_ML_SPATIAL_PYRAMID_HPP_
 
+// c++
 #include <memory>
 #include <vector>
-
-#include <ssiglib/core/algorithm.hpp>
-
+// ssiglib
 #include "ml_defs.hpp"
 #include "clustering.hpp"
+#include "ssiglib/core/algorithm.hpp"
 
 
 namespace ssig {
-class SpatialPyramid : public ssig::Algorithm {
- public:
-  SpatialPyramid(void);
-  virtual ~SpatialPyramid(void);
-  SpatialPyramid(const SpatialPyramid& rhs);
-  SpatialPyramid& operator=(const SpatialPyramid& rhs);
 
-  ML_EXPORT static void pool(
-    const cv::Size& imageSize,
-    const std::vector<ssig::Clustering*>& clusteringMethods,
-    const std::vector<cv::Vec2i>& pyramidConfigurations,
-    const std::vector<float>& poolingWeights,
-    const std::vector<cv::Mat_<float>>& partFeatures,
-    const std::vector<cv::Rect>& partWindows,
-    const std::vector<int>& scaledHeights,
-    cv::Mat_<float>& output);
+namespace SpatialPyramid {
+  ML_EXPORT void pool(
+      const cv::Size& imageSize,
+      const std::vector<ssig::Clustering*>& clusteringMethods,
+      const std::vector<cv::Vec2i>& pyramidConfigurations,
+      const std::vector<float>& poolingWeights,
+      const std::vector<cv::Mat_<float>>& partFeatures,
+      const std::vector<cv::Rect>& partWindows,
+      const std::vector<int>& scaledHeights,
+      cv::Mat_<float>& output);
+}  // namespace SpatialPyramid
 
- protected:
-  void read(const cv::FileNode& fn) override;
-  void write(cv::FileStorage& fs) const override;
-};
 }  // namespace ssig
 #endif  // !_SSF_ML_SPATIAL_PYRAMID_HPP_
 

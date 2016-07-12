@@ -45,77 +45,73 @@
 
 #include <opencv2/imgproc.hpp>
 
+#include <ssiglib/descriptors/co_occurrence.hpp>
+
 namespace ssig {
-  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
-    Descriptor2D(input) {}
+GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input) :
+  Descriptor2D(input) {}
 
-  GrayLevelCoOccurrence::GrayLevelCoOccurrence(const cv::Mat& input,
-    const GrayLevelCoOccurrence& descriptor) :
-    Descriptor2D(input, descriptor) {}
+GrayLevelCoOccurrence::GrayLevelCoOccurrence(
+  const cv::Mat& input,
+  const GrayLevelCoOccurrence& descriptor) :
+  Descriptor2D(input, descriptor) {}
 
-  GrayLevelCoOccurrence::GrayLevelCoOccurrence(
-    const GrayLevelCoOccurrence& descriptor) : Descriptor2D(descriptor) {}
+GrayLevelCoOccurrence::GrayLevelCoOccurrence(
+  const GrayLevelCoOccurrence& descriptor) : Descriptor2D(descriptor) {}
 
-  int GrayLevelCoOccurrence::getLevels() const {
-    return mLevels;
-  }
+int GrayLevelCoOccurrence::getLevels() const {
+  return mLevels;
+}
 
-  int GrayLevelCoOccurrence::getBins() const {
-    return mBins;
-  }
+int GrayLevelCoOccurrence::getBins() const {
+  return mBins;
+}
 
-  void GrayLevelCoOccurrence::setLevels(const int levels) {
-    mLevels = levels;
-  }
+void GrayLevelCoOccurrence::setLevels(const int levels) {
+  mLevels = levels;
+}
 
-  void GrayLevelCoOccurrence::setBins(const int bins) {
-    mBins = bins;
-  }
+void GrayLevelCoOccurrence::setBins(const int bins) {
+  mBins = bins;
+}
 
-  void GrayLevelCoOccurrence::read(const cv::FileNode& fn) { }
+void GrayLevelCoOccurrence::setDirection(int x, int y) {
+  mDi = 0;
+  mDj = 0;
+  if (x > 0)
+    mDj = 1;
+  else if (x < 0)
+    mDj = -1;
+  if (y > 0)
+    mDi = 1;
+  else if (y < 0)
+    mDi = -1;
+}
 
-  void GrayLevelCoOccurrence::write(cv::FileStorage& fs) const { }
+void GrayLevelCoOccurrence::read(const cv::FileNode& fn) { }
 
-  void GrayLevelCoOccurrence::beforeProcess() {
-    if (mImage.channels() == 3 || mImage.channels() == 4)
-      cv::cvtColor(mImage, mGreyImg, CV_BGR2GRAY);
-    else
-      mImage.copyTo(mGreyImg);
+void GrayLevelCoOccurrence::write(cv::FileStorage& fs) const { }
 
-    mGreyImg.convertTo(mGreyImg, CV_32FC1);
-  }
+void GrayLevelCoOccurrence::beforeProcess() {
+  if (mImage.channels() == 3 || mImage.channels() == 4)
+    cv::cvtColor(mImage, mGreyImg, CV_BGR2GRAY);
+  else
+    mImage.copyTo(mGreyImg);
 
-  void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
-    cv::Mat& output) {
-    output = cv::Mat::zeros(mBins, mBins, CV_32FC1);
-    int binWidth = mLevels / mBins;
+  mGreyImg.convertTo(mGreyImg, CV_32FC1);
+}
 
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
-    for (int i = patch.y; i < patch.height; i++) {
-      for (int j = patch.x; j < patch.width; j++) {
-        if (isValidPixel(i + mDi, j + mDj, mGreyImg.rows, mGreyImg.cols)) {
-          auto val1 = static_cast<int>(mGreyImg.at<float>(i, j) / binWidth);
-          auto val2 = static_cast<int>(
-            mGreyImg.at<float>(i + mDi, j + mDj) / binWidth);
+void GrayLevelCoOccurrence::extractFeatures(const cv::Rect& patch,
+                                            cv::Mat& output) {
+  CoOccurrence::extractCoOccurrence(mGreyImg,
+    patch,
+    mDj, mDi,
+    mBins, mLevels,
+    output);
+}
 
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-          {
-            output.at<float>(val1, val2)++;
-          }
-        }
-      }
-    }
-    output = output.reshape(1, 1);
-  }
-
-  int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
-    return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
-  }
+int GrayLevelCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
+  return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
+}
 
 }  // namespace ssig
-
-

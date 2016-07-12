@@ -43,108 +43,84 @@
 
 #include <vector>
 #include <stdexcept>
+#include <ssiglib/descriptors/co_occurrence.hpp>
 
 namespace ssig {
 
-  ColorCoOccurrence::ColorCoOccurrence(const cv::Mat& input) :
-    Descriptor2D(input) {}
+ColorCoOccurrence::ColorCoOccurrence(const cv::Mat& input) :
+  Descriptor2D(input) {}
 
-  ColorCoOccurrence::ColorCoOccurrence(
-    const cv::Mat& input,
-    const ColorCoOccurrence& descriptor) :
-    Descriptor2D(input, descriptor) {}
+ColorCoOccurrence::ColorCoOccurrence(
+  const cv::Mat& input,
+  const ColorCoOccurrence& descriptor) :
+  Descriptor2D(input, descriptor) {}
 
-  ColorCoOccurrence::ColorCoOccurrence(const ColorCoOccurrence& descriptor) :
-    Descriptor2D(descriptor) {}
+ColorCoOccurrence::ColorCoOccurrence(const ColorCoOccurrence& descriptor) :
+  Descriptor2D(descriptor) {}
 
-  std::vector<int> ColorCoOccurrence::getLevels() const {
-    return mLevels;
+std::vector<int> ColorCoOccurrence::getLevels() const {
+  return mLevels;
+}
+
+void ColorCoOccurrence::setLevels(const std::vector<int>& levels) {
+  mLevels = levels;
+}
+
+std::vector<int> ColorCoOccurrence::getBins() const {
+  return mBins;
+}
+
+void ColorCoOccurrence::setBins(const std::vector<int>& bins) {
+  mBins = bins;
+}
+
+void ColorCoOccurrence::setDirection(int x, int y) {
+  mDi = 0;
+  mDj = 0;
+  if (x > 0)
+    mDj = 1;
+  else if (x < 0)
+    mDj = -1;
+  if (y > 0)
+    mDi = 1;
+  else if (y < 0)
+    mDi = -1;
+}
+
+void ColorCoOccurrence::read(const cv::FileNode& fn) { }
+
+void ColorCoOccurrence::write(cv::FileStorage& fs) const { }
+
+void ColorCoOccurrence::beforeProcess() {
+  cv::split(mImage, mChannels);
+  for (auto& m : mChannels) {
+    m.convertTo(m, CV_32FC1);
   }
+}
 
-  void ColorCoOccurrence::setLevels(const std::vector<int>& levels) {
-    mLevels = levels;
-  }
+void ColorCoOccurrence::extractFeatures(
+  const cv::Rect& patch,
+  cv::Mat& output) {
+  const int nchannels = mImage.channels();
 
-  std::vector<int> ColorCoOccurrence::getBins() const {
-    return mBins;
-  }
+  for (int c1 = 0; c1 < nchannels; c1++) {
+    for (int c2 = c1; c2 < nchannels; c2++) {
+      cv::Mat partFeature;
+      CoOccurrence::extractPairCoOccurrence(
+                                            mChannels[c1],
+                                            mChannels[c2],
+                                            patch,
+                                            mDj,
+                                            mDi,
+                                            mLevels[c1], mBins[c1],
+                                            mLevels[c2], mBins[c2],
+                                            partFeature);
 
-  void ColorCoOccurrence::setBins(const std::vector<int>& bins) {
-    mBins = bins;
-  }
-
-  void ColorCoOccurrence::read(const cv::FileNode& fn) { }
-
-  void ColorCoOccurrence::write(cv::FileStorage& fs) const { }
-
-  void ColorCoOccurrence::beforeProcess() {
-    cv::split(mImage, mChannels);
-    for (auto& m : mChannels) {
-      m.convertTo(m, CV_32FC1);
+      if (output.empty())
+        output = partFeature;
+      else
+        cv::hconcat(output, partFeature, output);
     }
   }
-
-  void ColorCoOccurrence::extractFeatures(
-    const cv::Rect& patch,
-    cv::Mat& output) {
-
-    const int nchannels = mImage.channels();
-
-    for (int c1 = 0; c1 < nchannels; c1++) {
-      for (int c2 = c1; c2 < nchannels; c2++) {
-        cv::Mat partFeature;
-        extractFromPair(
-          mChannels[c1], mChannels[c2],
-          mLevels[c1], mBins[c1],
-          mLevels[c2], mBins[c2],
-          patch, partFeature);
-
-        if (output.empty())
-          output = partFeature;
-        else
-          cv::hconcat(output, partFeature, output);
-      }
-    }
-  }
-
-  void ColorCoOccurrence::extractFromPair(
-    const cv::Mat& m1,
-    const cv::Mat& m2,
-    const int levels1,
-    const int bins1,
-    const int levels2,
-    const int bins2,
-    const cv::Rect window,
-    cv::Mat& out) {
-    out = cv::Mat::zeros(bins1, bins2, CV_32FC1);
-    int binWidth1 = levels1 / bins1;
-    int binWidth2 = levels2 / bins2;
-
-    #ifdef _OPENMP
-        #pragma omp parallel for
-    #endif
-    for (int i = window.y; i < window.height; i++) {
-      for (int j = window.x; j < window.width; j++) {
-        if (isValidPixel(i, j + 1, m2.rows, m2.cols)) {
-          auto val1 = static_cast<int>(m1.at<float>(i, j) / binWidth1);
-          auto val2 = static_cast<int>(m2.at<float>(i, j + 1) / binWidth2);
-
-          #ifdef _OPENMP
-                    #pragma omp critical
-          #endif
-          {
-            out.at<float>(val1, val2)++;
-          }
-        }
-      }
-    }
-    out = out.reshape(1, 1);
-  }
-
-  int ColorCoOccurrence::isValidPixel(int i, int j, int rows, int cols) {
-    return ((i >= 0 && i < rows) && (j >= 0 && j < cols)) ? 1 : 0;
-  }
-
+}
 }  // namespace ssig
-
-

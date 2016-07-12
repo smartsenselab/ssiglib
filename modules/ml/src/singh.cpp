@@ -48,15 +48,20 @@
 
 namespace ssig {
 
+cv::Ptr<Singh> Singh::create() {
+  return cv::Ptr<Singh>(new Singh());
+}
+
 Singh::~Singh() {
-  for (auto& label : mClassifiers) delete label;
+  for (auto& label : mClassifiers)
+    delete label;
 }
 
 void Singh::predict(
   const cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const {
   resp =
-    cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
+      cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   for (int r = 0; r < inp.rows; ++r) {
     for (int i = 0; i < static_cast<int>(mClassifiers.size()); ++i) {
       cv::Mat_<float> sampleResp;
@@ -96,11 +101,11 @@ void Singh::read(const cv::FileNode& fn) {
   auto it = classifierNode.begin();
   for (; it != classifierNode.end(); ++it) {
     std::unique_ptr<ssig::Classifier>
-      classifier_temp(mUnderlyingClassifier->clone());
-    ssig::HardMiningClassifier hardClassifier(*classifier_temp);
+        classifier_temp(mUnderlyingClassifier->clone());
+    auto hardClassifier = ssig::HardMiningClassifier::create(*classifier_temp);
 
     mClassifiers.push_back(
-      static_cast<HardMiningClassifier*>(hardClassifier.clone()));
+      static_cast<HardMiningClassifier*>(hardClassifier->clone()));
     mClassifiers.back()->read(*it);
   }
 }
@@ -108,7 +113,7 @@ void Singh::read(const cv::FileNode& fn) {
 void Singh::write(cv::FileStorage& fs) const {
   int i = 0;
   fs << "Classifiers"
-    << "{";
+      << "{";
   for (auto& classifier : mClassifiers) {
     fs << "classifier" + std::to_string(i++) << "{";
     classifier->write(fs);
@@ -133,17 +138,17 @@ void Singh::initializeClusterings(const std::vector<int>& assignmentSet) {
   for (int row : assignmentSet) {
     feats.push_back(mSamples.row(row));
   }
-  ssig::Kmeans kmeans;
-  kmeans.setK(mInitialK);
-  kmeans.setFlags(cv::KMEANS_RANDOM_CENTERS);
-  kmeans.setNAttempts(1);
-  kmeans.setPredictionDistanceType(ssig::Kmeans::NORM_L2);
-  kmeans.setMaxIterations(1000);
+  auto kmeans = ssig::Kmeans::create();;
+  kmeans->setK(mInitialK);
+  kmeans->setFlags(cv::KMEANS_RANDOM_CENTERS);
+  kmeans->setNAttempts(1);
+  kmeans->setPredictionDistanceType(ssig::Kmeans::NORM_L2);
+  kmeans->setMaxIterations(1000);
 
-  kmeans.learn(feats);
-  auto initialClustering = kmeans.getClustering();
+  kmeans->learn(feats);
+  auto initialClustering = kmeans->getClustering();
   cv::Mat_<float> centroids;
-  kmeans.getCentroids(centroids);
+  kmeans->getCentroids(centroids);
 
   std::sort(initialClustering.begin(), initialClustering.end(),
             [](const Cluster& i, const Cluster& j) -> bool {
@@ -186,29 +191,29 @@ void Singh::trainClassifiers(const cv::Mat_<float>& samples,
        ++clusterNum) {
     // Initialization
     std::unique_ptr<ssig::Classifier>
-      classifier_temp(mUnderlyingClassifier->clone());
-    ssig::HardMiningClassifier hardClassifier(*classifier_temp);
+        classifier_temp(mUnderlyingClassifier->clone());
+    auto hardClassifier = ssig::HardMiningClassifier::create(*classifier_temp);
     if (mClassifiers[clusterNum] != nullptr) {
       delete mClassifiers[clusterNum];
 
       mClassifiers[clusterNum] = static_cast<ssig::HardMiningClassifier*>
-        (hardClassifier.clone());
+          (hardClassifier->clone());
     } else {
       mClassifiers[clusterNum] = static_cast<ssig::HardMiningClassifier*>
-        (hardClassifier.clone());
+          (hardClassifier->clone());
     }
   }
   for (int clusterNum = 0; clusterNum < static_cast<int>(clusters.size());
        ++clusterNum) {
     Cluster cluster = clusters[clusterNum];
     cv::Mat_<int> labels =
-      cv::Mat_<int>::zeros(static_cast<int>(negativeLearningSet.size()) +
-                           static_cast<int>(cluster.size()),
-                           1);
+        cv::Mat_<int>::zeros(static_cast<int>(negativeLearningSet.size()) +
+                             static_cast<int>(cluster.size()),
+                             1);
     labels = -1;
 
     cv::Mat_<float> trainSamples =
-      cv::Mat_<float>::zeros(static_cast<int>(cluster.size()), mSamples.cols);
+        cv::Mat_<float>::zeros(static_cast<int>(cluster.size()), mSamples.cols);
     int i = 0;
     for (int sample : cluster) {
       mSamples.row(sample).copyTo(trainSamples.row(i));
@@ -293,5 +298,3 @@ void Singh::setClassifier(Classifier& classifier) {
 }
 
 }  // namespace ssig
-
-

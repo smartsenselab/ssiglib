@@ -38,78 +38,98 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-#include <ctime>
+// c++
 #include <utility>
 #include <random>
-
+// c
+#include <ctime>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
 #include "ssiglib/core/pso.hpp"
-
 #include "ssiglib/core/math.hpp"
 
 static std::mt19937 gen(static_cast<uint>(time(nullptr)));
 
 namespace ssig {
-std::unique_ptr<PSO> PSO::create(
-  UtilityFunctor& utilityFunction,
-  DistanceFunctor& distanceFunction) {
+cv::Ptr<PSO> PSO::create(
+  cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) {
   struct _PSO : PSO {
-    _PSO(UtilityFunctor& utilityFunction,
-      DistanceFunctor& distanceFunction) :
+    _PSO(cv::Ptr<UtilityFunctor> utilityFunction,
+      cv::Ptr<DistanceFunctor> distanceFunction) :
       PSO(utilityFunction,
-          distanceFunction) {};
+      distanceFunction) {};
   };
 
-  return std::unique_ptr<ssig::PSO>(new _PSO(
-    utilityFunction,
-    distanceFunction));
+  return cv::makePtr<_PSO>(utilityFunction,
+    distanceFunction);
 }
 
-void PSO::setup(cv::Mat_<float>& input) {
+void PSO::setup(const cv::Mat_<float>& input) {
   if (input.empty()) {
+    mPopulation = cv::Mat_<float>::zeros(mPopulationLength, mDimensions);
     for (int i = 0; i < mPopulationLength; ++i) {
-      cv::Mat row = randomVector(mDimensions,
-                                 mPopulationConstraint.first,
-                                 mPopulationConstraint.second);
-      mPopulation.push_back(row);
+      for (int d = 0; d < mDimensions; ++d) {
+        std::uniform_real_distribution<float> randu(mMinRange.at<float>(d),
+          mMaxRange.at<float>(d));
+        mPopulation.at<float>(i, d) = randu(gen);
+      }
     }
   } else {
     mPopulation = input;
-
+    const int D = mPopulation.cols;
     double min, max;
-    cv::minMaxIdx(mPopulation, &min, &max);
-    mPopulationConstraint = std::make_pair(static_cast<float>(min) - 25,
-                                           static_cast<float>(max) - 50);
+    mMinRange = cv::Mat::zeros(1, D, CV_32F);
+    mMaxRange = cv::Mat::zeros(1, D, CV_32F);
+    for (int d = 0; d < D; ++d) {
+      cv::minMaxIdx(mPopulation.col(d), &min, &max);
+      mMinRange.at<float>(d) = static_cast<float>(min);
+      mMaxRange.at<float>(d) = static_cast<float>(max);
+    }
   }
+
+  mVelocities = cv::Mat::zeros(mPopulationLength, mPopulation.cols, CV_32F);
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulationLength; ++i) {
-    cv::Mat row = randomVector(mDimensions,
-                               mPopulationConstraint.first - 15,
-                               2 * mPopulationConstraint.second);
-    mVelocities.push_back(row);
+    cv::RNG lRng(static_cast<uint64>(time(nullptr)));
+
+    cv::Scalar stddev(2);
+    cv::Scalar mean(0);
+    cv::randn(mVelocities.row(i), mean, stddev);
   }
 
   mDimensions = mPopulation.cols;
   mPopulationLength = mPopulation.rows;
-  if (mInertia.empty())
-    mInertia = cv::Mat_<float>::ones(1, 3);
-  mInertia.convertTo(mInertia, CV_32F);
+
   mLocalBests = mPopulation.clone();
   mLocalUtils.resize(mPopulationLength);
   mUtilities = cv::Mat_<float>::zeros(mPopulationLength, 1);
+  mBestPosition = mPopulation.row(0).clone();
 
+#ifdef _OPENMP
+#pragma omp parallel for
+#endif
   for (int i = 0; i < mPopulationLength; ++i) {
     cv::Mat row = mPopulation.row(i);
-    float util = utility(row);
+    float util = (*utility)(row);
     mLocalUtils[i] = util;
     mUtilities.at<float>(i) = util;
+#ifdef _OPENMP
+#pragma omp critical
+#endif
     if (util > mBestUtil) {
       mBestUtil = util;
-      mBestPosition = row.clone();
+      for (int d = 0; d < mBestPosition.cols; ++d) {
+        mBestPosition.at<float>(d) = row.at<float>(d);
+      }
     }
   }
 }
 
-void PSO::learn(cv::Mat_<float>& input) {
+void PSO::learn(const cv::Mat_<float>& input) {
   setup(input);
 
   float pastUtil = -FLT_MAX;
@@ -122,32 +142,42 @@ void PSO::learn(cv::Mat_<float>& input) {
 }
 
 void PSO::iterate() {
+  #ifdef _OPENMP
   #pragma omp parallel for
+  #endif
   for (int r = 0; r < mPopulationLength; ++r) {
     cv::Mat position = mPopulation.row(r),
-        localBest = mLocalBests.row(r),
-        vel = mVelocities.row(r);
+      localBest = mLocalBests.row(r),
+      vel = mVelocities.row(r);
     update(mBestPosition, localBest, mInertia, vel, position);
 
-    float currentUtil = utility(position);
+    float currentUtil = (*utility)(position);
     mLocalUtils[r] = currentUtil;
-
-    #pragma omp critical(UPDATING)
-    if (currentUtil >= mBestUtil) {
-      mBestPosition = position.clone();
-      mBestUtil = currentUtil;
-    } else if (currentUtil >= mUtilities.at<float>(r)) {
-      localBest = position;
-      mUtilities.at<float>(r) = currentUtil;
+    #ifdef _OPENMP
+    #pragma omp critical
+    #endif
+    {
+      if (currentUtil >= mBestUtil) {
+        for (int d = 0; d < position.cols; ++d) {
+          mBestPosition.at<float>(d) = position.at<float>(d);
+        }
+        mBestUtil = currentUtil;
+      }
+      if (currentUtil >= mUtilities.at<float>(r)) {
+        for (int d = 0; d < position.cols; ++d) {
+          mLocalBests.at<float>(r, d) = position.at<float>(d);
+        }
+        mUtilities.at<float>(r) = currentUtil;
+      }
     }
   }
 }
 
-cv::Mat PSO::getInertia() const {
+cv::Vec3f PSO::getInertia() const {
   return mInertia;
 }
 
-void PSO::setInertia(const cv::Mat& inertia) {
+void PSO::setInertia(const cv::Vec3f& inertia) {
   mInertia = inertia;
 }
 
@@ -163,13 +193,18 @@ void PSO::setDimensionality(int d) {
   mDimensions = d;
 }
 
-std::pair<float, float> PSO::getPopulationConstraint() const {
-  return mPopulationConstraint;
+void PSO::getPopulationConstraint(
+  cv::Mat_<float>& min,
+  cv::Mat_<float>& max) const {
+  min.copyTo(mMinRange);
+  max.copyTo(mMaxRange);
 }
 
-void PSO::setPopulationConstraint(const float minRange,
-  const float maxRange) {
-  mPopulationConstraint = {minRange, maxRange};
+void PSO::setPopulationConstraint(
+  const cv::Mat_<float>& minRange,
+  const cv::Mat_<float>& maxRange) {
+  mMinRange = minRange.clone();
+  mMaxRange = maxRange.clone();
 }
 
 cv::Mat PSO::getBestPosition() const {
@@ -180,13 +215,23 @@ float PSO::getBestUtil() const {
   return mBestUtil;
 }
 
-PSO::PSO(UtilityFunctor& utility,
-  DistanceFunctor& distance) :
+PSO::PSO(const PSO& rhs) {
+  setDimensionality(rhs.mDimensions);
+  setInertia(rhs.getInertia());
+  getPopulationConstraint(mMinRange, mMaxRange);
+  setPopulationLength(getPopulationLength());
+  setEps(getEps());
+  setMaxIterations(getMaxIterations());
+}
+
+PSO::PSO(
+  cv::Ptr<UtilityFunctor>& utility,
+  cv::Ptr<DistanceFunctor>& distance) :
   Optimization(utility, distance) {}
 
 void PSO::update(const cv::Mat& globalBest,
   const cv::Mat& localBest,
-  const cv::Mat& inertia,
+  const cv::Vec3f& inertia,
   cv::Mat& velocity,
   cv::Mat& position) {
   static std::uniform_real_distribution<float> dist(0.0f, 1000.0f);
@@ -194,9 +239,9 @@ void PSO::update(const cv::Mat& globalBest,
   float R1 = (dist(gen)) / 1000.f;
   float R2 = (dist(gen)) / 1000.f;
   // v = w_1*v + w_2*R1(LB - X)+ w_3*R2(GB - X) :
-  cv::Mat term1 = velocity * inertia.at<float>(0);
-  cv::Mat term2 = (localBest - position) * inertia.at<float>(1) * R1;
-  cv::Mat term3 = (globalBest - position) * (inertia.at<float>(2) * R2);
+  cv::Mat term1 = velocity * inertia[0];
+  cv::Mat term2 = (localBest - position) * inertia[1] * R1;
+  cv::Mat term3 = (globalBest - position) * (inertia[2] * R2);
 
   velocity = term1 + term2 + term3;
 
@@ -205,5 +250,4 @@ void PSO::update(const cv::Mat& globalBest,
 }
 
 }  // namespace ssig
-
 

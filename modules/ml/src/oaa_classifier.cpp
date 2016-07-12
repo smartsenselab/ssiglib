@@ -55,12 +55,12 @@ namespace ssig {
 
 OAAClassifier::OAAClassifier(const Classifier& prototypeClassifier) {
   mUnderlyingClassifier =
-    std::unique_ptr<Classifier>(prototypeClassifier.clone());
+      std::unique_ptr<Classifier>(prototypeClassifier.clone());
 }
 
 void OAAClassifier::learn(
   const cv::Mat_<float>& input,
-  const cv::Mat_<int>& labels) {
+  const cv::Mat& labels) {
   if (!mClassifiers.empty()) {
     mClassifiers.clear();
   }
@@ -73,7 +73,7 @@ void OAAClassifier::learn(
   int c = -1;
   std::vector<int> labelOrdering;
   for (int i = 0; i < labels.rows; ++i) {
-    auto label = labels[0][i];
+    auto label = labels.at<int>(i);
     if (mLabel2Index.find(label) == mLabel2Index.end()) {
       mLabel2Index[label] = ++c;
       labelOrdering.push_back(label);
@@ -81,6 +81,10 @@ void OAAClassifier::learn(
   }
 
   mClassifiers.resize(mLabel2Index.size());
+  for (int i = 0; i < static_cast<int>(labelOrdering.size()); ++i)
+    mClassifiers[i] =
+        std::move(std::unique_ptr<Classifier>(mUnderlyingClassifier->clone()));
+
 #ifdef _OPENMP
 #pragma omp parallel for
 #endif
@@ -90,18 +94,15 @@ void OAAClassifier::learn(
     float nNeg = 0;
     cv::Mat_<int> localLabels = cv::Mat_<int>::zeros(mSamples.rows, 1);
     for (int j = 0; j < labels.rows; ++j) {
-      if (labels[j][0] == label) {
-        localLabels[j][0] = 1;
+      if (labels.at<int>(j)  == label) {
+        localLabels.at<int>(j) = 1;
         ++nPos;
       } else {
-        localLabels[j][0] = -1;
+        localLabels.at<int>(j) = -1;
         ++nNeg;
       }
     }
     nPos = nPos / (nPos + nNeg);
-
-    mClassifiers[i] =
-      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone());
 
     mClassifiers[i]->setClassWeights(1, nPos);
     mClassifiers[i]->setClassWeights(-1, 1 - nPos);
@@ -115,7 +116,7 @@ int OAAClassifier::predict(
   const cv::Mat_<float>& inp,
   cv::Mat_<float>& resp) const {
   resp =
-    cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
+      cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
   float maxResp = -FLT_MAX;
   int bestLabel = 0;
 #ifdef _OPENMP
@@ -138,10 +139,10 @@ int OAAClassifier::predict(
       ++c;
     }
   }
-  return inp.rows > 1?0 : mIndex2Label[bestLabel];
+  return inp.rows > 1 ? 0 : mIndex2Label[bestLabel];
 }
 
-cv::Mat_<int> OAAClassifier::getLabels() const {
+cv::Mat OAAClassifier::getLabels() const {
   return mLabels;
 }
 
@@ -186,20 +187,21 @@ void OAAClassifier::read(const cv::FileNode& fn) {
   auto classifiersNode = fn["classifiers"];
   auto it = classifiersNode.begin();
   for (; it != classifiersNode.end(); ++it) {
-    mClassifiers.push_back(
-      std::shared_ptr<Classifier>(mUnderlyingClassifier->clone()));
+    auto newClassifier = std::unique_ptr<Classifier>(
+      mUnderlyingClassifier->clone());
+    mClassifiers.push_back(std::move(newClassifier));
     mClassifiers.back()->read(*it);
   }
 }
 
 void OAAClassifier::write(cv::FileStorage& fs) const {
   fs << "labelOrdering"
-    << "{";
+      << "{";
   ssig::Util::write<int, int>(mLabel2Index, fs);
   fs << "}";
 
   fs << "classifiers"
-    << "{";
+      << "{";
   int i = 0;
   for (auto& c : mClassifiers) {
     fs << "c" + std::to_string(i++) << "{";
@@ -225,14 +227,18 @@ std::shared_ptr<Classifier> OAAClassifier::getUnderlyingClassifier() const {
 void OAAClassifier::setUnderlyingClassifier(
   const Classifier& underlyingClassifier) {
   mUnderlyingClassifier =
-    std::unique_ptr<Classifier>(underlyingClassifier.clone());
+      std::unique_ptr<Classifier>(underlyingClassifier.clone());
+}
+
+cv::Ptr<OAAClassifier> OAAClassifier::create(const Classifier& underlying) {
+  auto ans =
+      cv::Ptr<OAAClassifier>(new OAAClassifier(underlying));
+  return ans;
 }
 
 void OAAClassifier::addLabels(const cv::Mat_<int>& labels) {
   mLabels.release();
-  mLabels = labels;
+  labels.convertTo(mLabels, CV_32SC1);
 }
 
 }  // namespace ssig
-
-

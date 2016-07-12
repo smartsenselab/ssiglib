@@ -40,12 +40,13 @@
 *****************************************************************************L*/
 #include <gtest/gtest.h>
 
-#include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/objdetect.hpp>
-
+// c++
+#include <vector>
+// ssiglib
 #include "ssiglib/descriptors/hog_uoccti_features.hpp"
 
 TEST(HOGUOCCTI, Simple) {
@@ -67,7 +68,7 @@ TEST(HOGUOCCTI, Simple) {
 
   cv::Mat diff = cv::abs(out - expected);
   cv::Mat epsilon(diff.rows, diff.cols, CV_32FC1);
-  epsilon = static_cast<float>(1e-5);
+  epsilon = 0.1f;
   cv::Mat cmpson;
   cv::compare(diff, epsilon, cmpson, cv::CMP_LT);
   int diffSum = cv::countNonZero(cmpson);
