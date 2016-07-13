@@ -90,6 +90,9 @@ class PLSClassifier : public Multiclass {
   std::unique_ptr<OpenClPLS> mClPls;
   int mNumberOfFactors = 3;
 
+  std::unordered_map<int, int> mLabels2Idx;
+  std::unordered_map<int, int> mIdx2Labels;
+
   int mYColumns = 2;
 
   bool mTrained = false;
