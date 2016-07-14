@@ -51,14 +51,10 @@
 namespace ssig {
 class Multiclass : public Classifier {
  public:
+  Multiclass() = default;
   virtual ~Multiclass() = default;
 
   bool isClassifier() const override;
-
-protected:
-  Multiclass() = default;
- private:
-  // private members
 };
 }  // namespace ssig
 #endif  // !_SSIG_ML_MULTICLASS_HPP_

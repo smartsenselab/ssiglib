@@ -82,7 +82,7 @@ class PLSClassifier : public Multiclass {
 
   ML_EXPORT void setNumberOfFactors(int numberOfFactors);
 
-protected:
+ protected:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 

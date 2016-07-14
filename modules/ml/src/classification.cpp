@@ -99,4 +99,4 @@ int Classifier::getMaxIterations() const {
 void Classifier::setMaxIterations(int maxIterations) {
   mMaxIterations = maxIterations;
 }
-} // namespace ssig
+}  // namespace ssig
