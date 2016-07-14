@@ -91,9 +91,11 @@ class SVMClassifier : public Classifier {
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;
 
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels) const override;
 
   ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
@@ -109,10 +111,6 @@ class SVMClassifier : public Classifier {
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
   ML_EXPORT Classifier* clone() const override;
-
-  ML_EXPORT float getEpsilon() const override;
-
-  ML_EXPORT void setEpsilon(float epsilon) override;
 
   ML_EXPORT int getKernelType() const;
 

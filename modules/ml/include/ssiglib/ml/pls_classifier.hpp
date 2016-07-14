@@ -59,9 +59,11 @@ class PLSClassifier : public Multiclass {
   ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
 
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-              cv::Mat_<float>& resp) const override;
+              cv::Mat_<float>& resp,
+              cv::Mat_<int>& labels) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;
@@ -80,7 +82,7 @@ class PLSClassifier : public Multiclass {
 
   ML_EXPORT void setNumberOfFactors(int numberOfFactors);
 
- protected:
+protected:
   ML_EXPORT PLSClassifier(void);
   ML_EXPORT PLSClassifier(const PLSClassifier& rhs);
 
@@ -89,9 +91,6 @@ class PLSClassifier : public Multiclass {
   std::unique_ptr<PLS> mPls;
   std::unique_ptr<OpenClPLS> mClPls;
   int mNumberOfFactors = 3;
-
-  std::unordered_map<int, int> mLabels2Idx;
-  std::unordered_map<int, int> mIdx2Labels;
 
   int mYColumns = 2;
 

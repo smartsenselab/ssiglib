@@ -62,7 +62,8 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
 
 int PLSClassifier::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {
+  cv::Mat_<float>& resp,
+  cv::Mat_<int>& labels) const {
   if (mOpenClEnabled) {
     mClPls->predict(inp, resp);
   } else {
@@ -70,17 +71,22 @@ int PLSClassifier::predict(
   }
   cv::Mat_<float> r;
   r.create(inp.rows, mYColumns);
+  labels = cv::Mat_<int>::zeros(inp.rows, 1);
 
   int labelIdx = -1;
   if (!mIsMulticlass) {
     for (int row = 0; row < inp.rows; ++row) {
       r[row][0] = resp[row][0];
       r[row][1] = -1 * resp[row][0];
+      if (r[row][0] > 0) {
+        labels.at<int>(row) = 1;
+      }
     }
     labelIdx = resp[0][0] > 0 ? 1 : -1;
+
     resp = r;
   } else {
-    if (inp.rows == 1) {
+    for (int row = 0; row < resp.rows; ++row) {
       int maxIdx[2];
       cv::minMaxIdx(resp, nullptr, nullptr, nullptr, maxIdx);
       labelIdx = maxIdx[1];
@@ -90,9 +96,10 @@ int PLSClassifier::predict(
       } else {
         labelIdx = -1;
       }
+      labels.at<int>(row) = labelIdx;
     }
   }
-  
+
   return inp.rows > 1 || mIsMulticlass ? 0 : labelIdx;
 }
 
@@ -115,7 +122,6 @@ void PLSClassifier::addLabels(const cv::Mat& labels) {
       }
     }
   }
- 
 
   if (nLabels != 2) {
     // multiclass
@@ -138,7 +144,7 @@ void PLSClassifier::addLabels(const cv::Mat& labels) {
     mLabels2Idx[-1] = 1;
     mIdx2Labels[0] = 1;
     mIdx2Labels[1] = -1;
-  }  
+  }
 }
 
 cv::Ptr<PLSClassifier> PLSClassifier::create() {
@@ -200,18 +206,18 @@ void PLSClassifier::read(const cv::FileNode& fn) {
   ssig::Util::read<int, int>(mLabels2Idx, labelOrderingNode);
   labelOrderingNode = fn["Idx2Labels"];
   ssig::Util::read<int, int>(mIdx2Labels, labelOrderingNode);
-  
+
   mPls->load(fn);
 }
 
 void PLSClassifier::write(cv::FileStorage& fs) const {
   mPls->save(fs);
   fs << "Labels2Idx"
-    << "{";
+      << "{";
   ssig::Util::write<int, int>(mLabels2Idx, fs);
   fs << "}";
   fs << "Idx2Labels"
-    << "{";
+      << "{";
   ssig::Util::write<int, int>(mIdx2Labels, fs);
   fs << "}";
 }
@@ -231,5 +237,6 @@ int PLSClassifier::getNumberOfFactors() const {
 void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
   mNumberOfFactors = numberOfFactors;
 }
+
 
 } // namespace ssig

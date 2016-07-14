@@ -111,7 +111,7 @@ TEST(PLSClassifier, Persistence) {
 }
 
 TEST(PLSClassifier, MultiClassification) {
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1,1,2,2,3,3);
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 2, 2, 3, 3);
   cv::Mat_<float> inp =
       (cv::Mat_<float>(6, 2) <<
       1, 2,
