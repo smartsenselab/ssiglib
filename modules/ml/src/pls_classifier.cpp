@@ -88,7 +88,7 @@ int PLSClassifier::predict(
   } else {
     for (int row = 0; row < resp.rows; ++row) {
       int maxIdx[2];
-      cv::minMaxIdx(resp, nullptr, nullptr, nullptr, maxIdx);
+      cv::minMaxIdx(resp.row(row), nullptr, nullptr, nullptr, maxIdx);
       labelIdx = maxIdx[1];
       auto it = mIdx2Labels.find(labelIdx);
       if (it != mIdx2Labels.end()) {

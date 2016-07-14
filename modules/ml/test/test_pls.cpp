@@ -128,19 +128,30 @@ TEST(PLSClassifier, MultiClassification) {
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1003);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 100 , 103);
-
+  cv::Mat_<float> queries;
+  queries.push_back(query1);
+  queries.push_back(query2);
+  queries.push_back(query3);
 
   cv::Mat_<float> resp;
+  cv::Mat_<int> actual;
+  classifier->predict(queries, resp, actual);
+
+  
   classifier->predict(query1, resp);
   int idx[2];
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(0, idx[1]);
+  EXPECT_EQ(actual.at<int>(0), 1);
+
   classifier->predict(query2, resp);
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(1, idx[1]);
+  EXPECT_EQ(actual.at<int>(1), 2);
   classifier->predict(query3, resp);
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(2, idx[1]);
+  EXPECT_EQ(actual.at<int>(2), 3);
 }
 
 TEST(OpenClPLSClassifier, BinaryClassification) {

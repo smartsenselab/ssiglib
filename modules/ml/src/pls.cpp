@@ -58,7 +58,6 @@ namespace ssig {
 
 void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   int i;
-  int kk;
   float dt;
   int maxsteps, step;
   int nsamples, nfeatures;
@@ -66,8 +65,6 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   cv::Mat_<float> tmpM;
 
   // initially, clear current PLS model (if there is one)
-  // ClearPLS();
-
   nsamples = X.rows;
   nfeatures = X.cols;
 
@@ -80,109 +77,55 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
   computeMeanStd(X, cv::ml::COL_SAMPLE, mXmean, mXstd);
   computeZScore(X, mXmean, mXstd);
 
-  // Y
-  // ymean = new Vector<float> (1);
-  // ystd = new Vector<float> (1);
-  // mean(Y, ymean);
-  // std(Y, ymean, ystd);
-  // zscore(Y, ymean, ystd);
   computeMeanStd(Y, cv::ml::COL_SAMPLE, mYmean, mYstd);
   computeZScore(Y, mYmean, mYstd);
 
-  // Yscaled = Y->Copy();
   mYscaled = Y.clone();
 
-  U.create(nsamples, nfactors);   // U = new Matrix<float> (nsamples, nfactor);
-  C.create(1, nfactors);          // C = new Vector<float> (nfactor);
-  mT.create(nsamples, nfactors);  // T = new Matrix<float> (nsamples, nfactor);
-  mP.create(nfeatures,
-            nfactors);  // P = new Matrix<float> (nfeatures, nfactor);
-  mW.create(nfeatures,
-            nfactors);  // W = new Matrix<float> (nfeatures, nfactor);
+  U.create(nsamples, nfactors);
+  mT.create(nsamples, nfactors);
+  mP.create(nfeatures, nfactors);
+  mW.create(nfeatures, nfactors);
   mB.create(1, nfactors);
 
-  // sumY2 = SSFMatrixSquare(Y);
-  // sumX2 = SSFMatrixSquare(X);
-
-  // printf("\rsumX: %5.3f, sumY: %5.3f", sumX2, sumY2);
-
   for (i = 0; i < nfactors; i++) {
-    // normaliz(Y, t);
     cv::normalize(Y.col(0), t, 1, 0, cv::NORM_L2);
 
-    // CopyVector(t, u);
     u = t.clone();
-
     // ReportStatus("Extracting PLS factor %d/%d", i + 1, nfactors);
-
     step = 0;
     do {
-      // t0 = CopyVector(t, rY);
-      // CopyVector(t, t0);
       t0 = t.clone();
 
-      // w=normaliz(Xres'*u)
-      // tmp = MultiplyTransposeMatrixbyVector(X, rX, cX, u, rY);
-      // w = normaliz(tmp, cX);
-      // free(tmp);
-      // MultiplyTransposeMatrixbyVector(X, u, Vcol);
-      // normaliz(Vcol, w);
       tmpM = X.t() * u;
       cv::normalize(tmpM, w, 1, 0, cv::NORM_L2);
 
-      // t=normaliz(Xres*w);
-      // tmp = MultiplyMatrixbyVector(X, rX, cX, w, cX);
-      // free(t);
-      // t = normaliz(tmp, rX);
-      // free(tmp);
-      // MultiplyMatrixbyVector(X, w, Vrow);
-      // normaliz(Vrow, t);
       tmpM = X * w;
       cv::normalize(tmpM, t, 1, 0, cv::NORM_L2);
 
-      // c = normaliz(Yres'*t); c is 1xrY
-      // tmpscalar = MultiplyVectorTransposedbyVector(Y, rY, t);
-      // c = normaliz(&tmpscalar, 1);
-      // tmpscalar = MultiplyVectorTransposedbyVector(Y, t);
-      // c = tmpscalar/tmpscalar;  //dummy step, because it normalizes a
-      // constant
       tmpM = Y.t() * t;
       cv::normalize(tmpM, c, 1, 0, cv::NORM_L2);
 
-      // u=Yres*c
-      // free(u);
-      // u = MultiplyVectorandScalar(Y, rY, c[0]);
-      // MultiplyVectorandScalar(Y, c, u);
       u = Y * c;
 
       dt = 0;
-      for (kk = 0; kk < nsamples; kk++) {
-        dt += (t0(kk, 0) - t(kk, 0)) * (t0(kk, 0) - t(kk, 0));
-      }
+      cv::Mat_<float> tempT = t0 - t;
+      dt = static_cast<float>(tempT.dot(tempT));
+
       if (cvIsNaN(static_cast<double>(dt))) {
         char msg[2048];
         throw std::logic_error(msg);
       }
-
       step++;
 
       // ReportStatus("Latent Variable #%d, iteration #:%d", i, step);
       // disp(['Latent Variable #',int2str(l),'  Iteration #:',int2str(nstep)])
     } while (dt > 0.000001 && step < maxsteps);
 
-    // p=Xres'*t; p is cX by 1
-    // p = MultiplyTransposeMatrixbyVector(X, rX, cX, t, rX);
-    // MultiplyTransposeMatrixbyVector(X, t, p);
     p = X.t() * t;
 
-    // b_l=((t'*t)^(-1))*(u'*t); // ||t|| = 1
-    // b_l = MultiplyVectorTransposedbyVector(u, t);
-    b_l = t.t() * t;
-    b_l = b_l.inv() * (u.t() * t);
+    b_l = (t.t() * t).inv() * (u.t() * t);
 
-    // store matrices
-    // b[i] = b_l;
-    // b->SetElement(i, b_l);
     mB[0][i] = b_l[0][0];
 
     p.copyTo(mP.col(i));
@@ -191,30 +134,16 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
     t.copyTo(mT.col(i));
     u.copyTo(U.col(i));
 
-    // c->SetElement(i, c);
-    C[0][1] = c[0][0];
-
     // deflation of X and Y
-    // Xres=Xres-t*p';
-    // SubtractFromMatrix(X, rX, cX, t, rX, p, cX);
-    // SubtractFromMatrix(X, t, p);
     X = X - (t * p.t());
 
-    // Yres=Yres-(b(l)*(t*c'));
-    // SubtractFromVector(Y, rY, t, rX, c, 1, b[i]);
-    // SubtractFromVector(Y, t, c, b->GetElement(i));
-    Y = Y - (mB[0][i] * (t * c.t()));
+    Y = Y - (b_l[0][0] * (t * c.t()));
   }
-
-  // ComputeWstar();
-  // Wstar=W*inv(P'*W);
   tmpM = mP.t() * mW;
   mWstar = mW * tmpM.inv();
 
-  // Bstar = Wstar*inv(T'*T)*T'*Y;
   tmpM = (mT.t() * mT).inv();
   mBstar = mWstar * tmpM * mT.t() * mYscaled;
-  // computeBstar(nfactors);
 
   // set max number of factors
   this->mNFactors = nfactors;
@@ -274,13 +203,11 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
     mZDataV = aux - mXmean;
     mZDataV /= mXstd;
 
-    // X * Bstar .* Ydata.std) +  Ydata.mean;
+    // X * Bstar .* Ydata.std +  Ydata.mean;
     cv::Mat_<float> tmp = mZDataV * mBstar;
     tmp = tmp.mul(mYstd) + mYmean;
 
-    for (int i = 0; i < tmp.cols; i++) {
-      ret[y][i] = tmp[0][i];
-    }
+    tmp.copyTo(ret.row(y));
   }
 }
 
