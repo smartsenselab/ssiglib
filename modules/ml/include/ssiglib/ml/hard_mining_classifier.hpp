@@ -56,10 +56,11 @@ class HardMiningClassifier : public ssig::Classifier {
   ML_EXPORT HardMiningClassifier(const HardMiningClassifier& rhs);
   ML_EXPORT HardMiningClassifier& operator=(const HardMiningClassifier& rhs);
 
-
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;

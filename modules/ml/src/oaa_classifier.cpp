@@ -114,9 +114,12 @@ void OAAClassifier::learn(
 
 int OAAClassifier::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {
+  cv::Mat_<float>& resp,
+  cv::Mat_<int>& labels) const {
   resp =
       cv::Mat_<float>::zeros(inp.rows, static_cast<int>(mClassifiers.size()));
+  labels =
+    cv::Mat_<int>::zeros(inp.rows, 1);
   float maxResp = -FLT_MAX;
   int bestLabel = 0;
 #ifdef _OPENMP
@@ -138,6 +141,7 @@ int OAAClassifier::predict(
       }
       ++c;
     }
+    labels.at<int>(r) = mIndex2Label[bestLabel];
   }
   return inp.rows > 1 ? 0 : mIndex2Label[bestLabel];
 }
