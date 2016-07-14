@@ -239,4 +239,4 @@ void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
 }
 
 
-} // namespace ssig
+}  // namespace ssig
