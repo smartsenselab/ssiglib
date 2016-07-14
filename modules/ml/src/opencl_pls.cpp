@@ -232,7 +232,7 @@ void OpenClPLS::predict(
     cv::gemm(tmp, mYstd, 1, cv::noArray(), 0, tmp);
     cv::add(tmp, mYmean, tmp);
 
-    tmp.copyTo(ret.row(y));    
+    tmp.copyTo(ret.row(y));
   }
 }
 

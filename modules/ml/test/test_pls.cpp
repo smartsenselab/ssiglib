@@ -137,7 +137,6 @@ TEST(PLSClassifier, MultiClassification) {
   cv::Mat_<int> actual;
   classifier->predict(queries, resp, actual);
 
-  
   classifier->predict(query1, resp);
   int idx[2];
   cv::minMaxIdx(resp, 0, 0, 0, idx);
