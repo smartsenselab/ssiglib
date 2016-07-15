@@ -59,9 +59,11 @@ class PLSClassifier : public Multiclass {
   ML_EXPORT static cv::Ptr<PLSClassifier> create();
   ML_EXPORT virtual ~PLSClassifier(void);
 
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-              cv::Mat_<float>& resp) const override;
+              cv::Mat_<float>& resp,
+              cv::Mat_<int>& labels) const override;
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;

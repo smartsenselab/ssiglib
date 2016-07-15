@@ -39,76 +39,64 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ML_OAACLASSIFIER_HPP_
-#define _SSIG_ML_OAACLASSIFIER_HPP_
-
+// c++
 #include <unordered_map>
-#include <memory>
-#include <vector>
 #include <string>
-
-#include "classification.hpp"
-#include "multiclass.hpp"
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "ssiglib/ml/classification.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/core/algorithm.hpp"
 
 namespace ssig {
+int Classifier::predict(
+  const cv::Mat_<float>& inp,
+  cv::Mat_<float>& resp) const {
+  cv::Mat_<int> empty;
+  return predict(inp, resp, empty);
+}
 
-class OAAClassifier : public Multiclass {
-  ML_EXPORT virtual void addLabels(const cv::Mat_<int>& labels);
+std::unordered_map<int, int> Classifier::getIndexLabelsMap() const {
+  return mIdx2Labels;
+}
 
- public:
-  ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
-  virtual ~OAAClassifier(void) = default;
+void Classifier::setClassWeights(
+  const int classLabel,
+  const float weight) {
+  mWeights[classLabel] = weight;
+}
 
-  using Classifier::predict;
-  ML_EXPORT int predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp,
-    cv::Mat_<int>& labels) const override;
+void Classifier::setClassWeights(
+  const std::unordered_map<int, float>& weights) {
+  mWeights = weights;
+}
 
-  ML_EXPORT void learn(
-    const cv::Mat_<float>& input,
-    const cv::Mat& labels) override;
+std::unordered_map<int, float> Classifier::getClassWeights() const {
+  return mWeights;
+}
 
-  ML_EXPORT cv::Mat getLabels() const override;
-  ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
+int Classifier::getTermType() const {
+  return mTermType;
+}
 
-  ML_EXPORT bool empty() const override;
-  ML_EXPORT bool isTrained() const override;
-  ML_EXPORT bool isClassifier() const override;
+void Classifier::setTermType(int termType) {
+  mTermType = termType;
+}
 
-  ML_EXPORT void load(const std::string& filename,
-                      const std::string& nodename) override;
-  ML_EXPORT void save(const std::string& filename,
-                      const std::string& nodename) const override;
+float Classifier::getEpsilon() const {
+  return mEpsilon;
+}
 
-  ML_EXPORT void read(const cv::FileNode& fn) override;
-  ML_EXPORT void write(cv::FileStorage& fs) const override;
+void Classifier::setEpsilon(float epsilon) {
+  mEpsilon = epsilon;
+}
 
-  ML_EXPORT Classifier* clone() const override;
+int Classifier::getMaxIterations() const {
+  return mMaxIterations;
+}
 
-  ML_EXPORT std::shared_ptr<Classifier> getUnderlyingClassifier() const;
-  ML_EXPORT void setUnderlyingClassifier(
-    const Classifier& underlyingClassifier);
-
- protected:
-  ML_EXPORT OAAClassifier(const Classifier& prototypeClassifier);
-  OAAClassifier() = default;
-
- private:
-  // private members
-  std::unordered_map<int, int> mLabel2Index;
-  std::vector<int> mIndex2Label;
-
-  std::vector<std::unique_ptr<Classifier>> mClassifiers;
-  std::unique_ptr<Classifier> mUnderlyingClassifier;
-  cv::Mat_<int> mLabels;
-
-  bool mTrained = false;
-};
-
+void Classifier::setMaxIterations(int maxIterations) {
+  mMaxIterations = maxIterations;
+}
 }  // namespace ssig
-
-#endif  // !_SSIG_ML_OAACLASSIFIER_HPP_
-
-

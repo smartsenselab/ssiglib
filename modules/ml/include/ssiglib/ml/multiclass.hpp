@@ -51,26 +51,10 @@
 namespace ssig {
 class Multiclass : public Classifier {
  public:
+  Multiclass() = default;
   virtual ~Multiclass() = default;
 
-  int predict(
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override = 0;
-  void learn(const cv::Mat_<float>& input, const cv::Mat& labels) override = 0;
-  cv::Mat getLabels() const override = 0;
-  std::unordered_map<int, int> getLabelsOrdering() const override = 0;
-  bool empty() const override = 0;
-  bool isTrained() const override = 0;
   bool isClassifier() const override;
-  void read(const cv::FileNode& fn) override = 0;
-  void write(cv::FileStorage& fs) const override = 0;
-  Classifier* clone() const override = 0;
-
-
- protected:
-  Multiclass() = default;
- private:
-  // private members
 };
 }  // namespace ssig
 #endif  // !_SSIG_ML_MULTICLASS_HPP_

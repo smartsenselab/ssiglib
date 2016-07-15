@@ -120,8 +120,7 @@ void OpenClPLS::learn(
 
       dt = 0;
       cv::subtract(t0, t, uAux);
-      uAux = uAux.dot(uAux);
-      dt = static_cast<float>(cv::sum(uAux)[0]);
+      dt = static_cast<float>(uAux.dot(uAux));
 
       if (cvIsNaN(static_cast<double>(dt))) {
         char msg[2048];
@@ -156,7 +155,7 @@ void OpenClPLS::learn(
     cv::subtract(X, uAux, X);
 
     cv::gemm(t, c, 1, cv::noArray(), 0, uAux, cv::GEMM_2_T);
-    float auxScalar = (mB.col(i)).getMat(0).at<float>(0);
+    float auxScalar = (b_l).getMat(0).at<float>(0);
 
     uAux.mul(cv::UMat::eye(uAux.size(), CV_32F), auxScalar);
 
@@ -166,7 +165,7 @@ void OpenClPLS::learn(
   cv::gemm(mP, mW, 1, cv::noArray(), 0, tmpM, cv::GEMM_1_T);
   cv::gemm(mW, tmpM.inv(), 1, cv::noArray(), 0, mWstar);
 
-  cv::mulTransposed(mT, tmpM, true);
+  cv::gemm(mT, mT, 1, cv::noArray(), 0, tmpM, cv::GEMM_1_T);
   tmpM = tmpM.inv();
 
   cv::gemm(mT, mYscaled, 1, cv::noArray(), 0, uAux, cv::GEMM_1_T);
@@ -232,11 +231,8 @@ void OpenClPLS::predict(
     cv::gemm(mZDataV, mBstar, 1, cv::noArray(), 0, tmp);
     cv::gemm(tmp, mYstd, 1, cv::noArray(), 0, tmp);
     cv::add(tmp, mYmean, tmp);
-    cv::Mat tmpMat;
-    tmp.copyTo(tmpMat);
-    for (int i = 0; i < tmp.cols; i++) {
-      ret[y][i] = tmpMat.at<float>(0, i);
-    }
+
+    tmp.copyTo(ret.row(y));
   }
 }
 

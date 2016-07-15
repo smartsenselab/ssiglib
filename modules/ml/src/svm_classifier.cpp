@@ -175,6 +175,7 @@ void SVMClassifier::learn(
   const cv::Mat& labels) {
   cleanup();
   mSamplesLen = input.rows;
+  mParams.eps = mEpsilon;
   convertToLibSVM(mMapLabel2Weight, mParams);
   svm_problem* problem = convertToLibSVM(labels, input,
                                          mY, mX);
@@ -189,11 +190,14 @@ void SVMClassifier::learn(
 
 int SVMClassifier::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {
+  cv::Mat_<float>& resp,
+  cv::Mat_<int>& labels) const {
   if (!isTrained())
     return -1;
 
   resp = cv::Mat_<float>::zeros(inp.rows, 2);
+  labels = cv::Mat_<float>::zeros(inp.rows, 1);
+
   int label = 0;
   auto featNode = convertToLibSVM(inp);
   const int len = inp.rows;
@@ -214,6 +218,7 @@ int SVMClassifier::predict(
         svm_predict_values(mModel, featNode[i], &dec_value));
     }
     resp[i][0] = static_cast<float>(dec_value);
+    labels.at<int>(i) = resp.at<float>(i) > 0 ? 1 : 0;
   }
 
   if (getProbabilisticModel()) {
@@ -261,14 +266,6 @@ void SVMClassifier::write(cv::FileStorage& fs) const {
 
   delete[] buffer;
   fclose(tmpf);
-}
-
-float SVMClassifier::getEpsilon() const {
-  return static_cast<float>(mParams.eps);
-}
-
-void SVMClassifier::setEpsilon(float epsilon) {
-  mParams.eps = static_cast<double>(epsilon);
 }
 
 int SVMClassifier::getKernelType() const {
