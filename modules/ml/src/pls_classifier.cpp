@@ -123,7 +123,14 @@ void PLSClassifier::addLabels(const cv::Mat& labels) {
     }
   }
 
-  if (nLabels != 2) {
+  if (nLabels == 2 && minLabel == -1 || maxLabel == 1) {
+    mLabels = labels;
+
+    mLabels2Idx[1] = 0;
+    mLabels2Idx[-1] = 1;
+    mIdx2Labels[0] = 1;
+    mIdx2Labels[1] = -1;
+  } else {
     // multiclass
     mLabels2Idx = labelOrdering;
     mLabels = cv::Mat_<int>::zeros(labels.rows, nLabels);
@@ -131,19 +138,8 @@ void PLSClassifier::addLabels(const cv::Mat& labels) {
     for (int i = 0; i < labels.rows; ++i) {
       int label = labels.at<int>(i);
       mLabels.at<int>(i, mLabels2Idx[label]) = 1;
+      mIsMulticlass = true;
     }
-    mIsMulticlass = true;
-  } else {
-    if (minLabel != -1 || maxLabel != 1) {
-      char errMesg[] = "Labels for binary classifier must be only -1 and 1";
-      throw std::runtime_error(errMesg);
-    }
-    mLabels = labels;
-
-    mLabels2Idx[1] = 0;
-    mLabels2Idx[-1] = 1;
-    mIdx2Labels[0] = 1;
-    mIdx2Labels[1] = -1;
   }
 }
 
