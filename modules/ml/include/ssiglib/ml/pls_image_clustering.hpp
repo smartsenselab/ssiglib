@@ -60,7 +60,7 @@ class PLSImageClustering : public ClassifierClustering {
  public:
   ML_EXPORT static cv::Ptr<PLSImageClustering> create();
   ML_EXPORT static cv::Ptr<PLSImageClustering> create(
-  ssig::OAAClassifier& classifier,
+  ssig::Multiclass& classifier,
   const std::vector<std::vector<int>>& discoverySubset,
   const std::vector<ssig::Cluster>& initialClustering);
 
@@ -180,6 +180,11 @@ class PLSImageClustering : public ClassifierClustering {
   bool mMergeOcurred = false;
   bool mMergeConvergence = true;
   int nMergesPerIteration = 8;
+#if _DEBUG
+  bool mIsVerbose = true;
+#else
+  bool mIsVerbose = false;
+#endif
 };
 
 }  // namespace ssig

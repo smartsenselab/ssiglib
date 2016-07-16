@@ -105,7 +105,7 @@ cv::Ptr<PLSImageClustering> PLSImageClustering::create() {
 }
 
 cv::Ptr<PLSImageClustering> PLSImageClustering::create(
-  ssig::OAAClassifier& classifier,
+  ssig::Multiclass& classifier,
   const std::vector<std::vector<int>>& discoverySubset,
   const std::vector<ssig::Cluster>& initialClustering) {
   return cv::Ptr<PLSImageClustering>(new PLSImageClustering(
@@ -140,8 +140,8 @@ void PLSImageClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
 }
 
 void PLSImageClustering::setClassifier(Classifier& classifier) {
-  mClassifier = std::unique_ptr<OAAClassifier>(
-    static_cast<OAAClassifier*>(classifier.clone()));
+  mClassifier = std::unique_ptr<Multiclass>(
+    static_cast<Multiclass*>(classifier.clone()));
 }
 
 void PLSImageClustering::setClusterRepresentationType(
@@ -227,18 +227,24 @@ void PLSImageClustering::trainClassifiers(
 
 bool PLSImageClustering::isFinished() {
   if (getMaxIterations() > 0 && (mIt > getMaxIterations())) {
-    printf("Convergence due to max number of iterations reached\n");
+    if (mIsVerbose) {
+      printf("Convergence due to max number of iterations reached\n");
+    }
     return true;
   }
   if (getK()) {
     auto kConvergence = (static_cast<int>(mNewClusters.size()) <= getK());
     if (kConvergence) {
-      printf("Converged due to minimum K!\n");
+      if (mIsVerbose) {
+        printf("Converged due to minimum K!\n");
+      }
       return true;
     }
   }
   if (mMergeConvergence && !mMergeOcurred) {
-    printf("Converged due to merge stability!\n");
+    if (mIsVerbose) {
+      printf("Converged due to merge stability!\n");
+    }
     return true;
   }
   return false;
@@ -356,8 +362,8 @@ void PLSImageClustering::buildClusterRepresentation(
       ++i;
     }
   } else if (mRepresentationType == ClustersResponses) {
-    auto classifier = std::unique_ptr<OAAClassifier>(
-      static_cast<OAAClassifier*>(mClassifier->clone()));
+    auto classifier = std::unique_ptr<Multiclass>(
+      static_cast<Multiclass*>(mClassifier->clone()));
     trainClassifiers(clusters, mNatural[0], *classifier);
     const int dimensions = static_cast<int>(clusters.size());
 
