@@ -39,80 +39,54 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
-// opencv
-#include <opencv2/core.hpp>
-// ssiglib
-#include <ssiglib/ml/ml_defs.hpp>
+#ifndef _SSIG_ML_PLS_EMBEDDING_HPP_
+#define _SSIG_ML_PLS_EMBEDDING_HPP_
 // c++
-#include <stdexcept>
-#include <vector>
-#include <string>
+#include <memory>
+// ssiglib
+#include "ssiglib/core/algorithm.hpp"
+#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/ml/embedding.hpp"
+#include "ssiglib/ml/pls.hpp"
+
 
 namespace ssig {
-
-class PLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
-
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
-
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
-
+class PLSEmbedding : public Embedding{
  public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  ML_EXPORT static cv::Ptr<PLSEmbedding> create(
+   const int dimensions,
+   cv::InputArray labels);
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors) const;
+  ML_EXPORT virtual ~PLSEmbedding(void) = default;
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors() const;
+  ML_EXPORT PLSEmbedding(const PLSEmbedding& rhs);
+  ML_EXPORT PLSEmbedding& operator=(const PLSEmbedding& rhs);
 
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const;
+  ML_EXPORT void learn(cv::InputArray input) override;
+  ML_EXPORT void project(
+    cv::InputArray sample,
+    cv::OutputArray output) override;
 
-  // save PLS model
-  ML_EXPORT void save(std::string filename) const;
-  ML_EXPORT void save(cv::FileStorage& storage) const;
 
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
+  ML_EXPORT int getDimensions() const;
+  ML_EXPORT void setDimensions(const int dimensions);
 
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
 
- protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
+  ML_EXPORT cv::Mat_<float> getLabels() const;
+  ML_EXPORT void setLabels(cv::InputArray labels);
 
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
+protected:
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
 
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
+  PLSEmbedding(void) = default;
 
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
+ private:
+  // private members
+
+  int mDimensions = 2;
+  cv::Mat_<float> mLabels;
+  std::unique_ptr<ssig::PLS> mPLS;
 };
-
 }  // namespace ssig
-
-#endif  // !_SSIG_ML_PLS_HPP_
+#endif  // !_SSIG_ML_PLS_EMBEDDING_HPP_

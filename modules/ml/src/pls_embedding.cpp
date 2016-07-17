@@ -39,80 +39,78 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
 // opencv
 #include <opencv2/core.hpp>
 // ssiglib
-#include <ssiglib/ml/ml_defs.hpp>
-// c++
-#include <stdexcept>
-#include <vector>
-#include <string>
+#include "ssiglib/ml/pls_embedding.hpp"
 
 namespace ssig {
 
-class PLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
+cv::Ptr<PLSEmbedding> PLSEmbedding::create(
+  const int dimensions,
+  cv::InputArray labels) {
+  auto ans = cv::Ptr<PLSEmbedding>(new PLSEmbedding());
+  ans->setDimensions(dimensions);
+  ans->setLabels(labels);
 
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
+  return ans;
+}
 
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
+PLSEmbedding::PLSEmbedding(const PLSEmbedding& rhs) {
+  // Constructor Copy
+  mDimensions = rhs.getDimensions();
+  mLabels = rhs.getLabels().clone();
+}
 
- public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+PLSEmbedding& PLSEmbedding::operator=(const PLSEmbedding& rhs) {
+  if (this != &rhs) {
+    this->mDimensions = rhs.getDimensions();
+    this->mLabels = rhs.getLabels().clone();
+  }
+  return *this;
+}
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors) const;
+void PLSEmbedding::learn(
+  cv::InputArray input) {
+#ifdef _WIN32
+  mPLS = std::make_unique<ssig::PLS>();
+#else
+  mPLS = std::unique_ptr<ssig::PLS>(new ssig::PLS());
+#endif
+  cv::Mat_<float> X = input.getMat();
+  cv::Mat_<float> Xcopy = X.clone();
+  mPLS->learn(Xcopy, mLabels, mDimensions);
+}
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors() const;
+void PLSEmbedding::project(
+  cv::InputArray sample,
+  cv::OutputArray output) {
+  cv::Mat_<float> X, proj;
+  X = sample.getMat();
+  output.create(X.rows, mDimensions, CV_32F);
+  proj = output.getMat();
+  cv::Mat_<float> Xcopy = X.clone();
+  mPLS->predict(Xcopy, proj, mDimensions);
+}
 
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const;
+int PLSEmbedding::getDimensions() const {
+  return mDimensions;
+}
 
-  // save PLS model
-  ML_EXPORT void save(std::string filename) const;
-  ML_EXPORT void save(cv::FileStorage& storage) const;
+void PLSEmbedding::setDimensions(const int dimensions) {
+  mDimensions = dimensions;
+}
 
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
+cv::Mat_<float> PLSEmbedding::getLabels() const {
+  return mLabels;
+}
 
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
+void PLSEmbedding::setLabels(cv::InputArray labels) {
+  cv::Mat localLabels = labels.getMat();
+  localLabels.convertTo(mLabels, CV_32F);
+}
 
- protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
+void PLSEmbedding::read(const cv::FileNode& fn) {}
 
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
-
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
-
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
-};
-
-}  // namespace ssig
-
-#endif  // !_SSIG_ML_PLS_HPP_
+void PLSEmbedding::write(cv::FileStorage& fs) const {}
+} // namespace ssig

@@ -165,10 +165,7 @@ void PLS::computeBstar(int nfactors) {
 int PLS::getNFactors() const { return this->mNFactors; }
 
 void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                  int nfactors) {
-  cv::Mat_<float> aux, aux2;
-  int i, y;
-
+                  int nfactors) const {
   if (nfactors > this->mNFactors) {
     char msg[2048];
     throw(std::logic_error(msg));
@@ -176,21 +173,15 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
 
   projX.create(X.rows, nfactors);
 
-  for (y = 0; y < X.rows; y++) {
-    aux = X.row(y);
-
-    // zscore
-    mZDataV = aux - mXmean;
-    mZDataV /= mXstd;
-
-    for (i = 0; i < nfactors; i++) {
-      aux2 = mWstar.col(i);
-      projX[y][i] = static_cast<float>(mZDataV.dot(aux2.t()));
-    }
+  cv::Mat ZData = X.clone();
+  for (int y = 0; y < X.rows; y++) {
+    ZData.row(y) = ZData.row(y) - mXmean;
+    ZData.row(y) = ZData.row(y) / mXstd;
   }
+  projX = ZData * (mWstar.colRange(0, nfactors));
 }
 
-void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const {
   ret.create(X.rows, mBstar.cols);
   for (int y = 0; y < X.rows; y++) {
     cv::Mat_<float> aux = X.row(y);
@@ -199,14 +190,14 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
       throw std::logic_error("Inconsistent data matrix");
     }
 
+    cv::Mat zData;
     // zscore
-    mZDataV = aux - mXmean;
-    mZDataV /= mXstd;
+    zData = aux - mXmean;
+    zData /= mXstd;
 
     // X * Bstar .* Ydata.std +  Ydata.mean;
-    cv::Mat_<float> tmp = mZDataV * mBstar;
+    cv::Mat_<float> tmp = zData * mBstar;
     tmp = tmp.mul(mYstd) + mYmean;
-
     tmp.copyTo(ret.row(y));
   }
 }
