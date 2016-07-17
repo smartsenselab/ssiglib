@@ -39,80 +39,32 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
+#include <gtest/gtest.h>
 
-#ifndef _SSIG_ML_PLS_HPP_
-#define _SSIG_ML_PLS_HPP_
-// opencv
-#include <opencv2/core.hpp>
-// ssiglib
-#include <ssiglib/ml/ml_defs.hpp>
-// c++
-#include <stdexcept>
-#include <vector>
-#include <string>
+#include "ssiglib/ml/pls_embedding.hpp"
 
-namespace ssig {
+TEST(PLSEmbedding, SamplePLSEmbedding) {
+  cv::Mat labels, X;
+  X = cv::Mat::zeros(30, 10, CV_32FC1);
+  labels = cv::Mat::zeros(30, 1, CV_32S);
 
-class PLS {
-  // set output matrix according to indices
-  static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
+  cv::randn(X, cv::Mat::zeros(1, 1, CV_32F), cv::Mat::ones(1, 1, CV_32F));
+  cv::randn(labels, cv::Mat::zeros(1, 1, CV_32F), cv::Mat::ones(1, 1, CV_32S));
 
-  // compute regression error
-  float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
+  labels.convertTo(labels, CV_32F);
 
-  // function to computer the Bstar (nfactors must be the maximum the number of
-  // factors of the PLS model)
-  void computeBstar(int nfactors);
+  cv::Mat labelCovarMat = X.t()*labels;
+  float labelCovar = static_cast<float>(cv::sum(labelCovarMat)[0]);
+  auto embedder = ssig::PLSEmbedding::create(10, labels);
 
- public:
-  PLS() = default;
-  virtual ~PLS() = default;
-  // compute PLS model
-  ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
+  embedder->learn(X);
+  cv::Mat projection;
+  embedder->project(X, projection);
 
-  // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors) const;
+  float new_labelCovar = static_cast<float>(
+    cv::sum(projection.t()*labels)[0]);
 
-  // retrieve the number of factors
-  ML_EXPORT int getNFactors() const;
+  
 
-  // projection Bstar considering a number of factors (must be smaller than the
-  // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const;
-
-  // save PLS model
-  ML_EXPORT void save(std::string filename) const;
-  ML_EXPORT void save(cv::FileStorage& storage) const;
-
-  // load PLS model
-  ML_EXPORT void load(std::string filename);
-  ML_EXPORT void load(const cv::FileNode& node);
-
-  // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
-
- protected:
-  cv::Mat_<float> mXmean;
-  cv::Mat_<float> mXstd;
-  cv::Mat_<float> mYmean;
-  cv::Mat_<float> mYstd;
-
-  cv::Mat_<float> mB;
-  cv::Mat_<float> mT;
-  cv::Mat_<float> mP;
-  cv::Mat_<float> mW;
-
-  cv::Mat_<float> mWstar;
-  cv::Mat_<float> mBstar;
-
-  cv::Mat_<float> mYscaled;
-  int mNFactors;
-};
-
-}  // namespace ssig
-
-#endif  // !_SSIG_ML_PLS_HPP_
+  EXPECT_GT(new_labelCovar, labelCovar);
+}
