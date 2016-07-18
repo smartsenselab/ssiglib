@@ -113,4 +113,4 @@ void PLSEmbedding::setLabels(cv::InputArray labels) {
 void PLSEmbedding::read(const cv::FileNode& fn) {}
 
 void PLSEmbedding::write(cv::FileStorage& fs) const {}
-} // namespace ssig
+}  // namespace ssig

@@ -42,22 +42,49 @@
 #include "ssiglib/ml/pca_embedding.hpp"
 
 namespace ssig {
-PCAEmbedding::PCAEmbedding() {
-  // Constructor
-}
-
-PCAEmbedding::~PCAEmbedding() {
-  // Destructor
+cv::Ptr<PCAEmbedding> PCAEmbedding::create(const int dimensions) {
+  auto ans = cv::Ptr<PCAEmbedding>(new PCAEmbedding());
+  ans->mDimensions = dimensions;
+  return ans;
 }
 
 PCAEmbedding::PCAEmbedding(const PCAEmbedding& rhs) {
   // Constructor Copy
+  this->mDimensions = rhs.mDimensions;
 }
 
 PCAEmbedding& PCAEmbedding::operator=(const PCAEmbedding& rhs) {
   if (this != &rhs) {
-    // code here
+    this->mDimensions = rhs.mDimensions;
   }
   return *this;
 }
+
+void PCAEmbedding::learn(cv::InputArray input) {
+#ifdef _WIN32
+  mPCA = std::make_unique<cv::PCA>();
+#else
+  mPCA = std::unique_ptr<cv::PCA>(new cv::PCA());
+#endif
+  cv::Mat X = input.getMat();
+  mPCA->operator()(X, cv::noArray(), cv::PCA::DATA_AS_ROW);
+
+}
+
+void PCAEmbedding::project(
+  cv::InputArray sample,
+  cv::OutputArray output) {
+  cv::Mat X = sample.getMat();
+ 
+  output.create(X.rows, X.cols, CV_32F);
+  mPCA->project(sample, output);
+  cv::Mat dst = output.getMat();
+
+  dst = dst.colRange(0, mDimensions);
+  dst.copyTo(output);
+}
+
+void PCAEmbedding::read(const cv::FileNode& fn) {}
+
+void PCAEmbedding::write(cv::FileStorage& fs) const {}
 }  // namespace ssig
