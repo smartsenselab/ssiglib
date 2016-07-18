@@ -50,14 +50,14 @@
 
 namespace ssig {
 class PCAEmbedding : Embedding {
-public:
+ public:
   ML_EXPORT virtual ~PCAEmbedding(void) = default;
   ML_EXPORT static cv::Ptr<PCAEmbedding> create(const int dimensions);
   ML_EXPORT PCAEmbedding(const PCAEmbedding& rhs);
   ML_EXPORT PCAEmbedding& operator=(const PCAEmbedding& rhs);
 
   ML_EXPORT void learn(cv::InputArray input) override;
-  
+
   ML_EXPORT void project(
     cv::InputArray sample,
     cv::OutputArray output) override;
@@ -68,10 +68,10 @@ public:
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-private:
+ private:
   // private members
   int mDimensions;
   std::unique_ptr<cv::PCA> mPCA;
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_PCA_EMBEDDING_HPP_

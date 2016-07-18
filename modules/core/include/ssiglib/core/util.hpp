@@ -42,8 +42,6 @@
 
 #ifndef _SSIG_CORE_UTIL_HPP_
 #define _SSIG_CORE_UTIL_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <algorithm>
 #include <functional>
@@ -52,6 +50,8 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "core_defs.hpp"
 // flann
@@ -77,7 +77,7 @@ class Util {
     cv::Mat_<int>& ordering, cv::Mat& out);
 
   template <class T>
-  static flann::Matrix<T> convert(cv::Mat& m){
+  static flann::Matrix<T> convert(cv::Mat& m) {
       flann::Matrix<T> fMat(
         static_cast<T*>(m.ptr<T>(0)),
         m.rows,

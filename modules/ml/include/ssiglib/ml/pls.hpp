@@ -65,7 +65,7 @@ class PLS {
   // factors of the PLS model)
   void computeBstar(int nfactors);
 
-public:
+ public:
   PLS() = default;
   virtual ~PLS() = default;
   // compute PLS model
@@ -120,8 +120,8 @@ public:
   ML_EXPORT void setWstar(const cv::Mat_<float>& wstar);
   ML_EXPORT cv::Mat_<float> getBstar() const;
   ML_EXPORT void setBstar(const cv::Mat_<float>& bstar);
-  
-protected:
+
+ protected:
   cv::Mat_<float> mXmean;
   cv::Mat_<float> mXstd;
   cv::Mat_<float> mYmean;
@@ -139,6 +139,6 @@ protected:
   int mNFactors;
 };
 
-} // namespace ssig
+}  // namespace ssig
 
 #endif  // !_SSIG_ML_PLS_HPP_
