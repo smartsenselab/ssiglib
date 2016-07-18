@@ -39,38 +39,41 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_EMBEDDING_HPP_
-#define _SSIG_ML_EMBEDDING_HPP_
-
+#include <gtest/gtest.h>
 // ssiglib
-#include "ssiglib/core/algorithm.hpp"
-#include "ssiglib/ml/ml_defs.hpp"
+#include "ssiglib/ml/pca_embedding.hpp"
+#include "ssiglib/core/math.hpp"
 
-namespace ssig {
-class Embedding : public ssig::Algorithm {
- public:
-  virtual ~Embedding(void) = default;
-  /**
-  * @brief: This method must be called before project,
-    it is used to learn the embedding from the data contained in input.
-  * @param input: Must be an cv::Mat with one channel
+TEST(PCAEmbedding, CovarianceTest) {
+  /* The goal of PCA is to minimize the covariance
+  so, here we test if the projection has a quasi-diagonal covar matrix
   */
-  virtual void learn(
-    cv::InputArray input) = 0;
-  /**
-  * @brief: This method finds the embedding of sample  on the learned space.
+  cv::Mat_<float> X;
+  cv::Mat_<float> mean, std;
+
+  X = cv::Mat::zeros(30, 10, CV_32FC1);
+  cv::randn(X, cv::Mat::zeros(1, 1, CV_32F), cv::Mat::ones(1, 1, CV_32F));
+
+  cv::Mat_<float> centeredX = X.clone();
+  ssig::computeMeanStd(X, cv::ml::COL_SAMPLE, mean, std);
+  ssig::computeZScore(centeredX, mean, std);
+
+  cv::Mat covar = centeredX.t()*centeredX;
+  float covarValue = static_cast<float>(
+    (cv::sum(covar) - cv::trace(covar))[0]);
+  auto embedder = ssig::PCAEmbedding::create(10);
+
+  embedder->learn(X);
+  cv::Mat projection;
+  embedder->project(X, projection);
+
+  centeredX = projection.clone();
+  ssig::computeMeanStd(centeredX, cv::ml::COL_SAMPLE, mean, std);
+  ssig::computeZScore(centeredX, mean, std);
+  cv::Mat newCovar = centeredX.t()*centeredX;
+  float newCovarValue = static_cast<float>(
+    (cv::sum(newCovar) - cv::trace(newCovar))[0]);
+
   
-  * @param input: Must be an cv::Mat with one channel
-  */
-  virtual void project(
-    cv::InputArray sample,
-    cv::OutputArray output) = 0;
-
- protected:
- Embedding(void) = default;
-
- private:
-  // private members
-};
-}  // namespace ssig
-#endif  // !_SSIG_ML_EMBEDDING_HPP_
+  EXPECT_LT(abs(newCovarValue), abs(covarValue));
+}

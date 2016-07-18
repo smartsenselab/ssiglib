@@ -38,10 +38,18 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
+// c++
 
+// opencv
+#include <opencv2/flann/kdtree_index.h>
+// ssiglib
 #include "ssiglib/ml/spectral_embedding.hpp"
 
 namespace ssig {
+
+using KdTree = cv::flann::GenericIndex<cv::flann::L2<float>>;
+using KdTreeParams = cvflann::KDTreeIndexParams;
+
 SpectralEmbedding::SpectralEmbedding() {
   // Constructor
 }
@@ -60,4 +68,52 @@ SpectralEmbedding& SpectralEmbedding::operator=(const SpectralEmbedding& rhs) {
   }
   return *this;
 }
+
+void SpectralEmbedding::learn(
+  cv::InputArray input,
+  cv::OutputArray output) {
+  cv::Mat inpMat = input.getMat();
+  const int nSamples = inpMat.rows;
+
+  auto indexParams = cvflann::AutotunedIndexParams();
+
+#ifdef _WIN32
+  mKdtree = std::make_unique<KdTree>(
+                                     inpMat,
+                                     indexParams);
+#else
+  mKdtree = std::unique_ptr<KdTree>(inpMat, kdTreeParams);
+#endif
+
+  // construct Matrix W
+  cv::Mat indices(nSamples, mKnn, CV_32F), dists(nSamples, mKnn, CV_32F);
+  mKdtree->knnSearch(inpMat, indices, dists, mKnn, *mSearchParams);
+  cv::Mat W(nSamples, nSamples, CV_32F, 0.0f);
+
+  for (int r = 0; r < nSamples; ++r) {
+    for (int c = 0; c < mKnn; ++c) {
+      int idx = indices.at<int>(r, c);
+      if (idx == r)
+        continue;
+
+      W.at<float>(r, idx) = dists.at<float>(r, c);
+      W.at<float>(idx, r) = dists.at<float>(r, c);
+    }
+  }
+  // construct Matrix D (inside W)
+  for (int r = 0; r < nSamples; ++r) {
+    W.at<float>(r, r) = -static_cast<float>(cv::sum(W.row(r))[0]);
+  }
+  // construct Graph Laplacian (L =  D - W)
+  W = -W;
+  // extract eigenvectors of L
+  cv::Mat eigenValues, eigenVectors;
+  cv::eigen(W, eigenValues, eigenVectors);
+  eigenVectors.colRange(0, mDimensions).copyTo(output);
+  mEigenvectors = eigenVectors;
+}
+
+void SpectralEmbedding::read(const cv::FileNode& fn) {}
+
+void SpectralEmbedding::write(cv::FileStorage& fs) const {}
 }  // namespace ssig

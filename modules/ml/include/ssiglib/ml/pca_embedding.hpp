@@ -41,17 +41,37 @@
 
 #ifndef _SSIG_ML_PCA_EMBEDDING_HPP_
 #define _SSIG_ML_PCA_EMBEDDING_HPP_
+// c++
+#include <memory>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include "embedding.hpp"
 
 namespace ssig {
-class PCAEmbedding {
- public:
-  PCAEmbedding(void);
-  virtual ~PCAEmbedding(void);
-  PCAEmbedding(const PCAEmbedding& rhs);
-  PCAEmbedding& operator=(const PCAEmbedding& rhs);
+class PCAEmbedding : Embedding {
+public:
+  ML_EXPORT virtual ~PCAEmbedding(void) = default;
+  ML_EXPORT static cv::Ptr<PCAEmbedding> create(const int dimensions);
+  ML_EXPORT PCAEmbedding(const PCAEmbedding& rhs);
+  ML_EXPORT PCAEmbedding& operator=(const PCAEmbedding& rhs);
 
- private:
+  ML_EXPORT void learn(cv::InputArray input) override;
+  
+  ML_EXPORT void project(
+    cv::InputArray sample,
+    cv::OutputArray output) override;
+
+ protected:
+  ML_EXPORT PCAEmbedding(void) = default;
+
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+
+private:
   // private members
+  int mDimensions;
+  std::unique_ptr<cv::PCA> mPCA;
 };
-}  // namespace ssig
+} // namespace ssig
 #endif  // !_SSIG_ML_PCA_EMBEDDING_HPP_

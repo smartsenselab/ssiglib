@@ -51,11 +51,11 @@
 
 
 namespace ssig {
-class PLSEmbedding : public Embedding{
+class PLSEmbedding : public Embedding {
  public:
   ML_EXPORT static cv::Ptr<PLSEmbedding> create(
-   const int dimensions,
-   cv::InputArray labels);
+    const int dimensions,
+    cv::InputArray labels);
 
   ML_EXPORT virtual ~PLSEmbedding(void) = default;
 
@@ -75,7 +75,7 @@ class PLSEmbedding : public Embedding{
   ML_EXPORT cv::Mat_<float> getLabels() const;
   ML_EXPORT void setLabels(cv::InputArray labels);
 
-protected:
+ protected:
   void read(const cv::FileNode& fn) override;
   void write(cv::FileStorage& fs) const override;
 
