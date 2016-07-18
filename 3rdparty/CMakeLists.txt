@@ -17,5 +17,3 @@ if(BUILD_PERF_TESTS)
 endif()
 
 add_subdirectory (libsvm-3.21)
-
-add_subdirectory (flann-1.8.4)

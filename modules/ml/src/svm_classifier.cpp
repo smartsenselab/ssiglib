@@ -46,7 +46,7 @@
 #include <string>
 #include <unordered_set>
 // libsvm
-#include <libsvm.hpp>
+#include "../../../3rdparty/libsvm-3.21/include/libsvm.hpp"
 
 
 

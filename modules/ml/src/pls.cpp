@@ -97,14 +97,14 @@ void PLS::learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors) {
     do {
       t0 = t.clone();
 
-      w = X.t() * u;
-      cv::normalize(w, w, 1, 0, cv::NORM_L2);
+      tmpM = X.t() * u;
+      cv::normalize(tmpM, w, 1, 0, cv::NORM_L2);
 
-      t = X * w;
-      cv::normalize(t, t, 1, 0, cv::NORM_L2);
+      tmpM = X * w;
+      cv::normalize(tmpM, t, 1, 0, cv::NORM_L2);
 
-      c = Y.t() * t;
-      cv::normalize(c, c, 1, 0, cv::NORM_L2);
+      tmpM = Y.t() * t;
+      cv::normalize(tmpM, c, 1, 0, cv::NORM_L2);
 
       u = Y * c;
 
@@ -164,9 +164,11 @@ void PLS::computeBstar(int nfactors) {
 
 int PLS::getNFactors() const { return this->mNFactors; }
 
-void PLS::predict(const cv::Mat_<float>& X,
-                  cv::Mat_<float>& projX,
-                  int nfactors) const {
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
+                  int nfactors) {
+  cv::Mat_<float> aux, aux2;
+  int i, y;
+
   if (nfactors > this->mNFactors) {
     char msg[2048];
     throw(std::logic_error(msg));
@@ -174,15 +176,21 @@ void PLS::predict(const cv::Mat_<float>& X,
 
   projX.create(X.rows, nfactors);
 
-  cv::Mat ZData = X.clone();
-  for (int y = 0; y < X.rows; y++) {
-    ZData.row(y) = ZData.row(y) - mXmean;
-    ZData.row(y) = ZData.row(y) / mXstd;
+  for (y = 0; y < X.rows; y++) {
+    aux = X.row(y);
+
+    // zscore
+    mZDataV = aux - mXmean;
+    mZDataV /= mXstd;
+
+    for (i = 0; i < nfactors; i++) {
+      aux2 = mWstar.col(i);
+      projX[y][i] = static_cast<float>(mZDataV.dot(aux2.t()));
+    }
   }
-  projX = ZData * (mWstar.colRange(0, nfactors));
 }
 
-void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const {
+void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) {
   ret.create(X.rows, mBstar.cols);
   for (int y = 0; y < X.rows; y++) {
     cv::Mat_<float> aux = X.row(y);
@@ -191,14 +199,14 @@ void PLS::predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const {
       throw std::logic_error("Inconsistent data matrix");
     }
 
-    cv::Mat zData;
     // zscore
-    zData = aux - mXmean;
-    zData /= mXstd;
+    mZDataV = aux - mXmean;
+    mZDataV /= mXstd;
 
     // X * Bstar .* Ydata.std +  Ydata.mean;
-    cv::Mat_<float> tmp = zData * mBstar;
+    cv::Mat_<float> tmp = mZDataV * mBstar;
     tmp = tmp.mul(mYstd) + mYmean;
+
     tmp.copyTo(ret.row(y));
   }
 }
@@ -401,83 +409,4 @@ void PLS::learnWithCrossValidation(int folds, cv::Mat_<float>& X,
   this->learn(X, Y, minIdx);
 }
 
-cv::Mat_<float> PLS::getXmean() const {
-  return mXmean;
-}
-
-void PLS::setXmean(const cv::Mat_<float>& xmean) {
-  mXmean = xmean;
-}
-
-cv::Mat_<float> PLS::getXstd() const {
-  return mXstd;
-}
-
-void PLS::setXstd(const cv::Mat_<float>& xstd) {
-  mXstd = xstd;
-}
-
-cv::Mat_<float> PLS::getYmean() const {
-  return mYmean;
-}
-
-void PLS::setYmean(const cv::Mat_<float>& ymean) {
-  mYmean = ymean;
-}
-
-cv::Mat_<float> PLS::getYstd() const {
-  return mYstd;
-}
-
-void PLS::setYstd(const cv::Mat_<float>& ystd) {
-  mYstd = ystd;
-}
-
-cv::Mat_<float> PLS::getB() const {
-  return mB;
-}
-
-void PLS::setB(const cv::Mat_<float>& xes) {
-  mB = xes;
-}
-
-cv::Mat_<float> PLS::getT() const {
-  return mT;
-}
-
-void PLS::setT(const cv::Mat_<float>& xes) {
-  mT = xes;
-}
-
-cv::Mat_<float> PLS::getP() const {
-  return mP;
-}
-
-void PLS::setP(const cv::Mat_<float>& xes) {
-  mP = xes;
-}
-
-cv::Mat_<float> PLS::getW() const {
-  return mW;
-}
-
-void PLS::setW(const cv::Mat_<float>& xes) {
-  mW = xes;
-}
-
-cv::Mat_<float> PLS::getWstar() const {
-  return mWstar;
-}
-
-void PLS::setWstar(const cv::Mat_<float>& wstar) {
-  mWstar = wstar;
-}
-
-cv::Mat_<float> PLS::getBstar() const {
-  return mBstar;
-}
-
-void PLS::setBstar(const cv::Mat_<float>& bstar) {
-  mBstar = bstar;
-}
 }  // namespace ssig
