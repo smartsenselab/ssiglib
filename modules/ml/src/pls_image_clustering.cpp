@@ -56,7 +56,7 @@ namespace ssig {
 void PLSImageClustering::buildResponses(
   const cv::Mat_<float>& inp, const std::vector<Cluster>& clusters,
   std::vector<std::vector<float>>& responses,
-  const OAAClassifier& classifier) {
+  const Multiclass& classifier) {
   responses.clear();
 
   for (size_t c = 0; c < clusters.size(); ++c) {
@@ -91,11 +91,11 @@ void PLSImageClustering::removeMeaninglessClusters(
 }
 
 PLSImageClustering::PLSImageClustering(
-  ssig::OAAClassifier& classifier,
+  ssig::Multiclass& classifier,
   const std::vector<std::vector<int>>& discovery,
   const std::vector<ssig::Cluster>& initialClustering) {
-  mClassifier = std::unique_ptr<ssig::OAAClassifier>
-      (static_cast<OAAClassifier*>(classifier.clone()));
+  mClassifier = std::unique_ptr<ssig::Multiclass>
+    (static_cast<Multiclass*>(classifier.clone()));
   mDiscovery = discovery;
   Clustering::setInitialClustering(initialClustering);
 }
@@ -105,7 +105,7 @@ cv::Ptr<PLSImageClustering> PLSImageClustering::create() {
 }
 
 cv::Ptr<PLSImageClustering> PLSImageClustering::create(
-  ssig::OAAClassifier& classifier,
+  ssig::Multiclass& classifier,
   const std::vector<std::vector<int>>& discoverySubset,
   const std::vector<ssig::Cluster>& initialClustering) {
   return cv::Ptr<PLSImageClustering>(new PLSImageClustering(
@@ -140,8 +140,8 @@ void PLSImageClustering::getCentroids(cv::Mat_<float>& centroidsMatrix) const {
 }
 
 void PLSImageClustering::setClassifier(Classifier& classifier) {
-  mClassifier = std::unique_ptr<OAAClassifier>(
-    static_cast<OAAClassifier*>(classifier.clone()));
+  mClassifier = std::unique_ptr<Multiclass>(
+    static_cast<Multiclass*>(classifier.clone()));
 }
 
 void PLSImageClustering::setClusterRepresentationType(
@@ -211,7 +211,7 @@ void PLSImageClustering::trainClassifiers(
 void PLSImageClustering::trainClassifiers(
   const std::vector<Cluster>& clusters,
   const std::vector<int>& negativeLearningSet,
-  OAAClassifier& classifier) const {
+  Multiclass& classifier) const {
   cv::Mat_<float> inp;
   cv::Mat_<int> labels;
   int label = 0;
@@ -227,18 +227,24 @@ void PLSImageClustering::trainClassifiers(
 
 bool PLSImageClustering::isFinished() {
   if (getMaxIterations() > 0 && (mIt > getMaxIterations())) {
-    printf("Convergence due to max number of iterations reached\n");
+    if (mIsVerbose) {
+      printf("Convergence due to max number of iterations reached\n");
+    }
     return true;
   }
   if (getK()) {
     auto kConvergence = (static_cast<int>(mNewClusters.size()) <= getK());
     if (kConvergence) {
-      printf("Converged due to minimum K!\n");
+      if (mIsVerbose) {
+        printf("Converged due to minimum K!\n");
+      }
       return true;
     }
   }
   if (mMergeConvergence && !mMergeOcurred) {
-    printf("Converged due to merge stability!\n");
+    if (mIsVerbose) {
+      printf("Converged due to merge stability!\n");
+    }
     return true;
   }
   return false;
@@ -356,8 +362,8 @@ void PLSImageClustering::buildClusterRepresentation(
       ++i;
     }
   } else if (mRepresentationType == ClustersResponses) {
-    auto classifier = std::unique_ptr<OAAClassifier>(
-      static_cast<OAAClassifier*>(mClassifier->clone()));
+    auto classifier = std::unique_ptr<Multiclass>(
+      static_cast<Multiclass*>(mClassifier->clone()));
     trainClassifiers(clusters, mNatural[0], *classifier);
     const int dimensions = static_cast<int>(clusters.size());
 
@@ -373,9 +379,9 @@ void PLSImageClustering::buildClusterRepresentation(
   }
 }
 
-cv::Ptr<OAAClassifier> PLSImageClustering::getClassifier() const {
-  return cv::Ptr<OAAClassifier>(
-    dynamic_cast<OAAClassifier*>(mClassifier->clone()));
+cv::Ptr<Multiclass> PLSImageClustering::getClassifier() const {
+  return cv::Ptr<Multiclass>(
+    dynamic_cast<Multiclass*>(mClassifier->clone()));
 }
 
 void PLSImageClustering::setSimBuilder(

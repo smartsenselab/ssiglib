@@ -149,16 +149,13 @@ void OpenClPLS::learn(
 
     t.copyTo(mT.col(i));
     u.copyTo(U.col(i));
-
     // deflation of X and Y
     cv::gemm(t, p, 1, cv::noArray(), 0, uAux, cv::GEMM_2_T);
     cv::subtract(X, uAux, X);
 
     cv::gemm(t, c, 1, cv::noArray(), 0, uAux, cv::GEMM_2_T);
-    float auxScalar = (b_l).getMat(0).at<float>(0);
-
-    uAux.mul(cv::UMat::eye(uAux.size(), CV_32F), auxScalar);
-
+    float auxScalar = (b_l).getMat(cv::ACCESS_READ).at<float>(0);
+    uAux.mul(cv::UMat::ones(uAux.size(), CV_32F), auxScalar);
     cv::subtract(Y, uAux, Y);
   }
 

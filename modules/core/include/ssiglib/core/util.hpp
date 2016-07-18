@@ -42,8 +42,6 @@
 
 #ifndef _SSIG_CORE_UTIL_HPP_
 #define _SSIG_CORE_UTIL_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <algorithm>
 #include <functional>
@@ -52,8 +50,12 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "core_defs.hpp"
+// flann
+#include <flann/flann.hpp>
 
 namespace cv {
 class FileStorage;
@@ -73,6 +75,15 @@ class Util {
 
   CORE_EXPORT static void reorder(const cv::Mat& collection,
     cv::Mat_<int>& ordering, cv::Mat& out);
+
+  template <class T>
+  static flann::Matrix<T> convert(cv::Mat& m) {
+      flann::Matrix<T> fMat(
+        static_cast<T*>(m.ptr<T>(0)),
+        m.rows,
+        m.cols);
+      return fMat;
+    }
 
   template <class T>
   static void reorder(const cv::Mat_<T>& collection, cv::Mat_<int>& ordering,

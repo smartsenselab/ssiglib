@@ -42,21 +42,21 @@
 
 #ifndef _SSIG_ML_PLS_HPP_
 #define _SSIG_ML_PLS_HPP_
-// opencv
-#include <opencv2/core.hpp>
-// ssiglib
-#include <ssiglib/ml/ml_defs.hpp>
 // c++
 #include <stdexcept>
 #include <vector>
 #include <string>
+// opencv
+#include <opencv2/core.hpp>
+// ssiglib
+#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
 
 class PLS {
   // set output matrix according to indices
   static void setMatrix(cv::Mat_<float>& input, cv::Mat_<float>& output,
-                 std::vector<size_t>& indices);
+                        std::vector<size_t>& indices);
 
   // compute regression error
   float regError(cv::Mat_<float>& Y, cv::Mat_<float>& responses) const;
@@ -73,14 +73,14 @@ class PLS {
 
   // return projection considering n factors
   ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors);
+                         int nfactors) const;
 
   // retrieve the number of factors
   ML_EXPORT int getNFactors() const;
 
   // projection Bstar considering a number of factors (must be smaller than the
   // maximum)
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret);
+  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& ret) const;
 
   // save PLS model
   ML_EXPORT void save(std::string filename) const;
@@ -91,9 +91,35 @@ class PLS {
   ML_EXPORT void load(const cv::FileNode& node);
 
   // compute PLS using cross-validation to define the number of factors
-  ML_EXPORT void learnWithCrossValidation(int folds, cv::Mat_<float>& X,
-                                          cv::Mat_<float>& Y, int minDims,
-                                          int maxDims, int step);
+  ML_EXPORT void learnWithCrossValidation(
+    int folds,
+    cv::Mat_<float>& X,
+    cv::Mat_<float>& Y,
+    int minDims,
+    int maxDims,
+    int step);
+
+
+  ML_EXPORT cv::Mat_<float> getXmean() const;
+  ML_EXPORT void setXmean(const cv::Mat_<float>& xmean);
+  ML_EXPORT cv::Mat_<float> getXstd() const;
+  ML_EXPORT void setXstd(const cv::Mat_<float>& xstd);
+  ML_EXPORT cv::Mat_<float> getYmean() const;
+  ML_EXPORT void setYmean(const cv::Mat_<float>& ymean);
+  ML_EXPORT cv::Mat_<float> getYstd() const;
+  ML_EXPORT void setYstd(const cv::Mat_<float>& ystd);
+  ML_EXPORT cv::Mat_<float> getB() const;
+  ML_EXPORT void setB(const cv::Mat_<float>& xes);
+  ML_EXPORT cv::Mat_<float> getT() const;
+  ML_EXPORT void setT(const cv::Mat_<float>& xes);
+  ML_EXPORT cv::Mat_<float> getP() const;
+  ML_EXPORT void setP(const cv::Mat_<float>& xes);
+  ML_EXPORT cv::Mat_<float> getW() const;
+  ML_EXPORT void setW(const cv::Mat_<float>& xes);
+  ML_EXPORT cv::Mat_<float> getWstar() const;
+  ML_EXPORT void setWstar(const cv::Mat_<float>& wstar);
+  ML_EXPORT cv::Mat_<float> getBstar() const;
+  ML_EXPORT void setBstar(const cv::Mat_<float>& bstar);
 
  protected:
   cv::Mat_<float> mXmean;
@@ -109,7 +135,6 @@ class PLS {
   cv::Mat_<float> mWstar;
   cv::Mat_<float> mBstar;
 
-  cv::Mat_<float> mZDataV;
   cv::Mat_<float> mYscaled;
   int mNFactors;
 };
