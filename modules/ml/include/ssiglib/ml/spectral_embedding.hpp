@@ -46,37 +46,47 @@
 #include <memory>
 // opencv
 #include <opencv2/core.hpp>
-#include <opencv2/flann.hpp>
-// #include <opencv2/flann/dist.h>
 // ssiglib
 #include "embedding.hpp"
+// flann
+#include <flann/flann.hpp>
 
 
 namespace ssig {
 class SpectralEmbedding : public ssig::Algorithm {
  public:
-  SpectralEmbedding(void);
-  virtual ~SpectralEmbedding(void);
-  SpectralEmbedding(const SpectralEmbedding& rhs);
-  SpectralEmbedding& operator=(const SpectralEmbedding& rhs);
+  ML_EXPORT static cv::Ptr<SpectralEmbedding> create();
+  ML_EXPORT virtual ~SpectralEmbedding(void);
+  ML_EXPORT SpectralEmbedding(const SpectralEmbedding& rhs);
+  ML_EXPORT SpectralEmbedding& operator=(const SpectralEmbedding& rhs);
 
-  void learn(
+  ML_EXPORT void learn(
     cv::InputArray input,
     cv::OutputArray output);
 
+  ML_EXPORT cv::Mat getEigenValues() const;
+  ML_EXPORT void setEigenValues(const cv::Mat& eigenValues);
+  ML_EXPORT cv::Mat getEigenvectors() const;
+  ML_EXPORT void setEigenvectors(const cv::Mat& eigenvectors);
+
+
+  ML_EXPORT int getKnn() const;
+  ML_EXPORT void setKnn(const int knn);
+  ML_EXPORT int getDimensions() const;
+  ML_EXPORT void setDimensions(const int dimensions);
+
  protected:
-  void read(const cv::FileNode& fn) override;
-  void write(cv::FileStorage& fs) const override;
+  ML_EXPORT SpectralEmbedding(void);
+  ML_EXPORT void read(const cv::FileNode& fn) override;
+  ML_EXPORT void write(cv::FileStorage& fs) const override;
+
  private:
   // private members
-  int mTreesNumber = 4;
   int mKnn = 5;
   int mDimensions = 2;
 
-  cv::Mat mEigenvectors;
-
-  std::unique_ptr<cv::flann::GenericIndex<cv::flann::L2<float>>> mKdtree;
-  std::unique_ptr<cvflann::SearchParams> mSearchParams;
+  cv::Mat mEigenVectors;
+  cv::Mat mEigenValues;
 };
 }  // namespace ssig
 #endif  // !_SSIG_ML_SPECTRAL_EMBEDDING_HPP_
