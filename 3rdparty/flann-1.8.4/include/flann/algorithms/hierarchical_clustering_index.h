@@ -303,10 +303,10 @@ protected:
         std::vector<int> indices(size_);
         for (int i=0; i<trees_; ++i) {
             for (size_t j=0; j<size_; ++j) {
-                indices[j] = j;
+                indices[j] = int(j);
             }
             tree_roots_[i] = new(pool_) Node();
-            computeClustering(tree_roots_[i], &indices[0], size_);
+            computeClustering(tree_roots_[i], &indices[0], int(size_));
         }
     }
 
@@ -529,7 +529,7 @@ private:
         int maxChecks = searchParams.checks;
 
         // Priority queue storing intermediate branches in the best-bin-first search
-        Heap<BranchSt>* heap = new Heap<BranchSt>(size_);
+        Heap<BranchSt>* heap = new Heap<BranchSt>(int(size_));
 
         DynamicBitset checked(size_);
         int checks = 0;
@@ -614,9 +614,9 @@ private:
                 std::vector<int> indices(node->points.size());
 
                 for (size_t i=0;i<node->points.size();++i) {
-                	indices[i] = node->points[i].index;
+                  indices[i] = int(node->points[i].index);
                 }
-                computeClustering(node, &indices[0], indices.size());
+                computeClustering(node, &indices[0], int(indices.size()));
             }
         }
         else {            
@@ -629,7 +629,7 @@ private:
                 DistanceType crt_dist = distance_(center, point, veclen_);
                 if (crt_dist<dist) {
                     dist = crt_dist;
-                    closest = i;
+                    closest = int(i);
                 }
             }
             addPointToTree(node->childs[closest], index);

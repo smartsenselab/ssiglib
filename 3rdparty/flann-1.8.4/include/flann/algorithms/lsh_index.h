@@ -156,8 +156,8 @@ public:
         else {
             for (unsigned int i = 0; i < table_number_; ++i) {
                 lsh::LshTable<ElementType>& table = tables_[i];                
-                for (size_t i=old_size;i<size_;++i) {
-                    table.add(i, points_[i]);
+                for (size_t i=old_size; i<size_; ++i) {
+                    table.add(int(i), points_[i]);
                 }            
             }
         }
@@ -210,7 +210,7 @@ public:
      */
     int usedMemory() const
     {
-        return size_ * sizeof(int);
+        return int(size_ * sizeof(int));
     }
 
     /**
@@ -237,22 +237,22 @@ public:
         if (params.use_heap==FLANN_True) {
 #pragma omp parallel num_threads(params.cores)
         	{
-        		KNNUniqueResultSet<DistanceType> resultSet(knn);
+            KNNUniqueResultSet<DistanceType> resultSet((unsigned int)knn);
 #pragma omp for schedule(static) reduction(+:count)
         		for (int i = 0; i < (int)queries.rows; i++) {
         			resultSet.clear();
         			findNeighbors(resultSet, queries[i], params);
         			size_t n = std::min(resultSet.size(), knn);
-        			resultSet.copy(indices[i], dists[i], n, params.sorted);
+        			resultSet.copy(indices[i], dists[i], int(n), params.sorted);
         			indices_to_ids(indices[i], indices[i], n);
-        			count += n;
+        			count += int(n);
         		}
         	}
         }
         else {
 #pragma omp parallel num_threads(params.cores)
         	{
-        		KNNResultSet<DistanceType> resultSet(knn);
+        		KNNResultSet<DistanceType> resultSet((int)knn);
 #pragma omp for schedule(static) reduction(+:count)
         		for (int i = 0; i < (int)queries.rows; i++) {
         			resultSet.clear();
@@ -260,7 +260,7 @@ public:
         			size_t n = std::min(resultSet.size(), knn);
         			resultSet.copy(indices[i], dists[i], n, params.sorted);
         			indices_to_ids(indices[i], indices[i], n);
-        			count += n;
+              count += int(n);
         		}
         	}
         }
@@ -358,7 +358,7 @@ protected:
         }
         for (unsigned int i = 0; i < table_number_; ++i) {
             lsh::LshTable<ElementType>& table = tables_[i];
-            table = lsh::LshTable<ElementType>(veclen_, key_size_);
+            table = lsh::LshTable<ElementType>(int(veclen_), key_size_);
 
             // Add the features to the table
             table.add(features);
@@ -497,7 +497,7 @@ private:
             std::vector<lsh::BucketKey>::const_iterator xor_mask_end = xor_masks_.end();
             for (; xor_mask != xor_mask_end; ++xor_mask) {
                 size_t sub_key = key ^ (*xor_mask);
-                const lsh::Bucket* bucket = table->getBucketFromKey(sub_key);
+                const lsh::Bucket* bucket = table->getBucketFromKey(flann::lsh::BucketKey(sub_key));
                 if (bucket == 0) continue;
 
                 // Go over each descriptor index

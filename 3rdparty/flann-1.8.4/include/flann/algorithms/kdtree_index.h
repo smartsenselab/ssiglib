@@ -686,7 +686,7 @@ private:
                 right->divfeat = ind;
                 right->point = point;
             }
-            node->divfeat = div_feat;
+            node->divfeat = int(div_feat);
             node->divval = (point[div_feat]+leaf_point[div_feat])/2;
             node->child1 = left;
             node->child2 = right;            

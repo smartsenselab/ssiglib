@@ -456,7 +456,7 @@ private:
             ElementType span = bbox[i].high-bbox[i].low;
             if (span>max_span) {
                 max_span = span;
-                cutfeat = i;
+                cutfeat = int(i);
                 cutval = (bbox[i].high+bbox[i].low)/2;
             }
         }
@@ -473,11 +473,11 @@ private:
             if (i==k) continue;
             ElementType span = bbox[i].high-bbox[i].low;
             if (span>max_span) {
-                computeMinMax(ind, count, i, min_elem, max_elem);
+              computeMinMax(ind, count, int(i), min_elem, max_elem);
                 span = max_elem - min_elem;
                 if (span>max_span) {
                     max_span = span;
-                    cutfeat = i;
+                    cutfeat = int(i);
                     cutval = (min_elem+max_elem)/2;
                 }
             }
@@ -574,11 +574,11 @@ private:
 
         for (size_t i = 0; i < veclen_; ++i) {
             if (vec[i] < root_bbox_[i].low) {
-                dists[i] = distance_.accum_dist(vec[i], root_bbox_[i].low, i);
+              dists[i] = distance_.accum_dist(vec[i], root_bbox_[i].low, int(i));
                 distsq += dists[i];
             }
             if (vec[i] > root_bbox_[i].high) {
-                dists[i] = distance_.accum_dist(vec[i], root_bbox_[i].high, i);
+              dists[i] = distance_.accum_dist(vec[i], root_bbox_[i].high, int(i));
                 distsq += dists[i];
             }
         }
