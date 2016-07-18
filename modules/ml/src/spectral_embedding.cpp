@@ -41,17 +41,24 @@
 // c++
 
 // opencv
-#include <opencv2/flann/kdtree_index.h>
+
 // ssiglib
 #include "ssiglib/ml/spectral_embedding.hpp"
+#include "ssiglib/core/util.hpp"
+// flann
+#include <flann/flann.hpp>
+
 
 namespace ssig {
 
-using KdTree = cv::flann::GenericIndex<cv::flann::L2<float>>;
-using KdTreeParams = cvflann::KDTreeIndexParams;
+using KdTree = flann::Index<flann::L2<float>>;
 
 SpectralEmbedding::SpectralEmbedding() {
   // Constructor
+}
+
+cv::Ptr<SpectralEmbedding> SpectralEmbedding::create() {
+  return cv::Ptr<SpectralEmbedding>(new SpectralEmbedding());
 }
 
 SpectralEmbedding::~SpectralEmbedding() {
@@ -73,21 +80,30 @@ void SpectralEmbedding::learn(
   cv::InputArray input,
   cv::OutputArray output) {
   cv::Mat inpMat = input.getMat();
+
   const int nSamples = inpMat.rows;
 
-  auto indexParams = cvflann::AutotunedIndexParams();
+  auto indexParams = flann::AutotunedIndexParams();
+  auto searchParams = flann::SearchParams();
+  /*flann::Matrix<float> fMat(
+    static_cast<float*>(inpMat.ptr<float>(0)),
+    inpMat.rows,
+    inpMat.cols);*/
 
-#ifdef _WIN32
-  mKdtree = std::make_unique<KdTree>(
-                                     inpMat,
-                                     indexParams);
-#else
-  mKdtree = std::unique_ptr<KdTree>(inpMat, kdTreeParams);
-#endif
+  auto fMat = ssig::Util::convert<float>(inpMat);
 
+  flann::Index<flann::L2<float>> flannAlg(fMat, indexParams);
+  flannAlg.buildIndex();
   // construct Matrix W
-  cv::Mat indices(nSamples, mKnn, CV_32F), dists(nSamples, mKnn, CV_32F);
-  mKdtree->knnSearch(inpMat, indices, dists, mKnn, *mSearchParams);
+  cv::Mat indices(nSamples, mKnn, CV_32S), dists(nSamples, mKnn, CV_32F);
+
+  auto fIndices = ssig::Util::convert<int>(indices);
+  auto fDists = ssig::Util::convert<float>(dists);
+  flannAlg.knnSearch(fMat,
+    fIndices,
+    fDists,
+    static_cast<size_t>(mKnn),
+    searchParams);
   cv::Mat W(nSamples, nSamples, CV_32F, 0.0f);
 
   for (int r = 0; r < nSamples; ++r) {
@@ -109,11 +125,49 @@ void SpectralEmbedding::learn(
   // extract eigenvectors of L
   cv::Mat eigenValues, eigenVectors;
   cv::eigen(W, eigenValues, eigenVectors);
+  eigenVectors = eigenVectors.t();
+  eigenValues = eigenValues.t();
+  cv::flip(eigenVectors, eigenVectors, 1);
+  cv::flip(eigenValues, eigenValues, 1);
   eigenVectors.colRange(0, mDimensions).copyTo(output);
-  mEigenvectors = eigenVectors;
+  mEigenVectors = eigenVectors;
+  mEigenValues = eigenValues;
+}
+
+cv::Mat SpectralEmbedding::getEigenvectors() const {
+  return mEigenVectors;
+}
+
+void SpectralEmbedding::setEigenvectors(const cv::Mat& eigenvectors) {
+  mEigenVectors = eigenvectors;
+}
+
+int SpectralEmbedding::getKnn() const {
+  return mKnn;
+}
+
+void SpectralEmbedding::setKnn(const int knn) {
+  mKnn = knn;
+}
+
+int SpectralEmbedding::getDimensions() const {
+  return mDimensions;
+}
+
+void SpectralEmbedding::setDimensions(const int dimensions) {
+  mDimensions = dimensions;
+}
+
+cv::Mat SpectralEmbedding::getEigenValues() const {
+  return mEigenValues;
+}
+
+void SpectralEmbedding::setEigenValues(const cv::Mat& eigenValues) {
+  mEigenValues = eigenValues;
 }
 
 void SpectralEmbedding::read(const cv::FileNode& fn) {}
 
 void SpectralEmbedding::write(cv::FileStorage& fs) const {}
+
 }  // namespace ssig

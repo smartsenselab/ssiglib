@@ -44,6 +44,20 @@
 
 TEST(SpectralEmbedding, SampleSpectralEmbedding) {
   // Automatically generated stub
+  auto specEmbedding = ssig::SpectralEmbedding::create();
+  cv::Mat_<float> output, X;
 
-  EXPECT_EQ(2, 2 + 2);
+  X = cv::Mat::zeros(30, 10, CV_32FC1);
+  cv::randn(X.rowRange(0, 15), cv::Mat::zeros(1, 1, CV_32F), cv::Mat::ones(1, 1, CV_32F));
+  cv::randn(X.rowRange(15, 30), cv::Mat(1, 1, CV_32F, 10), cv::Mat::ones(1, 1, CV_32F));
+
+  specEmbedding->learn(X, output);
+  auto eiValues = specEmbedding->getEigenValues();
+  /*
+  *We have two Gaussians and therefore Two disconnected components,
+  we expect that if the method is working, than the two first eigenValues 
+  will be really close to zero.
+  */
+  EXPECT_LT(abs(eiValues.at<float>(0)), 1e-4);
+  EXPECT_LT(abs(eiValues.at<float>(1)), 1e-4);
 }

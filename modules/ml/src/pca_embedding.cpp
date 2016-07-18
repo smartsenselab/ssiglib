@@ -68,14 +68,13 @@ void PCAEmbedding::learn(cv::InputArray input) {
 #endif
   cv::Mat X = input.getMat();
   mPCA->operator()(X, cv::noArray(), cv::PCA::DATA_AS_ROW);
-
 }
 
 void PCAEmbedding::project(
   cv::InputArray sample,
   cv::OutputArray output) {
   cv::Mat X = sample.getMat();
- 
+
   output.create(X.rows, X.cols, CV_32F);
   mPCA->project(sample, output);
   cv::Mat dst = output.getMat();

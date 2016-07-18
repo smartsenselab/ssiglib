@@ -74,6 +74,5 @@ TEST(PCAEmbedding, CovarianceTest) {
   float newCovarValue = static_cast<float>(
     (cv::sum(newCovar) - cv::trace(newCovar))[0]);
 
-  
   EXPECT_LT(abs(newCovarValue), abs(covarValue));
 }
