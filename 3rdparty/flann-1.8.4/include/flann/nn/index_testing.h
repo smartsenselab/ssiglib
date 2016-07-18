@@ -118,7 +118,7 @@ float search_with_ground_truth(Index& index, const Matrix<typename Distance::Ele
             index.knnSearch(Matrix<ElementType>(testData[i], 1, testData.cols), indices_mat, dists_mat, nn+skipMatches, searchParams);
 
             correct += countCorrectMatches(neighbors,matches[i], nn);
-            distR += computeDistanceRaport<Distance>(inputData, testData[i], neighbors, matches[i], testData.cols, nn, distance);
+            distR += computeDistanceRaport<Distance>(inputData, testData[i], neighbors, matches[i], int(testData.cols), int(nn), distance);
         }
         t.stop();
     }

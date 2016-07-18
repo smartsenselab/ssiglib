@@ -161,7 +161,7 @@ public:
     void add(unsigned int value, const ElementType* feature)
     {
         // Add the value to the corresponding bucket
-        BucketKey key = getKey(feature);
+      BucketKey key = flann::lsh::BucketKey(getKey(feature));
 
         switch (speed_level_) {
         case kArray:
@@ -192,7 +192,7 @@ public:
 #endif
         // Add the features to the table
         for (size_t i = 0; i < features.size(); ++i) {
-        	add(features[i].first, features[i].second);
+        	add((unsigned int)features[i].first, features[i].second);
         }
         // Now that the table is full, optimize it for speed/space
         optimize();

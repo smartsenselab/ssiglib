@@ -741,7 +741,7 @@ public:
      */
     void copy(size_t* indices, DistanceType* dist, int n_neighbors, bool sorted = true)
     {
-    	if (n_neighbors<0) n_neighbors = dist_indices_.size();
+      if (n_neighbors<0) n_neighbors = int(dist_indices_.size());
     	int i = 0;
     	typedef typename std::set<DistIndex>::const_iterator Iterator;
     	for (Iterator dist_index = dist_indices_.begin(), dist_index_end =
@@ -804,7 +804,7 @@ public:
     {
         // Don't do anything if we are worse than the worst
         if (dist >= worst_distance_) return;
-        dist_indices_.insert(DistIndex(dist, index));
+        dist_indices_.insert(DistIndex(dist, int(index)));
 
         if (is_full_) {
             if (dist_indices_.size() > capacity_) {

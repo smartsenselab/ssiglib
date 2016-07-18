@@ -674,7 +674,7 @@ private:
 
         for (int i=0; i<branching; ++i) {
             centers[i] = new DistanceType[veclen_];
-            memoryCounter_ += veclen_*sizeof(DistanceType);
+            memoryCounter_ += int(veclen_*sizeof(DistanceType));
             for (size_t k=0; k<veclen_; ++k) {
                 centers[i][k] = (DistanceType)dcenters[i][k];
             }
@@ -776,7 +776,7 @@ private:
             }
             for (int i=0; i<node->size; ++i) {
             	PointInfo& point_info = node->points[i];
-                int index = point_info.index;
+              int index = int(point_info.index);
                 if (with_removed) {
                 	if (removed_points_.test(index)) continue;
                 }
@@ -852,7 +852,7 @@ private:
         if (node->childs.empty()) {
             for (int i=0; i<node->size; ++i) {
             	PointInfo& point_info = node->points[i];
-                int index = point_info.index;
+              int index = int(point_info.index);
                 if (with_removed) {
                 	if (removed_points_.test(index)) continue;
                 }
@@ -984,11 +984,11 @@ private:
 
             std::vector<int> indices(node->points.size());
             for (size_t i=0;i<node->points.size();++i) {
-            	indices[i] = node->points[i].index;
+              indices[i] = int(node->points[i].index);
             }
             computeNodeStatistics(node, indices);
             if (indices.size()>=size_t(branching_)) {
-                computeClustering(node, &indices[0], indices.size(), branching_);
+              computeClustering(node, &indices[0], int(indices.size()), branching_);
             }
         }
         else {            
@@ -999,7 +999,7 @@ private:
                 DistanceType crt_dist = distance_(node->childs[i]->pivot, point, veclen_);
                 if (crt_dist<dist) {
                     dist = crt_dist;
-                    closest = i;
+                    closest = int(i);
                 }
             }
             addPointToTree(node->childs[closest], index, dist);
