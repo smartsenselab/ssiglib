@@ -9,8 +9,4 @@ add_library(libsvm STATIC "src/libsvm.cpp")
 
 target_include_directories(libsvm PUBLIC ${libsvm_SOURCE_DIR}/include)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set_target_properties(libsvm PROPERTIES FOLDER 3RDPARTY)
-else()
-    set_target_properties(libsvm PROPERTIES COMPILE_FLAGS "-fPIC" FOLDER 3RDPARTY)
-endif()
+set_target_properties(libsvm PROPERTIES COMPILE_FLAGS "-fPIC" FOLDER 3RDPARTY)

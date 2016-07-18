@@ -49,7 +49,7 @@
 #include <ssiglib/core/util.hpp>
 #include <ssiglib/core/math.hpp>
 #include <ssiglib/ml/classifier_clustering.hpp>
-#include <ssiglib/ml/multiclass.hpp>
+#include <ssiglib/ml/oaa_classifier.hpp>
 
 
 namespace ssig {
@@ -60,7 +60,7 @@ class PLSImageClustering : public ClassifierClustering {
  public:
   ML_EXPORT static cv::Ptr<PLSImageClustering> create();
   ML_EXPORT static cv::Ptr<PLSImageClustering> create(
-  ssig::Multiclass& classifier,
+  ssig::OAAClassifier& classifier,
   const std::vector<std::vector<int>>& discoverySubset,
   const std::vector<ssig::Cluster>& initialClustering);
 
@@ -84,7 +84,7 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void read(const cv::FileNode& fn) override;
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-  ML_EXPORT cv::Ptr<Multiclass> getClassifier() const;
+  ML_EXPORT cv::Ptr<OAAClassifier> getClassifier() const;
 
   ML_EXPORT void setSimBuilder(
     std::unique_ptr<ssig::SimilarityFunctor> function);
@@ -114,7 +114,7 @@ class PLSImageClustering : public ClassifierClustering {
  protected:
   ML_EXPORT PLSImageClustering() = default;
   ML_EXPORT PLSImageClustering(
-    ssig::Multiclass& classifier,
+    ssig::OAAClassifier& classifier,
     const std::vector<std::vector<int>>& discoverySubset,
     const std::vector<ssig::Cluster>& initialClustering);
 
@@ -133,7 +133,7 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT virtual void trainClassifiers(
     const std::vector<Cluster>& clusters,
     const std::vector<int>& negativeLearningSet,
-    Multiclass& classifier) const;
+    OAAClassifier& classifier) const;
 
   ML_EXPORT bool isFinished() override;
 
@@ -161,14 +161,14 @@ class PLSImageClustering : public ClassifierClustering {
   ML_EXPORT void buildResponses(const cv::Mat_<float>& inp,
                                 const std::vector<Cluster>& clusters,
                                 std::vector<std::vector<float>>& responses,
-                                const Multiclass& classifier);
+                                const OAAClassifier& classifier);
 
   ML_EXPORT void removeMeaninglessClusters(
     std::vector<Cluster>& clusters) const;
 
  private:
   // private members
-  std::unique_ptr<Multiclass> mClassifier;
+  std::unique_ptr<OAAClassifier> mClassifier;
   std::unique_ptr<SimilarityFunctor> mSimilarityFunction;
 
   int mRepresentationType = ClustersResponses;
@@ -180,11 +180,6 @@ class PLSImageClustering : public ClassifierClustering {
   bool mMergeOcurred = false;
   bool mMergeConvergence = true;
   int nMergesPerIteration = 8;
-#if _DEBUG
-  bool mIsVerbose = true;
-#else
-  bool mIsVerbose = false;
-#endif
 };
 
 }  // namespace ssig
