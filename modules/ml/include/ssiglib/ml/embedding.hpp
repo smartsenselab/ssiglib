@@ -67,7 +67,7 @@ class Embedding : public ssig::Algorithm {
     cv::OutputArray output) = 0;
 
  protected:
- Embedding(void) = default;
+  Embedding(void) = default;
 
  private:
   // private members

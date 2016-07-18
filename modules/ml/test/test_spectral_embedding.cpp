@@ -48,8 +48,12 @@ TEST(SpectralEmbedding, SampleSpectralEmbedding) {
   cv::Mat_<float> output, X;
 
   X = cv::Mat::zeros(30, 10, CV_32FC1);
-  cv::randn(X.rowRange(0, 15), cv::Mat::zeros(1, 1, CV_32F), cv::Mat::ones(1, 1, CV_32F));
-  cv::randn(X.rowRange(15, 30), cv::Mat(1, 1, CV_32F, 10), cv::Mat::ones(1, 1, CV_32F));
+  cv::randn(X.rowRange(0, 15),
+    cv::Mat::zeros(1, 1, CV_32F),
+    cv::Mat::ones(1, 1, CV_32F));
+  cv::randn(X.rowRange(15, 30),
+    cv::Mat(1, 1, CV_32F, 10),
+    cv::Mat::ones(1, 1, CV_32F));
 
   specEmbedding->learn(X, output);
   auto eiValues = specEmbedding->getEigenValues();
