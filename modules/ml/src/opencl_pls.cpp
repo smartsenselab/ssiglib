@@ -59,6 +59,7 @@ void OpenClPLS::learn(
   cv::Mat_<float>& Ymat,
   int nfactors) {
   cv::ocl::setUseOpenCL(true);
+
   cv::UMat X, Y;
   Xmat.copyTo(X);
   Ymat.copyTo(Y);
@@ -154,8 +155,9 @@ void OpenClPLS::learn(
     cv::subtract(X, uAux, X);
 
     cv::gemm(t, c, 1, cv::noArray(), 0, uAux, cv::GEMM_2_T);
-    float auxScalar = (b_l).getMat(cv::ACCESS_READ).at<float>(0);
-    uAux.mul(cv::UMat::ones(uAux.size(), CV_32F), auxScalar);
+    cv::UMat utmp;
+    cv::repeat(b_l, uAux.rows, uAux.cols, utmp);
+    uAux.mul(utmp);
     cv::subtract(Y, uAux, Y);
   }
 
@@ -226,7 +228,7 @@ void OpenClPLS::predict(
     // X * Bstar .* Ydata.std +  Ydata.mean;
     cv::UMat tmp;
     cv::gemm(mZDataV, mBstar, 1, cv::noArray(), 0, tmp);
-    cv::gemm(tmp, mYstd, 1, cv::noArray(), 0, tmp);
+    tmp = tmp.mul(mYstd);
     cv::add(tmp, mYmean, tmp);
 
     tmp.copyTo(ret.row(y));
@@ -256,8 +258,7 @@ void OpenClPLS::save(cv::FileStorage& storage) const {
   mBstar.copyTo(Bstar);
 
 
-  storage << "PLS"
-      << "{";
+  storage << "PLS" << "{";
   storage << "nfactors" << mNFactors;
   storage << "Xmean" << Xmean;
   storage << "Xstd" << Xstd;

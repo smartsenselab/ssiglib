@@ -335,10 +335,10 @@ struct MaxDistance
 
         /* Process 4 items with each loop for efficiency. */
         while (a < lastgroup) {
-            diff0 = std::abs(a[0] - b[0]);
-            diff1 = std::abs(a[1] - b[1]);
-            diff2 = std::abs(a[2] - b[2]);
-            diff3 = std::abs(a[3] - b[3]);
+            diff0 = (ResultType)std::abs(a[0] - b[0]);
+            diff1 = (ResultType)std::abs(a[1] - b[1]);
+            diff2 = (ResultType)std::abs(a[2] - b[2]);
+            diff3 = (ResultType)std::abs(a[3] - b[3]);
             if (diff0>result) {result = diff0; }
             if (diff1>result) {result = diff1; }
             if (diff2>result) {result = diff2; }
@@ -352,7 +352,7 @@ struct MaxDistance
         }
         /* Process last 0-3 pixels.  Not needed for standard vector lengths. */
         while (a < last) {
-            diff0 = std::abs(*a++ - *b++);
+            diff0 = (ResultType)std::abs(*a++ - *b++);
             result = (diff0>result) ? diff0 : result;
         }
         return result;
