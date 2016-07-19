@@ -41,14 +41,15 @@
 
 #ifndef _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
 #define _SSIG_ML_HIERARCHICAL_KMEANS_HPP_
-
+// c++
 #include <vector>
-
+// ssiglib
 #include "clustering.hpp"
 #include "ml_defs.hpp"
-
 #include <ssiglib/core/math.hpp>
-#include <opencv2/flann.hpp>
+// flann
+#include <flann/flann.hpp>
+// #include <opencv2/flann.hpp>
 
 namespace ssig {
 enum ClusteringDistance {
@@ -90,8 +91,8 @@ class HierarchicalKmeans : public Clustering {
   ML_EXPORT int getMinkowskiParameter() const;
 
   ML_EXPORT void setInitialization(
-    const cvflann::flann_centers_init_t& initType);
-  ML_EXPORT cvflann::flann_centers_init_t getInitialization() const;
+    const flann::flann_centers_init_t& initType);
+  ML_EXPORT flann::flann_centers_init_t getInitialization() const;
   ML_EXPORT void setBranchingFactor(const int branchingFactor);
   ML_EXPORT int getBranchingFactor() const;
   ML_EXPORT void setCBIndex(const float cbIndex);
@@ -104,7 +105,7 @@ class HierarchicalKmeans : public Clustering {
   // private members
 
   ClusteringDistance mDistType = L2;
-  cvflann::flann_centers_init_t mInitType = cvflann::FLANN_CENTERS_RANDOM;
+  flann::flann_centers_init_t mInitType = flann::FLANN_CENTERS_RANDOM;
   int mBranchingFactor = 4;
   int mMinkowski = 3;
   float mCBIndex = 0.2f;

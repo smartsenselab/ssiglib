@@ -207,7 +207,11 @@ void PLSClassifier::read(const cv::FileNode& fn) {
 }
 
 void PLSClassifier::write(cv::FileStorage& fs) const {
-  mPls->save(fs);
+  if (mOpenClEnabled) {
+    mClPls->save(fs);
+  } else {
+    mPls->save(fs);
+  }
   fs << "Labels2Idx"
       << "{";
   ssig::Util::write<int, int>(mLabels2Idx, fs);

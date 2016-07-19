@@ -38,13 +38,16 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
-#include "ssiglib/ml/hierarchical_kmeans.hpp"
-
+// c++
 #include <vector>
-
+// opencv
 #include <opencv2/core.hpp>
-#include <opencv2/flann.hpp>
+// ssiglib
+#include "ssiglib/core/util.hpp"
+#include "ssiglib/ml/hierarchical_kmeans.hpp"
+// flann
+#include <flann/flann.hpp>
+
 
 namespace ssig {
 HierarchicalKmeans::HierarchicalKmeans(): mDistType(L2) {
@@ -76,10 +79,13 @@ void HierarchicalKmeans::setup(const cv::Mat_<float>& input) { }
 
 void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
   mSamples = input.clone();
-  cv::Mat features = input;
-  cv::Mat_<float> centers(getK(), features.cols, CV_32F);
+  cv::Mat temp = input;
+  cv::Mat_<float> centers(getK(), input.cols, CV_32F);
 
-  cvflann::KMeansIndexParams kMeansIndexParams(
+  auto features = ssig::Util::convert<float>(temp);
+  auto fCenters = ssig::Util::convert<float>(centers);
+
+  flann::KMeansIndexParams kMeansIndexParams(
     getBranchingFactor(),
     getMaxIterations(),
     getInitialization(),
@@ -88,73 +94,73 @@ void HierarchicalKmeans::learn(const cv::Mat_<float>& input) {
 
   switch (getDistance()) {
   case L2: {
-    cvflann::L2<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::L2<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case L1: {
-    cvflann::L1<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::L1<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case MinkowskiDistance: {
-    cvflann::MinkowskiDistance<float> distType(getMinkowskiParameter());
-    cv::flann::hierarchicalClustering(
+    flann::MinkowskiDistance<float> distType(getMinkowskiParameter());
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case MaxDistance: {
-    cvflann::MaxDistance<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::MaxDistance<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case HistIntersectionDistance: {
-    cvflann::HistIntersectionDistance<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::HistIntersectionDistance<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case HellingerDistance: {
-    cvflann::HellingerDistance<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::HellingerDistance<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case ChiSquareDistance: {
-    cvflann::ChiSquareDistance<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::ChiSquareDistance<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
     break;
   case KL_Divergence: {
-    cvflann::KL_Divergence<float> distType;
-    cv::flann::hierarchicalClustering(
+    flann::KL_Divergence<float> distType;
+    flann::hierarchicalClustering(
       features,
-      centers,
+      fCenters,
       kMeansIndexParams,
       distType);
   }
@@ -227,11 +233,11 @@ int HierarchicalKmeans::getMinkowskiParameter() const {
 }
 
 void HierarchicalKmeans::setInitialization(
-  const cvflann::flann_centers_init_t& initType) {
+  const flann::flann_centers_init_t& initType) {
   mInitType = initType;
 }
 
-cvflann::flann_centers_init_t HierarchicalKmeans::getInitialization() const {
+flann::flann_centers_init_t HierarchicalKmeans::getInitialization() const {
   return mInitType;
 }
 

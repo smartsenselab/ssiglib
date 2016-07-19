@@ -68,7 +68,7 @@ class HierarchicalKmeansClusteringTest : public ::testing::Test {
     hierarchicalKmeans->setBranchingFactor(4);
     hierarchicalKmeans->setDistance(ssig::L2);
     hierarchicalKmeans->setInitialization
-      (cvflann::flann_centers_init_t::FLANN_CENTERS_KMEANSPP);
+      (flann::flann_centers_init_t::FLANN_CENTERS_KMEANSPP);
     hierarchicalKmeans->setMaxIterations(20);
     hierarchicalKmeans->learn(inp);
   }
