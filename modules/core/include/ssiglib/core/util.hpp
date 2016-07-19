@@ -86,6 +86,15 @@ class Util {
     }
 
   template <class T>
+  static flann::Matrix<T> convert(cv::Mat_<T>& m) {
+    flann::Matrix<T> fMat(
+      (T*)(m.ptr(0)),
+      m.rows,
+      m.cols);
+    return fMat;
+  }
+
+  template <class T>
   static void reorder(const cv::Mat_<T>& collection, cv::Mat_<int>& ordering,
     cv::Mat_<T>& out) {
     out = cv::Mat_<T>::zeros(collection.rows, collection.cols);

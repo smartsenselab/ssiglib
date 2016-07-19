@@ -186,8 +186,11 @@ TEST(OpenClPLSClassifier, Persistence) {
   cv::Mat_<float> labels;
   labelsInt.convertTo(labels, CV_32F);
 
-  auto classifier = ssig::OpenClPLS::create();
-  classifier->learn(inp, labels, 2);
+  auto classifier = ssig::PLSClassifier::create();
+  classifier->setUseOpenCl(true);
+  
+  classifier->setNumberOfFactors(2);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
@@ -198,7 +201,7 @@ TEST(OpenClPLSClassifier, Persistence) {
   classifier->predict(query2, resp);
   EXPECT_LE(resp.at<float>(0), 0);
 
-  classifier->save("pls.yml");
+  classifier->save("pls.yml", "root");
 
   auto loaded = ssig::PLSClassifier::create();
   loaded->load("pls.yml", "root");

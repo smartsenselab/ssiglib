@@ -302,7 +302,7 @@ public:
      */
     int getClusterCenters(Matrix<DistanceType>& centers)
     {
-        int numClusters = centers.rows;
+        int numClusters = int(centers.rows);
         if (numClusters<1) {
             throw FLANNException("Number of clusters must be at least 1");
         }
