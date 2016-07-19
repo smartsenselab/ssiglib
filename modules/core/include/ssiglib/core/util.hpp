@@ -88,7 +88,7 @@ class Util {
   template <class T>
   static flann::Matrix<T> convert(cv::Mat_<T>& m) {
     flann::Matrix<T> fMat(
-      (T*)(m.ptr(0)),
+      reinterpret_cast<T*>(m.ptr(0)),
       m.rows,
       m.cols);
     return fMat;
