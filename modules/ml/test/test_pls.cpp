@@ -188,7 +188,7 @@ TEST(OpenClPLSClassifier, Persistence) {
 
   auto classifier = ssig::PLSClassifier::create();
   classifier->setUseOpenCl(true);
-  
+
   classifier->setNumberOfFactors(2);
   classifier->learn(inp, labels);
 
