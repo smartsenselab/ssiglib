@@ -180,11 +180,6 @@ class PLSImageClustering : public ClassifierClustering {
   bool mMergeOcurred = false;
   bool mMergeConvergence = true;
   int nMergesPerIteration = 8;
-#if _DEBUG
-  bool mIsVerbose = true;
-#else
-  bool mIsVerbose = false;
-#endif
 };
 
 }  // namespace ssig
