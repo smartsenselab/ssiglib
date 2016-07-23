@@ -52,25 +52,43 @@
 namespace ssig {
 
 class Algorithm : public Resource {
- public:
+public:
   CORE_EXPORT Algorithm(void);
   CORE_EXPORT virtual ~Algorithm(void) = 0;
   CORE_EXPORT Algorithm(const Algorithm& rhs);
   CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
 
-  CORE_EXPORT virtual void load(const std::string& filename,
-                                const std::string& nodename);
+  CORE_EXPORT virtual void load(
+    const std::string& filename,
+    const std::string& nodename);
 
-  CORE_EXPORT virtual void save(const std::string& filename,
-                                const std::string& nodename) const;
+  CORE_EXPORT virtual void save(
+    const std::string& filename,
+    const std::string& nodename) const;
+
+  /**
+  * @brief: this function can be used to verboseLog messages 
+   to file when setVerbose(true) is called.
+  **/
+  CORE_EXPORT void verboseLog(
+    FILE* file,
+    const char* format,
+    ...) const;
+  /**
+  * @brief: Overloaded method provided to verboseLog to stdout
+  **/
+  CORE_EXPORT void verboseLog(const char* format, ...) const;
 
   CORE_EXPORT void setUseOpenCl(bool state);
+  CORE_EXPORT bool getVerbose() const;
+  CORE_EXPORT void setVerbose(const bool verbose);
 
- protected:
+protected:
   CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
   bool mOpenClEnabled = false;
+  bool mVerbose = false;
 };
 
-}  // namespace ssig
+} // namespace ssig
 #endif  // !_SSIG_CORE_ALGORITHM_HPP_

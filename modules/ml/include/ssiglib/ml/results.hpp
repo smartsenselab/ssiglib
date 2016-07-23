@@ -57,12 +57,6 @@
 
 namespace ssig {
 class Results {
-  cv::Mat_<int> mConfusionMatrix;
-  cv::Mat_<int> mGroundTruth;
-  cv::Mat_<int> mLabels;
-  std::unordered_map<int, int> mLabelMap;
-  std::unordered_map<int, std::string> mStringLabels;
-
  public:
   /**
   @return: a pair of float where first is mean precision and second is stddev
@@ -148,6 +142,12 @@ class Results {
     const std::unordered_map<int, int>& labelMap,
     const std::unordered_map<int, std::string>& stringLabelsMap,
     cv::Mat& img);
+
+  cv::Mat_<int> mConfusionMatrix;
+  cv::Mat_<int> mGroundTruth;
+  cv::Mat_<int> mLabels;
+  std::unordered_map<int, int> mLabelMap;
+  std::unordered_map<int, std::string> mStringLabels;
 };
 }  // namespace ssig
 #endif  // !_SSF_CORE_RESULTS_HPP_

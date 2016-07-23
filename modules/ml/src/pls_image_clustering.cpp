@@ -227,24 +227,19 @@ void PLSImageClustering::trainClassifiers(
 
 bool PLSImageClustering::isFinished() {
   if (getMaxIterations() > 0 && (mIt > getMaxIterations())) {
-    if (mIsVerbose) {
-      printf("Convergence due to max number of iterations reached\n");
-    }
+      verboseLog("Convergence due to max number of iterations reached\n");
+
     return true;
   }
   if (getK()) {
     auto kConvergence = (static_cast<int>(mNewClusters.size()) <= getK());
     if (kConvergence) {
-      if (mIsVerbose) {
-        printf("Converged due to minimum K!\n");
-      }
+      verboseLog("Converged due to minimum K!\n");
       return true;
     }
   }
   if (mMergeConvergence && !mMergeOcurred) {
-    if (mIsVerbose) {
-      printf("Converged due to merge stability!\n");
-    }
+    verboseLog("Converged due to merge stability!\n");
     return true;
   }
   return false;
