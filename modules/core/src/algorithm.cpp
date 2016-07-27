@@ -88,21 +88,27 @@ void Algorithm::save(const std::string& filename,
   fileStorage.release();
 }
 
-void Algorithm::verboseLog(
-  FILE* file,
-  const char* format, ...) const {
+void Algorithm::verboseLog(FILE* file, const char* format, ...) const {
   if (mVerbose) {
     va_list args;
     va_start(args, format);
-    fprintf(file, format, args);
+    vfprintf(file, format, args);
     va_end(args);
+  }
+}
+
+void Algorithm::vVerboseLog(
+  FILE* file,
+  const char* format, va_list args) const {
+  if (mVerbose) {
+    vfprintf(file, format, args);
   }
 }
 
 void Algorithm::verboseLog(const char* format, ...) const {
   va_list args;
   va_start(args, format);
-  verboseLog(stdout, format, args);
+  vVerboseLog(stdout, format, args);
   va_end(args);
 }
 
@@ -118,5 +124,3 @@ void Algorithm::setVerbose(const bool verbose) {
   mVerbose = verbose;
 }
 }  // namespace ssig
-
-

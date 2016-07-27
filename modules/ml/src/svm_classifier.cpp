@@ -49,7 +49,6 @@
 #include <libsvm.hpp>
 
 
-
 namespace ssig {
 
 SVMClassifier::SVMClassifier() {
@@ -101,9 +100,18 @@ Classifier* SVMClassifier::clone() const {
   return ans;
 }
 
+bool SVMClassifier::isMulticlass() const {
+  return mIsMulticlass;
+}
+
+void SVMClassifier::setMulticlassState(const bool isMulticlass) {
+  mIsMulticlass = isMulticlass;
+}
+
 svm_problem* SVMClassifier::convertToLibSVM(
   const cv::Mat_<int>& labels,
   const cv::Mat_<float>& features,
+  int& numLabels,
   double* & y,
   svm_node** & x) {
   const int nSamples = labels.rows;
@@ -112,12 +120,14 @@ svm_problem* SVMClassifier::convertToLibSVM(
   y = new double[nSamples];
   ans->l = nSamples;
   ans->y = y;
-#ifdef _OPENMP
-#pragma omp parallel for
-#endif
+  std::unordered_set<int> labelsSet;
   for (int i = 0; i < nSamples; ++i) {
     y[i] = static_cast<double>(labels.at<int>(i));
+    if (labelsSet.find(labels.at<int>(i)) == labelsSet.end()) {
+      labelsSet.insert(labels.at<int>(i));
+    }
   }
+  numLabels = static_cast<int>(labelsSet.size());
 
   x = convertToLibSVM(features);
   ans->x = x;
@@ -177,8 +187,11 @@ void SVMClassifier::learn(
   mSamplesLen = input.rows;
   mParams.eps = mEpsilon;
   convertToLibSVM(mMapLabel2Weight, mParams);
-  svm_problem* problem = convertToLibSVM(labels, input,
-                                         mY, mX);
+  int numLabels = 0;
+  svm_problem* problem = convertToLibSVM(
+                                         labels, input, numLabels, mY, mX);
+  if (numLabels > 2)
+    setMulticlassState(true);
 
   const char* errMsg = svm_check_parameter(problem, &mParams);
   if (errMsg) {
@@ -195,7 +208,9 @@ int SVMClassifier::predict(
   if (!isTrained())
     return -1;
 
-  resp = cv::Mat_<float>::zeros(inp.rows, 2);
+  if (!mIsMulticlass) {
+    resp = cv::Mat_<float>::zeros(inp.rows, 2);
+  }
   labels = cv::Mat_<float>::zeros(inp.rows, 1);
 
   int label = 0;
@@ -214,17 +229,23 @@ int SVMClassifier::predict(
         std::runtime_error("Model not fit for probability estimates");
       }
     } else {
-      label = static_cast<int>(
-        svm_predict_values(mModel, featNode[i], &dec_value));
+      if (mIsMulticlass) {
+        label = static_cast<int>(svm_predict(mModel, featNode[i]));
+        labels.at<int>(i) = label;
+      } else {
+        label = static_cast<int>(
+          svm_predict_values(mModel, featNode[i], &dec_value));
+        resp[i][0] = static_cast<float>(dec_value);
+        labels.at<int>(i) = resp.at<float>(i) > 0 ? 1 : 0;
+      }
     }
-    resp[i][0] = static_cast<float>(dec_value);
-    labels.at<int>(i) = resp.at<float>(i) > 0 ? 1 : 0;
   }
-
-  if (getProbabilisticModel()) {
-    resp.col(1) = 1 - resp.col(0);
-  } else {
-    resp.col(1) = -1 * resp.col(0);
+  if (!isMulticlass()) {
+    if (getProbabilisticModel()) {
+      resp.col(1) = 1 - resp.col(0);
+    } else {
+      resp.col(1) = -1 * resp.col(0);
+    }
   }
 
   delete[] featNode;

@@ -39,61 +39,16 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_CORE_ALGORITHM_HPP_
-#define _SSIG_CORE_ALGORITHM_HPP_
-// opencv
-#include <opencv2/core.hpp>
-// c++
-#include <string>
-#include <cstdarg>
-// ssiglib
-#include "ssiglib/core/core_defs.hpp"
-#include "ssiglib/core/resource.hpp"
+#include <gtest/gtest.h>
+#include "ssiglib/ml/stacked_pls.hpp"
 
-namespace ssig {
-
-class Algorithm : public Resource {
-public:
-  CORE_EXPORT Algorithm(void);
-  CORE_EXPORT virtual ~Algorithm(void) = 0;
-  CORE_EXPORT Algorithm(const Algorithm& rhs);
-  CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
-
-  CORE_EXPORT virtual void load(
-    const std::string& filename,
-    const std::string& nodename);
-
-  CORE_EXPORT virtual void save(
-    const std::string& filename,
-    const std::string& nodename) const;
-
-  /**
-  * @brief: this function can be used to verboseLog messages 
-   to file when setVerbose(true) is called.
+TEST(StackedPLS, SampleStackedPLS) {
+ /**
+ * This Test is to complicated and costly to be included here you
+    may take a look on this file <a href=''> link_to_code </a>. it shows a sample usage of the method
+    on the mnist digits dataset.
+ * Using the first 100th training samples and a linear OvO svm 
+   for classification, the stacked pls was able to achieve 
+   0.66 mean average precision.
   **/
-  CORE_EXPORT void verboseLog(
-    FILE* file,
-    const char* format,
-    ...) const;
-  /**
-  * @brief: Overloaded method provided to verboseLog to stdout
-  **/
-  CORE_EXPORT void verboseLog(const char* format, ...) const;
-
-  CORE_EXPORT void setUseOpenCl(bool state);
-  CORE_EXPORT bool getVerbose() const;
-  CORE_EXPORT void setVerbose(const bool verbose);
-
-protected:
-  CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
-  CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
-  CORE_EXPORT void vVerboseLog(
-    FILE* file,
-    const char* format,
-    va_list args) const;
-  bool mOpenClEnabled = false;
-  bool mVerbose = false;
-};
-
-} // namespace ssig
-#endif  // !_SSIG_CORE_ALGORITHM_HPP_
+}
