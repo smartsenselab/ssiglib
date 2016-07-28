@@ -42,7 +42,7 @@
 #ifndef _SSIG_ML_STACKED_PLS_HPP_
 #define _SSIG_ML_STACKED_PLS_HPP_
 // c++
-
+#include <vector>
 // cv
 #include <opencv2/core.hpp>
 // ssiglib
@@ -57,7 +57,7 @@
 **/
 namespace ssig {
 class StackedPLS : public ssig::Algorithm {
-public:
+ public:
   ML_EXPORT static cv::Ptr<StackedPLS> create();
 
   virtual ~StackedPLS(void);
@@ -84,7 +84,7 @@ public:
   ML_EXPORT void setFilters(const std::vector<std::vector<cv::Mat>>& filters);
   ML_EXPORT void getTrainingOutput(cv::Mat& trainSamplesOut) const;
 
-protected:
+ protected:
   StackedPLS(void);
   void read(const cv::FileNode& fn) override;
   void write(cv::FileStorage& fs) const override;
@@ -132,7 +132,7 @@ protected:
     const int poolingSize,
     std::vector<cv::Mat>& pooled) const;
 
-private:
+ private:
   // private members
   const int mNumLayers = 2;
   std::vector<int> mNumFactors;
@@ -143,5 +143,5 @@ private:
 
   cv::Mat mTrainOut;
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_STACKED_PLS_HPP_

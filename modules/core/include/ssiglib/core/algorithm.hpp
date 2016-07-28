@@ -41,11 +41,11 @@
 
 #ifndef _SSIG_CORE_ALGORITHM_HPP_
 #define _SSIG_CORE_ALGORITHM_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <string>
 #include <cstdarg>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "ssiglib/core/core_defs.hpp"
 #include "ssiglib/core/resource.hpp"
@@ -53,7 +53,7 @@
 namespace ssig {
 
 class Algorithm : public Resource {
-public:
+ public:
   CORE_EXPORT Algorithm(void);
   CORE_EXPORT virtual ~Algorithm(void) = 0;
   CORE_EXPORT Algorithm(const Algorithm& rhs);
@@ -84,7 +84,7 @@ public:
   CORE_EXPORT bool getVerbose() const;
   CORE_EXPORT void setVerbose(const bool verbose);
 
-protected:
+ protected:
   CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
   CORE_EXPORT void vVerboseLog(
@@ -95,5 +95,5 @@ protected:
   bool mVerbose = false;
 };
 
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_CORE_ALGORITHM_HPP_

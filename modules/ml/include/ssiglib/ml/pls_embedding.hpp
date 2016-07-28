@@ -78,7 +78,7 @@ class PLSEmbedding : public Embedding {
   ML_EXPORT cv::Mat_<float> getWstarMat() const;
   ML_EXPORT void setWstarMat(const cv::Mat_<float>& wstarMat);
 
-protected:
+ protected:
   void read(const cv::FileNode& fn) override;
   void write(cv::FileStorage& fs) const override;
 
