@@ -41,8 +41,11 @@
 
 
 #include "ssiglib/core/algorithm.hpp"
-
+// c++
 #include <string>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
 
 namespace ssig {
 
@@ -85,9 +88,39 @@ void Algorithm::save(const std::string& filename,
   fileStorage.release();
 }
 
+void Algorithm::verboseLog(FILE* file, const char* format, ...) const {
+  if (mVerbose) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(file, format, args);
+    va_end(args);
+  }
+}
+
+void Algorithm::vVerboseLog(
+  FILE* file,
+  const char* format, va_list args) const {
+  if (mVerbose) {
+    vfprintf(file, format, args);
+  }
+}
+
+void Algorithm::verboseLog(const char* format, ...) const {
+  va_list args;
+  va_start(args, format);
+  vVerboseLog(stdout, format, args);
+  va_end(args);
+}
+
 void Algorithm::setUseOpenCl(bool state) {
   mOpenClEnabled = state;
 }
+
+bool Algorithm::getVerbose() const {
+  return mVerbose;
+}
+
+void Algorithm::setVerbose(const bool verbose) {
+  mVerbose = verbose;
+}
 }  // namespace ssig
-
-

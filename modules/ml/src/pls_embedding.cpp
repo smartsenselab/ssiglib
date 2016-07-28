@@ -80,6 +80,7 @@ void PLSEmbedding::learn(
   cv::Mat_<float> X = input.getMat();
   cv::Mat_<float> Xcopy = X.clone();
   mPLS->learn(Xcopy, mLabels, mDimensions);
+  mWstarMat = mPLS->getWstar();
 }
 
 void PLSEmbedding::project(
@@ -108,6 +109,14 @@ cv::Mat_<float> PLSEmbedding::getLabels() const {
 void PLSEmbedding::setLabels(cv::InputArray labels) {
   cv::Mat localLabels = labels.getMat();
   localLabels.convertTo(mLabels, CV_32F);
+}
+
+cv::Mat_<float> PLSEmbedding::getWstarMat() const {
+  return mWstarMat;
+}
+
+void PLSEmbedding::setWstarMat(const cv::Mat_<float>& wstarMat) {
+  mWstarMat = wstarMat;
 }
 
 void PLSEmbedding::read(const cv::FileNode& fn) {}

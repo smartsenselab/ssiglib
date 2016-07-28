@@ -72,8 +72,10 @@ class PLS {
   ML_EXPORT void learn(cv::Mat_<float>& X, cv::Mat_<float>& Y, int nfactors);
 
   // return projection considering n factors
-  ML_EXPORT void predict(const cv::Mat_<float>& X, cv::Mat_<float>& projX,
-                         int nfactors) const;
+  ML_EXPORT void predict(
+    const cv::Mat_<float>& X,
+    cv::Mat_<float>& projX,
+    int nfactors) const;
 
   // retrieve the number of factors
   ML_EXPORT int getNFactors() const;

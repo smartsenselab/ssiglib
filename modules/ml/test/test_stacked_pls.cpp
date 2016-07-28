@@ -39,59 +39,22 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_ML_PLS_EMBEDDING_HPP_
-#define _SSIG_ML_PLS_EMBEDDING_HPP_
-// c++
-#include <memory>
-// ssiglib
-#include "ssiglib/core/algorithm.hpp"
-#include "ssiglib/ml/ml_defs.hpp"
-#include "ssiglib/ml/embedding.hpp"
-#include "ssiglib/ml/pls.hpp"
+#include <gtest/gtest.h>
+#include "ssiglib/ml/stacked_pls.hpp"
 
-
-namespace ssig {
-class PLSEmbedding : public Embedding {
- public:
-  ML_EXPORT static cv::Ptr<PLSEmbedding> create(
-    const int dimensions,
-    cv::InputArray labels);
-
-  ML_EXPORT virtual ~PLSEmbedding(void) = default;
-
-  ML_EXPORT PLSEmbedding(const PLSEmbedding& rhs);
-  ML_EXPORT PLSEmbedding& operator=(const PLSEmbedding& rhs);
-
-  ML_EXPORT void learn(cv::InputArray input) override;
-  ML_EXPORT void project(
-    cv::InputArray sample,
-    cv::OutputArray output) override;
-
-
-  ML_EXPORT int getDimensions() const;
-  ML_EXPORT void setDimensions(const int dimensions);
-
-
-  ML_EXPORT cv::Mat_<float> getLabels() const;
-  ML_EXPORT void setLabels(cv::InputArray labels);
-
-  ML_EXPORT cv::Mat_<float> getWstarMat() const;
-  ML_EXPORT void setWstarMat(const cv::Mat_<float>& wstarMat);
-
- protected:
-  void read(const cv::FileNode& fn) override;
-  void write(cv::FileStorage& fs) const override;
-
-  PLSEmbedding(void) = default;
-
- private:
-  // private members
-
-  int mDimensions = 2;
-  cv::Mat_<float> mLabels;
-  cv::Mat_<float> mWstarMat;
-
-  std::unique_ptr<ssig::PLS> mPLS;
-};
-}  // namespace ssig
-#endif  // !_SSIG_ML_PLS_EMBEDDING_HPP_
+TEST(StackedPLS, SampleStackedPLS) {
+ /**
+ * This Test is to complicated and costly to be included here you
+    may take a look on this file <a href=''> link_to_code </a>. it shows a sample usage of the method
+    on the mnist digits dataset.
+ * Using the first 100th training samples and a linear OvO svm 
+   for classification, the stacked pls was able to achieve 
+   0.66 mean average precision.
+ * Points of notice:
+ ***The normalization method was not specified in the paper
+     so we used the x - min / (max - min) scalling.
+ ***The results were obtained disregarding their one versus one scheme
+     for feature extraction.
+ ***We did not discarded the borders as they did.
+ **/
+}

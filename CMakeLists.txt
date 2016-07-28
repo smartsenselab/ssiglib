@@ -14,6 +14,7 @@ project(${PROJECT_ACRONYM_STR} CXX)
 set(CMAKE_DEBUG_POSTFIX "_ssiglib_d")
 #set(IMPORT_PREFIX , "ssiglib_")
 set(CMAKE_RELEASE_POSTFIX "_ssiglib")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "_ssiglib")
 
 ###############################################################################
 # USER OPTIONS
