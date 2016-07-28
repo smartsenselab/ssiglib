@@ -50,5 +50,11 @@ TEST(StackedPLS, SampleStackedPLS) {
  * Using the first 100th training samples and a linear OvO svm 
    for classification, the stacked pls was able to achieve 
    0.66 mean average precision.
-  **/
+ * Points of notice:
+ ***The normalization method was not specified in the paper
+     so we used the x - min / (max - min) scalling.
+ ***The results were obtained disregarding their one versus one scheme
+     for feature extraction.
+ ***We did not discarded the borders as they did.
+ **/
 }

@@ -38,7 +38,9 @@
 *  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
-
+// c++
+#include <algorithm>
+#include <vector>
 // opencv
 #include <opencv2/imgproc.hpp>
 // ssiglib
@@ -367,15 +369,20 @@ void StackedPLS::normalize(
   const std::vector<cv::Mat>& inp,
   std::vector<cv::Mat>& normalized) const {
   normalized.resize(inp.size());
-  //for (int i = 0; i < inp.size(); ++i) {
-  //  normalized[i] = cv::Mat_<float>(inp[i].size(), 0.0f);
-  //}
+  /* COMMENTED OUT
+   for (int i = 0; i < inp.size(); ++i) {
+    normalized[i] = cv::Mat_<float>(inp[i].size(), 0.0f);
+  }
+  */
 
   for (int i = 0; i < inp.size(); ++i) {
-    //cv::exp(-inp[i], normalized[i]);
-    //normalized[0] = normalized[i] + 1.f;
-    //normalized[i] = 1.f / normalized[i];
-    /*const int rows = inp[i].rows,
+    /* COMMENTED OUT
+    cv::exp(-inp[i], normalized[i]);
+    normalized[0] = normalized[i] + 1.f;
+    normalized[i] = 1.f / normalized[i];
+    */
+    /* COMMENTED OUT
+    const int rows = inp[i].rows,
     cols = inp[i].cols;
     normalized[i] = inp[i].clone();
     for (int r = 0; r < rows; ++r) {
@@ -461,4 +468,4 @@ void StackedPLS::setFilters(const std::vector<std::vector<cv::Mat>>& filters) {
 void StackedPLS::getTrainingOutput(cv::Mat& trainSamplesOut) const {
   mTrainOut.copyTo(trainSamplesOut);
 }
-} // namespace ssig
+}  // namespace ssig

@@ -51,8 +51,9 @@
 TEST(SVMClassifier, BinaryClassification) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
   cv::Mat_<float> inp =
-      (cv::Mat_<float>(6, 2) << 0.8f , 0.8f , 0.7f , 0.7f , 0.9f , 0.8f ,
-                                       -0.8f , -0.9f , -0.8f , -0.7f , -0.7f , -0.7f);
+      (cv::Mat_<float>(6, 2) <<
+        0.8f , 0.8f , 0.7f , 0.7f , 0.9f , 0.8f ,
+               -0.8f , -0.9f , -0.8f , -0.7f , -0.7f , -0.7f);
 
   auto classifier = ssig::SVMClassifier::create();
 
@@ -77,8 +78,9 @@ TEST(SVMClassifier, BinaryClassification) {
 TEST(SVMClassifier, Persistence) {
   cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1 , 1 , 1 , -1 , -1 , -1);
   cv::Mat_<float> inp =
-      (cv::Mat_<float>(6, 2) << 0.8f , 0.8f , 0.7f , 0.7f , 0.9f , 0.8f ,
-                                       -0.8f , -0.9f , -0.8f , -0.7f , -0.7f , -0.7f);
+      (cv::Mat_<float>(6, 2) <<
+        0.8f , 0.8f , 0.7f , 0.7f , 0.9f , 0.8f ,
+               -0.8f , -0.9f , -0.8f , -0.7f , -0.7f , -0.7f);
 
   auto classifier = ssig::SVMClassifier::create();
   classifier->setC(0.1f);
@@ -140,9 +142,9 @@ TEST(SVMClassifier, SVMTernaryClassification) {
 
   cv::Mat_<float> resp;
   cv::Mat_<int> labelsResp;
-  cv::Mat_<int> expected = (cv::Mat_<int>(3, 1) << 1, 2, 3);
+  cv::Mat_<int> expected = (cv::Mat_<int>(3, 1) << 1 , 2 , 3);
   classifier->predict(queries, resp, labelsResp);
-  
+
   ssig::Results res(labelsResp, expected);
   GTEST_ASSERT_GE(res.getAccuracy(), .9f);
 }
