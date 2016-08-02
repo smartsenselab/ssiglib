@@ -94,15 +94,16 @@ int MultilayerPerceptron::predict(
 void MultilayerPerceptron::learn(
   const cv::Mat_<float>& _input,
   const cv::Mat& labels) {
-
+  mIsTrained = false;
   for (int it = 0; it < mMaxIterations; ++it) {
     learnWeights(
-      _input,
-      labels,
-      mWeights,
-      mActivationsTypes,
-      mDropoutWeights);
+                 _input,
+                 labels,
+                 mWeights,
+                 mActivationsTypes,
+                 mDropoutWeights);
   }
+  mIsTrained = true;
 }
 
 void MultilayerPerceptron::predict(
@@ -133,9 +134,17 @@ void MultilayerPerceptron::predict(
   labels = cv::Mat::zeros(inp.rows, activations.back().cols, CV_32F);
   for (int r = 0; r < resp.rows; ++r) {
     int maxIdx[2];
-    cv::minMaxIdx(resp.row(r), 0, 0, 0, maxIdx);
+    cv::minMaxIdx(resp.row(r), nullptr, nullptr, nullptr, maxIdx);
     labels.at<int>(r) == maxIdx[1];
   }
+}
+
+cv::Mat MultilayerPerceptron::getLabels() const {
+  return cv::Mat();
+}
+
+cv::Mat MultilayerPerceptron::getWeights(const int layerIndex) {
+  return mWeights[layerIndex];
 }
 
 float MultilayerPerceptron::getLearningRate() const {
@@ -214,6 +223,18 @@ void MultilayerPerceptron::setDropoutWeights(
   mDropoutWeights = dropoutWeights;
 }
 
+bool MultilayerPerceptron::empty() const {
+  return mWeights.empty();
+}
+
+bool MultilayerPerceptron::isTrained() const {
+  return mIsTrained;
+}
+
+Classifier* MultilayerPerceptron::clone() const {
+  return new MultilayerPerceptron(*this);
+}
+
 void MultilayerPerceptron::learnWeights(
   const cv::Mat& inputs,
   const cv::Mat& labels,
@@ -259,7 +280,6 @@ float MultilayerPerceptron::computeErrors(
   const std::vector<MatType>& activations,
   std::vector<MatType>& errors) const {
   //////////////////////////////////////////////////////
-  const int numOutputs = static_cast<int>(weights.size());
   const int numLayers = mNumLayers;
   errors.resize(numLayers + 1);
   // When Using softmax in last layer:
@@ -485,4 +505,4 @@ void MultilayerPerceptron::doForwardPass(
     activations[l + 1] = layerResponse;
   }
 }
-} // namespace ssig
+}  // namespace ssig

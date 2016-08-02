@@ -44,6 +44,7 @@
 // c++
 #include <vector>
 #include <functional>
+#include <string>
 // cv
 #include <opencv2/core/mat.hpp>
 // ssig
@@ -54,7 +55,7 @@
 
 namespace ssig {
 class MultilayerPerceptron : ssig::Multiclass {
-public:
+ public:
   static cv::Ptr<MultilayerPerceptron> create(
     const std::vector<std::string>& activationTypes,
     const std::vector<int>& layersLength,
@@ -71,7 +72,7 @@ public:
   void learn(
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;
-  
+
   void predict(
     const int layerIdx,
     const cv::Mat_<float>& inp,
@@ -96,7 +97,7 @@ public:
   void setLearningRate(const float learningRate);
   int getNumLayers() const;
   void setNumLayers(const int numLayers);
-  
+
   std::vector<cv::Mat> getWeightMatrices() const;
   void setWeights(const std::vector<cv::Mat>& weights);
   std::vector<cv::Mat> getDropouts() const;
@@ -116,7 +117,7 @@ public:
   bool isTrained() const override;
   Classifier* clone() const override;
 
-protected:
+ protected:
   MultilayerPerceptron(void);
   template <class MatType>
   void doForwardPass(
@@ -190,10 +191,11 @@ protected:
   void read(const cv::FileNode& fn) override;
   void write(cv::FileStorage& fs) const override;
 
-private:
+ private:
   // private members
-  float mLearningRate;
-  int mNumLayers;
+  bool mIsTrained = false;;
+  float mLearningRate = 0.5f;
+  int mNumLayers = 2;
 
   // the Weights matrix for each layer
   std::vector<cv::Mat> mWeights;
@@ -206,7 +208,6 @@ private:
   std::vector<cv::Mat> mLayerOut;
   // this vector holds the number of nodes in each layer;
   std::vector<int> mNumNodesConfiguration;
-
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_ANN_MLP_HPP_
