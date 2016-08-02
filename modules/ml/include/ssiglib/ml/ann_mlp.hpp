@@ -41,17 +41,172 @@
 
 #ifndef _SSIG_ML_ANN_MLP_HPP_
 #define _SSIG_ML_ANN_MLP_HPP_
+// c++
+#include <vector>
+#include <functional>
+// cv
+#include <opencv2/core/mat.hpp>
+// ssig
+#include <ssiglib/core/algorithm.hpp>
+#include <ssiglib/ml/classification.hpp>
+#include <ssiglib/ml/multiclass.hpp>
+#include <ssiglib/ml/ml_defs.hpp>
 
 namespace ssig {
-class MultilayerPerceptron {
- public:
-  MultilayerPerceptron(void);
+class MultilayerPerceptron : ssig::Multiclass {
+public:
+  static cv::Ptr<MultilayerPerceptron> create(
+    const std::vector<std::string>& activationTypes,
+    const std::vector<int>& layersLength,
+    const std::vector<float>& dropouts = std::vector<float>());
+
   virtual ~MultilayerPerceptron(void);
   MultilayerPerceptron(const MultilayerPerceptron& rhs);
   MultilayerPerceptron& operator=(const MultilayerPerceptron& rhs);
 
- private:
+  int predict(
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels) const override;
+  void learn(
+    const cv::Mat_<float>& input,
+    const cv::Mat& labels) override;
+  
+  void predict(
+    const int layerIdx,
+    const cv::Mat_<float>& inp,
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels);
+
+  void predict(
+    const cv::Mat& inp,
+    cv::Mat& resp,
+    cv::Mat& labels,
+    std::vector<cv::Mat>& activations,
+    std::vector<cv::Mat>& outputs) const;
+
+  cv::Mat getLabels() const override;
+  cv::Mat getWeights(const int layerIndex);
+
+
+  std::unordered_map<int, int> getLabelsOrdering() const override;
+
+
+  float getLearningRate() const;
+  void setLearningRate(const float learningRate);
+  int getNumLayers() const;
+  void setNumLayers(const int numLayers);
+  
+  std::vector<cv::Mat> getWeightMatrices() const;
+  void setWeights(const std::vector<cv::Mat>& weights);
+  std::vector<cv::Mat> getDropouts() const;
+  void setDropouts(const std::vector<cv::Mat>& dropouts);
+  std::vector<cv::Mat> getLayerActivations() const;
+  void setLayerActivations(const std::vector<cv::Mat>& layerActivations);
+  std::vector<cv::Mat> getLayerOut() const;
+  void setLayerOut(const std::vector<cv::Mat>& layerOut);
+  std::vector<int> getNumNodesConfiguration() const;
+  void setLayersLength(const std::vector<int>& numNodesConfiguration);
+  std::vector<std::string> getActivationsTypes() const;
+  void setActivationsTypes(const std::vector<std::string>& activationsTypes);
+  std::vector<float> getDropoutWeights() const;
+  void setDropoutWeights(const std::vector<float>& dropoutWeights);
+
+  bool empty() const override;
+  bool isTrained() const override;
+  Classifier* clone() const override;
+
+protected:
+  MultilayerPerceptron(void);
+  template <class MatType>
+  void doForwardPass(
+    const MatType& input,
+    const std::vector<MatType>& weights,
+    const std::vector<std::string>& activationTypes,
+    const std::vector<float>& dropout,
+    std::vector<MatType>& outputs,
+    std::vector<MatType>& activations) const;
+
+  // backpropagation
+  void learnWeights(
+    const cv::Mat& inputs,
+    const cv::Mat& labels,
+    const std::vector<cv::Mat>& weights,
+    const std::vector<std::string>& activationTypes,
+    const std::vector<float>& dropout) const;
+
+  template <class MatType>
+  float computeErrors(
+    const MatType& labels,
+    const std::vector<std::string>& activationTypes,
+    const std::vector<MatType>& weights,
+    const std::vector<MatType>& outputs,
+    const std::vector<MatType>& activations,
+    std::vector<MatType>& errors) const;
+
+  template <class MatType>
+  void gradientUpdate(
+    const float learningRate,
+    const std::vector<MatType>& weights,
+    const std::vector<MatType>& activations,
+    const std::vector<MatType>& errors) const;
+
+  // Activation Functions:
+  static void applyActivation(
+    const std::string& type,
+    cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void applyDerivative(
+    const std::string& type,
+    cv::InputArray& _inp,
+    cv::OutputArray& _out);
+
+  static void relu(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void logistic(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void softmax(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void softplus(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  // derivative of activation
+  static void dRelu(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void dSoftplus(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void dLogistic(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+  static void dSoftmax(
+    const cv::InputArray& _inp,
+    cv::OutputArray& _out);
+
+  void read(const cv::FileNode& fn) override;
+  void write(cv::FileStorage& fs) const override;
+
+private:
   // private members
+  float mLearningRate;
+  int mNumLayers;
+
+  // the Weights matrix for each layer
+  std::vector<cv::Mat> mWeights;
+  std::vector<cv::Mat> mDropouts;
+  std::vector<float> mDropoutWeights;
+
+  // the layer output, at index 0 is the input, at index 'n' is the final output
+  std::vector<cv::Mat> mLayerActivations;
+  std::vector<std::string> mActivationsTypes;
+  std::vector<cv::Mat> mLayerOut;
+  // this vector holds the number of nodes in each layer;
+  std::vector<int> mNumNodesConfiguration;
+
 };
-}  // namespace ssig
+} // namespace ssig
 #endif  // !_SSIG_ML_ANN_MLP_HPP_
