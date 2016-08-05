@@ -44,6 +44,7 @@
 #include <cassert>
 #include <string>
 #include <unordered_set>
+#include <ssiglib/core/util.hpp>
 
 namespace ssig {
 
@@ -61,42 +62,85 @@ PLSClassifier::PLSClassifier(const PLSClassifier& rhs) {
 
 int PLSClassifier::predict(
   const cv::Mat_<float>& inp,
-  cv::Mat_<float>& resp) const {
+  cv::Mat_<float>& resp,
+  cv::Mat_<int>& labels) const {
   if (mOpenClEnabled) {
     mClPls->predict(inp, resp);
   } else {
     mPls->predict(inp, resp);
   }
-    cv::Mat_<float> r;
-    r.create(inp.rows, mYColumns);
+  cv::Mat_<float> r;
+  r.create(inp.rows, mYColumns);
+  labels = cv::Mat_<int>::zeros(inp.rows, 1);
 
-    int labelIdx = -1;
-    if (!mIsMulticlass) {
-      for (int row = 0; row < inp.rows; ++row) {
-        r[row][0] = resp[row][0];
-        r[row][1] = -1 * resp[row][0];
+  int labelIdx = -1;
+  if (!mIsMulticlass) {
+    for (int row = 0; row < inp.rows; ++row) {
+      r[row][0] = resp[row][0];
+      r[row][1] = -1 * resp[row][0];
+      if (r[row][0] > 0) {
+        labels.at<int>(row) = 1;
       }
-      labelIdx = resp[0][0] > 0 ? 1 : -1;
-      resp = r;
     }
+    labelIdx = resp[0][0] > 0 ? 1 : -1;
+
+    resp = r;
+  } else {
+    for (int row = 0; row < resp.rows; ++row) {
+      int maxIdx[2];
+      cv::minMaxIdx(resp.row(row), nullptr, nullptr, nullptr, maxIdx);
+      labelIdx = maxIdx[1];
+      auto it = mIdx2Labels.find(labelIdx);
+      if (it != mIdx2Labels.end()) {
+        labelIdx = it->second;
+      } else {
+        labelIdx = -1;
+      }
+      labels.at<int>(row) = labelIdx;
+    }
+  }
+
   return inp.rows > 1 || mIsMulticlass ? 0 : labelIdx;
 }
 
 void PLSClassifier::addLabels(const cv::Mat& labels) {
-  if (labels.cols > 1) {
-    // multiclass
-    mYColumns = labels.cols;
-    mIsMulticlass = true;
-  } else {
-    std::unordered_set<int> labelsSet;
-    for (int r = 0; r < labels.rows; ++r)
-      labelsSet.insert(labels.at<int>(r, 0));
-    if (labelsSet.size() > 2) {
-      std::runtime_error(std::string("Number of Labels is greater than 2.\n") +
-                         "This is a binary classifier!\n");
+  std::unordered_map<int, int> labelOrdering;
+  int labelIdx = -1;
+  int nLabels = 0;
+  int minLabel = INT_MAX, maxLabel = INT_MIN;
+  for (int i = 0; i < labels.rows; ++i) {
+    int label = labels.at<int>(i);
+    if (labelOrdering.find(label) == labelOrdering.end()) {
+      labelOrdering[label] = ++labelIdx;
+      mIdx2Labels[labelIdx] = label;
+      ++nLabels;
+      if (label <= minLabel) {
+        minLabel = label;
+      }
+      if (label >= maxLabel) {
+        maxLabel = label;
+      }
     }
   }
-  mLabels = labels;
+
+  if (nLabels == 2 && minLabel == -1 || maxLabel == 1) {
+    mLabels = labels;
+
+    mLabels2Idx[1] = 0;
+    mLabels2Idx[-1] = 1;
+    mIdx2Labels[0] = 1;
+    mIdx2Labels[1] = -1;
+  } else {
+    // multiclass
+    mLabels2Idx = labelOrdering;
+    mLabels = cv::Mat_<int>::zeros(labels.rows, nLabels);
+    mLabels = -1;
+    for (int i = 0; i < labels.rows; ++i) {
+      int label = labels.at<int>(i);
+      mLabels.at<int>(i, mLabels2Idx[label]) = 1;
+      mIsMulticlass = true;
+    }
+  }
 }
 
 cv::Ptr<PLSClassifier> PLSClassifier::create() {
@@ -106,9 +150,12 @@ cv::Ptr<PLSClassifier> PLSClassifier::create() {
 void PLSClassifier::learn(
   const cv::Mat_<float>& input,
   const cv::Mat& labels) {
-  // TODO(Ricardo): assert labels between -1 and 1
+  mIsMulticlass = false;
+  mLabels.release();
+  mSamples.release();
+
   addLabels(labels);
-  assert(!labels.empty());
+  assert(!mLabels.empty());
 
   cv::Mat_<float> l;
   mLabels.convertTo(l, CV_32F);
@@ -131,14 +178,7 @@ cv::Mat PLSClassifier::getLabels() const {
 }
 
 std::unordered_map<int, int> PLSClassifier::getLabelsOrdering() const {
-  if (mIsMulticlass) {
-    std::unordered_map<int, int> ans;
-    for (int i = 0; i < mYColumns; ++i) {
-      ans[i] = i;
-    }
-    return ans;
-  }
-  return {{1, 0}, {-1, 1}};
+  return mLabels2Idx;
 }
 
 bool PLSClassifier::empty() const {
@@ -157,11 +197,29 @@ void PLSClassifier::setClassWeights(const int classLabel, const float weight) {}
 
 void PLSClassifier::read(const cv::FileNode& fn) {
   mPls = std::unique_ptr<PLS>(new PLS());
+
+  auto labelOrderingNode = fn["Labels2Idx"];
+  ssig::Util::read<int, int>(mLabels2Idx, labelOrderingNode);
+  labelOrderingNode = fn["Idx2Labels"];
+  ssig::Util::read<int, int>(mIdx2Labels, labelOrderingNode);
+
   mPls->load(fn);
 }
 
 void PLSClassifier::write(cv::FileStorage& fs) const {
-  mPls->save(fs);
+  if (mOpenClEnabled) {
+    mClPls->save(fs);
+  } else {
+    mPls->save(fs);
+  }
+  fs << "Labels2Idx"
+      << "{";
+  ssig::Util::write<int, int>(mLabels2Idx, fs);
+  fs << "}";
+  fs << "Idx2Labels"
+      << "{";
+  ssig::Util::write<int, int>(mIdx2Labels, fs);
+  fs << "}";
 }
 
 Classifier* PLSClassifier::clone() const {
@@ -179,5 +237,6 @@ int PLSClassifier::getNumberOfFactors() const {
 void PLSClassifier::setNumberOfFactors(int numberOfFactors) {
   mNumberOfFactors = numberOfFactors;
 }
+
 
 }  // namespace ssig

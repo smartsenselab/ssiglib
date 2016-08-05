@@ -111,13 +111,7 @@ TEST(PLSClassifier, Persistence) {
 }
 
 TEST(PLSClassifier, MultiClassification) {
-  cv::Mat_<int> labels = (cv::Mat_<int>(6, 3) <<
-        1 , -1 , -1 ,
-        1 , -1 , -1 ,
-        -1 , 1 , -1 ,
-        -1 , 1 , -1 ,
-        -1 , -1 , 1 ,
-        -1 , -1 , 1);
+  cv::Mat_<int> labels = (cv::Mat_<int>(6, 1) << 1, 1, 2, 2, 3, 3);
   cv::Mat_<float> inp =
       (cv::Mat_<float>(6, 2) <<
       1, 2,
@@ -134,19 +128,29 @@ TEST(PLSClassifier, MultiClassification) {
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1 , 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 1000, 1003);
   cv::Mat_<float> query3 = (cv::Mat_<float>(1, 2) << 100 , 103);
-
+  cv::Mat_<float> queries;
+  queries.push_back(query1);
+  queries.push_back(query2);
+  queries.push_back(query3);
 
   cv::Mat_<float> resp;
+  cv::Mat_<int> actual;
+  classifier->predict(queries, resp, actual);
+
   classifier->predict(query1, resp);
   int idx[2];
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(0, idx[1]);
+  EXPECT_EQ(actual.at<int>(0), 1);
+
   classifier->predict(query2, resp);
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(1, idx[1]);
+  EXPECT_EQ(actual.at<int>(1), 2);
   classifier->predict(query3, resp);
   cv::minMaxIdx(resp, 0, 0, 0, idx);
   EXPECT_EQ(2, idx[1]);
+  EXPECT_EQ(actual.at<int>(2), 3);
 }
 
 TEST(OpenClPLSClassifier, BinaryClassification) {
@@ -182,8 +186,11 @@ TEST(OpenClPLSClassifier, Persistence) {
   cv::Mat_<float> labels;
   labelsInt.convertTo(labels, CV_32F);
 
-  auto classifier = ssig::OpenClPLS::create();
-  classifier->learn(inp, labels, 2);
+  auto classifier = ssig::PLSClassifier::create();
+  classifier->setUseOpenCl(true);
+
+  classifier->setNumberOfFactors(2);
+  classifier->learn(inp, labels);
 
   cv::Mat_<float> query1 = (cv::Mat_<float>(1, 2) << 1, 2);
   cv::Mat_<float> query2 = (cv::Mat_<float>(1, 2) << 100, 103);
@@ -194,7 +201,7 @@ TEST(OpenClPLSClassifier, Persistence) {
   classifier->predict(query2, resp);
   EXPECT_LE(resp.at<float>(0), 0);
 
-  classifier->save("pls.yml");
+  classifier->save("pls.yml", "root");
 
   auto loaded = ssig::PLSClassifier::create();
   loaded->load("pls.yml", "root");

@@ -225,10 +225,11 @@ TEST(OAAClassifier, SVMPersistence) {
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
 
-  classifier->save("oaa.yml", "root");
+  classifier->save("svmp_oaa.yml", "root");
 
   auto loaded = ssig::OAAClassifier::create(*underlying);
-  loaded->load("oaa.yml", "root");
+  loaded->load("svmp_oaa.yml", "root");
+  remove("svmp_oaa.yml");
 
   loaded->predict(query1, resp);
   ordering = loaded->getLabelsOrdering();
@@ -300,11 +301,11 @@ TEST(OAAClassifier, PLSPersistence) {
   EXPECT_TRUE(ordering.find(3) != ordering.end());
   EXPECT_GE(resp[0][label3], maxResp);
 
-  classifier->save("oaa.yml", "root");
+  classifier->save("plsp_oaa.yml", "root");
 
   auto loaded = ssig::OAAClassifier::create(*underlying);
-  loaded->load("oaa.yml", "root");
-  remove("oaa.yml");
+  loaded->load("plsp_oaa.yml", "root");
+  remove("plsp_oaa.yml");
 
   loaded->predict(query1, resp);
   ordering = loaded->getLabelsOrdering();

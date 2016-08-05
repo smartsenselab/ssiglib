@@ -40,8 +40,10 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
+// opencv
 #include <opencv2/core.hpp>
-
+// ssiglib
+#include <ssiglib/ml/classification.hpp>
 #include <ssiglib/ml/pls_classifier.hpp>
 #include <ssiglib/ml/hard_mining_classifier.hpp>
 

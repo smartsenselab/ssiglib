@@ -41,10 +41,11 @@
 
 #ifndef _SSIG_CORE_ALGORITHM_HPP_
 #define _SSIG_CORE_ALGORITHM_HPP_
-// opencv
-#include <opencv2/core.hpp>
 // c++
 #include <string>
+#include <cstdarg>
+// opencv
+#include <opencv2/core.hpp>
 // ssiglib
 #include "ssiglib/core/core_defs.hpp"
 #include "ssiglib/core/resource.hpp"
@@ -58,18 +59,40 @@ class Algorithm : public Resource {
   CORE_EXPORT Algorithm(const Algorithm& rhs);
   CORE_EXPORT Algorithm& operator=(const Algorithm& rhs);
 
-  CORE_EXPORT virtual void load(const std::string& filename,
-                                const std::string& nodename);
+  CORE_EXPORT virtual void load(
+    const std::string& filename,
+    const std::string& nodename);
 
-  CORE_EXPORT virtual void save(const std::string& filename,
-                                const std::string& nodename) const;
+  CORE_EXPORT virtual void save(
+    const std::string& filename,
+    const std::string& nodename) const;
+
+  /**
+  * @brief: this function can be used to verboseLog messages 
+   to file when setVerbose(true) is called.
+  **/
+  CORE_EXPORT void verboseLog(
+    FILE* file,
+    const char* format,
+    ...) const;
+  /**
+  * @brief: Overloaded method provided to verboseLog to stdout
+  **/
+  CORE_EXPORT void verboseLog(const char* format, ...) const;
 
   CORE_EXPORT void setUseOpenCl(bool state);
+  CORE_EXPORT bool getVerbose() const;
+  CORE_EXPORT void setVerbose(const bool verbose);
 
  protected:
   CORE_EXPORT virtual void read(const cv::FileNode& fn) = 0;
   CORE_EXPORT virtual void write(cv::FileStorage& fs) const = 0;
+  CORE_EXPORT void vVerboseLog(
+    FILE* file,
+    const char* format,
+    va_list args) const;
   bool mOpenClEnabled = false;
+  bool mVerbose = false;
 };
 
 }  // namespace ssig

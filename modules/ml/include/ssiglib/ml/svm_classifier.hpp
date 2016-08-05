@@ -57,6 +57,7 @@ class SVMClassifier : public Classifier {
   static svm_problem* convertToLibSVM(
     const cv::Mat_<int>& labels,
     const cv::Mat_<float>& features,
+    int& numLabels,
     double* & y,
     svm_node** & x);
 
@@ -91,9 +92,11 @@ class SVMClassifier : public Classifier {
     const cv::Mat_<float>& input,
     const cv::Mat& labels) override;
 
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels) const override;
 
   ML_EXPORT cv::Mat getLabels() const override;
   ML_EXPORT std::unordered_map<int, int> getLabelsOrdering() const override;
@@ -110,9 +113,8 @@ class SVMClassifier : public Classifier {
 
   ML_EXPORT Classifier* clone() const override;
 
-  ML_EXPORT float getEpsilon() const override;
-
-  ML_EXPORT void setEpsilon(float epsilon) override;
+  ML_EXPORT bool isMulticlass() const;
+  ML_EXPORT void setMulticlassState(const bool isMulticlass);
 
   ML_EXPORT int getKernelType() const;
 
@@ -159,6 +161,8 @@ class SVMClassifier : public Classifier {
 
  private:
   ML_EXPORT inline void cleanup();
+
+  bool mIsMulticlass = false;
   // private members
   svm_model* mModel = nullptr;
   double* mY = nullptr;

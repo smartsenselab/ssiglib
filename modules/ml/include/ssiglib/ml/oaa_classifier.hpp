@@ -60,9 +60,11 @@ class OAAClassifier : public Multiclass {
   ML_EXPORT static cv::Ptr<OAAClassifier> create(const Classifier& underlying);
   virtual ~OAAClassifier(void) = default;
 
+  using Classifier::predict;
   ML_EXPORT int predict(
     const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp) const override;
+    cv::Mat_<float>& resp,
+    cv::Mat_<int>& labels) const override;
 
   ML_EXPORT void learn(
     const cv::Mat_<float>& input,
