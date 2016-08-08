@@ -141,6 +141,10 @@ class MultilayerPerceptron : public ssig::Multiclass {
 
   ML_EXPORT void setDropoutWeights(const std::vector<float>& dropoutWeights);
 
+  ML_EXPORT std::string getLossType() const;
+
+  ML_EXPORT void setLossType(const std::string& loss);
+
   ML_EXPORT bool empty() const override;
 
   ML_EXPORT bool isTrained() const override;
@@ -154,6 +158,13 @@ class MultilayerPerceptron : public ssig::Multiclass {
     const std::string& loss,
     const cv::Mat& out,
     const cv::Mat& target) const;
+
+  template <class MatType>
+  ML_EXPORT void computeLossDerivative(
+    const std::string& lossType,
+    const MatType& activation,
+    const MatType& target,
+    MatType& loss) const;
 
   template <class MatType>
   ML_EXPORT void doForwardPass(

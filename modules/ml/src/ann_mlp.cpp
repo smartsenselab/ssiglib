@@ -55,34 +55,6 @@ MultilayerPerceptron::MultilayerPerceptron() {
   // Constructor
 }
 
-float MultilayerPerceptron::computeLoss(
-  const std::string& loss,
-  const cv::Mat& out,
-  const cv::Mat& target) const {
-  float avg_loss = 0.f;
-  if (loss == "log") {
-    cv::Mat m1, m2;
-    cv::log(out, m1);
-    cv::multiply(target, m1, m1);
-    avg_loss = static_cast<float>(
-      (cv::sum(m1) / (target.rows * target.cols))[0]);
-    cv::subtract(1, out, m2);
-    cv::log(m2, m2);
-    cv::Mat aux;
-    cv::subtract(1, target, aux);
-    cv::multiply(aux, m2, m2);
-    avg_loss += static_cast<float>(
-      (cv::sum(m2) / (target.rows * target.cols))[0]);
-    avg_loss = -avg_loss;
-  } else if (loss == "quadratic") {
-    cv::Mat aux = out - target;
-    cv::pow(aux, 2, aux);
-    avg_loss = static_cast<float>(cv::sum(aux)[0]);
-    avg_loss = avg_loss / (target.rows * target.cols);
-  }
-  return avg_loss;
-}
-
 cv::Ptr<MultilayerPerceptron> MultilayerPerceptron::create() {
   auto ans = cv::Ptr<MultilayerPerceptron>(new MultilayerPerceptron());
   return ans;
@@ -106,6 +78,63 @@ MultilayerPerceptron::~MultilayerPerceptron() {
 
 MultilayerPerceptron::MultilayerPerceptron(const MultilayerPerceptron& rhs) {
   // Constructor Copy
+}
+
+template <class MatType>
+void MultilayerPerceptron::computeLossDerivative(
+  const std::string& lossType,
+  const MatType& activation,
+  const MatType& target,
+  MatType& error) const {
+  if (lossType == "quadratic") {
+    cv::subtract(activation, target, error);
+  }else if(lossType == "log") {
+    
+    MatType diff, aux1, aux2;
+    
+    cv::subtract(activation, target, aux1);
+    cv::subtract(1, activation, aux2);
+    cv::multiply(activation, aux2, aux2);
+    cv::add(aux2, FLT_EPSILON, aux2);
+
+    cv::divide(aux1, aux2, error);
+    
+    //MatType aux;
+    //cv::add(activation, FLT_EPSILON, aux);
+    //cv::divide(target, aux, error);
+    //cv::multiply(error, -1, error);
+  }
+}
+
+float MultilayerPerceptron::computeLoss(
+  const std::string& loss,
+  const cv::Mat& out,
+  const cv::Mat& target) const {
+  float avg_loss = 0.f;
+  if (loss == "log") {
+    cv::Mat m1, m2;
+    cv::add(out, FLT_EPSILON, m1);
+    cv::log(m1, m1);
+    cv::multiply(target, m1, m1);
+    avg_loss = static_cast<float>(
+      (cv::sum(m1) / (target.rows * target.cols))[0]);
+    cv::subtract(1, out, m2);
+    
+    cv::add(m2, FLT_EPSILON, m2);
+    cv::log(m2, m2);
+    cv::Mat aux;
+    cv::subtract(1, target, aux);
+    cv::multiply(aux, m2, m2);
+    avg_loss += static_cast<float>(
+      (cv::sum(m2) / (target.rows * target.cols))[0]);
+    avg_loss = -avg_loss;
+  } else if (loss == "quadratic") {
+    cv::Mat aux = out - target;
+    cv::pow(aux, 2, aux);
+    avg_loss = static_cast<float>(cv::sum(aux)[0]);
+    avg_loss = avg_loss / (target.rows * target.cols);
+  }
+  return avg_loss;
 }
 
 template <class MatType>
@@ -266,6 +295,10 @@ void MultilayerPerceptron::addLayer(
   mActivationsTypes.push_back(activation);
 }
 
+void MultilayerPerceptron::setLossType(const std::string& loss) {
+  mLoss = loss;
+}
+
 bool MultilayerPerceptron::empty() const {
   return mWeights.empty();
 }
@@ -323,10 +356,10 @@ void MultilayerPerceptron::computeErrors(
   const int numLayers = mNumLayers;
   errors.resize(numLayers + 1);
   // this is the derivative of the loss function
-  // In the case of quadratic loss:
-  // TODO(Ricardo): instead call computeLossDerivative()
-  cv::subtract(activations.back(), target, errors.back());
-  // TODO(Ricardo): Change this line above to any loss
+  computeLossDerivative(mLoss,
+    activations.back(),
+    target,
+    errors.back());
   for (int L = numLayers - 1; L > 0; --L) {
     MatType aux;
     cv::gemm(weights[L], errors[L + 1], 1,
@@ -434,6 +467,7 @@ void MultilayerPerceptron::softmax(
     cv::UMat inp = _inp.getUMat();
     cv::UMat out;
     cv::exp(inp, out);
+    cv::add(out, FLT_EPSILON, out);
     for (int c = 0; c < out.cols; ++c) {
       cv::normalize(out.col(c), out.col(c), 1, 0, cv::NORM_L1);
     }
@@ -442,8 +476,13 @@ void MultilayerPerceptron::softmax(
     cv::Mat inp = _inp.getMat();
     cv::Mat out;
     cv::exp(inp, out);
+    cv::min(out, 1e10, out);
+    cv::add(out, FLT_EPSILON, out);
     for (int c = 0; c < out.cols; ++c) {
       cv::normalize(out.col(c), out.col(c), 1, 0, cv::NORM_L1);
+      if(!cv::checkRange(out.col(c))) {
+        perror("NAN found\n");
+      }
     }
     out.copyTo(_out);
   }
@@ -620,5 +659,9 @@ std::vector<float> MultilayerPerceptron::getDropoutWeights() const {
 void MultilayerPerceptron::setDropoutWeights(
   const std::vector<float>& dropoutWeights) {
   mDropoutWeights = dropoutWeights;
+}
+
+std::string MultilayerPerceptron::getLossType() const {
+  return mLoss;
 }
 }  // namespace ssig
