@@ -55,7 +55,7 @@
 
 namespace ssig {
 class MultilayerPerceptron : public ssig::Multiclass {
-public:
+ public:
   ML_EXPORT static cv::Ptr<MultilayerPerceptron> create();
 
   ML_EXPORT static cv::Ptr<MultilayerPerceptron> create(
@@ -121,7 +121,8 @@ public:
 
   ML_EXPORT std::vector<cv::Mat> getLayerActivations() const;
 
-  ML_EXPORT void setLayerActivations(const std::vector<cv::Mat>& layerActivations);
+  ML_EXPORT void setLayerActivations(
+    const std::vector<cv::Mat>& layerActivations);
 
   ML_EXPORT std::vector<cv::Mat> getLayerOut() const;
 
@@ -133,7 +134,8 @@ public:
 
   ML_EXPORT std::vector<std::string> getActivationsTypes() const;
 
-  ML_EXPORT void setActivationsTypes(const std::vector<std::string>& activationsTypes);
+  ML_EXPORT void setActivationsTypes(
+    const std::vector<std::string>& activationsTypes);
 
   ML_EXPORT std::vector<float> getDropoutWeights() const;
 
@@ -145,7 +147,7 @@ public:
 
   ML_EXPORT Classifier* clone() const override;
 
-protected:
+ protected:
   ML_EXPORT MultilayerPerceptron(void);
 
   ML_EXPORT float computeLoss(
@@ -161,6 +163,8 @@ protected:
     const std::vector<float>& dropout,
     std::vector<MatType>& outputs,
     std::vector<MatType>& activations) const;
+
+  ML_EXPORT void setWeights(const int startNodes);
 
   // backpropagation
   ML_EXPORT void learnWeights(
@@ -235,7 +239,7 @@ protected:
 
   ML_EXPORT void write(cv::FileStorage& fs) const override;
 
-private:
+ private:
   // private members
   bool mIsTrained = false;;
   float mLearningRate = 0.5f;
@@ -255,5 +259,5 @@ private:
   // this vector holds the number of nodes in each layer;
   std::vector<int> mNumNodesConfiguration;
 };
-} // namespace ssig
+}  // namespace ssig
 #endif  // !_SSIG_ML_ANN_MLP_HPP_
