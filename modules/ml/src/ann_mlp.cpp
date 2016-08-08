@@ -89,7 +89,6 @@ void MultilayerPerceptron::computeLossDerivative(
   if (lossType == "quadratic") {
     cv::subtract(activation, target, error);
   } else if (lossType == "log") {
-
     MatType diff, aux1, aux2;
 
     cv::subtract(activation, target, aux1);
@@ -98,11 +97,6 @@ void MultilayerPerceptron::computeLossDerivative(
     cv::add(aux2, FLT_EPSILON, aux2);
 
     cv::divide(aux1, aux2, error);
-
-    //MatType aux;
-    //cv::add(activation, FLT_EPSILON, aux);
-    //cv::divide(target, aux, error);
-    //cv::multiply(error, -1, error);
   }
 }
 
@@ -736,4 +730,4 @@ void MultilayerPerceptron::setDropoutWeights(
 std::string MultilayerPerceptron::getLossType() const {
   return mLoss;
 }
-} // namespace ssig
+}  // namespace ssig

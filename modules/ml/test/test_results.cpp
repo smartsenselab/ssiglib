@@ -68,7 +68,7 @@ TEST(Results, binaryConfMat) {
   ASSERT_FLOAT_EQ(0.75f, results.getAccuracy());
 }
 
-//TEST(Results, randomConfusion) {
+// TEST(Results, randomConfusion) {
 //  cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0 , 1 , 0 , 1);
 //  cv::Mat_<int> labels = (cv::Mat_<int>(4, 1) << 0 , 1 , 1 , 1);
 //
@@ -91,7 +91,7 @@ TEST(Results, binaryConfMat) {
 //  avgRandConf /= N;
 //
 //  ASSERT_LT(std::abs(0.5f - randPrec), 0.75f);
-//}
+// }
 
 TEST(Results, simpleConfMat) {
   cv::Mat_<int> gt = (cv::Mat_<int>(4, 1) << 0 , 1 , 2 , 1);
