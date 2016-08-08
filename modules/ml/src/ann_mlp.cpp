@@ -88,17 +88,17 @@ void MultilayerPerceptron::computeLossDerivative(
   MatType& error) const {
   if (lossType == "quadratic") {
     cv::subtract(activation, target, error);
-  }else if(lossType == "log") {
-    
+  } else if (lossType == "log") {
+
     MatType diff, aux1, aux2;
-    
+
     cv::subtract(activation, target, aux1);
     cv::subtract(1, activation, aux2);
     cv::multiply(activation, aux2, aux2);
     cv::add(aux2, FLT_EPSILON, aux2);
 
     cv::divide(aux1, aux2, error);
-    
+
     //MatType aux;
     //cv::add(activation, FLT_EPSILON, aux);
     //cv::divide(target, aux, error);
@@ -106,30 +106,32 @@ void MultilayerPerceptron::computeLossDerivative(
   }
 }
 
+template <class MatType>
 float MultilayerPerceptron::computeLoss(
   const std::string& loss,
-  const cv::Mat& out,
-  const cv::Mat& target) const {
+  const MatType& out,
+  const MatType& target) const {
   float avg_loss = 0.f;
   if (loss == "log") {
-    cv::Mat m1, m2;
+    MatType m1, m2;
     cv::add(out, FLT_EPSILON, m1);
     cv::log(m1, m1);
     cv::multiply(target, m1, m1);
     avg_loss = static_cast<float>(
       (cv::sum(m1) / (target.rows * target.cols))[0]);
     cv::subtract(1, out, m2);
-    
+
     cv::add(m2, FLT_EPSILON, m2);
     cv::log(m2, m2);
-    cv::Mat aux;
+    MatType aux;
     cv::subtract(1, target, aux);
     cv::multiply(aux, m2, m2);
     avg_loss += static_cast<float>(
       (cv::sum(m2) / (target.rows * target.cols))[0]);
     avg_loss = -avg_loss;
   } else if (loss == "quadratic") {
-    cv::Mat aux = out - target;
+    MatType aux;
+    cv::subtract(out, target, aux);
     cv::pow(aux, 2, aux);
     avg_loss = static_cast<float>(cv::sum(aux)[0]);
     avg_loss = avg_loss / (target.rows * target.cols);
@@ -153,7 +155,9 @@ void MultilayerPerceptron::doForwardPass(
   activations[0] = input;
 
   for (int l = 0; l < numLayers; ++l) {
-    cv::Mat layerResponse = weights[l] * activations[l];
+    MatType layerResponse;
+    cv::gemm(weights[l], activations[l], 1, cv::noArray(), 0, layerResponse);
+
     outputs[l] = layerResponse;
     applyActivation(activationTypes[l], layerResponse, layerResponse);
     if (dropout[l] > 0.05f && dropout[l] < 0.8f) {
@@ -196,10 +200,27 @@ void MultilayerPerceptron::learn(
   const cv::Mat& labels) {
   mIsTrained = false;
 
-  cv::Mat input;
-  cv::Mat target = labels.t();
+  if (mOpenClEnabled) {
+    cv::UMat inp, lab;
+    _input.copyTo(inp);
+    labels.copyTo(lab);
+    _learn(inp, lab);
+  } else {
+    cv::Mat inp = _input;
+    _learn(inp, labels);
+  }
+  mIsTrained = true;
+}
 
-  cv::Mat ones = cv::Mat(_input.rows, 1, CV_32F, 1);
+template <class MatType>
+void MultilayerPerceptron::_learn(
+  const MatType& _input,
+  const MatType& labels) {
+  MatType input;
+  MatType target;
+  cv::transpose(labels, target);
+
+  MatType ones = MatType(_input.rows, 1, CV_32F, 1);
   cv::hconcat(_input, ones, input);
   input = input.t();
   // create weight matrices
@@ -207,23 +228,36 @@ void MultilayerPerceptron::learn(
   // END Weights
   char* loss_msg =
     "The average loss in the output layer of this epoch is [%g]\n";
+  std::vector<MatType> activations,
+    weights(mWeights.size());
+
+  for (int i = 0; i < static_cast<int>(mWeights.size()); ++i) {
+    mWeights[i].copyTo(weights[i]);
+  }
   for (int it = 0; it < mMaxIterations; ++it) {
     learnWeights(
       input,
       target,
       mActivationsTypes,
       mDropoutWeights,
-      mLayerActivations,
-      mWeights);
-    cv::Mat out;
-    mLayerActivations.back().copyTo(out);
+      activations,
+      weights);
 
+    MatType out;
+    activations.back().copyTo(out);
+
+    auto avg_loss = computeLoss(mLoss, out, target);
     if (it % 100 == 0) {
-      auto avg_loss = computeLoss(mLoss, out, target);
       verboseLog(loss_msg, avg_loss);
     }
+    if (avg_loss < mEpsilon) {
+      break;
+    }
   }
-  mIsTrained = true;
+
+  for (int i = 0; i < weights.size(); ++i) {
+    weights[i].copyTo(mWeights[i]);
+  }
 }
 
 int MultilayerPerceptron::predict(
@@ -249,9 +283,9 @@ int MultilayerPerceptron::predict(
 
 void MultilayerPerceptron::predict(
   const int layerIdx,
-  const cv::Mat_<float>& _inp,
-  cv::Mat_<float>& resp,
-  cv::Mat_<int>& labels) const {
+  const cv::Mat& _inp,
+  cv::Mat& resp,
+  cv::Mat& labels) const {
   std::vector<cv::Mat> activations,
                        outputs;
   predict(_inp, resp, labels, activations, outputs);
@@ -311,25 +345,26 @@ Classifier* MultilayerPerceptron::clone() const {
   return new MultilayerPerceptron(*this);
 }
 
+template <class MatType>
 void MultilayerPerceptron::learnWeights(
-  const cv::Mat& inputs,
-  const cv::Mat& labels,
+  const MatType& inputs,
+  const MatType& labels,
   const std::vector<std::string>& activationTypes,
   const std::vector<float>& dropout,
-  std::vector<cv::Mat>& activations,
-  std::vector<cv::Mat>& weights) const {
+  std::vector<MatType>& activations,
+  std::vector<MatType>& weights) const {
   const int numLayers = static_cast<int>(weights.size()) + 1;
   CV_Assert(weights.size() == numLayers - 1);
   CV_Assert(activationTypes.size() == numLayers - 1);
   CV_Assert(dropout.size() == numLayers - 1);
 
-  std::vector<cv::Mat> net_out;
+  std::vector<MatType> net_out;
   doForwardPass(inputs, weights,
                 activationTypes,
                 dropout,
                 net_out,
                 activations);
-  std::vector<cv::Mat> errors;
+  std::vector<MatType> errors;
   computeErrors(
     labels,
     activationTypes,
@@ -337,7 +372,7 @@ void MultilayerPerceptron::learnWeights(
     net_out,
     activations,
     errors);
-  gradientUpdate<cv::Mat>(
+  gradientUpdate<MatType>(
     mLearningRate,
     activations,
     errors,
@@ -357,9 +392,9 @@ void MultilayerPerceptron::computeErrors(
   errors.resize(numLayers + 1);
   // this is the derivative of the loss function
   computeLossDerivative(mLoss,
-    activations.back(),
-    target,
-    errors.back());
+                        activations.back(),
+                        target,
+                        errors.back());
   for (int L = numLayers - 1; L > 0; --L) {
     MatType aux;
     cv::gemm(weights[L], errors[L + 1], 1,
@@ -429,7 +464,7 @@ void MultilayerPerceptron::relu(
   if (_inp.isUMat()) {
     cv::UMat inp = _inp.getUMat();
     cv::UMat out;
-    cv::max(cv::UMat::zeros(inp.size(), CV_32F), inp, out);
+    cv::max(0, inp, out);
     out.copyTo(_out);
   } else {
     cv::Mat inp = _inp.getMat();
@@ -480,7 +515,7 @@ void MultilayerPerceptron::softmax(
     cv::add(out, FLT_EPSILON, out);
     for (int c = 0; c < out.cols; ++c) {
       cv::normalize(out.col(c), out.col(c), 1, 0, cv::NORM_L1);
-      if(!cv::checkRange(out.col(c))) {
+      if (!cv::checkRange(out.col(c))) {
         perror("NAN found\n");
       }
     }
@@ -565,11 +600,48 @@ void MultilayerPerceptron::dSoftmax(
 }
 
 void MultilayerPerceptron::read(const cv::FileNode& fn) {
-  // TODO(Ricardo): implement this
+  int numWeights;
+  fn["numWeights"] >> numWeights;
+  cv::FileNode node;
+  node = fn["weights"];
+
+  mWeights.resize(numWeights);
+  for (int i = 0; i < numWeights; ++i) {
+    node["weight_" + std::to_string(i)] >> mWeights[i];
+  }
+
+  fn["numLayers"] >> mNumLayers;
+
+  node = fn["activations"];
+  int len = static_cast<int>(node.size());
+  mActivationsTypes.resize(len);
+  for (int i = 0; i < len; ++i) {
+    node[i] >> mActivationsTypes[i];
+  }
+
+  fn["learningRate"] >> mLearningRate;
+  fn["numNodesConfig"] >> mNumNodesConfiguration;
+  fn["dropoutWeights"] >> mDropoutWeights;
+  fn["dropouts"] >> mDropouts;
+  fn["loss"] >> mLoss;
 }
 
 void MultilayerPerceptron::write(cv::FileStorage& fs) const {
-  // TODO(Ricardo): implement this
+  const int numWeights = static_cast<int>(mWeights.size());
+  fs << "numWeights" << numWeights;
+  fs << "weights" << "{";
+
+  for (int i = 0; i < numWeights; ++i) {
+    fs << "weight_" + std::to_string(i) << mWeights[i];
+  }
+
+  fs << "numLayers" << mNumLayers;
+  fs << "activations" << mActivationsTypes;
+  fs << "learningRate" << mLearningRate;
+  fs << "numNodesConfig" << mNumNodesConfiguration;
+  fs << "dropoutWeights" << mDropoutWeights;
+  fs << "dropouts" << mDropouts;
+  fs << "loss" << mLoss;
 }
 
 cv::Mat MultilayerPerceptron::getLabels() const {
@@ -664,4 +736,4 @@ void MultilayerPerceptron::setDropoutWeights(
 std::string MultilayerPerceptron::getLossType() const {
   return mLoss;
 }
-}  // namespace ssig
+} // namespace ssig
