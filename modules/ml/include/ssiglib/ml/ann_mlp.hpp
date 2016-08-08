@@ -80,9 +80,9 @@ class MultilayerPerceptron : public ssig::Multiclass {
 
   ML_EXPORT void predict(
     const int layerIdx,
-    const cv::Mat_<float>& inp,
-    cv::Mat_<float>& resp,
-    cv::Mat_<int>& labels) const;
+    const cv::Mat& inp,
+    cv::Mat& resp,
+    cv::Mat& labels) const;
 
   ML_EXPORT void predict(
     const cv::Mat& inp,
@@ -154,10 +154,16 @@ class MultilayerPerceptron : public ssig::Multiclass {
  protected:
   ML_EXPORT MultilayerPerceptron(void);
 
+  template<class MatType>
+  ML_EXPORT void _learn(
+    const MatType& input,
+    const MatType& labels);
+
+  template <class MatType>
   ML_EXPORT float computeLoss(
     const std::string& loss,
-    const cv::Mat& out,
-    const cv::Mat& target) const;
+    const MatType& out,
+    const MatType& target) const;
 
   template <class MatType>
   ML_EXPORT void computeLossDerivative(
@@ -178,13 +184,14 @@ class MultilayerPerceptron : public ssig::Multiclass {
   ML_EXPORT void setWeights(const int startNodes);
 
   // backpropagation
+  template <class MatType>
   ML_EXPORT void learnWeights(
-    const cv::Mat& inputs,
-    const cv::Mat& labels,
+    const MatType& inputs,
+    const MatType& labels,
     const std::vector<std::string>& activationTypes,
     const std::vector<float>& dropout,
-    std::vector<cv::Mat>& activations,
-    std::vector<cv::Mat>& weights) const;
+    std::vector<MatType>& activations,
+    std::vector<MatType>& weights) const;
 
   template <class MatType>
   ML_EXPORT void computeErrors(
