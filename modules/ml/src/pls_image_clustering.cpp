@@ -53,6 +53,149 @@
 
 namespace ssig {
 
+void PLSImageClustering::assignment(
+  const cv::Mat_<float>& samples, const int clusterSize, const int nClusters,
+  const std::vector<int>& assignmentSet,
+  std::vector<std::vector<float>>& clustersResponses,
+  std::vector<int>& clustersIds, std::vector<Cluster>& out) {
+  const int C =
+    static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
+  const int nLabels = static_cast<int>(mClassifier->getLabelsOrdering().size());
+  std::unordered_map<int, bool> pointAvailability;
+  std::vector<Cluster> clusters;
+  clustersResponses.clear();
+  std::vector<int> ids;
+  cv::Mat_<float> responsesMatrix(static_cast<int>(assignmentSet.size()),
+    nLabels);
+
+  for (int sample = 0; sample < static_cast<int>(assignmentSet.size());
+    ++sample) {
+    cv::Mat_<float> response;
+    cv::Mat_<float> feat = mSamples.row(assignmentSet[sample]);
+    mClassifier->predict(feat, response);
+    if (mNormalizeResponses) {
+      response = response / (cv::norm(response) + 0.1);
+    }
+    response.copyTo(responsesMatrix.row(sample));
+  }
+  cv::transpose(responsesMatrix, responsesMatrix);
+
+  cv::Mat_<int> ordering;
+  cv::sortIdx(responsesMatrix, ordering,
+    cv::SORT_DESCENDING + cv::SORT_EVERY_ROW);
+
+  // Loop consists of two steps
+  // calculating the sum of responses
+  // picking the fittest cluster
+  int nAssignment = 0;
+  std::vector<bool> clusterAssigned(nClusters, false);
+  while (nAssignment < C) {
+    Cluster newCluster;
+    // step one:
+    float maxSum = -FLT_MAX;
+    int chosenClusterId = -1;
+    for (int clusterId = 0; clusterId < nClusters; ++clusterId) {
+      if (clusterAssigned[clusterId])
+        continue;
+
+      int m = 0;
+      int i = 0;
+      float sum = 0;
+      Cluster clusterSet;
+      clusterSet.reserve(clusterSize);
+      while (m < clusterSize) {
+        int assignmentId = ordering[clusterId][i];
+        int sampleId = assignmentSet[assignmentId];
+
+        auto it = pointAvailability.find(sampleId);
+        bool availability = (it == pointAvailability.end()) || it->second;
+        if (availability) {
+          sum += responsesMatrix[clusterId][assignmentId];
+          clusterSet.push_back(sampleId);
+          ++m;
+        }
+        ++i;
+      }
+      if (sum > maxSum) {
+        maxSum = sum;
+        chosenClusterId = clusterId;
+        newCluster = clusterSet;
+      }
+    }
+
+    // step two
+    clusterAssigned[chosenClusterId] = true;
+    ids.push_back(clustersIds[chosenClusterId]);
+
+    clusters.push_back(newCluster);
+    for (auto& sampleId : newCluster) {
+      pointAvailability[sampleId] = false;
+    }
+    nAssignment++;
+  }
+  clustersIds = ids;
+
+  // MERGING
+  if (nClusters != 1) {
+    removeMeaninglessClusters(clusters);
+    merge(clusters);
+  }
+  buildResponses(samples, clusters, mClustersResponses, *mClassifier);
+  out = clusters;
+}
+
+void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
+  mMergeOcurred = false;
+
+  bool hasMerged = false;
+  std::vector<Cluster> ans;
+
+  int merges = 0;
+  do {
+    if (static_cast<int>(clusters.size() + ans.size()) <= mK) {
+      break;
+    }
+    cv::Mat_<float> clusterRepresentation;
+    buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
+
+    cv::Mat_<float> similarity = Math::buildSimilarity(
+      clusterRepresentation,
+      *mSimilarityFunction);
+
+    // similarity = cv::abs(similarity);
+    std::pair<int, int> mergedPair;
+    hasMerged = findClosestClusters(similarity, mMergeThreshold, mergedPair);
+    if (hasMerged) {
+      ++merges;
+      int id1 = mergedPair.first;
+      int id2 = mergedPair.second;
+
+      clusters[id1].insert(clusters[id1].end(), clusters[id2].begin(),
+        clusters[id2].end());
+
+      Cluster mergeResult;
+      mergeResult.insert(mergeResult.end(), clusters[id1].begin(),
+        clusters[id1].end());
+
+      clusters.erase(clusters.begin() + id2);
+      clusters.erase(clusters.begin() + id1);
+
+      ans.push_back(mergeResult);
+    }
+
+    similarity.release();
+    if (nMergesPerIteration > 0 && merges >= nMergesPerIteration)
+      break;
+  } while (hasMerged);
+  if (clusters.size() > 0) {
+    ans.insert(ans.begin(), clusters.begin(), clusters.end());
+  }
+  if (merges)
+    mMergeOcurred = true;
+  clusters = ans;
+}
+
+
 void PLSImageClustering::buildResponses(
   const cv::Mat_<float>& inp, const std::vector<Cluster>& clusters,
   std::vector<std::vector<float>>& responses,
@@ -247,96 +390,6 @@ bool PLSImageClustering::isFinished() {
 
 void PLSImageClustering::postCondition() {}
 
-void PLSImageClustering::assignment(
-  const cv::Mat_<float>& samples, const int clusterSize, const int nClusters,
-  const std::vector<int>& assignmentSet,
-  std::vector<std::vector<float>>& clustersResponses,
-  std::vector<int>& clustersIds, std::vector<Cluster>& out) {
-  const int C =
-      static_cast<int>(MIN(nClusters, assignmentSet.size() / clusterSize));
-  const int nLabels = static_cast<int>(mClassifier->getLabelsOrdering().size());
-  std::unordered_map<int, bool> pointAvailability;
-  std::vector<Cluster> clusters;
-  clustersResponses.clear();
-  std::vector<int> ids;
-  cv::Mat_<float> responsesMatrix(static_cast<int>(assignmentSet.size()),
-                                  nLabels);
-
-  for (int sample = 0; sample < static_cast<int>(assignmentSet.size());
-       ++sample) {
-    cv::Mat_<float> response;
-    cv::Mat_<float> feat = mSamples.row(assignmentSet[sample]);
-    mClassifier->predict(feat, response);
-    if (mNormalizeResponses) {
-      response = response / (cv::norm(response) + 0.1);
-    }
-    response.copyTo(responsesMatrix.row(sample));
-  }
-  cv::transpose(responsesMatrix, responsesMatrix);
-
-  cv::Mat_<int> ordering;
-  cv::sortIdx(responsesMatrix, ordering,
-              cv::SORT_DESCENDING + cv::SORT_EVERY_ROW);
-
-  // Loop consists of two steps
-  // calculating the sum of responses
-  // picking the fittest cluster
-  int nAssignment = 0;
-  std::vector<bool> clusterAssigned(nClusters, false);
-  while (nAssignment < C) {
-    Cluster newCluster;
-    // step one:
-    float maxSum = -FLT_MAX;
-    int chosenClusterId = -1;
-    for (int clusterId = 0; clusterId < nClusters; ++clusterId) {
-      if (clusterAssigned[clusterId])
-        continue;
-
-      int m = 0;
-      int i = 0;
-      float sum = 0;
-      Cluster clusterSet;
-      clusterSet.reserve(clusterSize);
-      while (m < clusterSize) {
-        int assignmentId = ordering[clusterId][i];
-        int sampleId = assignmentSet[assignmentId];
-
-        auto it = pointAvailability.find(sampleId);
-        bool availability = (it == pointAvailability.end()) || it->second;
-        if (availability) {
-          sum += responsesMatrix[clusterId][assignmentId];
-          clusterSet.push_back(sampleId);
-          ++m;
-        }
-        ++i;
-      }
-      if (sum > maxSum) {
-        maxSum = sum;
-        chosenClusterId = clusterId;
-        newCluster = clusterSet;
-      }
-    }
-
-    // step two
-    clusterAssigned[chosenClusterId] = true;
-    ids.push_back(clustersIds[chosenClusterId]);
-
-    clusters.push_back(newCluster);
-    for (auto& sampleId : newCluster) {
-      pointAvailability[sampleId] = false;
-    }
-    nAssignment++;
-  }
-  clustersIds = ids;
-
-  // MERGING
-  if (nClusters != 1) {
-    removeMeaninglessClusters(clusters);
-    merge(clusters);
-  }
-  buildResponses(samples, clusters, mClustersResponses, *mClassifier);
-  out = clusters;
-}
 
 void PLSImageClustering::buildClusterRepresentation(
   const cv::Mat_<float>& samples,
@@ -415,57 +468,6 @@ void PLSImageClustering::setNormalizeResponses(bool normalizeResponses) {
 
 bool PLSImageClustering::getMergeConvergence() const {
   return mMergeConvergence;
-}
-
-void PLSImageClustering::merge(std::vector<Cluster>& clusters) {
-  mMergeOcurred = false;
-
-  bool hasMerged = false;
-  std::vector<Cluster> ans;
-
-  int merges = 0;
-  do {
-    if (static_cast<int>(clusters.size() + ans.size()) <= mK) {
-      break;
-    }
-    cv::Mat_<float> clusterRepresentation;
-    buildClusterRepresentation(mSamples, clusters, clusterRepresentation);
-
-    cv::Mat_<float> similarity = Math::buildSimilarity(
-      clusterRepresentation,
-      *mSimilarityFunction);
-
-    // similarity = cv::abs(similarity);
-    std::pair<int, int> mergedPair;
-    hasMerged = findClosestClusters(similarity, mMergeThreshold, mergedPair);
-    if (hasMerged) {
-      ++merges;
-      int id1 = mergedPair.first;
-      int id2 = mergedPair.second;
-
-      clusters[id1].insert(clusters[id1].end(), clusters[id2].begin(),
-                           clusters[id2].end());
-
-      Cluster mergeResult;
-      mergeResult.insert(mergeResult.end(), clusters[id1].begin(),
-                         clusters[id1].end());
-
-      clusters.erase(clusters.begin() + id2);
-      clusters.erase(clusters.begin() + id1);
-
-      ans.push_back(mergeResult);
-    }
-
-    similarity.release();
-    if (nMergesPerIteration > 0 && merges >= nMergesPerIteration)
-      break;
-  } while (hasMerged);
-  if (clusters.size() > 0) {
-    ans.insert(ans.begin(), clusters.begin(), clusters.end());
-  }
-  if (merges)
-    mMergeOcurred = true;
-  clusters = ans;
 }
 
 bool PLSImageClustering::findClosestClusters(const cv::Mat& similarityMatrix,
