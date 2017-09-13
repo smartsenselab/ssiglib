@@ -250,4 +250,7 @@ void PSO::update(const cv::Mat& globalBest,
 }
 
 }  // namespace ssig
+<<<<<<< HEAD
+=======
 
+>>>>>>> Lint
