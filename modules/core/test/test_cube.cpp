@@ -39,33 +39,31 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#include <gtest/gtest.h>
+#include "ssiglib/core/cube.hpp"
 
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
+TEST(cube, CubeIntersection) {
+	int temporalSize = 5;
+	ssig::Cube cuboid(0, 0, 2, 8, 8, 3);
 
-#define HARALICK_EPSILON 0.00001
+	auto cuboidRoi = ssig::Cube(0, 0, 0, 16, 16, 8);
+	auto intersection = cuboidRoi & cuboid;
 
-namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+	EXPECT_EQ(intersection, cuboid);
+	
+	cuboid.x0 = 13;
+	intersection = cuboidRoi & cuboid;
+	EXPECT_FALSE(intersection == cuboid);
+
+	cuboid.x0 = 0;
+	cuboid.y0 = 13;
+	intersection = cuboidRoi & cuboid;
+	EXPECT_FALSE(intersection == cuboid);
+
+	cuboid.x0 = 0;
+	cuboid.y0 = 0;
+	cuboid.t0 = 13;
+	intersection = cuboidRoi & cuboid;
+	EXPECT_FALSE(intersection == cuboid);
+
+}

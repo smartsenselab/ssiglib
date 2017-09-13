@@ -39,33 +39,47 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#include <gtest/gtest.h>
+#include "ssiglib/descriptors/co_occurrence_general.hpp"
+#include <opencv2\core\core.hpp>
+#include <opencv2\highgui\highgui.hpp>
+#include <iomanip>
 
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
+TEST(CoOccurrenceGeneral, SampleCoOccurrenceGeneral) {
+	cv::Mat_<int>img;
+	std::vector<cv::Mat> mat;
+	ssig::CoOccurrenceGeneral *cooc = new ssig::CoOccurrenceGeneral(255, 1);
 
-#define HARALICK_EPSILON 0.00001
+	img = cv::imread("cooc_img.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+	ASSERT_FALSE(img.empty());
+	cv::Rect patch(0, 0, img.cols, img.rows);
 
-namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+	cooc->extractAllMatricesDirections(patch, img, mat);
+
+	std::vector<cv::Mat> loadedMat;
+	cv::FileStorage storageMatrix;
+	cv::FileNode node, n1;
+
+	//Loading pre-computed matrices
+	for (int degree = 0; degree <= 136; degree += 45)
+	{
+		cv::Mat tempMat;
+		std::stringstream number;
+		number << std::setw(4) << std::setfill('0') << degree;
+		std::string path = "cooc_matrix" + number.str() + ".yml";
+		storageMatrix.open(path, cv::FileStorage::READ);
+
+		node = storageMatrix.root();
+		n1 = node["ActionRecognitionFeatures"];
+		n1["Matrix"] >> tempMat;
+
+		loadedMat.push_back(tempMat.clone());
+	}
+
+	//Comparing matrices
+	for (int matrix = 0; matrix < loadedMat.size(); matrix++)
+		for (int i = 0; i < loadedMat[matrix].rows; i++)
+			for (int j = 0; j < loadedMat[matrix].cols; j++)
+				EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); //if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
+
+}

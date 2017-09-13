@@ -39,33 +39,74 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
-
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+#include "ssiglib/core/optimization.hpp"
 
 namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
+cv::Mat_<float> Optimization::getResults() const {
+  return mUtilities;
+}
+
+cv::Mat_<float> Optimization::getState() const {
+  return mPopulation;
+}
+
+void Optimization::setState(const cv::Mat_<float>& state) {
+  mPopulation = state.clone();
+}
+
+int Optimization::getMaxIterations() const {
+  return mMaxIterations;
+}
+
+void Optimization::setMaxIterations(const int maxIterations) {
+  mMaxIterations = maxIterations;
+}
+
+cv::Ptr<UtilityFunctor> Optimization::getUtility() const {
+  return utility;
+}
+
+cv::Ptr<DistanceFunctor> Optimization::getDistance() const {
+  return distance;
+}
+
+void Optimization::setUtilityFunctor(
+  cv::Ptr<UtilityFunctor>& utilityFunctor) {
+  utility = utilityFunctor;
+}
+
+void Optimization::setDistanceFunctor(
+  cv::Ptr<DistanceFunctor>& distanceFunctor) {
+  distance = distanceFunctor;
+}
+
+double Optimization::getEps() const {
+  return mEps;
+}
+
+void Optimization::setEps(const double eps) {
+  mEps = eps;
+}
+
+<<<<<<< HEAD
+=======
+Optimization::Optimization(
+  cv::Ptr<UtilityFunctor>& utilityFunction,
+  cv::Ptr<DistanceFunctor>& distanceFunction) :
+  utility(utilityFunction),
+  distance(distanceFunction) {}
+
+>>>>>>> Changing Optimization and PSO signatures to be more readable
+cv::Mat_<float> ssig::Optimization::
+randomVector(const int dimensionality,
+  const double minRange,
+  const double maxRange) {
+  cv::Mat_<float> vec(1, dimensionality);
+  cv::randu(vec, cv::Scalar::all(minRange),
+            cv::Scalar::all(maxRange));
+  return vec;
+}
+
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+
+

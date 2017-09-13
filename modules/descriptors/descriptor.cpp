@@ -39,33 +39,25 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
-
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+#include "descriptors/descriptor.hpp"
 
 namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
+Descriptor::Descriptor() {
+  // Constructor
+}
+
+Descriptor::~Descriptor() {
+  // Destructor
+}
+
+Descriptor::Descriptor(const Descriptor& rhs) {
+  // Constructor Copy
+}
+
+Descriptor& Descriptor::operator=(const Descriptor& rhs) {
+  if (this != &rhs) {
+    // code here
+  }
+  return *this;
+}
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
