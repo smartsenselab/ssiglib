@@ -149,7 +149,7 @@ void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
 	patches = CreatePatch(cuboid, hasMovement);
 	output.release();
 
-	if (hasMovement) //verificar se tem movimento
+	if (hasMovement) //verify sif there is any movement
 	{
 		for (int i = 0, k = 0; i < patches.size(); i++)
 		{
@@ -345,9 +345,9 @@ inline void OFCM::FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB
 
 int OFCM::calcNumOptcialFlowPerCuboid() {
 	int numOpticalFlow = 0;
-	for (size_t i = 0; i < this->cuboidLength; i++) //for (int i = 1; i < this->cuboidLength; i++)
+	for (size_t i = 0; i < this->cuboidLength; i++) 
 	{
-		for (size_t j : this->temporalScales) //for (int j = 1; j <= this->temporalScale; j++)
+		for (size_t j : this->temporalScales) 
 		{
 			size_t k = i + j; //image to process with i
 			if (k < this->cuboidLength) //if (k >= 0)
@@ -410,13 +410,13 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool
 {
 	std::deque<ParMat> patches;
 	cv::Mat patchAngles, patchMagni;
+	int thr = 1; //it's already quantized so zero is a movement from "bin 0"
 
-	int thr = 0; //it's already quantized so zero is a movement from "bin 0"
 	int t1 = cuboid.l + cuboid.t0 - 1;
 
-	for (size_t ts : this->temporalScales) //for (int ts = 1; ts <= this->temporalScale; ts++)
+	for (size_t ts : this->temporalScales) 
 	{
-		for (size_t i = cuboid.t0; i < t1; i++)//for (size_t i = t0+1; i <= t1; i++) //it starts from frame 1 to compare with frame 0
+		for (size_t i = cuboid.t0; i < t1; i++)
 		{
 			size_t f = i + ts; //image to process with i
 			if (f <= t1) //if (f >= t0)
@@ -438,8 +438,8 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool
 						for (int k = 0; k < patchMagni.cols; ++k)
 							if (patchMagni.at<int>(j, k) >= thr)
 							{
-						hasMovement = true;
-						k = patchMagni.cols; j = patchMagni.rows; // just to get out of this 2 loops
+								hasMovement = true;
+								k = patchMagni.cols; j = patchMagni.rows; // just to get out of this 2 loops
 							}
 				}
 			}

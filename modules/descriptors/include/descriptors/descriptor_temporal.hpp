@@ -55,6 +55,7 @@ namespace ssig {
 class DescriptorTemporal : public Descriptor {
 
  public:
+	std::string videoName;
 	DESCRIPTORS_EXPORT DescriptorTemporal(void);
 	DESCRIPTORS_EXPORT virtual ~DescriptorTemporal(void) = default;
 	DESCRIPTORS_EXPORT DescriptorTemporal(const DescriptorTemporal& rhs);
