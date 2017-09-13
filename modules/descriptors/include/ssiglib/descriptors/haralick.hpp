@@ -51,10 +51,6 @@ namespace ssig {
 class Haralick {
  public:
   DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-
-	//Compute just 12 features (old implementaion from William Schwartz)
-	DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
-
  private:
   static float f1ASM(const cv::Mat& mat);
   static float f2Contrast(const cv::Mat& mat);
