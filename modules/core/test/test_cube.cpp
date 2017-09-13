@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include "core/cube.hpp"
+#include "ssiglib/core/cube.hpp"
 
 TEST(cube, CubeIntersection) {
 	int temporalSize = 5;

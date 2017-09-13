@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/descriptor_temporal.hpp"
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
 
 namespace ssig {
 DescriptorTemporal::DescriptorTemporal() {

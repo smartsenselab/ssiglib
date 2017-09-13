@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include "descriptors\co_occurrence_general.hpp"
+#include "ssiglib/descriptors/co_occurrence_general.hpp"
 #include <opencv2\core\core.hpp>
 #include <opencv2\highgui\highgui.hpp>
 #include <iomanip>

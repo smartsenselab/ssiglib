@@ -41,8 +41,8 @@
 
 #include <gtest/gtest.h>
 #include <opencv2\opencv.hpp>
-#include "descriptors/descriptor_temporal.hpp"
-#include "descriptors/ofcm_features.hpp"
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
+#include "ssiglib/descriptors/ofcm_features.hpp"
 
 TEST(OFCM, ConstructorOFCM) {
 	ssig::OFCM *desc = new ssig::OFCM();

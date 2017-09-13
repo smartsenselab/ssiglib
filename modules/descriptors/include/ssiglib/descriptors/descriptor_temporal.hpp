@@ -42,13 +42,13 @@
 #ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_TEMPORAL_HPP_
 #define _SSIG_DESCRIPTORS_DESCRIPTOR_TEMPORAL_HPP_
 
-#include <core/algorithm.hpp>
+#include "ssiglib/core/algorithm.hpp"
 #include <opencv2/core.hpp>
 #include <vector>
 
 #include "descriptors_defs.hpp"
 #include "descriptor.hpp"
-#include "core\cube.hpp"
+#include "ssiglib/core/cube.hpp"
 
 namespace ssig {
 

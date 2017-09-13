@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/co_occurrence_general.hpp"
+#include "ssiglib/descriptors/co_occurrence_general.hpp"
 
 namespace ssig {
 	CoOccurrenceGeneral::CoOccurrenceGeneral(int nbins, int distance) {

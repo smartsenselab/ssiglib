@@ -45,10 +45,10 @@
 #include <deque>
 #include <opencv2\video\tracking.hpp>
 
-#include "core\exception.hpp"
-#include "descriptor_temporal.hpp"
-#include "descriptors/haralick.hpp"
-#include "descriptors\co_occurrence_general.hpp"
+#include "ssiglib/core/exception.hpp"
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
+#include "ssiglib/descriptors/haralick.hpp"
+#include "ssiglib/descriptors/co_occurrence_general.hpp"
 
 namespace ssig {
 

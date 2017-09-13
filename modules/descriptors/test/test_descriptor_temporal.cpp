@@ -40,7 +40,7 @@
 *****************************************************************************L*/
 
 #include <gtest/gtest.h>
-#include "descriptors/descriptor_temporal.hpp"
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
 
 TEST(DescriptorTemporal, SampleDescriptorTemporal) {
   // Automatically generated stub

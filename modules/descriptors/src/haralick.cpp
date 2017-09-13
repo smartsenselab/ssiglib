@@ -88,7 +88,7 @@ cv::Mat Haralick::computeOld(const cv::Mat& mat) {
 	//output.at<float>(0, 11) = Haralick::f12InformationCorrelation01(mat);
 	//output.at<float>(0, 12) = Haralick::f13InformationCorrelation02(mat);
 	//output.at<float>(0, 13) = 0.0f;
-	output.at<float>(0, 11) = Haralick::f15_Dierctionality(mat);
+	output.at<float>(0, 11) = Haralick::f15_Directionality(mat);
 
 	for (int i = 0; i < 12; i++)
 		if (isnan(output.at<float>(0, i))) output.at<float>(0, i) = 0.0f;

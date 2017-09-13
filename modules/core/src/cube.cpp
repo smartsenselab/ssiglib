@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "core/cube.hpp"
+#include "ssiglib/core/cube.hpp"
 
 namespace ssig {
 	Cube::Cube() {

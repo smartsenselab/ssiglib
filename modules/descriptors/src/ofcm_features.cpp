@@ -39,7 +39,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#include "descriptors/ofcm_features.hpp"
+#include "ssiglib/descriptors/ofcm_features.hpp"
 
 std::vector<int> splitTemporalScales(std::string str, char delimiter);
 
