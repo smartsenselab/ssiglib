@@ -39,34 +39,11 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#include <gtest/gtest.h>
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
 
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
+TEST(DescriptorTemporal, SampleDescriptorTemporal) {
+  // Automatically generated stub
 
-#define HARALICK_EPSILON 0.00001
-
-namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
-}  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+  EXPECT_EQ(2, 2 + 2);
+}
