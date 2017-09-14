@@ -39,34 +39,97 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#ifndef _SSIG_CORE_PSO_HPP_
+#define _SSIG_CORE_PSO_HPP_
 
+// c++
+#include <cfloat>
+#include <memory>
+#include <utility>
+#include <vector>
+// opencv
 #include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+// ssiglib
+#include <ssiglib/core/algorithm.hpp>
+#include "core_defs.hpp"
+#include "optimization.hpp"
 
 namespace ssig {
-class Haralick {
+class DistanceFunctor;
+class UtilityFunctor;
+
+class PSO : public Optimization {
  public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
+  CORE_EXPORT virtual ~PSO(void) = default;
+
+  CORE_EXPORT static cv::Ptr<PSO> create(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
+
+
+  CORE_EXPORT void learn(const cv::Mat_<float>& input) override;
+
+
+  CORE_EXPORT cv::Vec3f getInertia() const;
+  // a 1x3 matrix of floating point numbers
+  CORE_EXPORT void setInertia(const cv::Vec3f& inertia);
+
+
+  CORE_EXPORT int getPopulationLength() const;
+  CORE_EXPORT void setPopulationLength(const int populationLength);
+
+  CORE_EXPORT void setDimensionality(int d);
+
+
+  CORE_EXPORT void getPopulationConstraint(
+    cv::Mat_<float>& min,
+    cv::Mat_<float>& max) const;
+  CORE_EXPORT void setPopulationConstraint(
+    const cv::Mat_<float>& minRange,
+    const cv::Mat_<float>& maxRange);
+
+
+  CORE_EXPORT cv::Mat getBestPosition() const;
+
+  CORE_EXPORT float getBestUtil() const;
+
+ protected:
+  CORE_EXPORT PSO(
+    cv::Ptr<UtilityFunctor>& utility,
+    cv::Ptr<DistanceFunctor>& distance);
+  CORE_EXPORT PSO(const PSO& rhs);
+
+  CORE_EXPORT void setup(const cv::Mat_<float>& input) override;
+
+
+  CORE_EXPORT void iterate();
+  CORE_EXPORT static void update(const cv::Mat& globalBest,
+                                 const cv::Mat& localBest,
+<<<<<<< HEAD
+    const cv::Vec3f& inertia,
+=======
+                                 const cv::Vec3f& inertia,
+>>>>>>> Lint
+                                 cv::Mat& velocity,
+                                 cv::Mat& position);
+
  private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
+  // private members
+  UtilityFunctor& utility;
+  DistanceFunctor& distance;
+
+  cv::Mat mBestPosition;
+  cv::Mat mLocalBests;
+  cv::Mat mVelocities;
+  cv::Vec3f mInertia;
+  cv::Mat_<float> mMinRange;
+  cv::Mat_<float> mMaxRange;
+
+  int mPopulationLength = 100;
+  int mDimensions = 1;
+
+  float mBestUtil = -FLT_MAX;
+  std::vector<float> mLocalUtils;
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+#endif  // !_SSIG_CORE_PSO_HPP_

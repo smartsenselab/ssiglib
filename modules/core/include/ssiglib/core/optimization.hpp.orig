@@ -39,34 +39,71 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#ifndef _SSIG_CORE_OPTIMIZATION_HPP_
+#define _SSIG_CORE_OPTIMIZATION_HPP_
 
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
+#include <ssiglib/core/algorithm.hpp>
 
-#define HARALICK_EPSILON 0.00001
+#include "core_defs.hpp"
+
 
 namespace ssig {
-class Haralick {
+class UtilityFunctor;
+class DistanceFunctor;
+
+class Optimization : public Algorithm {
  public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
+  virtual ~Optimization(void) = default;
+
+  CORE_EXPORT virtual void setup(cv::Mat_<float>& input) = 0;
+
+  CORE_EXPORT virtual void learn(cv::Mat_<float>& input) = 0;
+
+  CORE_EXPORT cv::Mat_<float> getResults() const;
+
+  CORE_EXPORT cv::Mat_<float> getState() const;
+
+  // sets the initial "population" of the method
+  CORE_EXPORT void setState(const cv::Mat_<float>& state);
+
+  CORE_EXPORT int getMaxIterations() const;
+  CORE_EXPORT void setMaxIterations(const int maxIterations);
+
+  CORE_EXPORT cv::Ptr<UtilityFunctor> getUtility() const;
+  CORE_EXPORT cv::Ptr<DistanceFunctor> getDistance() const;
+  CORE_EXPORT void setUtilityFunctor(cv::Ptr<UtilityFunctor>& utilityFunctor);
+  CORE_EXPORT void setDistanceFunctor(cv::Ptr<DistanceFunctor>& distanceFunctor);
+
+  CORE_EXPORT double getEps() const;
+  CORE_EXPORT void setEps(const double eps);
+
+ protected:
+  CORE_EXPORT Optimization() = default;
+
+  CORE_EXPORT Optimization(
+    cv::Ptr<UtilityFunctor>& utilityFunction,
+    cv::Ptr<DistanceFunctor>& distanceFunction);
+  CORE_EXPORT static cv::Mat_<float> randomVector(
+    const int dimensionality,
+    const double minRange = 0.5,
+    const double maxRange = 0.5);
+
+  CORE_EXPORT void read(const cv::FileNode& fn) override {};
+
+  CORE_EXPORT void write(cv::FileStorage& fs) const override {};
+
+  cv::Ptr<UtilityFunctor> utility;
+  cv::Ptr<DistanceFunctor> distance;
+  cv::Mat_<float> mPopulation;
+  cv::Mat_<float> mUtilities;
+
+  int mMaxIterations = 100;
+  double mEps = 0.0001;
+
  private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
+  // private members
 };
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+#endif  // !_SSIG_CORE_OPTIMIZATION_HPP_
+
+
