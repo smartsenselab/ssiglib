@@ -58,7 +58,7 @@
 #include <opencv2/imgproc.hpp>
 #include "descriptor_2d.hpp"
 
-typedef unsigned short gray;
+typedef short gray;
 
 namespace ssig {
 class CoOccurrenceGeneral {

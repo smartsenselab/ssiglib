@@ -88,7 +88,6 @@ class OFCM : public DescriptorTemporal {
   DESCRIPTORS_EXPORT int getNumOpticalFlow();
   DESCRIPTORS_EXPORT std::vector<int> getTemporalScales(); 
   DESCRIPTORS_EXPORT int getDescriptorDataType() override;
- 
   DESCRIPTORS_EXPORT void setMovementFilter(bool movementFilter);
   DESCRIPTORS_EXPORT void setnBinsMagnitude(int nBinsMagnitude);
   DESCRIPTORS_EXPORT void setnBinsAngle(int nBinsAngle);
@@ -98,7 +97,6 @@ class OFCM : public DescriptorTemporal {
   DESCRIPTORS_EXPORT void setLogQuantization(int logQuantization);
   DESCRIPTORS_EXPORT void setMaxMagnitude(float maxMagnitude);
   DESCRIPTORS_EXPORT void setTemporalScales(std::vector<int> temporalScales);
-
   DESCRIPTORS_EXPORT void release() override;
 
 protected:
@@ -120,7 +118,7 @@ private:
 
   int logQuantization = 0;
   int descriptorLength;
-  int numOpticalFlow = 0; // number of computed optical flows
+  int numOpticalFlow = 0;  // number of computed optical flows
   int **mapToOpticalFlows;
 
   float maxAngle;

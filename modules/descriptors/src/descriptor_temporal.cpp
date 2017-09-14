@@ -95,7 +95,6 @@ void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints, cv:
 }
 */
 void DescriptorTemporal::setData(const std::vector<cv::Mat>& imgs) {
-
   for (auto &img : imgs)
     mImages.push_back(img.clone());
 

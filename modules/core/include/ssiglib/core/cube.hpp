@@ -49,7 +49,7 @@ namespace ssig {
 class Cube {
   public:
     int x0, y0, t0;
-    int w, h, l; // width, height, length
+    int w, h, l;  // width, height, length
 
     CORE_EXPORT Cube(void);
     CORE_EXPORT Cube(int x, int y, int t, int width, int height, int length);

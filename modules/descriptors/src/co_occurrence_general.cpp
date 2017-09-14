@@ -66,7 +66,6 @@ namespace ssig {
     M45 = descriptor.M45.clone();
     M90 = descriptor.M90.clone();
     M135 = descriptor.M135.clone();
-
   }
 
   CoOccurrenceGeneral& CoOccurrenceGeneral::operator=(const CoOccurrenceGeneral& rhs) {
@@ -124,7 +123,7 @@ namespace ssig {
         if (x == -1)
           continue;
 
-        if (col + d < patch.width){
+        if (col + d < patch.width) {
           y = img(row, col + d);
           if (y == -1)
             continue;
@@ -164,7 +163,7 @@ namespace ssig {
         if (x == -1)
           continue;
 
-        if (row + d < patch.height && col - d >= patch.x){
+        if (row + d < patch.height && col - d >= patch.x) {
           y = img(row + d, col - d);
           if (y == -1)
             continue;
@@ -205,7 +204,7 @@ namespace ssig {
         if (x == -1)
           continue;
 
-        if (row + d < patch.height){
+        if (row + d < patch.height) {
           y = img(row + d, col);
           if (y == -1)
             continue;
@@ -245,8 +244,8 @@ namespace ssig {
         if (x == -1)
           continue;
 
-        if (row + d < patch.height && col + d < patch.width){
-          //y = direct->GetElement(col + d, row + d);
+        if (row + d < patch.height && col + d < patch.width) {
+          // y = direct->GetElement(col + d, row + d);
           y = img(row + d, col + d);
           if (y == -1)
             continue;
@@ -269,8 +268,7 @@ namespace ssig {
   }
 
   void CoOccurrenceGeneral::extractAllMatricesDirections(const cv::Rect& patch, cv::Mat_<int> &img, std::vector<cv::Mat>& output) {
-
-    cv::Mat dummy; //testar se vai precisar declarar o tamanho
+    cv::Mat dummy;  // testar se vai precisar declarar o tamanho
 
     extractMatrix0(patch, img, dummy);
     extractMatrix45(patch, img, dummy);
@@ -281,7 +279,6 @@ namespace ssig {
     output.push_back(M45);
     output.push_back(M90);
     output.push_back(M135);
-
   }
 
 }  // namespace ssig

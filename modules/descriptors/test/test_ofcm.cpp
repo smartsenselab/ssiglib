@@ -60,7 +60,6 @@ TEST(OFCM, ConstructorOFCM) {
 
   for (size_t i = 0; i < desc->getTemporalScales().size(); i++)
     EXPECT_EQ(desc->getTemporalScales()[0], 1);
-
 }
 
 
@@ -105,7 +104,6 @@ TEST(OFCM, SettersOFCM) {
   tempScales.push_back(1); tempScales.push_back(2);
 
   ssig::OFCM *desc = new ssig::OFCM();
-
 
   desc->setnBinsMagnitude(nBinsMagnitude);
   desc->setnBinsAngle(nBinsAngle);
@@ -162,23 +160,20 @@ TEST(OFCM, SampleOFCM) {
   }
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
   /////////////////////// Create cube vector (dense sampling) ////////////////////////////
   sampleX = 48;	sampleY = 48;	sampleL = 10;
   strideX = 24;	strideY = 24;	strideL = 5;
-  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL); t += strideL) // video.size() instead of videoLength since we used a frameStep different from 1
+  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL); t += strideL)  // video.size() instead of videoLength since we used a frameStep different from 1
     for (int y = 0; y <= static_cast<int>(0 + videoHeight - sampleY); y += strideY)
       for (int x = 0; x <= static_cast<int>(0 + videoWidth - sampleX); x += strideX)
         cuboids.push_back(ssig::Cube(x, y, t, sampleX, sampleY, sampleL));
   ////////////////////////////////////////////////////////////////////////////////////////
- 
 
   ////////////////////////////// OFCM feature computing //////////////////////////////////
   ssig::DescriptorTemporal *desc = new ssig::OFCM();
   desc->setData(video);
   desc->extract(cuboids, output);
   ////////////////////////////////////////////////////////////////////////////////////////
-
 
   /////////////////////// Loading pre-computed OFCM features ////////////////////////////
   path = "OFCM_person23_running_d4_uncomp.yml";
@@ -188,15 +183,13 @@ TEST(OFCM, SampleOFCM) {
   n1["Features"] >> loadedFeatures;
   ////////////////////////////////////////////////////////////////////////////////////////
 
-
   EXPECT_EQ(output.cols, loadedFeatures.cols);
   EXPECT_EQ(output.rows, loadedFeatures.rows);
 
   for (int i = 0; i < loadedFeatures.rows; i++)
     for (int j = 0; j < loadedFeatures.cols; j++)
-      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j), 0.001); // if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
+      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j), 0.001);  // if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
 
   output.release();
   delete desc;
-
 }

@@ -53,14 +53,12 @@ namespace ssig {
   }
 
   Cube::Cube(int x, int y, int t, int width, int height, int length) {
-
     this->x0 = x;
     this->y0 = y;
     this->t0 = t;
     this->w = width;
     this->h = height;
     this->l = length;
-
   }
 
   Cube::~Cube() {
@@ -79,7 +77,6 @@ namespace ssig {
 
   // return true if this cube has been set
   bool Cube::isCubeValid() {
-
     if (this->x0 != -1 && this->y0 != -1 && this->t0 != -1 && this->w > 0 && this->h > 0 && this->l > 0)
       return true;
 
@@ -87,7 +84,6 @@ namespace ssig {
   }
 
   void Cube::setCube(int x0, int y0, int t0, int w, int h, int l) {
-
     this->x0 = x0;
     this->y0 = y0;
     this->t0 = t0;

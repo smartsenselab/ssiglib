@@ -79,6 +79,5 @@ TEST(CoOccurrenceGeneral, SampleCoOccurrenceGeneral) {
   for (int matrix = 0; matrix < loadedMat.size(); matrix++)
     for (int i = 0; i < loadedMat[matrix].rows; i++)
       for (int j = 0; j < loadedMat[matrix].cols; j++)
-        EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); // if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
-
+        EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001);  // if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
 }
