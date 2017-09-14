@@ -43,7 +43,8 @@
 #define _SSIG_DESCRIPTORS_OFCM_FEATURES_HPP_
 
 #include <deque>
-#include <opencv2\video\tracking.hpp>
+#include <opencv2/video/tracking.hpp>
+//#include <opencv2\video\tracking.hpp>
 
 #include "ssiglib/core/exception.hpp"
 #include "ssiglib/descriptors/descriptor_temporal.hpp"

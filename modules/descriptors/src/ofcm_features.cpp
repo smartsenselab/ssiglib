@@ -283,7 +283,7 @@ void OFCM::setOpticalFlowData() {
 
 				if (points[0].size() > 0)
 				{
-					calcOpticalFlowPyrLK(mImages[i], mImages[j], points[0], points[1], status, err, winSize, 3, termcrit, 0, 0.001);
+					cv::calcOpticalFlowPyrLK(mImages[i], mImages[j], points[0], points[1], status, err, winSize, 3, termcrit, 0, 0.001);
 					VecDesp2Mat(points[1], points[0], angles_magni);
 				}
 
