@@ -44,8 +44,8 @@
 
 #define COOCALLDIRS
 #define FEATURESCG 12
-#define SIGN(x,y) ((y)<0 ? -fabs(x) : fabs(x))
-#define SWAP(a,b) {y=(a);(a)=(b);(b)=y;}
+#define SIGN(x, y) ((y) < 0 ? -fabs(x) : fabs(x))
+#define SWAP(a, b) {y=(a); (a)=(b); (b)=y;}
 #define PGM_MAXMAXVAL 257
 #define RADIX 2.0
 #define EPSILON 0.000000001
@@ -53,6 +53,7 @@
 #define COOC_MAX_ANGLES 4
 #undef MEAN
 
+#include <vector>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include "descriptor_2d.hpp"

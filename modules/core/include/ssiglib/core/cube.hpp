@@ -46,10 +46,10 @@
 #include <algorithm>
 
 namespace ssig {
-  class Cube {
+class Cube {
   public:
     int x0, y0, t0;
-    int w, h, l; //width, height, length
+    int w, h, l; // width, height, length
 
     CORE_EXPORT Cube(void);
     CORE_EXPORT Cube(int x, int y, int t, int width, int height, int length);
@@ -63,8 +63,7 @@ namespace ssig {
     // private members
   };
 
-  static inline bool operator == (const Cube& a, const Cube& b)
-  {
+  static inline bool operator == (const Cube& a, const Cube& b) {
     return a.x0 == b.x0 && a.y0 == b.y0 && a.t0 == b.t0 && a.w == b.w && a.h == b.h && a.l == b.l;
   }
 

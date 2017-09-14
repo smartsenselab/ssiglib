@@ -43,8 +43,10 @@
 #define _SSIG_DESCRIPTORS_OFCM_FEATURES_HPP_
 
 #include <deque>
+#include <utility>
+#include <vector>
 #include <opencv2/video/tracking.hpp>
-//#include <opencv2\video\tracking.hpp>
+// #include <opencv2\video\tracking.hpp>
 
 #include "ssiglib/core/exception.hpp"
 #include "ssiglib/descriptors/descriptor_temporal.hpp"
@@ -53,8 +55,7 @@
 
 namespace ssig {
 
-  enum ExtractionType
-  {
+  enum ExtractionType {
     HaralickFeatures,
     VectorizedMatrices,
     ConcatVectorizedHaralick
@@ -73,7 +74,7 @@ class OFCM : public DescriptorTemporal {
   DESCRIPTORS_EXPORT OFCM(const OFCM& rhs);
   DESCRIPTORS_EXPORT OFCM& operator=(const OFCM& rhs);
 
-  //getters and setters
+  // getters and setters
   DESCRIPTORS_EXPORT bool getMovementFilter();
   DESCRIPTORS_EXPORT int getnBinsMagnitude();
   DESCRIPTORS_EXPORT int getnBinsAngle();
@@ -119,7 +120,7 @@ private:
 
   int logQuantization = 0;
   int descriptorLength;
-  int numOpticalFlow = 0; //number of computed optical flows
+  int numOpticalFlow = 0; // number of computed optical flows
   int **mapToOpticalFlows;
 
   float maxAngle;

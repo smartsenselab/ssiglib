@@ -53,11 +53,11 @@ OFCM::OFCM() {
   this->distanceAngle = 1;
   this->cuboidLength = 10;
   this->maxMagnitude = 15;
-  this->maxAngle = 361.0; //max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
+  this->maxAngle = 361.0; // max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
   this->logQuantization = 1;
   this->movementFilter = 1;
   this->temporalScales.push_back(1);
-  this->extractionType = ExtractionType::HaralickFeatures; //default
+  this->extractionType = ExtractionType::HaralickFeatures; // default
 
   this->coocMagnitude = NULL;
   this->coocAngles = NULL;
@@ -67,7 +67,7 @@ OFCM::OFCM() {
 OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle,
             int cuboidLength, float maxMagnitude, int logQuantization, bool movementFilter,
             std::vector<int> temporalScales, ExtractionType extractionType) {
- 
+
   this->nBinsMagnitude = nBinsMagnitude;
   this->nBinsAngle = nBinsAngle;
   this->distanceMagnitude = distanceMagnitude;
@@ -76,10 +76,9 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distan
   this->movementFilter = movementFilter;
   this->extractionType = extractionType;
 
-  if (logQuantization == 1)
-  {
+  if (logQuantization == 1) {
     this->logQuantization = logQuantization;
-    this->maxMagnitude = 15; //default
+    this->maxMagnitude = 15; // default
   }
   else
     this->maxMagnitude = maxMagnitude;
@@ -87,8 +86,8 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distan
   for (auto v : temporalScales)
     this->temporalScales.push_back(v);
 
-  this->maxAngle = 361.0; //max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
-  //extractionType = 0;
+  this->maxAngle = 361.0; // max val of Angle is 360. We sum 1 more to fit on nBinsAngle. If 360 / (360 / 4) it will go to the bin 4, but it is from 0 to 3. (int)floor(angle / (this->maxAngle / this->nBinsAngle));
+  // extractionType = 0;
 
   this->coocMagnitude = NULL;
   this->coocAngles = NULL;
@@ -97,25 +96,21 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distan
 
 OFCM::~OFCM(){
 
-  for (int i = 0; i < (int)data.size(); i++)
-  {
+  for (int i = 0; i < static_cast<int>(data.size()); i++) {
     this->data[i].first.release();
     this->data[i].second.release();
   }
   this->data.clear();
 
-  if (this->coocMagnitude != NULL)
-  {
+  if (this->coocMagnitude != NULL) {
     delete this->coocMagnitude;
     this->coocMagnitude = NULL;
   }
-  if (this->coocAngles != NULL)
-  {
+  if (this->coocAngles != NULL) {
     delete this->coocAngles;
     this->coocAngles = NULL;
   }
-  if (this->mapToOpticalFlows != NULL)
-  {
+  if (this->mapToOpticalFlows != NULL) {
     for (int i = 0; i < numImgs; i++)
       delete[] this->mapToOpticalFlows[i];
     delete[] this->mapToOpticalFlows;
@@ -144,22 +139,20 @@ void OFCM::beforeProcess() {
 }
 
 void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
-  bool hasMovement = !movementFilter; //false to eliminate pacthes without movement
+  bool hasMovement = !movementFilter; // false to eliminate pacthes without movement
   std::deque<ParMat> patches;
   patches = CreatePatch(cuboid, hasMovement);
   output.release();
 
-  if (hasMovement) //verify sif there is any movement
-  {
-    for (int i = 0, k = 0; i < patches.size(); i++)
-    {
+  // verify sif there is any movement
+  if (hasMovement) {
+    for (int i = 0, k = 0; i < patches.size(); i++) {
       std::vector<cv::Mat> mMagnitude, mAngles;
 
       coocMagnitude->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].second, mMagnitude);
       coocAngles->extractAllMatricesDirections(cv::Rect(0, 0, cuboid.w, cuboid.h), patches[i].first, mAngles);
 
-      switch (this->extractionType)
-      {
+      switch (this->extractionType) {
       case ExtractionType::HaralickFeatures:
         extractHaralickFeatures(mMagnitude, mAngles, output);
         break;
@@ -226,25 +219,21 @@ void OFCM::release()
   mImages.clear();
   mIsPrepared = false;
 
-  for (int i = 0; i < (int)data.size(); i++)
-  {
+  for (int i = 0; i < static_cast<int>(data.size()); i++) {
     this->data[i].first.release();
     this->data[i].second.release();
   }
   this->data.clear();
 
-  if (this->coocMagnitude != NULL)
-  {
+  if (this->coocMagnitude != NULL) {
     delete this->coocMagnitude;
     this->coocMagnitude = NULL;
   }
-  if (this->coocAngles != NULL)
-  {
+  if (this->coocAngles != NULL) {
     delete this->coocAngles;
     this->coocAngles = NULL;
   }
-  if (this->mapToOpticalFlows != NULL)
-  {
+  if (this->mapToOpticalFlows != NULL) {
     for (int i = 0; i < numImgs; i++)
       delete[] this->mapToOpticalFlows[i];
     delete[] this->mapToOpticalFlows;
@@ -252,7 +241,7 @@ void OFCM::release()
   }
 }
 
-/////////////////////////////////Aditional Auxiliary Functions//////////////////////////////////////
+///////////////////////////////// Aditional Auxiliary Functions //////////////////////////////////////
 void OFCM::setOpticalFlowData() {
   data.clear();
   std::vector<cv::Point2f> points[2], basePoints;
@@ -268,21 +257,17 @@ void OFCM::setOpticalFlowData() {
   this->numImgs = static_cast<int>(mImages.size());
   allocateMapToOpticalFlowsMatrix();
 
-  for (int t : this->temporalScales)
-  {
-    for (int i = 0; i < static_cast<int>(mImages.size()); i++)
-    {
-      int j = i + t; //image to process with i
-      if (j < (int)mImages.size())
-      {
+  for (int t : this->temporalScales) {
+    for (int i = 0; i < static_cast<int>(mImages.size()); i++) {
+      int j = i + t; // image to process with i
+      if (j < static_cast<int>(mImages.size())) {
         FillPoints(points[0], mImages[j], mImages[i]);
 
         ParMat angles_magni;
-        angles_magni.first = cv::Mat(rows, cols, CV_16SC1, -1); //angles
-        angles_magni.second = cv::Mat(rows, cols, CV_16SC1, -1); //magnitude
+        angles_magni.first = cv::Mat(rows, cols, CV_16SC1, -1); // angles
+        angles_magni.second = cv::Mat(rows, cols, CV_16SC1, -1); // magnitude
 
-        if (points[0].size() > 0)
-        {
+        if (points[0].size() > 0) {
           cv::calcOpticalFlowPyrLK(mImages[i], mImages[j], points[0], points[1], status, err, winSize, 3, termcrit, 0, 0.001);
           VecDesp2Mat(points[1], points[0], angles_magni);
         }
@@ -308,8 +293,7 @@ void OFCM::setParameters() {
   this->numOpticalFlow = calcNumOptcialFlowPerCuboid();
 
   // It is(4 direction matrices * 12 Haralick texture features) * 2, because we have one magnitude matrix and one angle matrix, *numOpticalFlow, the number of optical flow will depend on temporal scale.
-  switch (this->extractionType)
-  {
+  switch (this->extractionType) {
   case ExtractionType::HaralickFeatures:
     this->descriptorLength = ((4 * 12) + (4 * 12)) * this->numOpticalFlow;
     break;
@@ -326,31 +310,26 @@ void OFCM::setParameters() {
  
 }
 
-inline void OFCM::FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr)
-{
+inline void OFCM::FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr) {
   vecPoints.clear();
   cvtColor(frameB, frameB, CV_BGR2GRAY);
   cvtColor(frameA, frameA, CV_BGR2GRAY);
 
   cv::Mat frameDif = cv::abs(frameB - frameA);
-  for (int i = 0; i < frameDif.rows; ++i)
-  {
-    for (int j = 0; j< frameDif.cols; ++j)
-    {
+  for (int i = 0; i < frameDif.rows; ++i) {
+    for (int j = 0; j< frameDif.cols; ++j) {
       if (frameDif.at<uchar>(i, j) > thr)
-        vecPoints.push_back(cv::Point2f((float)j, (float)i));
+        vecPoints.push_back(cv::Point2f(static_cast<float>(j), static_cast<float>(i)));
     }
   }
 }
 
 int OFCM::calcNumOptcialFlowPerCuboid() {
   int numOpticalFlow = 0;
-  for (size_t i = 0; i < this->cuboidLength; i++) 
-  {
-    for (size_t j : this->temporalScales) 
-    {
-      size_t k = i + j; //image to process with i
-      if (k < this->cuboidLength) //if (k >= 0)
+  for (size_t i = 0; i < this->cuboidLength; i++) {
+    for (size_t j : this->temporalScales) {
+      size_t k = i + j; // image to process with i
+      if (k < this->cuboidLength) // if (k >= 0)
         numOpticalFlow++;
       else
         break;
@@ -363,8 +342,7 @@ inline void OFCM::VecDesp2Mat(std::vector<cv::Point2f> &vecPoints, std::vector<c
   int x, y, valAngle, valMagnitude;
   float magnitude, angle, catetoOposto, catetoAdjacente;
 
-  for (int i = 0; i < static_cast<int>(positions.size()); ++i)
-  {
+  for (int i = 0; i < static_cast<int>(positions.size()); ++i) {
     catetoOposto = vecPoints[i].y - positions[i].y;
     catetoAdjacente = vecPoints[i].x - positions[i].x;
 
@@ -374,18 +352,18 @@ inline void OFCM::VecDesp2Mat(std::vector<cv::Point2f> &vecPoints, std::vector<c
     if (angle < 0)
       angle += 360;
 
-    valAngle = (int)floor(angle / (this->maxAngle / this->nBinsAngle));
+    valAngle = static_cast<float>(floor(angle / (this->maxAngle / this->nBinsAngle)));
 
     if (logQuantization == 1)
-      valMagnitude = (int)floor(log2(magnitude));
+      valMagnitude = static_cast<int>(floor(log2(magnitude)));
     else
-      valMagnitude = (int)floor(magnitude / (this->maxMagnitude / this->nBinsMagnitude));
+      valMagnitude = static_cast<int>(floor(magnitude / (this->maxMagnitude / this->nBinsMagnitude)));
 
     if (valMagnitude < 0) // e.g., log2(0)
-      valMagnitude = 0; //send to the first bin
+      valMagnitude = 0; // send to the first bin
 
     if (valMagnitude >= this->nBinsMagnitude)
-      valMagnitude = this->nBinsMagnitude - 1; //send to the last bin
+      valMagnitude = this->nBinsMagnitude - 1; // send to the last bin
 
     y = static_cast<int>(positions[i].y);
     x = static_cast<int>(positions[i].x);
@@ -397,8 +375,7 @@ inline void OFCM::VecDesp2Mat(std::vector<cv::Point2f> &vecPoints, std::vector<c
 
 inline void OFCM::allocateMapToOpticalFlowsMatrix() {
   this->mapToOpticalFlows = new int*[this->numImgs];
-  for (int i = 0; i < this->numImgs; i++)
-  {
+  for (int i = 0; i < this->numImgs; i++) {
     this->mapToOpticalFlows[i] = new int[this->numImgs];
     memset(this->mapToOpticalFlows[i], 0, sizeof(int) * this->numImgs);
   }
@@ -407,34 +384,31 @@ inline void OFCM::allocateMapToOpticalFlowsMatrix() {
 inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid, bool & hasMovement) {
   std::deque<ParMat> patches;
   cv::Mat patchAngles, patchMagni;
-  int thr = 1; //it's already quantized so zero is a movement from "bin 0"
+  int thr = 1; // it's already quantized so zero is a movement from "bin 0"
 
   int t1 = cuboid.l + cuboid.t0 - 1;
 
-  for (size_t ts : this->temporalScales) 
-  {
-    for (size_t i = cuboid.t0; i < t1; i++)
-    {
-      size_t f = i + ts; //image to process with i
-      if (f <= t1) //if (f >= t0)
-      {
+  for (size_t ts : this->temporalScales) {
+    for (size_t i = cuboid.t0; i < t1; i++) {
+      size_t f = i + ts; // image to process with i
+      // if (f >= t0)
+      if (f <= t1) {
         int optFlowPos = this->mapToOpticalFlows[i][f];
         ParMat angles_magni;
 
-        patchAngles = cv::Mat(this->data[optFlowPos].first, cv::Rect(cuboid.x0, cuboid.y0, cuboid.w, cuboid.h)); //on "first" we have the angles
-        patchMagni = cv::Mat(this->data[optFlowPos].second, cv::Rect(cuboid.x0, cuboid.y0, cuboid.w, cuboid.h)); //on "second" we have the magnitudes
+        patchAngles = cv::Mat(this->data[optFlowPos].first, cv::Rect(cuboid.x0, cuboid.y0, cuboid.w, cuboid.h)); // on "first" we have the angles
+        patchMagni = cv::Mat(this->data[optFlowPos].second, cv::Rect(cuboid.x0, cuboid.y0, cuboid.w, cuboid.h)); // on "second" we have the magnitudes
 
         angles_magni.first = patchAngles.clone();
         angles_magni.second = patchMagni.clone();
 
         patches.push_back(angles_magni);
 
-        if (!hasMovement) //if movement was not detected yet
-        {
+        // if movement was not detected yet
+        if (!hasMovement) {
           for (int j = 0; j < patchMagni.rows; ++j)
             for (int k = 0; k < patchMagni.cols; ++k)
-              if (patchMagni.at<int>(j, k) >= thr)
-              {
+              if (patchMagni.at<int>(j, k) >= thr) {
                 hasMovement = true;
                 k = patchMagni.cols; j = patchMagni.rows; // just to get out of this 2 loops
               }

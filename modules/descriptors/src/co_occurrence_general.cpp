@@ -153,7 +153,7 @@ namespace ssig {
     /* Inicializacoes */
     d = this->distance;
 
-    /*Initializes the matrices*/
+    /* Initializes the matrices */
     M45 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
 
     for (int row = patch.y; row < patch.height; row++) {
@@ -168,7 +168,7 @@ namespace ssig {
           y = img(row + d, col - d);
           if (y == -1)
             continue;
-          //y = direct->GetElement(col - d, row + d);
+          // y = direct->GetElement(col - d, row + d);
 
           M45(y, x)++;
           M45(x, y)++;

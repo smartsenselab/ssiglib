@@ -132,7 +132,7 @@ TEST(OFCM, SettersOFCM) {
 }
 
 TEST(OFCM, SampleOFCM) {
-  unsigned long int videoLength, videoWidth, videoHeight;
+  int64 videoLength, videoWidth, videoHeight;
   int sampleX, sampleY, sampleL, strideX, strideY, strideL, step;
   cv::Mat image, output, loadedFeatures;
   std::vector<cv::Mat> video;
@@ -149,12 +149,11 @@ TEST(OFCM, SampleOFCM) {
   capture.open(path);
   if (!capture.isOpened())
     std::cerr << "Error processing file. Can't read video " << path;
-  videoLength = static_cast<unsigned long>(capture.get(CV_CAP_PROP_FRAME_COUNT));
-  videoWidth = static_cast<unsigned long>(capture.get(CV_CAP_PROP_FRAME_WIDTH));
-  videoHeight = static_cast<unsigned long>(capture.get(CV_CAP_PROP_FRAME_HEIGHT));
+  videoLength = static_cast<int64>(capture.get(CV_CAP_PROP_FRAME_COUNT));
+  videoWidth = static_cast<int64>(capture.get(CV_CAP_PROP_FRAME_WIDTH));
+  videoHeight = static_cast<int64>(capture.get(CV_CAP_PROP_FRAME_HEIGHT));
 
-  for (unsigned long int frameStep = 0; frameStep < videoLength; frameStep += step)
-  {
+  for (int64 frameStep = 0; frameStep < videoLength; frameStep += step) {
     capture.set(CV_CAP_PROP_POS_FRAMES, frameStep);
     capture.read((image));
     if (image.empty())
@@ -167,7 +166,7 @@ TEST(OFCM, SampleOFCM) {
   /////////////////////// Create cube vector (dense sampling) ////////////////////////////
   sampleX = 48;	sampleY = 48;	sampleL = 10;
   strideX = 24;	strideY = 24;	strideL = 5;
-  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL); t += strideL) //video.size() instead of videoLength since we used a frameStep different from 1
+  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL); t += strideL) // video.size() instead of videoLength since we used a frameStep different from 1
     for (int y = 0; y <= static_cast<int>(0 + videoHeight - sampleY); y += strideY)
       for (int x = 0; x <= static_cast<int>(0 + videoWidth - sampleX); x += strideX)
         cuboids.push_back(ssig::Cube(x, y, t, sampleX, sampleY, sampleL));
@@ -195,7 +194,7 @@ TEST(OFCM, SampleOFCM) {
 
   for (int i = 0; i < loadedFeatures.rows; i++)
     for (int j = 0; j < loadedFeatures.cols; j++)
-      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j), 0.001); //if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
+      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j), 0.001); // if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
 
   output.release();
   delete desc;

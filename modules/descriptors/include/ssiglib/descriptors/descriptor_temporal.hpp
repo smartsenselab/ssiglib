@@ -45,6 +45,7 @@
 #include "ssiglib/core/algorithm.hpp"
 #include <opencv2/core.hpp>
 #include <vector>
+#include <string>
 
 #include "descriptors_defs.hpp"
 #include "descriptor.hpp"
@@ -62,8 +63,7 @@ class DescriptorTemporal : public Descriptor {
 
   DESCRIPTORS_EXPORT void extract(cv::Mat& output);
   DESCRIPTORS_EXPORT void extract(const std::vector<ssig::Cube>& cuboids,	cv::Mat& output);
-  //TODO
-  //DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,	cv::Mat& output);
+  // DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,	cv::Mat& output);
 
   DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& imgs);
   DESCRIPTORS_EXPORT virtual void release() = 0;

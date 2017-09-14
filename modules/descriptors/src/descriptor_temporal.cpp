@@ -84,14 +84,14 @@ void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat
     extractFeatures(cuboid, feat);
     if (feat.cols > 0)
       feat.row(0).copyTo(output.row(i++));
-    //output.push_back(feat);
+    // output.push_back(feat);
   }
   output.resize(i);
 }
 
 /*
 void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints, cv::Mat& output) {
-  //TODO
+  //
 }
 */
 void DescriptorTemporal::setData(const std::vector<cv::Mat>& imgs) {

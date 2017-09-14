@@ -60,9 +60,8 @@ TEST(CoOccurrenceGeneral, SampleCoOccurrenceGeneral) {
   cv::FileStorage storageMatrix;
   cv::FileNode node, n1;
 
-  //Loading pre-computed matrices
-  for (int degree = 0; degree <= 136; degree += 45)
-  {
+  // Loading pre-computed matrices
+  for (int degree = 0; degree <= 136; degree += 45) {
     cv::Mat tempMat;
     std::stringstream number;
     number << std::setw(4) << std::setfill('0') << degree;
@@ -76,10 +75,10 @@ TEST(CoOccurrenceGeneral, SampleCoOccurrenceGeneral) {
     loadedMat.push_back(tempMat.clone());
   }
 
-  //Comparing matrices
+  // Comparing matrices
   for (int matrix = 0; matrix < loadedMat.size(); matrix++)
     for (int i = 0; i < loadedMat[matrix].rows; i++)
       for (int j = 0; j < loadedMat[matrix].cols; j++)
-        EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); //if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
+        EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); // if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
 
 }
