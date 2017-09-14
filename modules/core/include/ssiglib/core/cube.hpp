@@ -39,34 +39,58 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#ifndef _SSIG_CORE_CUBE_HPP_
+#define _SSIG_CORE_CUBE_HPP_
 
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+#include "core_defs.hpp"
+#include <algorithm>
 
 namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
+	class Cube {
+	public:
+		int x0, y0, t0;
+		int w, h, l; //width, height, length
+
+		CORE_EXPORT Cube(void);
+		CORE_EXPORT Cube(int x, int y, int t, int width, int height, int length);
+		CORE_EXPORT ~Cube(void);
+		CORE_EXPORT bool isCubeValid();
+		CORE_EXPORT void setCube(int x0, int y0, int t0, int w, int h, int l);
+		CORE_EXPORT Cube(const Cube& rhs);
+		CORE_EXPORT Cube& operator = (const Cube& rhs);
+
+	private:
+		// private members
+	};
+
+	static inline bool operator == (const Cube& a, const Cube& b)
+	{
+		return a.x0 == b.x0 && a.y0 == b.y0 && a.t0 == b.t0 && a.w == b.w && a.h == b.h && a.l == b.l;
+	}
+
+	static inline bool operator != (const Cube& a, const Cube& b)	{
+		return a.x0 != b.x0 || a.y0 != b.y0 || a.t0 != b.t0 || a.w != b.w || a.h != b.h || a.l != b.l;
+	}
+	
+	static inline Cube& operator&= (Cube& a, const Cube& b)	{
+		int x1 = std::max(a.x0, b.x0);
+		int y1 = std::max(a.y0, b.y0);
+		int t1 = std::max(a.t0, b.t0);
+		a.w = std::min(a.x0 + a.w, b.x0 + b.w) - x1;
+		a.h = std::min(a.y0 + a.h, b.y0 + b.h) - y1;
+		a.l = std::min(a.t0 + a.l, b.t0 + b.l) - t1;
+		a.x0 = x1;
+		a.y0 = y1;
+		a.t0 = t1;
+		if (a.w <= 0 || a.h <= 0 || a.l <= 0)
+			a = Cube();
+		return a;
+	}
+	
+	static inline Cube operator & (const Cube& a, const Cube& b) {
+		ssig::Cube c = a;
+		return c &= b;
+	}
+
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+#endif  // !_SSF_CORE_CUBE_HPP_
