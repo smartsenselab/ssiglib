@@ -47,60 +47,60 @@ DescriptorTemporal::DescriptorTemporal() {
 }
 
 DescriptorTemporal::DescriptorTemporal(const DescriptorTemporal& rhs) {
-	// Constructor Copy
-	for (auto &img : rhs.mImages)
-		mImages.push_back(img);
+  // Constructor Copy
+  for (auto &img : rhs.mImages)
+    mImages.push_back(img);
 }
 
 
 void DescriptorTemporal::extract(cv::Mat& output) {
-	if (!mIsPrepared) {
-		beforeProcess();
-		mIsPrepared = true;
-	}
-	extractFeatures(ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size())), output);
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  extractFeatures(ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size())), output);
 }
 
 void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat& output) {
-	if (!mIsPrepared) {
-		beforeProcess();
-		mIsPrepared = true;
-	}
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
 
-	output.create(static_cast<int>(cuboids.size()), getDescriptorLength(), getDescriptorDataType());
+  output.create(static_cast<int>(cuboids.size()), getDescriptorLength(), getDescriptorDataType());
 
-	int i = 0;
-	for (auto& cuboid : cuboids) {
-		cv::Mat feat;
+  int i = 0;
+  for (auto& cuboid : cuboids) {
+    cv::Mat feat;
 
-		auto cuboidRoi = ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size()));
-		auto intersection = cuboidRoi & cuboid;
+    auto cuboidRoi = ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size()));
+    auto intersection = cuboidRoi & cuboid;
 
-		if (intersection != cuboid) {
-			std::runtime_error(
-				"Invalid cuboid, its intersection with the images are" +
-				std::string("different than the cuboid itself"));
-		}
-		extractFeatures(cuboid, feat);
-		if (feat.cols > 0)
-			feat.row(0).copyTo(output.row(i++));
-		//output.push_back(feat);
-	}
-	output.resize(i);
+    if (intersection != cuboid) {
+      std::runtime_error(
+        "Invalid cuboid, its intersection with the images are" +
+        std::string("different than the cuboid itself"));
+    }
+    extractFeatures(cuboid, feat);
+    if (feat.cols > 0)
+      feat.row(0).copyTo(output.row(i++));
+    //output.push_back(feat);
+  }
+  output.resize(i);
 }
 
 /*
 void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints, cv::Mat& output) {
-	//TODO
+  //TODO
 }
 */
 void DescriptorTemporal::setData(const std::vector<cv::Mat>& imgs) {
-	
-	for (auto &img : imgs)
-		mImages.push_back(img.clone());
-	
-	beforeProcess();
-	mIsPrepared = true;
+
+  for (auto &img : imgs)
+    mImages.push_back(img.clone());
+
+  beforeProcess();
+  mIsPrepared = true;
 }
 
 }  // namespace ssig

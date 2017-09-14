@@ -42,246 +42,246 @@
 #include "ssiglib/descriptors/co_occurrence_general.hpp"
 
 namespace ssig {
-	CoOccurrenceGeneral::CoOccurrenceGeneral(int nbins, int distance) {
-		// Constructor
-		this->nbins = nbins;
-		this->distance = distance;
-
-		M0.create(this->nbins, this->nbins);
-		M45.create(this->nbins, this->nbins);
-		M90.create(this->nbins, this->nbins);
-		M135.create(this->nbins, this->nbins);
-	}
-
-	CoOccurrenceGeneral::~CoOccurrenceGeneral() {
-		// Destructor
-	}
-
-	CoOccurrenceGeneral::CoOccurrenceGeneral(const CoOccurrenceGeneral& descriptor) {
-		// Constructor Copy
-		this->nbins = descriptor.nbins;
-		this->distance = descriptor.distance;
-
-		M0 = descriptor.M0.clone();
-		M45 = descriptor.M45.clone();
-		M90 = descriptor.M90.clone();
-		M135 = descriptor.M135.clone();
-
-	}
-
-	CoOccurrenceGeneral& CoOccurrenceGeneral::operator=(const CoOccurrenceGeneral& rhs) {
-		if (this != &rhs) {
-			// code here
-		}
-		return *this;
-	}
-
-	int CoOccurrenceGeneral::getnBins() const {
-		return this->nbins;
-	}
-
-	int CoOccurrenceGeneral::getDistance() const {
-		return this->distance;
-	}
-
-	int CoOccurrenceGeneral::getNFeatures() {
-		return 4 * FEATURESCG;
-	}
-
-
-	void CoOccurrenceGeneral::setnBins(const int nbins) {
-		this->nbins = nbins;
-
-		M0.release();
-		M0.create(this->nbins, this->nbins);
-		M45.release();
-		M45.create(this->nbins, this->nbins);
-		M90.release();
-		M90.create(this->nbins, this->nbins);
-		M135.release();
-		M135.create(this->nbins, this->nbins);
-	}
+  CoOccurrenceGeneral::CoOccurrenceGeneral(int nbins, int distance) {
+    // Constructor
+    this->nbins = nbins;
+    this->distance = distance;
 
-	void CoOccurrenceGeneral::setDistance(const int distance) {
-		this->distance = distance;
-	}
+    M0.create(this->nbins, this->nbins);
+    M45.create(this->nbins, this->nbins);
+    M90.create(this->nbins, this->nbins);
+    M135.create(this->nbins, this->nbins);
+  }
+
+  CoOccurrenceGeneral::~CoOccurrenceGeneral() {
+    // Destructor
+  }
 
-	void CoOccurrenceGeneral::extractMatrix0(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
-		float R0 = 0.0f;
-		int d, x, y;
-
-		/* Inicializacoes */
-		d = this->distance;
-
-		/*Initializes the matrices*/
-		M0 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
-
-		for (int row = patch.y; row < patch.height; row++) {
-			for (int col = patch.x; col < patch.width; col++) {
+  CoOccurrenceGeneral::CoOccurrenceGeneral(const CoOccurrenceGeneral& descriptor) {
+    // Constructor Copy
+    this->nbins = descriptor.nbins;
+    this->distance = descriptor.distance;
 
-				/* Calcula as matrizes */
-				x = img(row, col);
-				if (x == -1)
-					continue;
+    M0 = descriptor.M0.clone();
+    M45 = descriptor.M45.clone();
+    M90 = descriptor.M90.clone();
+    M135 = descriptor.M135.clone();
 
-				if (col + d < patch.width){
-					y = img(row, col + d);
-					if (y == -1)
-						continue;
-					
-					M0(y, x)++;
-					M0(x, y)++;
-					R0++;
-					
-				}
+  }
+
+  CoOccurrenceGeneral& CoOccurrenceGeneral::operator=(const CoOccurrenceGeneral& rhs) {
+    if (this != &rhs) {
+      // code here
+    }
+    return *this;
+  }
+
+  int CoOccurrenceGeneral::getnBins() const {
+    return this->nbins;
+  }
 
-			}
-		}
+  int CoOccurrenceGeneral::getDistance() const {
+    return this->distance;
+  }
 
-		if (R0 == 0.0f)
-			R0 = 1.0f;
+  int CoOccurrenceGeneral::getNFeatures() {
+    return 4 * FEATURESCG;
+  }
 
-		M0 = M0 / R0;
 
-		output = M0.clone();
-	}
+  void CoOccurrenceGeneral::setnBins(const int nbins) {
+    this->nbins = nbins;
 
-	void CoOccurrenceGeneral::extractMatrix45(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
-		float R45 = 0.0f;
-		int d, x, y;
+    M0.release();
+    M0.create(this->nbins, this->nbins);
+    M45.release();
+    M45.create(this->nbins, this->nbins);
+    M90.release();
+    M90.create(this->nbins, this->nbins);
+    M135.release();
+    M135.create(this->nbins, this->nbins);
+  }
 
-		/* Inicializacoes */
-		d = this->distance;
+  void CoOccurrenceGeneral::setDistance(const int distance) {
+    this->distance = distance;
+  }
 
-		/*Initializes the matrices*/
-		M45 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
+  void CoOccurrenceGeneral::extractMatrix0(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+    float R0 = 0.0f;
+    int d, x, y;
 
-		for (int row = patch.y; row < patch.height; row++) {
-			for (int col = patch.x; col < patch.width; col++) {
+    /* Inicializacoes */
+    d = this->distance;
 
-				/* Calcula as matrizes */
-				x = img(row, col);
-				if (x == -1)
-					continue;
+    /*Initializes the matrices*/
+    M0 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
 
-				if (row + d < patch.height && col - d >= patch.x){
-					y = img(row + d, col - d);
-					if (y == -1)
-						continue;
-					//y = direct->GetElement(col - d, row + d);
+    for (int row = patch.y; row < patch.height; row++) {
+      for (int col = patch.x; col < patch.width; col++) {
 
-					M45(y, x)++;
-					M45(x, y)++;
-					R45++;
+        /* Calcula as matrizes */
+        x = img(row, col);
+        if (x == -1)
+          continue;
 
-				}
+        if (col + d < patch.width){
+          y = img(row, col + d);
+          if (y == -1)
+            continue;
 
-			}
-		}
+          M0(y, x)++;
+          M0(x, y)++;
+          R0++;
 
-		if (R45 == 0.0f)
-			R45 = 1.0f;
+        }
 
-		M45 = M45 / R45;
+      }
+    }
 
-		output = M45.clone();
-	}
+    if (R0 == 0.0f)
+      R0 = 1.0f;
 
-	void CoOccurrenceGeneral::extractMatrix90(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
-		float R90 = 0.0f;
-		int d, x, y;
+    M0 = M0 / R0;
 
-		/* Inicializacoes */
-		d = this->distance;
+    output = M0.clone();
+  }
 
-		/*Initializes the matrices*/
-		M90 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
+  void CoOccurrenceGeneral::extractMatrix45(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+    float R45 = 0.0f;
+    int d, x, y;
 
-		for (int row = patch.y; row < patch.height; row++) {
-			for (int col = patch.x; col < patch.width; col++) {
+    /* Inicializacoes */
+    d = this->distance;
 
-				/* Calcula as matrizes */
-				x = img(row, col);
-				if (x == -1)
-					continue;
+    /*Initializes the matrices*/
+    M45 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
 
-				if (row + d < patch.height){
-					y = img(row + d, col);
-					if (y == -1)
-						continue;
+    for (int row = patch.y; row < patch.height; row++) {
+      for (int col = patch.x; col < patch.width; col++) {
 
-					M90(y, x)++;
-					M90(x, y)++;
-					R90++;
+        /* Calcula as matrizes */
+        x = img(row, col);
+        if (x == -1)
+          continue;
 
-				}
+        if (row + d < patch.height && col - d >= patch.x){
+          y = img(row + d, col - d);
+          if (y == -1)
+            continue;
+          //y = direct->GetElement(col - d, row + d);
 
-			}
-		}
+          M45(y, x)++;
+          M45(x, y)++;
+          R45++;
 
-		if (R90 == 0.0f)
-			R90 = 1.0f;
+        }
 
-		M90 = M90 / R90;
+      }
+    }
 
-		output = M90.clone();
-	}
+    if (R45 == 0.0f)
+      R45 = 1.0f;
 
-	void CoOccurrenceGeneral::extractMatrix135(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
-		float R135 = 0.0f;
-		int d, x, y;
+    M45 = M45 / R45;
 
-		/* Inicializacoes */
-		d = this->distance;
+    output = M45.clone();
+  }
 
-		/*Initializes the matrices*/
-		M135 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
+  void CoOccurrenceGeneral::extractMatrix90(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+    float R90 = 0.0f;
+    int d, x, y;
 
-		for (int row = patch.y; row < patch.height; row++) {
-			for (int col = patch.x; col < patch.width; col++) {
+    /* Inicializacoes */
+    d = this->distance;
 
-				/* Calcula as matrizes */
-				x = img(row, col);
-				if (x == -1)
-					continue;
+    /*Initializes the matrices*/
+    M90 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
 
-				if (row + d < patch.height && col + d < patch.width){
-					//y = direct->GetElement(col + d, row + d);
-					y = img(row + d, col + d);
-					if (y == -1)
-						continue;
+    for (int row = patch.y; row < patch.height; row++) {
+      for (int col = patch.x; col < patch.width; col++) {
 
-					M135(y, x)++;
-					M135(x, y)++;
-					R135++;
+        /* Calcula as matrizes */
+        x = img(row, col);
+        if (x == -1)
+          continue;
 
-				}
+        if (row + d < patch.height){
+          y = img(row + d, col);
+          if (y == -1)
+            continue;
 
-			}
-		}
+          M90(y, x)++;
+          M90(x, y)++;
+          R90++;
 
-		if (R135 == 0.0f)
-			R135 = 1.0f;
+        }
 
-		M135 = M135 / R135;
+      }
+    }
 
-		output = M135.clone();
-	}
+    if (R90 == 0.0f)
+      R90 = 1.0f;
 
-	void CoOccurrenceGeneral::extractAllMatricesDirections(const cv::Rect& patch, cv::Mat_<int> &img, std::vector<cv::Mat>& output) {
+    M90 = M90 / R90;
 
-		cv::Mat dummy; //testar se vai precisar declarar o tamanho
+    output = M90.clone();
+  }
 
-		extractMatrix0(patch, img, dummy);
-		extractMatrix45(patch, img, dummy);
-		extractMatrix90(patch, img, dummy);
-		extractMatrix135(patch, img, dummy);
+  void CoOccurrenceGeneral::extractMatrix135(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+    float R135 = 0.0f;
+    int d, x, y;
 
-		output.push_back(M0);
-		output.push_back(M45);
-		output.push_back(M90);
-		output.push_back(M135);
+    /* Inicializacoes */
+    d = this->distance;
 
-	}
+    /*Initializes the matrices*/
+    M135 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
+
+    for (int row = patch.y; row < patch.height; row++) {
+      for (int col = patch.x; col < patch.width; col++) {
+
+        /* Calcula as matrizes */
+        x = img(row, col);
+        if (x == -1)
+          continue;
+
+        if (row + d < patch.height && col + d < patch.width){
+          //y = direct->GetElement(col + d, row + d);
+          y = img(row + d, col + d);
+          if (y == -1)
+            continue;
+
+          M135(y, x)++;
+          M135(x, y)++;
+          R135++;
+
+        }
+
+      }
+    }
+
+    if (R135 == 0.0f)
+      R135 = 1.0f;
+
+    M135 = M135 / R135;
+
+    output = M135.clone();
+  }
+
+  void CoOccurrenceGeneral::extractAllMatricesDirections(const cv::Rect& patch, cv::Mat_<int> &img, std::vector<cv::Mat>& output) {
+
+    cv::Mat dummy; //testar se vai precisar declarar o tamanho
+
+    extractMatrix0(patch, img, dummy);
+    extractMatrix45(patch, img, dummy);
+    extractMatrix90(patch, img, dummy);
+    extractMatrix135(patch, img, dummy);
+
+    output.push_back(M0);
+    output.push_back(M45);
+    output.push_back(M90);
+    output.push_back(M135);
+
+  }
 
 }  // namespace ssig

@@ -41,45 +41,45 @@
 
 #include <gtest/gtest.h>
 #include "ssiglib/descriptors/co_occurrence_general.hpp"
-#include <opencv2\core\core.hpp>
-#include <opencv2\highgui\highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <iomanip>
 
 TEST(CoOccurrenceGeneral, SampleCoOccurrenceGeneral) {
-	cv::Mat_<int>img;
-	std::vector<cv::Mat> mat;
-	ssig::CoOccurrenceGeneral *cooc = new ssig::CoOccurrenceGeneral(255, 1);
+  cv::Mat_<int>img;
+  std::vector<cv::Mat> mat;
+  ssig::CoOccurrenceGeneral *cooc = new ssig::CoOccurrenceGeneral(255, 1);
 
-	img = cv::imread("cooc_img.jpg", CV_LOAD_IMAGE_GRAYSCALE);
-	ASSERT_FALSE(img.empty());
-	cv::Rect patch(0, 0, img.cols, img.rows);
+  img = cv::imread("cooc_img.jpg", CV_LOAD_IMAGE_GRAYSCALE);
+  ASSERT_FALSE(img.empty());
+  cv::Rect patch(0, 0, img.cols, img.rows);
 
-	cooc->extractAllMatricesDirections(patch, img, mat);
+  cooc->extractAllMatricesDirections(patch, img, mat);
 
-	std::vector<cv::Mat> loadedMat;
-	cv::FileStorage storageMatrix;
-	cv::FileNode node, n1;
+  std::vector<cv::Mat> loadedMat;
+  cv::FileStorage storageMatrix;
+  cv::FileNode node, n1;
 
-	//Loading pre-computed matrices
-	for (int degree = 0; degree <= 136; degree += 45)
-	{
-		cv::Mat tempMat;
-		std::stringstream number;
-		number << std::setw(4) << std::setfill('0') << degree;
-		std::string path = "cooc_matrix" + number.str() + ".yml";
-		storageMatrix.open(path, cv::FileStorage::READ);
+  //Loading pre-computed matrices
+  for (int degree = 0; degree <= 136; degree += 45)
+  {
+    cv::Mat tempMat;
+    std::stringstream number;
+    number << std::setw(4) << std::setfill('0') << degree;
+    std::string path = "cooc_matrix" + number.str() + ".yml";
+    storageMatrix.open(path, cv::FileStorage::READ);
 
-		node = storageMatrix.root();
-		n1 = node["ActionRecognitionFeatures"];
-		n1["Matrix"] >> tempMat;
+    node = storageMatrix.root();
+    n1 = node["ActionRecognitionFeatures"];
+    n1["Matrix"] >> tempMat;
 
-		loadedMat.push_back(tempMat.clone());
-	}
+    loadedMat.push_back(tempMat.clone());
+  }
 
-	//Comparing matrices
-	for (int matrix = 0; matrix < loadedMat.size(); matrix++)
-		for (int i = 0; i < loadedMat[matrix].rows; i++)
-			for (int j = 0; j < loadedMat[matrix].cols; j++)
-				EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); //if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
+  //Comparing matrices
+  for (int matrix = 0; matrix < loadedMat.size(); matrix++)
+    for (int i = 0; i < loadedMat[matrix].rows; i++)
+      for (int j = 0; j < loadedMat[matrix].cols; j++)
+        EXPECT_NEAR(loadedMat[matrix].at<float>(i, j), mat[matrix].at<float>(i, j), 0.001); //if (loadedMat[matrix].at<float>(i, j) == mat[matrix].at<float>(i, j))					
 
 }

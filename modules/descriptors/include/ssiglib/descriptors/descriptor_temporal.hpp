@@ -55,31 +55,31 @@ namespace ssig {
 class DescriptorTemporal : public Descriptor {
 
  public:
-	std::string videoName;
-	DESCRIPTORS_EXPORT DescriptorTemporal(void);
-	DESCRIPTORS_EXPORT virtual ~DescriptorTemporal(void) = default;
-	DESCRIPTORS_EXPORT DescriptorTemporal(const DescriptorTemporal& rhs);
+  std::string videoName;
+  DESCRIPTORS_EXPORT DescriptorTemporal(void);
+  DESCRIPTORS_EXPORT virtual ~DescriptorTemporal(void) = default;
+  DESCRIPTORS_EXPORT DescriptorTemporal(const DescriptorTemporal& rhs);
 
-	DESCRIPTORS_EXPORT void extract(cv::Mat& output);
-	DESCRIPTORS_EXPORT void extract(const std::vector<ssig::Cube>& cuboids,	cv::Mat& output);
-	//TODO
-	//DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,	cv::Mat& output);
-	
-	DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& imgs);
-	DESCRIPTORS_EXPORT virtual void release() = 0;
-	DESCRIPTORS_EXPORT virtual int getDescriptorLength() = 0;
-	DESCRIPTORS_EXPORT virtual int getDescriptorDataType() = 0;
+  DESCRIPTORS_EXPORT void extract(cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<ssig::Cube>& cuboids,	cv::Mat& output);
+  //TODO
+  //DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,	cv::Mat& output);
+
+  DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& imgs);
+  DESCRIPTORS_EXPORT virtual void release() = 0;
+  DESCRIPTORS_EXPORT virtual int getDescriptorLength() = 0;
+  DESCRIPTORS_EXPORT virtual int getDescriptorDataType() = 0;
 
 
  protected:
-	 DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
-	 DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
-	 DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-	 DESCRIPTORS_EXPORT virtual void extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) = 0;
+   DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+   DESCRIPTORS_EXPORT virtual void extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) = 0;
 
-	 std::vector<cv::Mat> mImages;
-	 bool mIsPrepared = false;
+   std::vector<cv::Mat> mImages;
+   bool mIsPrepared = false;
 };
 
 }  // namespace ssig

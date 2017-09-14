@@ -43,27 +43,27 @@
 #include "ssiglib/core/cube.hpp"
 
 TEST(cube, CubeIntersection) {
-	int temporalSize = 5;
-	ssig::Cube cuboid(0, 0, 2, 8, 8, 3);
+  int temporalSize = 5;
+  ssig::Cube cuboid(0, 0, 2, 8, 8, 3);
 
-	auto cuboidRoi = ssig::Cube(0, 0, 0, 16, 16, 8);
-	auto intersection = cuboidRoi & cuboid;
+  auto cuboidRoi = ssig::Cube(0, 0, 0, 16, 16, 8);
+  auto intersection = cuboidRoi & cuboid;
 
-	EXPECT_EQ(intersection, cuboid);
-	
-	cuboid.x0 = 13;
-	intersection = cuboidRoi & cuboid;
-	EXPECT_FALSE(intersection == cuboid);
+  EXPECT_EQ(intersection, cuboid);
 
-	cuboid.x0 = 0;
-	cuboid.y0 = 13;
-	intersection = cuboidRoi & cuboid;
-	EXPECT_FALSE(intersection == cuboid);
+  cuboid.x0 = 13;
+  intersection = cuboidRoi & cuboid;
+  EXPECT_FALSE(intersection == cuboid);
 
-	cuboid.x0 = 0;
-	cuboid.y0 = 0;
-	cuboid.t0 = 13;
-	intersection = cuboidRoi & cuboid;
-	EXPECT_FALSE(intersection == cuboid);
+  cuboid.x0 = 0;
+  cuboid.y0 = 13;
+  intersection = cuboidRoi & cuboid;
+  EXPECT_FALSE(intersection == cuboid);
+
+  cuboid.x0 = 0;
+  cuboid.y0 = 0;
+  cuboid.t0 = 13;
+  intersection = cuboidRoi & cuboid;
+  EXPECT_FALSE(intersection == cuboid);
 
 }
