@@ -39,34 +39,48 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
+#ifndef _SSIG_DESCRIPTORS_DESCRIPTOR_TEMPORAL_HPP_
+#define _SSIG_DESCRIPTORS_DESCRIPTOR_TEMPORAL_HPP_
 
+#include "ssiglib/core/algorithm.hpp"
 #include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
+#include <vector>
+#include <string>
 
-#define HARALICK_EPSILON 0.00001
+#include "descriptors_defs.hpp"
+#include "descriptor.hpp"
+#include "ssiglib/core/cube.hpp"
 
 namespace ssig {
-class Haralick {
+
+class DescriptorTemporal : public Descriptor {
+
  public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
+  std::string videoName;
+  DESCRIPTORS_EXPORT DescriptorTemporal(void);
+  DESCRIPTORS_EXPORT virtual ~DescriptorTemporal(void) = default;
+  DESCRIPTORS_EXPORT DescriptorTemporal(const DescriptorTemporal& rhs);
+
+  DESCRIPTORS_EXPORT void extract(cv::Mat& output);
+  DESCRIPTORS_EXPORT void extract(const std::vector<ssig::Cube>& cuboids,	cv::Mat& output);
+  // DESCRIPTORS_EXPORT void extract(const std::vector<cv::KeyPoint>& keypoints,	cv::Mat& output);
+
+  DESCRIPTORS_EXPORT void setData(const std::vector<cv::Mat>& imgs);
+  DESCRIPTORS_EXPORT virtual void release() = 0;
+  DESCRIPTORS_EXPORT virtual int getDescriptorLength() = 0;
+  DESCRIPTORS_EXPORT virtual int getDescriptorDataType() = 0;
+
+
+ protected:
+   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+
+   DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+   DESCRIPTORS_EXPORT virtual void extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) = 0;
+
+   std::vector<cv::Mat> mImages;
+   bool mIsPrepared = false;
 };
+
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
+#endif  // !_SSIG_DESCRIPTORS_DESCRIPTOR_TEMPORAL_HPP_
