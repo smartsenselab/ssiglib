@@ -82,8 +82,7 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude,
   if (logQuantization == 1) {
     this->logQuantization = logQuantization;
     this->maxMagnitude = 15;  // default
-  }
-  else
+  } else
     this->maxMagnitude = maxMagnitude;
 
   for (auto v : temporalScales)
@@ -279,8 +278,7 @@ void OFCM::setOpticalFlowData() {
         this->data.push_back(angles_magni);
         this->mapToOpticalFlows[i][j] = static_cast<int>(this->data.size()) - 1;
         this->mapToOpticalFlows[j][i] = static_cast<int>(this->data.size()) - 1;
-      }
-      else
+      } else
         break;
     }
   }
@@ -434,8 +432,7 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid,
                 k = patchMagni.cols; j = patchMagni.rows;
               }
         }
-      }
-      else
+      } else
         break;
     }
   }
@@ -446,8 +443,8 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid,
 
 //////////////// Getters and Setters ////////////////
 bool OFCM::getMovementFilter() { return movementFilter; }
-int OFCM::getnBinsMagnitude() {	return nBinsMagnitude; }
-int OFCM::getnBinsAngle() {	return nBinsAngle; }
+int OFCM::getnBinsMagnitude() { return nBinsMagnitude; }
+int OFCM::getnBinsAngle() { return nBinsAngle; }
 int OFCM::getDistanceMagnitude() { return distanceMagnitude; }
 int OFCM::getDistanceAngle() { return distanceAngle; }
 int OFCM::getCuboidLength() { return cuboidLength; }

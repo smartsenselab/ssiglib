@@ -62,13 +62,13 @@ namespace ssig {
   };
 
 class OFCM : public DescriptorTemporal {
- typedef	std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
+ typedef std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
 
  public:
   DESCRIPTORS_EXPORT OFCM(void);
   DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle,
     int distanceMagnitude, int distanceAngle,
-    int cuboidLength, float maxMagnitude,	int logQuantization,
+    int cuboidLength, float maxMagnitude, int logQuantization,
     bool movementFilter, std::vector<int> temporalScales,
     ExtractionType extractionType = ExtractionType::HaralickFeatures);
   DESCRIPTORS_EXPORT virtual ~OFCM(void);
@@ -87,7 +87,7 @@ class OFCM : public DescriptorTemporal {
   DESCRIPTORS_EXPORT float getMaxAngle();
   DESCRIPTORS_EXPORT int getDescriptorLength() override;
   DESCRIPTORS_EXPORT int getNumOpticalFlow();
-  DESCRIPTORS_EXPORT std::vector<int> getTemporalScales(); 
+  DESCRIPTORS_EXPORT std::vector<int> getTemporalScales();
   DESCRIPTORS_EXPORT int getDescriptorDataType() override;
   DESCRIPTORS_EXPORT void setMovementFilter(bool movementFilter);
   DESCRIPTORS_EXPORT void setnBinsMagnitude(int nBinsMagnitude);
