@@ -121,7 +121,6 @@ OFCM::~OFCM() {
     delete[] this->mapToOpticalFlows;
     this->mapToOpticalFlows = NULL;
   }
-
 }
 
 OFCM::OFCM(const OFCM& rhs) {
@@ -174,12 +173,10 @@ void OFCM::extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) {
       default:
         extractHaralickFeatures(mMagnitude, mAngles, output);
       }
-
     }
     output = output.reshape(0, 1);
   }
   patches.clear();
-
 }
 
 void OFCM::extractHaralickFeatures(std::vector<cv::Mat>& mMagnitude,
@@ -302,8 +299,8 @@ void OFCM::setParameters() {
   this->numOpticalFlow = calcNumOptcialFlowPerCuboid();
 
   // It is(4 direction matrices * 12 Haralick texture features) * 2,
-  //because we have one magnitude matrix and one angle matrix,
-  //*numOpticalFlow, the number of optical flow will depend on temporal scale.
+  // because we have one magnitude matrix and one angle matrix,
+  // *numOpticalFlow, the number of optical flow will depend on temporal scale.
   switch (this->extractionType) {
   case ExtractionType::HaralickFeatures:
     this->descriptorLength = ((4 * 12) + (4 * 12)) * this->numOpticalFlow;

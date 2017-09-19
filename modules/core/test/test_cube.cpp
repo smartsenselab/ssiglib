@@ -65,5 +65,4 @@ TEST(cube, CubeIntersection) {
   cuboid.t0 = 13;
   intersection = cuboidRoi & cuboid;
   EXPECT_FALSE(intersection == cuboid);
-
 }

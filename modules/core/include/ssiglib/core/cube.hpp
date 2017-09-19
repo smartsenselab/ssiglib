@@ -68,12 +68,12 @@ class Cube {
       a.h == b.h && a.l == b.l;
   }
 
-  static inline bool operator != (const Cube& a, const Cube& b)	{
+  static inline bool operator != (const Cube& a, const Cube& b) {
     return a.x0 != b.x0 || a.y0 != b.y0 || a.t0 != b.t0 || a.w != b.w ||
       a.h != b.h || a.l != b.l;
   }
-  
-  static inline Cube& operator&= (Cube& a, const Cube& b)	{
+
+  static inline Cube& operator&= (Cube& a, const Cube& b) {
     int x1 = std::max(a.x0, b.x0);
     int y1 = std::max(a.y0, b.y0);
     int t1 = std::max(a.t0, b.t0);
@@ -87,7 +87,7 @@ class Cube {
       a = Cube();
     return a;
   }
-  
+
   static inline Cube operator & (const Cube& a, const Cube& b) {
     ssig::Cube c = a;
     return c &= b;

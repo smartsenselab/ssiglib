@@ -117,10 +117,8 @@ namespace ssig {
 
     /*Initializes the matrices*/
     M0 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
-
     for (int row = patch.y; row < patch.height; row++) {
       for (int col = patch.x; col < patch.width; col++) {
-
         /* Calcula as matrizes */
         x = img(row, col);
         if (x == -1)
@@ -134,9 +132,7 @@ namespace ssig {
           M0(y, x)++;
           M0(x, y)++;
           R0++;
-
         }
-
       }
     }
 
@@ -158,10 +154,8 @@ namespace ssig {
 
     /* Initializes the matrices */
     M45 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
-
     for (int row = patch.y; row < patch.height; row++) {
       for (int col = patch.x; col < patch.width; col++) {
-
         /* Calcula as matrizes */
         x = img(row, col);
         if (x == -1)
@@ -176,9 +170,7 @@ namespace ssig {
           M45(y, x)++;
           M45(x, y)++;
           R45++;
-
         }
-
       }
     }
 
@@ -200,10 +192,8 @@ namespace ssig {
 
     /*Initializes the matrices*/
     M90 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
-
     for (int row = patch.y; row < patch.height; row++) {
       for (int col = patch.x; col < patch.width; col++) {
-
         /* Calcula as matrizes */
         x = img(row, col);
         if (x == -1)
@@ -217,9 +207,7 @@ namespace ssig {
           M90(y, x)++;
           M90(x, y)++;
           R90++;
-
         }
-
       }
     }
 
@@ -241,10 +229,8 @@ namespace ssig {
 
     /*Initializes the matrices*/
     M135 = cv::Mat::zeros(this->nbins, this->nbins, CV_32F);
-
     for (int row = patch.y; row < patch.height; row++) {
       for (int col = patch.x; col < patch.width; col++) {
-
         /* Calcula as matrizes */
         x = img(row, col);
         if (x == -1)
@@ -259,9 +245,7 @@ namespace ssig {
           M135(y, x)++;
           M135(x, y)++;
           R135++;
-
         }
-
       }
     }
 

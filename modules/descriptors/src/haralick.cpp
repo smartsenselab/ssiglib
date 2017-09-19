@@ -71,7 +71,7 @@ cv::Mat Haralick::compute(const cv::Mat& mat) {
 }
 
 cv::Mat Haralick::computeOld(const cv::Mat& mat) {
-  //Compute just 12 features (old implementaion from William Schwartz)
+  // Compute just 12 features (old implementaion from William Schwartz)
   cv::Mat output = cv::Mat::zeros(1, 12, CV_32F);
 
   output.at<float>(0, 0) = Haralick::f1ASM(mat);
@@ -85,9 +85,9 @@ cv::Mat Haralick::computeOld(const cv::Mat& mat) {
   output.at<float>(0, 8) = Haralick::f9Entropy(mat);
   output.at<float>(0, 9) = Haralick::f10DifferenceVariance(mat);
   output.at<float>(0, 10) = Haralick::f11DifferenceEntropy(mat);
-  //output.at<float>(0, 11) = Haralick::f12InformationCorrelation01(mat);
-  //output.at<float>(0, 12) = Haralick::f13InformationCorrelation02(mat);
-  //output.at<float>(0, 13) = 0.0f;
+  // output.at<float>(0, 11) = Haralick::f12InformationCorrelation01(mat);
+  // output.at<float>(0, 12) = Haralick::f13InformationCorrelation02(mat);
+  // output.at<float>(0, 13) = 0.0f;
   output.at<float>(0, 11) = Haralick::f15_Directionality(mat);
 
   for (int i = 0; i < 12; i++)

@@ -62,7 +62,6 @@ namespace ssig {
   };
 
 class OFCM : public DescriptorTemporal {
-
  typedef	std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
 
  public:
@@ -152,7 +151,6 @@ private:
   inline void VecDesp2Mat(std::vector<cv::Point2f> &vecPoints,
     std::vector<cv::Point2f> &positions, OFCM::ParMat & AMmat);
   inline void allocateMapToOpticalFlowsMatrix();
-
 };
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_OFCM_FEATURES_HPP_

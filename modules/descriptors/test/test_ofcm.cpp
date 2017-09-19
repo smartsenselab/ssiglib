@@ -163,8 +163,8 @@ TEST(OFCM, SampleOFCM) {
   /////////////////////////////////////////////////////////////////////////////
 
   /////////////////////// Create cube vector (dense sampling) /////////////////
-  sampleX = 48;	sampleY = 48;	sampleL = 10;
-  strideX = 24;	strideY = 24;	strideL = 5;
+  sampleX = 48; sampleY = 48; sampleL = 10;
+  strideX = 24; strideY = 24; strideL = 5;
   // video.size() instead of videoLength since used a frameStep different from 1
   for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL);
     t += strideL)
