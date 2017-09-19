@@ -67,9 +67,11 @@ class OFCM : public DescriptorTemporal {
 
  public:
   DESCRIPTORS_EXPORT OFCM(void);
-  DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude, int distanceAngle,
-                          int cuboidLength, float maxMagnitude,	int logQuantization, bool movementFilter,
-                          std::vector<int> temporalScales, ExtractionType extractionType = ExtractionType::HaralickFeatures);
+  DESCRIPTORS_EXPORT OFCM(int nBinsMagnitude, int nBinsAngle,
+    int distanceMagnitude, int distanceAngle,
+    int cuboidLength, float maxMagnitude,	int logQuantization,
+    bool movementFilter, std::vector<int> temporalScales,
+    ExtractionType extractionType = ExtractionType::HaralickFeatures);
   DESCRIPTORS_EXPORT virtual ~OFCM(void);
   DESCRIPTORS_EXPORT OFCM(const OFCM& rhs);
   DESCRIPTORS_EXPORT OFCM& operator=(const OFCM& rhs);
@@ -104,7 +106,8 @@ protected:
   CORE_EXPORT void write(cv::FileStorage& fs) const override {}
 
   DESCRIPTORS_EXPORT void beforeProcess() override;
-  DESCRIPTORS_EXPORT void extractFeatures(const ssig::Cube& cuboid, cv::Mat& output) override;
+  DESCRIPTORS_EXPORT void extractFeatures(const ssig::Cube& cuboid,
+    cv::Mat& output) override;
 
 private:
   bool movementFilter = true;
@@ -135,13 +138,19 @@ private:
   void setParameters();
   void setOpticalFlowData();
   int calcNumOptcialFlowPerCuboid();
-  void extractHaralickFeatures(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
-  void extractVectorizedMatrices(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
-  void extractConcatVectorizedHaralick(std::vector<cv::Mat>& mMagnitude, std::vector<cv::Mat>& mAngles, cv::Mat& output);
+  void extractHaralickFeatures(std::vector<cv::Mat>& mMagnitude,
+    std::vector<cv::Mat>& mAngles, cv::Mat& output);
+  void extractVectorizedMatrices(std::vector<cv::Mat>& mMagnitude,
+    std::vector<cv::Mat>& mAngles, cv::Mat& output);
+  void extractConcatVectorizedHaralick(std::vector<cv::Mat>& mMagnitude,
+    std::vector<cv::Mat>& mAngles, cv::Mat& output);
 
-  inline std::deque<ParMat> CreatePatch(const ssig::Cube& cuboid, bool & hasMovement);
-  inline void FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB, cv::Mat frameA, int thr = 30);
-  inline void VecDesp2Mat(std::vector<cv::Point2f> &vecPoints, std::vector<cv::Point2f> &positions, OFCM::ParMat & AMmat);
+  inline std::deque<ParMat> CreatePatch(const ssig::Cube& cuboid,
+    bool & hasMovement);
+  inline void FillPoints(std::vector<cv::Point2f> &vecPoints, cv::Mat frameB,
+    cv::Mat frameA, int thr = 30);
+  inline void VecDesp2Mat(std::vector<cv::Point2f> &vecPoints,
+    std::vector<cv::Point2f> &positions, OFCM::ParMat & AMmat);
   inline void allocateMapToOpticalFlowsMatrix();
 
 };

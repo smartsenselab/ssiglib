@@ -58,22 +58,26 @@ void DescriptorTemporal::extract(cv::Mat& output) {
     beforeProcess();
     mIsPrepared = true;
   }
-  extractFeatures(ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size())), output);
+  extractFeatures(ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows,
+    static_cast<int>(mImages.size())), output);
 }
 
-void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat& output) {
+void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids,
+  cv::Mat& output) {
   if (!mIsPrepared) {
     beforeProcess();
     mIsPrepared = true;
   }
 
-  output.create(static_cast<int>(cuboids.size()), getDescriptorLength(), getDescriptorDataType());
+  output.create(static_cast<int>(cuboids.size()), getDescriptorLength(),
+    getDescriptorDataType());
 
   int i = 0;
   for (auto& cuboid : cuboids) {
     cv::Mat feat;
 
-    auto cuboidRoi = ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows, static_cast<int>(mImages.size()));
+    auto cuboidRoi = ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows,
+      static_cast<int>(mImages.size()));
     auto intersection = cuboidRoi & cuboid;
 
     if (intersection != cuboid) {
@@ -90,7 +94,8 @@ void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids, cv::Mat
 }
 
 /*
-void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints, cv::Mat& output) {
+void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints,
+cv::Mat& output) {
   //
 }
 */

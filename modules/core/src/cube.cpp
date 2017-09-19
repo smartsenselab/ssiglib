@@ -77,7 +77,8 @@ namespace ssig {
 
   // return true if this cube has been set
   bool Cube::isCubeValid() {
-    if (this->x0 != -1 && this->y0 != -1 && this->t0 != -1 && this->w > 0 && this->h > 0 && this->l > 0)
+    if (this->x0 != -1 && this->y0 != -1 && this->t0 != -1 && this->w > 0 &&
+      this->h > 0 && this->l > 0)
       return true;
 
     return false;

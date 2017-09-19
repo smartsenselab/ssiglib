@@ -57,7 +57,8 @@ namespace ssig {
     // Destructor
   }
 
-  CoOccurrenceGeneral::CoOccurrenceGeneral(const CoOccurrenceGeneral& descriptor) {
+  CoOccurrenceGeneral::CoOccurrenceGeneral(const CoOccurrenceGeneral&
+    descriptor) {
     // Constructor Copy
     this->nbins = descriptor.nbins;
     this->distance = descriptor.distance;
@@ -68,7 +69,8 @@ namespace ssig {
     M135 = descriptor.M135.clone();
   }
 
-  CoOccurrenceGeneral& CoOccurrenceGeneral::operator=(const CoOccurrenceGeneral& rhs) {
+  CoOccurrenceGeneral& CoOccurrenceGeneral::operator=(const CoOccurrenceGeneral&
+    rhs) {
     if (this != &rhs) {
       // code here
     }
@@ -105,7 +107,8 @@ namespace ssig {
     this->distance = distance;
   }
 
-  void CoOccurrenceGeneral::extractMatrix0(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+  void CoOccurrenceGeneral::extractMatrix0(const cv::Rect& patch, cv::Mat_<int>
+    &img, cv::Mat& output) {
     float R0 = 0.0f;
     int d, x, y;
 
@@ -145,7 +148,8 @@ namespace ssig {
     output = M0.clone();
   }
 
-  void CoOccurrenceGeneral::extractMatrix45(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+  void CoOccurrenceGeneral::extractMatrix45(const cv::Rect& patch, cv::Mat_<int>
+    &img, cv::Mat& output) {
     float R45 = 0.0f;
     int d, x, y;
 
@@ -186,7 +190,8 @@ namespace ssig {
     output = M45.clone();
   }
 
-  void CoOccurrenceGeneral::extractMatrix90(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+  void CoOccurrenceGeneral::extractMatrix90(const cv::Rect& patch, cv::Mat_<int>
+    &img, cv::Mat& output) {
     float R90 = 0.0f;
     int d, x, y;
 
@@ -226,7 +231,8 @@ namespace ssig {
     output = M90.clone();
   }
 
-  void CoOccurrenceGeneral::extractMatrix135(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output) {
+  void CoOccurrenceGeneral::extractMatrix135(const cv::Rect& patch,
+    cv::Mat_<int> &img, cv::Mat& output) {
     float R135 = 0.0f;
     int d, x, y;
 
@@ -267,7 +273,8 @@ namespace ssig {
     output = M135.clone();
   }
 
-  void CoOccurrenceGeneral::extractAllMatricesDirections(const cv::Rect& patch, cv::Mat_<int> &img, std::vector<cv::Mat>& output) {
+  void CoOccurrenceGeneral::extractAllMatricesDirections(const cv::Rect& patch,
+    cv::Mat_<int> &img, std::vector<cv::Mat>& output) {
     cv::Mat dummy;  // testar se vai precisar declarar o tamanho
 
     extractMatrix0(patch, img, dummy);

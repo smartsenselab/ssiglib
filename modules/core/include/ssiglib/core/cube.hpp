@@ -64,11 +64,13 @@ class Cube {
   };
 
   static inline bool operator == (const Cube& a, const Cube& b) {
-    return a.x0 == b.x0 && a.y0 == b.y0 && a.t0 == b.t0 && a.w == b.w && a.h == b.h && a.l == b.l;
+    return a.x0 == b.x0 && a.y0 == b.y0 && a.t0 == b.t0 && a.w == b.w &&
+      a.h == b.h && a.l == b.l;
   }
 
   static inline bool operator != (const Cube& a, const Cube& b)	{
-    return a.x0 != b.x0 || a.y0 != b.y0 || a.t0 != b.t0 || a.w != b.w || a.h != b.h || a.l != b.l;
+    return a.x0 != b.x0 || a.y0 != b.y0 || a.t0 != b.t0 || a.w != b.w ||
+      a.h != b.h || a.l != b.l;
   }
   
   static inline Cube& operator&= (Cube& a, const Cube& b)	{

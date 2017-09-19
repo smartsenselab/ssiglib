@@ -75,7 +75,8 @@ private:
   DESCRIPTORS_EXPORT CoOccurrenceGeneral(int nbins, int distance);
   DESCRIPTORS_EXPORT virtual ~CoOccurrenceGeneral(void);
   DESCRIPTORS_EXPORT CoOccurrenceGeneral(const CoOccurrenceGeneral& descriptor);
-  DESCRIPTORS_EXPORT CoOccurrenceGeneral& operator=(const CoOccurrenceGeneral& rhs);
+  DESCRIPTORS_EXPORT CoOccurrenceGeneral& operator=(const CoOccurrenceGeneral&
+    rhs);
 
   DESCRIPTORS_EXPORT int getnBins() const;
   DESCRIPTORS_EXPORT int getDistance() const;
@@ -84,22 +85,31 @@ private:
   DESCRIPTORS_EXPORT void setDistance(const int distance);
 
   // co-occurrence without feature selection
-  void ExtractFeatures(int x0, int y0, int x1, int y1, cv::Mat_<int> &img, cv::Mat_<float> &m);
-  void ExtractFeatures(int x0, int y0, int x1, int y1, std::vector<cv::Mat_<int>> &vecImg, cv::Mat_<float> &m);
-  void ExtractVectorizedCoocMatrices(int x0, int y0, int x1, int y1, cv::Mat_<int> &img, cv::Mat_<float> &m);
-  void ExtractVectorizedCoocMatrices(int x0, int y0, int x1, int y1, std::vector<cv::Mat_<int>> &vecImg, cv::Mat_<float> &m);
+  void ExtractFeatures(int x0, int y0, int x1, int y1, cv::Mat_<int> &img,
+    cv::Mat_<float> &m);
+  void ExtractFeatures(int x0, int y0, int x1, int y1,
+    std::vector<cv::Mat_<int>> &vecImg, cv::Mat_<float> &m);
+  void ExtractVectorizedCoocMatrices(int x0, int y0, int x1, int y1,
+    cv::Mat_<int> &img, cv::Mat_<float> &m);
+  void ExtractVectorizedCoocMatrices(int x0, int y0, int x1, int y1,
+    std::vector<cv::Mat_<int>> &vecImg, cv::Mat_<float> &m);
 
   cv::Mat_<float> getMatrix0();
   cv::Mat_<float> getMatrix45();
   cv::Mat_<float> getMatrix90();
   cv::Mat_<float> getMatrix135();
 
-  DESCRIPTORS_EXPORT void extractMatrix0(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output);
-  DESCRIPTORS_EXPORT void extractMatrix45(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output);
-  DESCRIPTORS_EXPORT void extractMatrix90(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output);
-  DESCRIPTORS_EXPORT void extractMatrix135(const cv::Rect& patch, cv::Mat_<int> &img, cv::Mat& output);
+  DESCRIPTORS_EXPORT void extractMatrix0(const cv::Rect& patch,
+    cv::Mat_<int> &img, cv::Mat& output);
+  DESCRIPTORS_EXPORT void extractMatrix45(const cv::Rect& patch,
+    cv::Mat_<int> &img, cv::Mat& output);
+  DESCRIPTORS_EXPORT void extractMatrix90(const cv::Rect& patch,
+    cv::Mat_<int> &img, cv::Mat& output);
+  DESCRIPTORS_EXPORT void extractMatrix135(const cv::Rect& patch,
+    cv::Mat_<int> &img, cv::Mat& output);
 
-  DESCRIPTORS_EXPORT void extractAllMatricesDirections(const cv::Rect& patch, cv::Mat_<int> &img, std::vector<cv::Mat>& output);
+  DESCRIPTORS_EXPORT void extractAllMatricesDirections(const cv::Rect& patch,
+    cv::Mat_<int> &img, std::vector<cv::Mat>& output);
 };
 }  // namespace ssig
 #endif  // !_SSIG_DESCRIPTORS_CO_OCCURRENCE_GENERAL_HPP_

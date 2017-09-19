@@ -75,8 +75,9 @@ TEST(OFCM, GettersOFCM) {
   std::vector<int> tempScales;
   tempScales.push_back(1); tempScales.push_back(2);
 
-  ssig::OFCM *desc = new ssig::OFCM(nBinsMagnitude, nBinsAngle, distanceMagnitude, distanceAngle,
-                                    cuboidLength, maxMagnitude, logQuantization, movementFilter, tempScales);
+  ssig::OFCM *desc = new ssig::OFCM(nBinsMagnitude, nBinsAngle,
+    distanceMagnitude, distanceAngle, cuboidLength, maxMagnitude,
+    logQuantization, movementFilter, tempScales);
 
   EXPECT_EQ(desc->getnBinsMagnitude(), nBinsMagnitude);
   EXPECT_EQ(desc->getnBinsAngle(), nBinsAngle);
@@ -141,7 +142,7 @@ TEST(OFCM, SampleOFCM) {
   cv::FileNode node, n1;
 
 
-  /////////////////////////////////////////// Video Reading /////////////////////////////////////////////////
+  //////////////////////// Video Reading ////////////////////////
   step = 5;
   path = "person23_running_d4_uncomp.avi";
   capture.open(path);
@@ -155,40 +156,46 @@ TEST(OFCM, SampleOFCM) {
     capture.set(CV_CAP_PROP_POS_FRAMES, frameStep);
     capture.read((image));
     if (image.empty())
-      std::cerr << "Error processing file. Can't read frame " << frameStep << "from video %s" << path;
+      std::cerr << "Error processing file. Can't read frame " << frameStep
+      << "from video %s" << path;
     video.push_back(image.clone());
   }
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////// Create cube vector (dense sampling) ////////////////////////////
+  /////////////////////// Create cube vector (dense sampling) /////////////////
   sampleX = 48;	sampleY = 48;	sampleL = 10;
   strideX = 24;	strideY = 24;	strideL = 5;
-  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL); t += strideL)  // video.size() instead of videoLength since we used a frameStep different from 1
-    for (int y = 0; y <= static_cast<int>(0 + videoHeight - sampleY); y += strideY)
-      for (int x = 0; x <= static_cast<int>(0 + videoWidth - sampleX); x += strideX)
+  // video.size() instead of videoLength since used a frameStep different from 1
+  for (int t = 0; t <= static_cast<int>(0 + video.size() - sampleL);
+    t += strideL)
+    for (int y = 0; y <= static_cast<int>(0 + videoHeight - sampleY);
+      y += strideY)
+      for (int x = 0; x <= static_cast<int>(0 + videoWidth - sampleX);
+        x += strideX)
         cuboids.push_back(ssig::Cube(x, y, t, sampleX, sampleY, sampleL));
-  ////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
-  ////////////////////////////// OFCM feature computing //////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   ssig::DescriptorTemporal *desc = new ssig::OFCM();
   desc->setData(video);
   desc->extract(cuboids, output);
-  ////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
-  /////////////////////// Loading pre-computed OFCM features ////////////////////////////
+  /////////////////////// Loading pre-computed OFCM features //////////////////
   path = "OFCM_person23_running_d4_uncomp.yml";
   storageMatrix.open(path, cv::FileStorage::READ);
   node = storageMatrix.root();
   n1 = node["ActionRecognitionFeatures"];
   n1["Features"] >> loadedFeatures;
-  ////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   EXPECT_EQ(output.cols, loadedFeatures.cols);
   EXPECT_EQ(output.rows, loadedFeatures.rows);
 
   for (int i = 0; i < loadedFeatures.rows; i++)
     for (int j = 0; j < loadedFeatures.cols; j++)
-      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j), 0.001);  // if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
+      EXPECT_NEAR(loadedFeatures.at<float>(i, j), output.at<float>(i, j),
+      0.001);  // if (loadedFeatures.at<float>(i, j) == output.at<float>(i, j))
 
   output.release();
   delete desc;
