@@ -39,34 +39,70 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
-
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+#include "ssiglib/core/cube.hpp"
 
 namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
+  Cube::Cube() {
+    // Constructor
+    this->x0 = -1;
+    this->y0 = -1;
+    this->t0 = -1;
+    this->w = -1;
+    this->h = -1;
+    this->l = -1;
+  }
+
+  Cube::Cube(int x, int y, int t, int width, int height, int length) {
+    this->x0 = x;
+    this->y0 = y;
+    this->t0 = t;
+    this->w = width;
+    this->h = height;
+    this->l = length;
+  }
+
+  Cube::~Cube() {
+    // Destructor
+  }
+
+  Cube::Cube(const Cube& rhs) {
+    // Constructor Copy
+    this->x0 = rhs.x0;
+    this->y0 = rhs.y0;
+    this->t0 = rhs.t0;
+    this->w = rhs.w;
+    this->h = rhs.h;
+    this->l = rhs.l;
+  }
+
+  // return true if this cube has been set
+  bool Cube::isCubeValid() {
+    if (this->x0 != -1 && this->y0 != -1 && this->t0 != -1 && this->w > 0 &&
+      this->h > 0 && this->l > 0)
+      return true;
+
+    return false;
+  }
+
+  void Cube::setCube(int x0, int y0, int t0, int w, int h, int l) {
+    this->x0 = x0;
+    this->y0 = y0;
+    this->t0 = t0;
+    this->w = w;
+    this->h = h;
+    this->l = l;
+  }
+
+  Cube& Cube::operator = (const Cube& rhs) {
+    if (this != &rhs) {
+      this->x0 = rhs.x0;
+      this->y0 = rhs.y0;
+      this->t0 = rhs.t0;
+      this->w = rhs.w;
+      this->h = rhs.h;
+      this->l = rhs.l;
+    }
+    return *this;
+  }
+
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_

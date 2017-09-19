@@ -39,34 +39,72 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************L*/
 
-#ifndef _SSIG_DESCRIPTORS_HARALICK_HPP_
-#define _SSIG_DESCRIPTORS_HARALICK_HPP_
-
-#include <opencv2/core.hpp>
-#include "ssiglib/descriptors/descriptors_defs.hpp"
-
-#define HARALICK_EPSILON 0.00001
+#include "ssiglib/descriptors/descriptor_temporal.hpp"
 
 namespace ssig {
-class Haralick {
- public:
-  DESCRIPTORS_EXPORT static cv::Mat compute(const cv::Mat& mat);
-  DESCRIPTORS_EXPORT static cv::Mat computeOld(const cv::Mat& mat);
- private:
-  static float f1ASM(const cv::Mat& mat);
-  static float f2Contrast(const cv::Mat& mat);
-  static float f3Correlation(const cv::Mat& mat);
-  static float f4Variance(const cv::Mat& mat);
-  static float f5IDM(const cv::Mat& mat);
-  static float f6SumAverage(const cv::Mat& mat);
-  static float f7SumVariance(const cv::Mat& mat);
-  static float f8SumEntropy(const cv::Mat& mat);
-  static float f9Entropy(const cv::Mat& mat);
-  static float f10DifferenceVariance(const cv::Mat& mat);
-  static float f11DifferenceEntropy(const cv::Mat& mat);
-  static float f12InformationCorrelation01(const cv::Mat& mat);
-  static float f13InformationCorrelation02(const cv::Mat& mat);
-  static float f15_Directionality(const cv::Mat& mat);
-};
+DescriptorTemporal::DescriptorTemporal() {
+  // Constructor
+}
+
+DescriptorTemporal::DescriptorTemporal(const DescriptorTemporal& rhs) {
+  // Constructor Copy
+  for (auto &img : rhs.mImages)
+    mImages.push_back(img);
+}
+
+
+void DescriptorTemporal::extract(cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+  extractFeatures(ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows,
+    static_cast<int>(mImages.size())), output);
+}
+
+void DescriptorTemporal::extract(const std::vector<ssig::Cube>& cuboids,
+  cv::Mat& output) {
+  if (!mIsPrepared) {
+    beforeProcess();
+    mIsPrepared = true;
+  }
+
+  output.create(static_cast<int>(cuboids.size()), getDescriptorLength(),
+    getDescriptorDataType());
+
+  int i = 0;
+  for (auto& cuboid : cuboids) {
+    cv::Mat feat;
+
+    auto cuboidRoi = ssig::Cube(0, 0, 0, mImages[0].cols, mImages[0].rows,
+      static_cast<int>(mImages.size()));
+    auto intersection = cuboidRoi & cuboid;
+
+    if (intersection != cuboid) {
+      std::runtime_error(
+        "Invalid cuboid, its intersection with the images are" +
+        std::string("different than the cuboid itself"));
+    }
+    extractFeatures(cuboid, feat);
+    if (feat.cols > 0)
+      feat.row(0).copyTo(output.row(i++));
+    // output.push_back(feat);
+  }
+  output.resize(i);
+}
+
+/*
+void DescriptorTemporal::extract(const std::vector<cv::KeyPoint>& keypoints,
+cv::Mat& output) {
+  //
+}
+*/
+void DescriptorTemporal::setData(const std::vector<cv::Mat>& imgs) {
+  for (auto &img : imgs)
+    mImages.push_back(img.clone());
+
+  beforeProcess();
+  mIsPrepared = true;
+}
+
 }  // namespace ssig
-#endif  // !_SSIG_DESCRIPTORS_HARALICK_HPP_
