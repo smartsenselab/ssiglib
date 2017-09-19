@@ -62,7 +62,7 @@ typedef int gray;
 
 namespace ssig {
 class CoOccurrenceGeneral {
-private:
+ private:
   float Pxpy[2 * PGM_MAXMAXVAL];
   int nbins;
   int distance;

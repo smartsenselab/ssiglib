@@ -62,7 +62,7 @@ namespace ssig {
   };
 
 class OFCM : public DescriptorTemporal {
- typedef std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
+  typedef std::pair<cv::Mat_<int>, cv::Mat_<int>> ParMat;
 
  public:
   DESCRIPTORS_EXPORT OFCM(void);
@@ -100,7 +100,7 @@ class OFCM : public DescriptorTemporal {
   DESCRIPTORS_EXPORT void setTemporalScales(std::vector<int> temporalScales);
   DESCRIPTORS_EXPORT void release() override;
 
-protected:
+ protected:
   CORE_EXPORT void read(const cv::FileNode& fn) override {}
   CORE_EXPORT void write(cv::FileStorage& fs) const override {}
 
@@ -108,7 +108,7 @@ protected:
   DESCRIPTORS_EXPORT void extractFeatures(const ssig::Cube& cuboid,
     cv::Mat& output) override;
 
-private:
+ private:
   bool movementFilter = true;
 
   int numImgs;

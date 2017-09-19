@@ -82,9 +82,9 @@ OFCM::OFCM(int nBinsMagnitude, int nBinsAngle, int distanceMagnitude,
   if (logQuantization == 1) {
     this->logQuantization = logQuantization;
     this->maxMagnitude = 15;  // default
-  } else
+  } else {
     this->maxMagnitude = maxMagnitude;
-
+  }
   for (auto v : temporalScales)
     this->temporalScales.push_back(v);
 
@@ -278,8 +278,9 @@ void OFCM::setOpticalFlowData() {
         this->data.push_back(angles_magni);
         this->mapToOpticalFlows[i][j] = static_cast<int>(this->data.size()) - 1;
         this->mapToOpticalFlows[j][i] = static_cast<int>(this->data.size()) - 1;
-      } else
+      } else {
         break;
+      }
     }
   }
 }
@@ -432,8 +433,9 @@ inline std::deque<OFCM::ParMat> OFCM::CreatePatch(const ssig::Cube& cuboid,
                 k = patchMagni.cols; j = patchMagni.rows;
               }
         }
-      } else
+      } else {
         break;
+      }
     }
   }
 

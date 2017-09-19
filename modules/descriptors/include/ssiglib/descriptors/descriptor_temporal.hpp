@@ -73,15 +73,15 @@ class DescriptorTemporal : public Descriptor {
 
 
  protected:
-   DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
-   DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
+  DESCRIPTORS_EXPORT void read(const cv::FileNode& fn) override = 0;
+  DESCRIPTORS_EXPORT void write(cv::FileStorage& fs) const override = 0;
 
-   DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
-   DESCRIPTORS_EXPORT virtual void extractFeatures(const ssig::Cube& cuboid,
+  DESCRIPTORS_EXPORT virtual void beforeProcess() = 0;
+  DESCRIPTORS_EXPORT virtual void extractFeatures(const ssig::Cube& cuboid,
      cv::Mat& output) = 0;
 
-   std::vector<cv::Mat> mImages;
-   bool mIsPrepared = false;
+  std::vector<cv::Mat> mImages;
+  bool mIsPrepared = false;
 };
 
 }  // namespace ssig
